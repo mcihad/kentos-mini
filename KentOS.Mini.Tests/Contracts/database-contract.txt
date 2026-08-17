@@ -233,6 +233,108 @@ TABLE dosyalar
   path
   randevu_id
   size
+TABLE ekip_uyeleri
+  ekip_id
+  eklenme_tarihi
+  id
+  kullanici_id
+TABLE ekipler
+  aciklama
+  ad
+  birim_id
+  guncelleme_tarihi
+  id
+  kullanimda
+  lider_id
+  olusturma_tarihi
+TABLE gorev_asamalari
+  aciklama_zorunlu
+  ad
+  durum
+  fotograf_zorunlu
+  gorev_id
+  gorev_tipi_asama_id
+  id
+  not
+  sira_no
+  tamamlanma_tarihi
+  tamamlayan
+  tamamlayan_id
+  zorunlu
+TABLE gorev_atamalari
+  atama_tarihi
+  atayan
+  ekip_id
+  gorev_id
+  id
+  kullanici_id
+  rol
+TABLE gorev_tipi_asamalari
+  aciklama
+  aciklama_zorunlu
+  ad
+  fotograf_zorunlu
+  gorev_tipi_id
+  id
+  sira_no
+  tahmini_saat
+  zorunlu
+TABLE gorev_tipi_birimleri
+  birim_id
+  gorev_tipi_id
+  id
+TABLE gorev_tipi_devirleri
+  gorev_tipi_id
+  hedef_birim_id
+  hedef_gorev_tipi_id
+  id
+  is_talebi
+  not
+TABLE gorev_tipleri
+  aciklama
+  ad
+  birim_id
+  guncelleme_tarihi
+  hizmet_standardi_gun
+  id
+  konum_zorunlu
+  kullanimda
+  olusturan
+  olusturma_tarihi
+  renk
+  sla_saat
+  varsayilan_oncelik
+TABLE gorevler
+  aciklama
+  adres
+  baslama_tarihi
+  baslik
+  bekleme_dakika
+  birim_id
+  boylam
+  durum
+  enlem
+  gerekce
+  gorev_tipi_id
+  guncelleme_tarihi
+  guncelleyen
+  id
+  kaynak
+  kaynak_id
+  kilometre_tasi_id
+  mahalle_id
+  olusturan
+  olusturan_birim_id
+  olusturma_tarihi
+  onaylayan
+  oncelik
+  planlanan_baslangic
+  planlanan_bitis
+  proje_id
+  sla_bitis
+  takip_no
+  tamamlanma_tarihi
+  ust_gorev_id
 TABLE halk_gunleri
   aciklama
   baslik
@@ -328,6 +430,16 @@ TABLE is_ekleri
   varlik_id
   varlik_turu
   yukleyen
+TABLE is_olaylari
+  aciklama
+  birim_id
+  degisiklikler_json
+  id
+  kullanici
+  tarih
+  tip
+  varlik_id
+  varlik_turu
 TABLE is_yorumlari
   guncelleme_tarihi
   id

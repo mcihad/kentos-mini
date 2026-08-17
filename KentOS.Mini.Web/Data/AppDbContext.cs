@@ -54,6 +54,18 @@ namespace KentOS.Mini.Web.Data
         public DbSet<WorkAttachment> IsEkleri { get; set; }
         public DbSet<WorkComment> IsYorumlari { get; set; }
 
+        // ── İş takip: tanım ve görev ──
+        public DbSet<TaskType> GorevTipleri { get; set; }
+        public DbSet<TaskTypeStage> GorevTipiAsamalari { get; set; }
+        public DbSet<TaskTypeUnit> GorevTipiBirimleri { get; set; }
+        public DbSet<TaskTypeHandoff> GorevTipiDevirleri { get; set; }
+        public DbSet<WorkTask> Gorevler { get; set; }
+        public DbSet<WorkTaskStage> GorevAsamalari { get; set; }
+        public DbSet<WorkTaskAssignment> GorevAtamalari { get; set; }
+        public DbSet<WorkEvent> IsOlaylari { get; set; }
+        public DbSet<Team> Ekipler { get; set; }
+        public DbSet<TeamMember> EkipUyeleri { get; set; }
+
         // ── Halk Günü ──
         public DbSet<HalkGunu> HalkGunleri { get; set; }
         public DbSet<HalkGunuDilim> HalkGunuDilimleri { get; set; }
@@ -202,6 +214,113 @@ namespace KentOS.Mini.Web.Data
                       .WithMany(e => e.Yanitlar)
                       .HasForeignKey(e => e.UstYorumId)
                       .OnDelete(DeleteBehavior.SetNull);
+            });
+
+            // ══════════════════════════════════════════ İş takip: tanım
+            builder.Entity<TaskType>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Birim).WithMany()
+                      .HasForeignKey(e => e.BirimId).OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(e => new { e.BirimId, e.Kullanimda });
+            });
+
+            builder.Entity<TaskTypeStage>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.GorevTipi).WithMany(t => t.Asamalar)
+                      .HasForeignKey(e => e.GorevTipiId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => new { e.GorevTipiId, e.SiraNo });
+            });
+
+            builder.Entity<TaskTypeUnit>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.GorevTipi).WithMany(t => t.Birimler)
+                      .HasForeignKey(e => e.GorevTipiId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.Birim).WithMany()
+                      .HasForeignKey(e => e.BirimId).OnDelete(DeleteBehavior.Cascade);
+                // Aynı birim aynı tipe iki kez bağlanamaz.
+                entity.HasIndex(e => new { e.GorevTipiId, e.BirimId }).IsUnique();
+            });
+
+            builder.Entity<TaskTypeHandoff>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.GorevTipi).WithMany(t => t.Devirler)
+                      .HasForeignKey(e => e.GorevTipiId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasOne(e => e.HedefBirim).WithMany()
+                      .HasForeignKey(e => e.HedefBirimId).OnDelete(DeleteBehavior.Cascade);
+            });
+
+            // ══════════════════════════════════════════ İş takip: görev
+            builder.Entity<WorkTask>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                entity.HasIndex(e => e.TakipNo).IsUnique();
+
+                entity.HasOne(e => e.Birim).WithMany()
+                      .HasForeignKey(e => e.BirimId).OnDelete(DeleteBehavior.Restrict);
+                entity.HasOne(e => e.GorevTipi).WithMany()
+                      .HasForeignKey(e => e.GorevTipiId).OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(e => e.Mahalle).WithMany()
+                      .HasForeignKey(e => e.MahalleId).OnDelete(DeleteBehavior.SetNull);
+
+                // AĞAÇ: üst görev silinince alt görevler KÖKE ÇIKAR, silinmez.
+                // Cascade, bir üst görevi silmenin altındaki bütün işi ve
+                // kanıtını götürmesi demekti.
+                entity.HasOne(e => e.UstGorev).WithMany(e => e.AltGorevler)
+                      .HasForeignKey(e => e.UstGorevId).OnDelete(DeleteBehavior.SetNull);
+
+                // Liste sorgusunun tam şekli: birim + durum, tarihe göre sıralı.
+                entity.HasIndex(e => new { e.BirimId, e.Durum, e.OlusturmaTarihi });
+                entity.HasIndex(e => new { e.BirimId, e.SlaBitis });
+                entity.HasIndex(e => e.UstGorevId);
+                entity.HasIndex(e => new { e.Kaynak, e.KaynakId });
+            });
+
+            builder.Entity<WorkTaskStage>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Gorev).WithMany(g => g.Asamalar)
+                      .HasForeignKey(e => e.GorevId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => new { e.GorevId, e.SiraNo });
+            });
+
+            builder.Entity<WorkTaskAssignment>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Gorev).WithMany(g => g.Atamalar)
+                      .HasForeignKey(e => e.GorevId).OnDelete(DeleteBehavior.Cascade);
+                // Ekip silinirse atama KALIR, ekibi boşalır: geçmişte kimin
+                // atandığı bilgisi ekibin ömründen uzun yaşamalı.
+                entity.HasOne(e => e.Ekip).WithMany()
+                      .HasForeignKey(e => e.EkipId).OnDelete(DeleteBehavior.SetNull);
+                entity.HasIndex(e => new { e.GorevId, e.KullaniciId });
+                entity.HasIndex(e => e.KullaniciId);
+            });
+
+            builder.Entity<WorkEvent>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.VarlikTuru, e.VarlikId, e.Tarih });
+            });
+
+            builder.Entity<Team>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Birim).WithMany()
+                      .HasForeignKey(e => e.BirimId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => new { e.BirimId, e.Kullanimda });
+            });
+
+            builder.Entity<TeamMember>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Ekip).WithMany(t => t.Uyeler)
+                      .HasForeignKey(e => e.EkipId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => new { e.EkipId, e.KullaniciId }).IsUnique();
             });
 
             // ══════════════════════════════════════════════ Halk Günü
