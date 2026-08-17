@@ -9,6 +9,9 @@ import gorevTipleri from './texts/gorev-tipleri.md?raw';
 import ekipler from './texts/ekipler.md?raw';
 import projeler from './texts/projeler.md?raw';
 import projeDetay from './texts/proje-detay.md?raw';
+import vatandasBildirimleri from './texts/vatandas-bildirimleri.md?raw';
+import haritaMetni from './texts/harita.md?raw';
+import saha from './texts/saha.md?raw';
 import talepDetay from './texts/talep-detay.md?raw';
 import halkGunu from './texts/halk-gunu.md?raw';
 import halkGunuBasvurular from './texts/halk-gunu-basvurular.md?raw';
@@ -171,6 +174,33 @@ const KATALOG: { kalip: string; kayit: HelpEntry }[] = [
       baslik: 'Projeler',
       ozet: 'Görevlerin çatısı, ilerleme ve gecikme takibi',
       metin: projeler,
+    },
+  },
+  {
+    kalip: '/vatandas-bildirimleri',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Vatandaş Bildirimleri',
+      ozet: 'Gelen bildirimleri ayıklama ve birime yönlendirme',
+      metin: vatandasBildirimleri,
+    },
+  },
+  {
+    kalip: '/harita',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Harita',
+      ozet: 'Görev ve bildirimlerin coğrafi görünümü',
+      metin: haritaMetni,
+    },
+  },
+  {
+    kalip: '/saha',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Saha',
+      ozet: 'Tek elle kullanım, tespit girme ve aşama tamamlama',
+      metin: saha,
     },
   },
   {

@@ -947,6 +947,460 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/vatandas-bildirimi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Sayfa?: number;
+                    Boyut?: number;
+                    Ara?: string;
+                    Sirala?: string;
+                    Azalan?: boolean;
+                    Atla?: number;
+                    TemizArama?: string;
+                    durum?: components["schemas"]["VatandasBildirimDurumu"];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VatandasBildirimiDtoSayfaliSonuc"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/vatandas-bildirimi/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VatandasBildirimiDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/vatandas-bildirimi/{id}/ek": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Vatandaşın yüklediği fotoğraflar. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsEkDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/vatandas-bildirimi/{id}/yonlendir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bildirimi bir birime yönlendirir ve GÖREV AÇAR.
+         * @description Bir bildirim bir KEZ yönlendirilir; ikinci çağrı reddediliyor. Aksi
+         *     hâlde aynı şikayet için birden çok görev açılırdı.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["BildirimYonlendirmeDto"];
+                    "text/json": components["schemas"]["BildirimYonlendirmeDto"];
+                    "application/*+json": components["schemas"]["BildirimYonlendirmeDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VatandasBildirimiDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/vatandas-bildirimi/{id}/reddet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bildirimi işleme almaz — gerekçe ZORUNLU. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["BildirimRetDto"];
+                    "text/json": components["schemas"]["BildirimRetDto"];
+                    "application/*+json": components["schemas"]["BildirimRetDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VatandasBildirimiDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/bildir/kod": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Telefona doğrulama kodu gönderir. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["DogrulamaIstegiDto"];
+                    "text/json": components["schemas"]["DogrulamaIstegiDto"];
+                    "application/*+json": components["schemas"]["DogrulamaIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/bildir/dogrula": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Kodu doğrular ve kısa ömürlü bilet döner. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["DogrulamaOnayDto"];
+                    "text/json": components["schemas"]["DogrulamaOnayDto"];
+                    "application/*+json": components["schemas"]["DogrulamaOnayDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["DogrulamaSonucuDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/bildir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bildirimi kaydeder. Yalnızca takip numarası döner. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["VatandasBildirimiIstegiDto"];
+                    "text/json": components["schemas"]["VatandasBildirimiIstegiDto"];
+                    "application/*+json": components["schemas"]["VatandasBildirimiIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["VatandasBildirimiSonucuDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/bildir/fotograf": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Bildirime fotoğraf ekler.
+         * @description Bildirim kimliği DEĞİL, imzalı ve kısa ömürlü bir anahtar alıyor:
+         *     kimlik doğrudan kabul edilseydi sıralı bir sayı deneyerek başkasının
+         *     bildirimine fotoğraf eklemek mümkün olurdu.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        anahtar?: string;
+                        /** Format: binary */
+                        dosya?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/birim-kapsam": {
         parameters: {
             query?: never;
@@ -7964,6 +8418,133 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/saha/tespit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sahada görülen sorunu doğrudan görev olarak açar. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["SahaTespitiDto"];
+                    "text/json": components["schemas"]["SahaTespitiDto"];
+                    "application/*+json": components["schemas"]["SahaTespitiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevDetayDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/saha/islerim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kullanıcının üzerindeki açık görevler — ekip ataması dahil. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevOzetDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/saha/harita": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Harita noktaları — görevler ve (istenirse) bekleyen bildirimler. */
+        get: {
+            parameters: {
+                query?: {
+                    altBirimlerDahil?: boolean;
+                    bildirimlerDahil?: boolean;
+                    yalnizAcik?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsHaritaNoktasiDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/takvim/aralik": {
         parameters: {
             query?: never;
@@ -11148,6 +11729,9 @@ export interface components {
             readonly oncekiVar?: boolean;
             readonly sonrakiVar?: boolean;
         };
+        BildirimRetDto: {
+            not: string;
+        };
         /**
          * @description Web push için tarayıcıya gereken Firebase alanları. Yapılandırma eksikse
          *     `null` döner ve SPA bildirim kurulumunu hiç denemez.
@@ -11160,6 +11744,14 @@ export interface components {
             messagingSenderId?: string | null;
             appId?: string | null;
             vapidPublicKey?: string | null;
+        };
+        BildirimYonlendirmeDto: {
+            /** Format: int64 */
+            birimId?: number;
+            /** Format: int64 */
+            gorevTipiId?: number | null;
+            oncelik?: components["schemas"]["GorevOnceligi"];
+            not?: string | null;
         };
         BirimDetayDto: {
             /** Format: int64 */
@@ -11453,6 +12045,18 @@ export interface components {
             kapasite?: number | null;
             /** Format: int32 */
             dilimDakika?: number | null;
+        };
+        DogrulamaIstegiDto: {
+            telefon: string;
+        };
+        DogrulamaOnayDto: {
+            telefon: string;
+            kod: string;
+        };
+        DogrulamaSonucuDto: {
+            bilet?: string | null;
+            /** Format: date-time */
+            gecerlilik?: string;
         };
         /** @description Durum başına talep sayısı. */
         DurumSayaciDto: {
@@ -12322,6 +12926,21 @@ export interface components {
             yukleyen?: string | null;
             /** Format: date-time */
             tarih?: string;
+        };
+        IsHaritaNoktasiDto: {
+            /** Format: int64 */
+            id?: number;
+            tur?: string | null;
+            takipNo?: string | null;
+            baslik?: string | null;
+            /** Format: double */
+            enlem?: number;
+            /** Format: double */
+            boylam?: number;
+            renk?: string | null;
+            durumAd?: string | null;
+            gecikti?: boolean;
+            adres?: string | null;
         };
         IsOlayDegisiklikDto: {
             alan?: string | null;
@@ -13440,6 +14059,21 @@ export interface components {
         RolIzinIstegi: {
             izinler?: string[] | null;
         };
+        SahaTespitiDto: {
+            baslik: string;
+            aciklama?: string | null;
+            /** Format: int64 */
+            gorevTipiId?: number | null;
+            oncelik?: components["schemas"]["GorevOnceligi"];
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            /** Format: int64 */
+            mahalleId?: number | null;
+            kendimeAta?: boolean;
+        };
         SendSmsToBirimDto: {
             /** Format: int64 */
             ajandaId?: number;
@@ -13665,6 +14299,78 @@ export interface components {
             requestOnNoteAdded?: boolean;
             requestOnRemittance?: boolean;
             requestOnAddedToAgenda?: boolean;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        VatandasBildirimDurumu: 0 | 1 | 2;
+        VatandasBildirimiDto: {
+            /** Format: int64 */
+            id?: number;
+            takipNo?: string | null;
+            adSoyad?: string | null;
+            telefon?: string | null;
+            konu?: string | null;
+            aciklama?: string | null;
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            /** Format: int64 */
+            mahalleId?: number | null;
+            mahalleAd?: string | null;
+            durum?: components["schemas"]["VatandasBildirimDurumu"];
+            durumAd?: string | null;
+            durumRenk?: string | null;
+            /** Format: int64 */
+            birimId?: number | null;
+            birimAd?: string | null;
+            /** Format: int64 */
+            gorevId?: number | null;
+            gorevTakipNo?: string | null;
+            islemNotu?: string | null;
+            isleyen?: string | null;
+            /** Format: date-time */
+            islemTarihi?: string | null;
+            /** Format: date-time */
+            olusturmaTarihi?: string;
+            /** Format: int32 */
+            ekSayisi?: number;
+            /** Format: int32 */
+            ayniNumaradanOnceki?: number;
+        };
+        VatandasBildirimiDtoSayfaliSonuc: {
+            veriler?: components["schemas"]["VatandasBildirimiDto"][] | null;
+            /** Format: int32 */
+            sayfa?: number;
+            /** Format: int32 */
+            boyut?: number;
+            /** Format: int64 */
+            toplam?: number;
+            /** Format: int32 */
+            readonly toplamSayfa?: number;
+            readonly oncekiVar?: boolean;
+            readonly sonrakiVar?: boolean;
+        };
+        VatandasBildirimiIstegiDto: {
+            adSoyad: string;
+            telefon: string;
+            bilet: string;
+            konu: string;
+            aciklama: string;
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            /** Format: int64 */
+            mahalleId?: number | null;
+        };
+        VatandasBildirimiSonucuDto: {
+            takipNo?: string | null;
+            yuklemeAnahtari?: string | null;
         };
         ZamanIstegi: {
             /** Format: date-time */

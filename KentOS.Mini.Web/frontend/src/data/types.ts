@@ -196,6 +196,28 @@ export const PROJECT_MEMBER_ROLE_LABELS: Record<number, string> = {
   2: 'İzleyici',
 };
 
+// ── vatandaş ve saha ──
+export type CitizenReport = S['VatandasBildirimiDto'];
+export type CitizenReportRequest = S['VatandasBildirimiIstegiDto'];
+export type CitizenReportResult = S['VatandasBildirimiSonucuDto'];
+export type VerificationResult = S['DogrulamaSonucuDto'];
+export type ReportRouteRequest = S['BildirimYonlendirmeDto'];
+export type FieldReportRequest = S['SahaTespitiDto'];
+export type WorkMapPoint = S['IsHaritaNoktasiDto'];
+
+/** Vatandaş bildirimi durumları — `VatandasBildirimDurumu`. */
+export const REPORT_STATUS = {
+  yeni: 0,
+  yonlendirildi: 1,
+  reddedildi: 2,
+} as const;
+
+export const REPORT_STATUS_LABELS: Record<number, string> = {
+  0: 'Bekliyor',
+  1: 'Yönlendirildi',
+  2: 'İşleme alınmadı',
+};
+
 export type WorkEvent = S['IsOlayDto'];
 export type WorkEventChange = S['IsOlayDegisiklikDto'];
 export type WorkAttachment = S['IsEkDto'];

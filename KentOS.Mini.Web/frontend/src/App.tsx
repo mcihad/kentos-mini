@@ -27,6 +27,13 @@ import Protocol from './screens/Protocol';
 import ProtocolDetail from './screens/protocol/ProtocolDetail';
 import RequestFormPage from './screens/RequestForm';
 import Login from './screens/Login';
+import ReportPortal from './screens/citizen/ReportPortal';
+import CitizenReports from './screens/CitizenReports';
+import WorkMapScreen from './screens/WorkMapScreen';
+import FieldHome from './screens/field/FieldHome';
+import FieldReport from './screens/field/FieldReport';
+import FieldTask from './screens/field/FieldTask';
+import { BareLayout } from './shell/BareLayout';
 import Statistics from './screens/Statistics';
 import CalendarScreen from './screens/CalendarPage';
 import RequestDetail from './screens/RequestDetail';
@@ -67,6 +74,45 @@ export default function App() {
   return (
     <Routes>
       <Route path="/giris" element={<Login />} />
+
+      {/*
+        VATANDAŞ PORTALI — KABUKSUZ ve ANONİM.
+
+        `ProtectedRoute` YOK: portalın tamamı oturum açmamış vatandaş için.
+        `AppShell` de yok — kurumsal menüyü göstermek anlamsız, orada kimse
+        oturum açmış değil.
+      */}
+      <Route element={<BareLayout geriYok />}>
+        <Route path="/bildir" element={<ReportPortal />} />
+      </Route>
+
+      {/*
+        SAHA — KABUKSUZ ama KİMLİK DOĞRULAMALI.
+
+        Kenar çubuğu, sekme çubuğu ve bildirim ikonu yok: saha personeli
+        telefonu tek elle, güneş altında, eldivenle kullanıyor ve ekranın
+        tamamı işe ayrılmalı.
+      */}
+      <Route
+        element={
+          <ProtectedRoute>
+            <BareLayout />
+          </ProtectedRoute>
+        }
+      >
+        <Route
+          path="/saha"
+          element={<ProtectedRoute permission={PERMISSION.gorevGoruntule}><FieldHome /></ProtectedRoute>}
+        />
+        <Route
+          path="/saha/tespit"
+          element={<ProtectedRoute permission={[PERMISSION.sahaTespit, PERMISSION.gorevEkle]}><FieldReport /></ProtectedRoute>}
+        />
+        <Route
+          path="/saha/gorev/:id"
+          element={<ProtectedRoute permission={PERMISSION.gorevGoruntule}><FieldTask /></ProtectedRoute>}
+        />
+      </Route>
 
       <Route
         element={
@@ -165,6 +211,14 @@ export default function App() {
         <Route
           path="projeler"
           element={<ProtectedRoute permission={PERMISSION.projeGoruntule}><Projects /></ProtectedRoute>}
+        />
+        <Route
+          path="vatandas-bildirimleri"
+          element={<ProtectedRoute permission={PERMISSION.bildirimKarsila}><CitizenReports /></ProtectedRoute>}
+        />
+        <Route
+          path="harita"
+          element={<ProtectedRoute permission={PERMISSION.gorevGoruntule}><WorkMapScreen /></ProtectedRoute>}
         />
         <Route
           path="ekipler"

@@ -1,6 +1,6 @@
 import {
   Bell, Bug, Building2, CalendarDays, ChartColumn, ClipboardCheck, ClipboardList,
-  FolderKanban, Flower2, Landmark, ListChecks,
+  FolderKanban, Flower2, Inbox, Landmark, ListChecks, Map, Radio,
   FileUser, LayoutDashboard, MailCheck, Paperclip, Settings, SlidersHorizontal, UserPlus, Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -133,6 +133,21 @@ export const NAVIGATION: NavigationGroup[] = [
       {
         yol: '/ekipler', etiket: 'Ekipler', ikon: Users,
         izin: [PERMISSION.ekipYonet, PERMISSION.gorevGoruntule],
+      },
+      {
+        yol: '/vatandas-bildirimleri', etiket: 'Vatandaş Bildirimleri', ikon: Inbox,
+        izin: PERMISSION.bildirimKarsila,
+      },
+      {
+        yol: '/harita', etiket: 'Harita', ikon: Map,
+        izin: PERMISSION.gorevGoruntule,
+      },
+      {
+        // SAHA ekranı KABUKSUZ açılıyor; menüde durması yine de gerekiyor,
+        // yoksa personel adresi elle yazmak zorunda kalırdı.
+        yol: '/saha', etiket: 'Saha', ikon: Radio,
+        izin: PERMISSION.gorevGoruntule,
+        altYollar: ['/saha/'],
       },
       {
         yol: '/gorevler/tipler', etiket: 'Görev Tipleri', ikon: ListChecks,

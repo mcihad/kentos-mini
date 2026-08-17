@@ -42,6 +42,14 @@ const EKRANLAR = [
   { ad: 'proje-pano', yol: '/projeler/2?sekme=pano', bekle: 'Sütunsuz' },
   { ad: 'proje-gantt', yol: '/projeler/2?sekme=gantt', bekle: 'Gantt' },
   { ad: 'proje-form', yol: '/projeler/yeni', bekle: 'Vazgeç' },
+  // VATANDAŞ ve SAHA — kabuksuz yerleşim, harita içeriyor.
+  { ad: 'vatandas-bildirimleri', yol: '/vatandas-bildirimleri', secici: 'main input[type="search"]' },
+  { ad: 'harita', yol: '/harita', bekle: 'nokta' },
+  { ad: 'saha', yol: '/saha', bekle: 'Tespit gir' },
+  // NOT: alan etiketleri CSS ile BÜYÜK HARFE çevriliyor ("NE GÖRDÜNÜZ?") ve
+  // `innerText` dönüşmüş hâli veriyor; çıpa dönüşümden etkilenmeyen bir
+  // düğme metni.
+  { ad: 'saha-tespit', yol: '/saha/tespit', bekle: 'Tespiti kaydet' },
   { ad: 'ajanda-liste', yol: '/ajanda?sekme=liste', bekle: 'Yeni etkinlik' },
   { ad: 'ajanda-silinmis', yol: '/ajanda?sekme=silinmis', bekle: 'Yeni etkinlik' },
   { ad: 'etkinlik-form', yol: '/ajanda/yeni', bekle: 'Yeni etkinlik' },

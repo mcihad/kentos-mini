@@ -36,6 +36,7 @@
     "echarts": "^6.1.0",
     "firebase": "^12.17.1",
     "lucide-react": "^1.31.0",
+    "maplibre-gl": "^6.4.0",
     "react": "^19.2.8",
     "react-dom": "^19.2.8",
     "react-router-dom": "^7.18.2",
