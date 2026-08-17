@@ -148,6 +148,10 @@ public static class Izinler
     public const string GorevTipYonet = "gorev.tipYonet";
     public const string EkipYonet = "ekip.yonet";
 
+    public const string ProjeGoruntule = "proje.goruntule";
+    public const string ProjeYonet = "proje.yonet";
+    public const string ProjeUyeYonet = "proje.uyeYonet";
+
     // ─────────────────────────────────────────────────────────── sistem
     public const string SistemHata = "sistem.hata";
     public const string SistemKurum = "sistem.kurum";
@@ -310,6 +314,14 @@ public static class Izinler
             "Değişiklik YENİ açılan görevleri etkiler; açılmış görevler aşamalarını kopya olarak taşır."),
         new(EkipYonet, "İş Takip", "Ekip yönetimi",
             "Biriminin çalışma ekiplerini kurar, üye ve lider atar."),
+
+        new(ProjeGoruntule, "İş Takip", "Projeleri görüntüle",
+            "Biriminin projelerini, kilometre taşlarını, kanban panosunu ve gantt çizelgesini görür."),
+        new(ProjeYonet, "İş Takip", "Proje yönetimi",
+            "Proje açar, düzenler, kilometre taşı ve pano sütunu tanımlar, kartları panoda taşır. " +
+            "Kart taşımak görevin DURUMUNU değiştirir; onay kapısı yine geçerlidir."),
+        new(ProjeUyeYonet, "İş Takip", "Proje ekibi",
+            "Projeye üye ekler, çıkarır ve proje yöneticisini belirler."),
 
         new(SistemHata, "Sistem", "Hata kayıtları",
             "Sunucu hatalarını görüntüler. Kayıtlar istek gövdeleri, IP adresleri ve yığın izleri içerir."),

@@ -460,6 +460,15 @@ TABLE izinler
   kullanimda
   olusturma_tarihi
   sira_no
+TABLE kilometre_taslari
+  aciklama
+  ad
+  hedef_tarih
+  id
+  proje_id
+  sira_no
+  tamamlandi
+  tamamlanma_tarihi
 TABLE kurum_bilgileri
   ad
   adres
@@ -565,6 +574,39 @@ TABLE ozgecmisler
   randevu_id
   telefon
   telefon_sade
+TABLE pano_sutunlari
+  ad
+  gorev_durumu
+  id
+  proje_id
+  renk
+  sira_no
+TABLE proje_uyeleri
+  eklenme_tarihi
+  id
+  kullanici_id
+  proje_id
+  rol
+TABLE projeler
+  aciklama
+  ad
+  adres
+  baslangic
+  birim_id
+  bitis
+  boylam
+  butce
+  durum
+  enlem
+  guncelleme_tarihi
+  guncelleyen
+  id
+  kod
+  olusturan
+  olusturma_tarihi
+  renk
+  tamamlanma_tarihi
+  yonetici_id
 TABLE protokol_kategorileri
   ad
   aktif

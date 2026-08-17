@@ -66,6 +66,12 @@ namespace KentOS.Mini.Web.Data
         public DbSet<Team> Ekipler { get; set; }
         public DbSet<TeamMember> EkipUyeleri { get; set; }
 
+        // Proje katmanı — görevlerin çatısı.
+        public DbSet<Project> Projeler { get; set; }
+        public DbSet<ProjectMember> ProjeUyeleri { get; set; }
+        public DbSet<Milestone> KilometreTaslari { get; set; }
+        public DbSet<BoardColumn> PanoSutunlari { get; set; }
+
         // ── Halk Günü ──
         public DbSet<HalkGunu> HalkGunleri { get; set; }
         public DbSet<HalkGunuDilim> HalkGunuDilimleri { get; set; }
@@ -321,6 +327,46 @@ namespace KentOS.Mini.Web.Data
                 entity.HasOne(e => e.Ekip).WithMany(t => t.Uyeler)
                       .HasForeignKey(e => e.EkipId).OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => new { e.EkipId, e.KullaniciId }).IsUnique();
+            });
+
+            // ══════════════════════════════════════════ İş takip: proje
+            builder.Entity<Project>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                // Birim silinemez: altında proje varken birimi kaldırmak,
+                // projeyi görünürlük kapısı olmayan bir kayda düşürürdü.
+                entity.HasOne(e => e.Birim).WithMany()
+                      .HasForeignKey(e => e.BirimId).OnDelete(DeleteBehavior.Restrict);
+
+                entity.HasIndex(e => new { e.BirimId, e.Durum });
+                entity.HasIndex(e => e.Kod);
+            });
+
+            builder.Entity<ProjectMember>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Proje).WithMany(p => p.Uyeler)
+                      .HasForeignKey(e => e.ProjeId).OnDelete(DeleteBehavior.Cascade);
+
+                // Aynı kişi bir projede iki kez üye olamaz; rolü değişir.
+                entity.HasIndex(e => new { e.ProjeId, e.KullaniciId }).IsUnique();
+            });
+
+            builder.Entity<Milestone>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Proje).WithMany(p => p.KilometreTaslari)
+                      .HasForeignKey(e => e.ProjeId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => new { e.ProjeId, e.SiraNo });
+            });
+
+            builder.Entity<BoardColumn>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.Proje).WithMany(p => p.PanoSutunlari)
+                      .HasForeignKey(e => e.ProjeId).OnDelete(DeleteBehavior.Cascade);
+                entity.HasIndex(e => new { e.ProjeId, e.SiraNo });
             });
 
             // ══════════════════════════════════════════════ Halk Günü

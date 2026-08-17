@@ -337,6 +337,7 @@ builder.Services.AddScoped<IIsOlayServisi, IsOlayServisi>();
 builder.Services.AddScoped<IGorevTipiServisi, GorevTipiServisi>();
 builder.Services.AddScoped<IEkipServisi, EkipServisi>();
 builder.Services.AddScoped<IGorevServisi, GorevServisi>();
+builder.Services.AddScoped<IProjeServisi, ProjeServisi>();
 
 builder.Services.AddScoped<IHataKaydiServisi, HataKaydiServisi>();
 builder.Services.AddScoped<IOturumServisi, OturumServisi>();

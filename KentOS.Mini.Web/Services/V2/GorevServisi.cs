@@ -41,6 +41,18 @@ public interface IGorevServisi
     Task<GorevDetayDto> AsamaTamamlaAsync(long gorevId, long asamaId, GorevAsamaIstegiDto istek, CancellationToken iptal = default);
 
     Task<List<IsOlayDto>> OlaylarAsync(long id, CancellationToken iptal = default);
+
+    /// <summary>
+    /// Verilen kimlikleri liste satırına çevirir — GÖRÜNÜRLÜK DENETLEMEZ.
+    /// </summary>
+    /// <remarks>
+    /// Proje panosu ve gantt'ı kendi kapılarından geçirdikleri görevleri
+    /// buradan biçimlendiriyor. Kapıyı ikinci kez uygulamıyor çünkü çağıran
+    /// zaten projeye erişebildiğini doğruladı ve projeye bağlı görevler o
+    /// projenin birimine ait. Bu yüzden metot İSTEMCİYE AÇIK BİR UÇ DEĞİL;
+    /// yalnızca servisler arası paylaşım.
+    /// </remarks>
+    Task<List<GorevOzetDto>> OzetleAsync(List<long> idler, CancellationToken iptal = default);
 }
 
 public class GorevServisi(
@@ -962,7 +974,8 @@ public class GorevServisi(
 
     // ── iç: dönüştürme ─────────────────────────────────────────────────
 
-    private async Task<List<GorevOzetDto>> OzetleAsync(List<long> idler, CancellationToken iptal)
+    public async Task<List<GorevOzetDto>> OzetleAsync(
+        List<long> idler, CancellationToken iptal = default)
     {
         if (idler.Count == 0) return [];
 

@@ -95,6 +95,9 @@ export const PERMISSION = {
   gorevOnayla: 'gorev.onayla',
   gorevTipYonet: 'gorev.tipYonet',
   ekipYonet: 'ekip.yonet',
+  projeGoruntule: 'proje.goruntule',
+  projeYonet: 'proje.yonet',
+  projeUyeYonet: 'proje.uyeYonet',
 
   sistemHata: 'sistem.hata',
   sistemKurum: 'sistem.kurum',
