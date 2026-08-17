@@ -42,8 +42,17 @@ describe('yardım kataloğu', () => {
     expect(findHelp('/bilinmeyen-ekran')).toBeNull();
   });
 
+  /**
+   * Grup adları MENÜDEN türetiliyor, elle yazılmıyor.
+   *
+   * Önce sabit bir diziydi ve menüye yeni bir grup eklendiğinde (İş Takip)
+   * bu test, yardım metinleri doğru yazılmış olmasına rağmen kırmızıya döndü:
+   * gerçek bir hatayı değil, kendi kopyasının bayatladığını bildiriyordu.
+   * Menüden okununca kopya kalmıyor — yardım merkezi konuları zaten menü
+   * gruplarına göre öbekliyor.
+   */
   it('her konunun bir grubu var (yardım merkezi onları gruplar)', () => {
-    const gecerli = ['Genel', 'Halk Günü', 'Özgeçmişler', 'Program', 'Yönetim'];
+    const gecerli = NAVIGATION.map((g) => g.baslik);
     for (const { kalip, kayit } of helpTopics()) {
       expect(gecerli, `${kalip} tanımsız grupta`).toContain(kayit.grup);
     }

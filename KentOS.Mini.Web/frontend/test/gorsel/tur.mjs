@@ -29,6 +29,13 @@ const EKRANLAR = [
   { ad: 'ana-sayfa', yol: '/', bekle: 'Yaklaşan etkinlikler' },
   { ad: 'talepler', yol: '/talepler', secici: 'table tbody tr, ul li a' },
   { ad: 'ajanda', yol: '/ajanda', bekle: 'Program' },
+  // İŞ TAKİP. Liste boş açılabilir; çıpa iki görünümde de duran arama alanı.
+  { ad: 'gorevler', yol: '/gorevler', secici: 'main input[type="search"]' },
+  { ad: 'gorev-detay', yol: '/gorevler/5', bekle: 'Aşamalar' },
+  { ad: 'gorev-detay-dosya', yol: '/gorevler/5?sekme=tartisma', bekle: 'Aşamalar' },
+  { ad: 'gorev-form', yol: '/gorevler/yeni', bekle: 'Vazgeç' },
+  { ad: 'gorev-tipleri', yol: '/gorevler/tipler', bekle: 'Tip ekle' },
+  { ad: 'ekipler', yol: '/ekipler', bekle: 'Ekip kur' },
   { ad: 'ajanda-liste', yol: '/ajanda?sekme=liste', bekle: 'Yeni etkinlik' },
   { ad: 'ajanda-silinmis', yol: '/ajanda?sekme=silinmis', bekle: 'Yeni etkinlik' },
   { ad: 'etkinlik-form', yol: '/ajanda/yeni', bekle: 'Yeni etkinlik' },

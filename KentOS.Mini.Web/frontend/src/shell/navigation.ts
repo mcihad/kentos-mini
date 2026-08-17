@@ -1,5 +1,6 @@
 import {
-  Bell, Bug, Building2, CalendarDays, ChartColumn, ClipboardList, Flower2, Landmark,
+  Bell, Bug, Building2, CalendarDays, ChartColumn, ClipboardCheck, ClipboardList,
+  Flower2, Landmark, ListChecks,
   FileUser, LayoutDashboard, MailCheck, Paperclip, Settings, SlidersHorizontal, UserPlus, Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -110,6 +111,27 @@ export const NAVIGATION: NavigationGroup[] = [
         izin: PERMISSION.halkgunuGoruntule, politika: 'Ajanda',
         altYollar: ['/halk-gunu/'], haric: ['/halk-gunu/basvurular'],
         tabbar: 4,
+      },
+    ],
+  },
+  {
+    // İŞ TAKİP KENDİ GRUBU: makamın işi (ajanda, talep, halk günü) ile
+    // birimlerin işi ayrı şeyler. Aynı grupta dursalardı park bahçelerin
+    // çim biçimi ile başkanın protokol randevusu yan yana okunurdu.
+    baslik: 'İş Takip',
+    ogeler: [
+      {
+        yol: '/gorevler', etiket: 'Görevler', ikon: ClipboardCheck,
+        izin: PERMISSION.gorevGoruntule,
+        altYollar: ['/gorevler/'], haric: ['/gorevler/tipler'],
+      },
+      {
+        yol: '/ekipler', etiket: 'Ekipler', ikon: Users,
+        izin: [PERMISSION.ekipYonet, PERMISSION.gorevGoruntule],
+      },
+      {
+        yol: '/gorevler/tipler', etiket: 'Görev Tipleri', ikon: ListChecks,
+        izin: PERMISSION.gorevTipYonet,
       },
     ],
   },

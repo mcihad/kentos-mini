@@ -30,6 +30,46 @@ export const tokenStore = {
   },
 };
 
+const ETKIN_BIRIM_KEY = 'sv-etkin-birim';
+
+/**
+ * ETKİN BİRİM — "hangi birim adına çalışıyorum?"
+ *
+ * <p>
+ * Başkan yardımcısı kendine bağlı bir müdürlüğü seçtiğinde iş takip uçları o
+ * müdürlüğün kayıtlarını göstermeli. Seçim burada tutuluyor ve her isteğe
+ * <code>X-Etkin-Birim</code> başlığı olarak ekleniyor.
+ * </p>
+ *
+ * <p>
+ * <b>Bu bir yetki değil bir tercih.</b> Sunucu başlığı HER istekte yeniden
+ * doğruluyor: istenen birim kullanıcının alt ağacında değilse ya da
+ * <code>gorev.birimKapsam</code> izni yoksa isteği reddediyor. Buradan
+ * gönderilen hiçbir şey yetki yerine geçmez.
+ * </p>
+ *
+ * <p>
+ * Sekmeler arası paylaşılsın diye <code>localStorage</code>: kullanıcı bir
+ * sekmede müdürlüğe geçip ötekinde kendi birimini görürse hangi verinin
+ * kimin olduğunu ayırt edemez.
+ * </p>
+ */
+export const activeUnitStore = {
+  read(): number | null {
+    try {
+      const ham = localStorage.getItem(ETKIN_BIRIM_KEY);
+      const id = ham ? Number(ham) : NaN;
+      return Number.isFinite(id) && id > 0 ? id : null;
+    } catch {
+      return null;
+    }
+  },
+  write(id: number | null) {
+    if (id && id > 0) localStorage.setItem(ETKIN_BIRIM_KEY, String(id));
+    else localStorage.removeItem(ETKIN_BIRIM_KEY);
+  },
+};
+
 /** Sunucunun RFC 7807 hata gövdesi. */
 export type ErrorResponse = {
   type: string;
@@ -65,6 +105,7 @@ export function onSessionExpired(f: () => void) {
 
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PUT' | 'PATCH' | 'DELETE';
+  /** JSON'a çevrilir; `FormData` ise olduğu gibi gönderilir. */
   body?: unknown;
   signal?: AbortSignal;
 };
@@ -89,14 +130,29 @@ export async function request<T>(path: string, options: RequestOptions = {}): Pr
   const { method = 'GET', body, signal } = options;
   const token = tokenStore.read();
 
+  /*
+    DOSYA YÜKLEME: `FormData` gövdesine DOKUNULMAZ.
+
+    `Content-Type` elle yazılırsa tarayıcının ürettiği sınır (boundary)
+    kaybolur ve sunucu gövdeyi ayrıştıramaz — istek 400 ya da boş dosya
+    olarak düşer. Aynı sebeple `JSON.stringify` de uygulanmıyor: `FormData`
+    stringlenince `"[object FormData]"` oluyor.
+  */
+  const dosyaGovdesi = typeof FormData !== 'undefined' && body instanceof FormData;
+
   const headers: Record<string, string> = { Accept: 'application/json' };
-  if (body !== undefined) headers['Content-Type'] = 'application/json';
+  if (body !== undefined && !dosyaGovdesi) headers['Content-Type'] = 'application/json';
   if (token) headers.Authorization = `Bearer ${token.jeton}`;
+
+  // Etkin birim seçiliyse HER isteğe eklenir. Uçların çoğu başlığı yok
+  // sayıyor; iş takip uçları ise onu görünürlük kapısı olarak kullanıyor.
+  const etkinBirim = activeUnitStore.read();
+  if (etkinBirim) headers['X-Etkin-Birim'] = String(etkinBirim);
 
   const response = await fetch(`/api/v2${path}`, {
     method,
     headers,
-    body: body === undefined ? undefined : JSON.stringify(body),
+    body: body === undefined ? undefined : dosyaGovdesi ? (body as FormData) : JSON.stringify(body),
     signal,
   });
 

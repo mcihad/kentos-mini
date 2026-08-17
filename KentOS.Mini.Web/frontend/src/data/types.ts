@@ -131,6 +131,104 @@ export const SCOPE = {
   All: 2,
 } as const;
 
+// ─────────────────────────────────────────────────────────── iş takip
+export type TaskSummary = S['GorevOzetDto'];
+export type TaskDetail = S['GorevDetayDto'];
+export type TaskStage = S['GorevAsamaDto'];
+export type TaskAssignment = S['GorevAtamaDto'];
+export type TaskStatusOption = S['GorevDurumSecenegiDto'];
+export type TaskSave = S['GorevKayitDto'];
+export type TaskAssignRequest = S['GorevAtamaIstegiDto'];
+export type TaskStatusRequest = S['GorevDurumIstegiDto'];
+export type TaskStageRequest = S['GorevAsamaIstegiDto'];
+
+export type TaskType = S['GorevTipiDto'];
+export type TaskTypeSave = S['GorevTipiKayitDto'];
+export type TaskTypeStage = S['GorevTipiAsamaDto'];
+export type TaskTypeHandoff = S['GorevTipiDevirDto'];
+
+export type Team = S['EkipDto'];
+export type TeamSave = S['EkipKayitDto'];
+export type TeamMember = S['EkipUyeDto'];
+
+export type WorkEvent = S['IsOlayDto'];
+export type WorkEventChange = S['IsOlayDegisiklikDto'];
+export type WorkAttachment = S['IsEkDto'];
+export type WorkComment = S['IsYorumDto'];
+
+/** Kullanıcının adına çalışabileceği birimler — `X-Etkin-Birim` seçimi. */
+export type ScopeUnit = S['KapsamBirimiDto'];
+
+/**
+ * GÖREV DURUMLARI — sunucudaki `GorevDurumu` ile BİREBİR.
+ *
+ * Ad ve renk sunucudan geliyor (`durumAd`, `durumRenk`); buradaki sayılar
+ * yalnızca süzgeç ve istek gövdesi kurmak için. Sunucudaki sıra değişirse
+ * burası da değişmeli — ama enum'a değer SONA ekleniyor, araya değil.
+ */
+export const TASK_STATUS = {
+  yeni: 0,
+  atandi: 1,
+  basladi: 2,
+  devamEdiyor: 3,
+  beklemede: 4,
+  onayBekliyor: 5,
+  tamamlandi: 6,
+  iadeEdildi: 7,
+  reddedildi: 8,
+  iptal: 9,
+} as const;
+
+/**
+ * Durum etiketleri — YALNIZCA süzgeç çipleri için.
+ *
+ * Liste ve detay satırları etiketi SUNUCUDAN alıyor (`durumAd`, `durumRenk`);
+ * burası hiçbir kaydın etiketini üretmiyor. Süzgeç çipleri henüz seçilmemiş
+ * durumları da göstermek zorunda ve o durumların adı hiçbir satırda
+ * bulunmuyor — tek kaynaktan okunamayacak yer burası.
+ */
+export const TASK_STATUS_LABELS: Record<number, string> = {
+  0: 'Yeni',
+  1: 'Atandı',
+  2: 'Başladı',
+  3: 'Devam ediyor',
+  4: 'Beklemede',
+  5: 'Onay bekliyor',
+  6: 'Tamamlandı',
+  7: 'İade edildi',
+  8: 'Reddedildi',
+  9: 'İptal edildi',
+};
+
+/** Öncelikler — `GorevOnceligi`. */
+export const TASK_PRIORITY = {
+  dusuk: 0,
+  normal: 1,
+  yuksek: 2,
+  acil: 3,
+} as const;
+
+export const TASK_PRIORITY_LABELS: Record<number, string> = {
+  0: 'Düşük',
+  1: 'Normal',
+  2: 'Yüksek',
+  3: 'Acil',
+};
+
+/** Aşama durumları — `GorevAsamaDurumu`. */
+export const TASK_STAGE_STATUS = {
+  bekliyor: 0,
+  tamamlandi: 1,
+  atlandi: 2,
+} as const;
+
+/** Atama rolleri — `GorevAtamaRolu`. */
+export const TASK_ASSIGNMENT_ROLE = {
+  sorumlu: 0,
+  yardimci: 1,
+  izleyici: 2,
+} as const;
+
 /**
  * Olay tipleri (`AjandaOlayTip`). Sunucu sayısal gönderiyor; zaman
  * çizelgesinde okunabilir etiket gerekiyor.

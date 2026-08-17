@@ -947,6 +947,48 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/birim-kapsam": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Kullanıcının kendi birimi ve ALTINDAKİ birimler, ağaç sırasıyla.
+         * @description Sayfalama YOK ve bilinçli: bir kullanıcının alt ağacı en fazla birkaç
+         *     düzine birim. Bu liste bir seçim kutusunu dolduruyor; sayfalanmış bir
+         *     açılır liste, kullanıcıyı aradığı müdürlüğü sayfa sayfa aramaya
+         *     zorlardı.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KapsamBirimiDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/cicek/cicekciler/{id}/detay": {
         parameters: {
             query?: never;
@@ -2108,6 +2150,195 @@ export interface paths {
         put?: never;
         post?: never;
         delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/ekip": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Sayfa?: number;
+                    Boyut?: number;
+                    Ara?: string;
+                    Sirala?: string;
+                    Azalan?: boolean;
+                    Atla?: number;
+                    TemizArama?: string;
+                    altBirimlerDahil?: boolean;
+                    yalnizKullanimda?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EkipDtoSayfaliSonuc"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["EkipKayitDto"];
+                    "text/json": components["schemas"]["EkipKayitDto"];
+                    "application/*+json": components["schemas"]["EkipKayitDto"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EkipDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/ekip/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EkipDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["EkipKayitDto"];
+                    "text/json": components["schemas"]["EkipKayitDto"];
+                    "application/*+json": components["schemas"]["EkipKayitDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["EkipDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -3618,6 +3849,1057 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/gorev": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Durumlar?: components["schemas"]["GorevDurumu"][];
+                    Oncelikler?: components["schemas"]["GorevOnceligi"][];
+                    Kaynaklar?: components["schemas"]["GorevKaynagi"][];
+                    GorevTipiId?: number;
+                    ProjeId?: number;
+                    KullaniciId?: number;
+                    EkipId?: number;
+                    YalnizKok?: boolean;
+                    YalnizGeciken?: boolean;
+                    AltBirimlerDahil?: boolean;
+                    Baslangic?: string;
+                    Bitis?: string;
+                    Sayfa?: number;
+                    Boyut?: number;
+                    Ara?: string;
+                    Sirala?: string;
+                    Azalan?: boolean;
+                    Atla?: number;
+                    TemizArama?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevOzetDtoSayfaliSonuc"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevKayitDto"];
+                    "text/json": components["schemas"]["GorevKayitDto"];
+                    "application/*+json": components["schemas"]["GorevKayitDto"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevDetayDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevDetayDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevKayitDto"];
+                    "text/json": components["schemas"]["GorevKayitDto"];
+                    "application/*+json": components["schemas"]["GorevKayitDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevDetayDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Görevi ve alt görevlerini TÜMÜYLE siler.
+         * @description Dosyalar, yorumlar ve zaman çizelgesi geri gelmez. Yapılmayacak bir işi
+         *     kapatmak için silmek değil <b>iptal</b> kullanılır — iptal kaydı ve
+         *     gerekçesi durur.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}/olaylar": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Zaman çizelgesi — en yeni önce. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsOlayDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}/atama": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /** Atamaları TAM LİSTE olarak yazar; yeni atananlara bildirir. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevAtamaIstegiDto"][];
+                    "text/json": components["schemas"]["GorevAtamaIstegiDto"][];
+                    "application/*+json": components["schemas"]["GorevAtamaIstegiDto"][];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevDetayDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}/durum": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Durum değiştirir — başlatma, beklemeye alma, iptal.
+         * @description ONAY ve İADE bu uçtan GEÇMEZ: ikisi ayrı izne bağlı
+         *     (`gorev.onayla`). Aynı uçtan yapılsaydı, görevi düzenleyebilen
+         *     herkes kendi işini onaylayabilirdi ve onay kapısı anlamını yitirirdi.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevDurumIstegiDto"];
+                    "text/json": components["schemas"]["GorevDurumIstegiDto"];
+                    "application/*+json": components["schemas"]["GorevDurumIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevDetayDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}/tamamla": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Tamamlanma beyanı — personelin "bitirdim" düğmesi.
+         * @description Zorunlu aşamalar bitmeden çalışmaz ve görevi TAMAMLAMAZ: yalnızca
+         *     onaya gönderir. Kabul yöneticinin işi.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevDetayDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}/onay": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * ONAY KAPISI — yönetici görevi kabul eder ya da gerekçeyle iade eder.
+         * @description Modülün en önemli tek kuralı: personelin "bitirdim" beyanı ile kurumun
+         *     kabulü aynı şey değil. Bu uç olmadan hiçbir görev tamamlanmış sayılmaz.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevDurumIstegiDto"];
+                    "text/json": components["schemas"]["GorevDurumIstegiDto"];
+                    "application/*+json": components["schemas"]["GorevDurumIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevDetayDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}/asama/{asamaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Sıradaki aşamayı tamamlar ya da (zorunlu değilse) atlar. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    asamaId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevAsamaIstegiDto"];
+                    "text/json": components["schemas"]["GorevAsamaIstegiDto"];
+                    "application/*+json": components["schemas"]["GorevAsamaIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevDetayDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}/ek": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsEkDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        dosya?: string;
+                        aciklama?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsEkDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}/asama/{asamaId}/ek": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Aşama kanıtı — fotoğraf zorunlu aşamalar bunu bekliyor. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    asamaId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        /** Format: binary */
+                        dosya?: string;
+                        aciklama?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsEkDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/ek/{ekId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    ekId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    ekId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/{id}/yorum": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsYorumDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevYorumIstegiDto"];
+                    "text/json": components["schemas"]["GorevYorumIstegiDto"];
+                    "application/*+json": components["schemas"]["GorevYorumIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsYorumDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev/yorum/{yorumId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    yorumId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevYorumIstegiDto"];
+                    "text/json": components["schemas"]["GorevYorumIstegiDto"];
+                    "application/*+json": components["schemas"]["GorevYorumIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsYorumDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    yorumId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev-tipi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Sayfa?: number;
+                    Boyut?: number;
+                    Ara?: string;
+                    Sirala?: string;
+                    Azalan?: boolean;
+                    Atla?: number;
+                    TemizArama?: string;
+                    yalnizKullanimda?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevTipiDtoSayfaliSonuc"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevTipiKayitDto"];
+                    "text/json": components["schemas"]["GorevTipiKayitDto"];
+                    "application/*+json": components["schemas"]["GorevTipiKayitDto"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevTipiDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev-tipi/kullanilabilir": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Etkin birimin kullanabileceği tipler — görev açma ekranı için. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevTipiDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gorev-tipi/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevTipiDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GorevTipiKayitDto"];
+                    "text/json": components["schemas"]["GorevTipiKayitDto"];
+                    "application/*+json": components["schemas"]["GorevTipiKayitDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GorevTipiDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/halk-gunu": {
         parameters: {
             query?: never;
@@ -4777,6 +6059,77 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/institution": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kurum bilgisi ve kurumsal kimlik. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KurumBilgisiDto"];
+                    };
+                };
+            };
+        };
+        /** Kurum bilgisini günceller. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["KurumGuncellemeIstegi"];
+                    "text/json": components["schemas"]["KurumGuncellemeIstegi"];
+                    "application/*+json": components["schemas"]["KurumGuncellemeIstegi"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KurumBilgisiDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["HataYaniti"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/istatistik": {
         parameters: {
             query?: never;
@@ -5527,7 +6880,7 @@ export interface paths {
                     MahalleId?: number;
                     BirimId?: number;
                     /** @description `havuz` · `talep` — boşsa ikisi de. */
-                    ResumeSource?: string;
+                    Kaynak?: string;
                     Baslangic?: string;
                     Bitis?: string;
                     /** @description Yalnızca bana paylaşılanlar. */
@@ -9086,7 +10439,7 @@ export interface components {
             seriOrijinalBaslangic?: string | null;
             seriAyrik?: boolean;
             tekrarKurali?: string | null;
-            recurrenceSummary?: string | null;
+            tekrarOzeti?: string | null;
             /** Format: date-time */
             tekrarBitisi?: string | null;
             tekrar?: components["schemas"]["AjandaSeriOlusturDto"];
@@ -9362,6 +10715,19 @@ export interface components {
             readonly toplamSayfa?: number;
             readonly oncekiVar?: boolean;
             readonly sonrakiVar?: boolean;
+        };
+        /**
+         * @description Web push için tarayıcıya gereken Firebase alanları. Yapılandırma eksikse
+         *     `null` döner ve SPA bildirim kurulumunu hiç denemez.
+         */
+        BildirimYapilandirmasiDto: {
+            apiKey?: string | null;
+            authDomain?: string | null;
+            projectId?: string | null;
+            storageBucket?: string | null;
+            messagingSenderId?: string | null;
+            appId?: string | null;
+            vapidPublicKey?: string | null;
         };
         BirimDetayDto: {
             /** Format: int64 */
@@ -9665,6 +11031,52 @@ export interface components {
             /** Format: int32 */
             adet?: number;
         };
+        EkipDto: {
+            /** Format: int64 */
+            id?: number;
+            ad?: string | null;
+            aciklama?: string | null;
+            /** Format: int64 */
+            birimId?: number;
+            birimAd?: string | null;
+            /** Format: int64 */
+            liderId?: number | null;
+            liderAd?: string | null;
+            kullanimda?: boolean;
+            /** Format: int32 */
+            uyeSayisi?: number;
+            /** Format: int32 */
+            acikGorevSayisi?: number;
+            uyeler?: components["schemas"]["EkipUyeDto"][] | null;
+        };
+        EkipDtoSayfaliSonuc: {
+            veriler?: components["schemas"]["EkipDto"][] | null;
+            /** Format: int32 */
+            sayfa?: number;
+            /** Format: int32 */
+            boyut?: number;
+            /** Format: int64 */
+            toplam?: number;
+            /** Format: int32 */
+            readonly toplamSayfa?: number;
+            readonly oncekiVar?: boolean;
+            readonly sonrakiVar?: boolean;
+        };
+        EkipKayitDto: {
+            ad: string;
+            aciklama?: string | null;
+            /** Format: int64 */
+            liderId?: number | null;
+            kullanimda?: boolean;
+            uyeIdler?: number[] | null;
+        };
+        EkipUyeDto: {
+            /** Format: int64 */
+            kullaniciId?: number;
+            ad?: string | null;
+            birimAd?: string | null;
+            lider?: boolean;
+        };
         EtkinlikOzetDto: {
             /** Format: int64 */
             id?: number;
@@ -9812,6 +11224,327 @@ export interface components {
             readonly toplamSayfa?: number;
             readonly oncekiVar?: boolean;
             readonly sonrakiVar?: boolean;
+        };
+        GorevAsamaDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            siraNo?: number;
+            ad?: string | null;
+            durum?: components["schemas"]["GorevAsamaDurumu"];
+            durumAd?: string | null;
+            zorunlu?: boolean;
+            aciklamaZorunlu?: boolean;
+            fotografZorunlu?: boolean;
+            not?: string | null;
+            /** Format: date-time */
+            tamamlanmaTarihi?: string | null;
+            tamamlayan?: string | null;
+            /** Format: int32 */
+            ekSayisi?: number;
+            sirada?: boolean;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        GorevAsamaDurumu: 0 | 1 | 2;
+        GorevAsamaIstegiDto: {
+            not?: string | null;
+            atla?: boolean;
+        };
+        GorevAtamaDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            kullaniciId?: number | null;
+            kullaniciAd?: string | null;
+            /** Format: int64 */
+            ekipId?: number | null;
+            ekipAd?: string | null;
+            rol?: components["schemas"]["GorevAtamaRolu"];
+            rolAd?: string | null;
+            atayan?: string | null;
+            /** Format: date-time */
+            atamaTarihi?: string;
+        };
+        GorevAtamaIstegiDto: {
+            /** Format: int64 */
+            kullaniciId?: number | null;
+            /** Format: int64 */
+            ekipId?: number | null;
+            rol?: components["schemas"]["GorevAtamaRolu"];
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        GorevAtamaRolu: 0 | 1 | 2;
+        GorevDetayDto: {
+            /** Format: int64 */
+            id?: number;
+            takipNo?: string | null;
+            baslik?: string | null;
+            durum?: components["schemas"]["GorevDurumu"];
+            durumAd?: string | null;
+            durumRenk?: string | null;
+            oncelik?: components["schemas"]["GorevOnceligi"];
+            oncelikAd?: string | null;
+            kaynak?: components["schemas"]["GorevKaynagi"];
+            kaynakAd?: string | null;
+            /** Format: int64 */
+            gorevTipiId?: number | null;
+            gorevTipiAd?: string | null;
+            /** Format: int64 */
+            birimId?: number;
+            birimAd?: string | null;
+            /** Format: int64 */
+            ustGorevId?: number | null;
+            /** Format: int32 */
+            altGorevSayisi?: number;
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            /** Format: date-time */
+            planlananBitis?: string | null;
+            /** Format: date-time */
+            slaBitis?: string | null;
+            /** Format: date-time */
+            olusturmaTarihi?: string;
+            /** Format: date-time */
+            tamamlanmaTarihi?: string | null;
+            gecikti?: boolean;
+            /** Format: double */
+            kalanSaat?: number | null;
+            /** Format: int32 */
+            asamaToplam?: number;
+            /** Format: int32 */
+            asamaBiten?: number;
+            sorumlular?: string[] | null;
+            aciklama?: string | null;
+            gerekce?: string | null;
+            /** Format: int64 */
+            mahalleId?: number | null;
+            mahalleAd?: string | null;
+            /** Format: date-time */
+            planlananBaslangic?: string | null;
+            /** Format: date-time */
+            baslamaTarihi?: string | null;
+            /** Format: int32 */
+            beklemeDakika?: number;
+            olusturan?: string | null;
+            onaylayan?: string | null;
+            /** Format: int64 */
+            olusturanBirimId?: number | null;
+            olusturanBirimAd?: string | null;
+            /** Format: int64 */
+            projeId?: number | null;
+            /** Format: int64 */
+            kilometreTasiId?: number | null;
+            asamalar?: components["schemas"]["GorevAsamaDto"][] | null;
+            atamalar?: components["schemas"]["GorevAtamaDto"][] | null;
+            altGorevler?: components["schemas"]["GorevOzetDto"][] | null;
+            sonrakiDurumlar?: components["schemas"]["GorevDurumSecenegiDto"][] | null;
+        };
+        GorevDurumIstegiDto: {
+            durum?: components["schemas"]["GorevDurumu"];
+            gerekce?: string | null;
+        };
+        GorevDurumSecenegiDto: {
+            durum?: components["schemas"]["GorevDurumu"];
+            ad?: string | null;
+            renk?: string | null;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        GorevDurumu: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9;
+        GorevKayitDto: {
+            baslik: string;
+            aciklama?: string | null;
+            /** Format: int64 */
+            gorevTipiId?: number | null;
+            oncelik?: components["schemas"]["GorevOnceligi"];
+            kaynak?: components["schemas"]["GorevKaynagi"];
+            /** Format: int64 */
+            kaynakId?: number | null;
+            /** Format: int64 */
+            ustGorevId?: number | null;
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            /** Format: int64 */
+            mahalleId?: number | null;
+            /** Format: date-time */
+            planlananBaslangic?: string | null;
+            /** Format: date-time */
+            planlananBitis?: string | null;
+            /** Format: int64 */
+            projeId?: number | null;
+            /** Format: int64 */
+            kilometreTasiId?: number | null;
+            atamalar?: components["schemas"]["GorevAtamaIstegiDto"][] | null;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        GorevKaynagi: 0 | 1 | 2 | 3 | 4 | 5 | 6;
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        GorevOlayTipi: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12 | 13 | 14 | 15 | 16;
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        GorevOnceligi: 0 | 1 | 2 | 3;
+        GorevOzetDto: {
+            /** Format: int64 */
+            id?: number;
+            takipNo?: string | null;
+            baslik?: string | null;
+            durum?: components["schemas"]["GorevDurumu"];
+            durumAd?: string | null;
+            durumRenk?: string | null;
+            oncelik?: components["schemas"]["GorevOnceligi"];
+            oncelikAd?: string | null;
+            kaynak?: components["schemas"]["GorevKaynagi"];
+            kaynakAd?: string | null;
+            /** Format: int64 */
+            gorevTipiId?: number | null;
+            gorevTipiAd?: string | null;
+            /** Format: int64 */
+            birimId?: number;
+            birimAd?: string | null;
+            /** Format: int64 */
+            ustGorevId?: number | null;
+            /** Format: int32 */
+            altGorevSayisi?: number;
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            /** Format: date-time */
+            planlananBitis?: string | null;
+            /** Format: date-time */
+            slaBitis?: string | null;
+            /** Format: date-time */
+            olusturmaTarihi?: string;
+            /** Format: date-time */
+            tamamlanmaTarihi?: string | null;
+            gecikti?: boolean;
+            /** Format: double */
+            kalanSaat?: number | null;
+            /** Format: int32 */
+            asamaToplam?: number;
+            /** Format: int32 */
+            asamaBiten?: number;
+            sorumlular?: string[] | null;
+        };
+        GorevOzetDtoSayfaliSonuc: {
+            veriler?: components["schemas"]["GorevOzetDto"][] | null;
+            /** Format: int32 */
+            sayfa?: number;
+            /** Format: int32 */
+            boyut?: number;
+            /** Format: int64 */
+            toplam?: number;
+            /** Format: int32 */
+            readonly toplamSayfa?: number;
+            readonly oncekiVar?: boolean;
+            readonly sonrakiVar?: boolean;
+        };
+        GorevTipiAsamaDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            siraNo?: number;
+            ad: string;
+            aciklama?: string | null;
+            zorunlu?: boolean;
+            aciklamaZorunlu?: boolean;
+            fotografZorunlu?: boolean;
+            /** Format: int32 */
+            tahminiSaat?: number | null;
+        };
+        GorevTipiDevirDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            hedefBirimId?: number;
+            hedefBirimAd?: string | null;
+            isTalebi?: boolean;
+            not?: string | null;
+            /** Format: int64 */
+            hedefGorevTipiId?: number | null;
+        };
+        GorevTipiDto: {
+            /** Format: int64 */
+            id?: number;
+            ad?: string | null;
+            aciklama?: string | null;
+            renk?: string | null;
+            /** Format: int32 */
+            hizmetStandardiGun?: number | null;
+            /** Format: int32 */
+            slaSaat?: number | null;
+            varsayilanOncelik?: components["schemas"]["GorevOnceligi"];
+            varsayilanOncelikAd?: string | null;
+            konumZorunlu?: boolean;
+            kullanimda?: boolean;
+            /** Format: int64 */
+            birimId?: number | null;
+            birimAd?: string | null;
+            asamalar?: components["schemas"]["GorevTipiAsamaDto"][] | null;
+            birimIdler?: number[] | null;
+            devirler?: components["schemas"]["GorevTipiDevirDto"][] | null;
+            /** Format: int32 */
+            gorevSayisi?: number;
+        };
+        GorevTipiDtoSayfaliSonuc: {
+            veriler?: components["schemas"]["GorevTipiDto"][] | null;
+            /** Format: int32 */
+            sayfa?: number;
+            /** Format: int32 */
+            boyut?: number;
+            /** Format: int64 */
+            toplam?: number;
+            /** Format: int32 */
+            readonly toplamSayfa?: number;
+            readonly oncekiVar?: boolean;
+            readonly sonrakiVar?: boolean;
+        };
+        GorevTipiKayitDto: {
+            ad: string;
+            aciklama?: string | null;
+            renk?: string | null;
+            /** Format: int32 */
+            hizmetStandardiGun?: number | null;
+            /** Format: int32 */
+            slaSaat?: number | null;
+            varsayilanOncelik?: components["schemas"]["GorevOnceligi"];
+            konumZorunlu?: boolean;
+            kullanimda?: boolean;
+            asamalar?: components["schemas"]["GorevTipiAsamaDto"][] | null;
+            birimIdler?: number[] | null;
+            devirler?: components["schemas"]["GorevTipiDevirDto"][] | null;
+        };
+        /** @description Yorum yazma/düzenleme isteği. */
+        GorevYorumIstegiDto: {
+            metin: string;
+            /**
+             * Format: int64
+             * @description Yanıtlanan yorum — iç içe yorumlar için.
+             */
+            ustYorumId?: number | null;
         };
         GorusmeIstegi: {
             durum?: components["schemas"]["KatilimDurumu"];
@@ -10127,6 +11860,51 @@ export interface components {
             } | null;
             izKimligi?: string | null;
         };
+        /** @description Bir ek — listede ve detayda aynı biçim. */
+        IsEkDto: {
+            /** Format: int64 */
+            id?: number;
+            ad?: string | null;
+            icerikTuru?: string | null;
+            /** Format: int64 */
+            boyut?: number;
+            resimMi?: boolean;
+            aciklama?: string | null;
+            yukleyen?: string | null;
+            /** Format: date-time */
+            tarih?: string;
+        };
+        IsOlayDegisiklikDto: {
+            alan?: string | null;
+            eski?: string | null;
+            yeni?: string | null;
+        };
+        IsOlayDto: {
+            /** Format: int64 */
+            id?: number;
+            tip?: components["schemas"]["GorevOlayTipi"];
+            tipAd?: string | null;
+            aciklama?: string | null;
+            kullanici?: string | null;
+            /** Format: date-time */
+            tarih?: string;
+            degisiklikler?: components["schemas"]["IsOlayDegisiklikDto"][] | null;
+        };
+        /** @description Bir yorum ve altındaki yanıtlar. */
+        IsYorumDto: {
+            /** Format: int64 */
+            id?: number;
+            metin?: string | null;
+            /** Format: int64 */
+            yazanId?: number | null;
+            yazan?: string | null;
+            benimMi?: boolean;
+            silindi?: boolean;
+            /** Format: date-time */
+            tarih?: string;
+            duzenlendi?: boolean;
+            yanitlar?: components["schemas"]["IsYorumDto"][] | null;
+        };
         IstatistikDilimDto: {
             etiket?: string | null;
             /** Format: int32 */
@@ -10187,6 +11965,20 @@ export interface components {
         /** @description Jeton taşıyan istek gövdesi. */
         JetonIstegi: {
             jeton?: string | null;
+        };
+        /** @description Kullanıcının adına çalışabileceği bir birim. */
+        KapsamBirimiDto: {
+            /** Format: int64 */
+            id?: number;
+            ad?: string | null;
+            yetkili?: string | null;
+            /**
+             * Format: int32
+             * @description Ağaçtaki derinlik — arayüz girintiyi buradan çizer.
+             */
+            derinlik?: number;
+            /** @description Kullanıcının KENDİ birimi mi? */
+            kendiBirimi?: boolean;
         };
         /**
          * Format: int32
@@ -10378,6 +12170,46 @@ export interface components {
             readonly oncekiVar?: boolean;
             readonly sonrakiVar?: boolean;
         };
+        /** @description İstemcilere verilen kurum bilgisi. */
+        KurumBilgisiDto: {
+            ad?: string | null;
+            kisaAd?: string | null;
+            gorunenAd?: string | null;
+            birim?: string | null;
+            kunye?: string | null;
+            webSitesi?: string | null;
+            adres?: string | null;
+            telefon?: string | null;
+            eposta?: string | null;
+            uygulamaAdi?: string | null;
+            uygulamaKisaAdi?: string | null;
+            uygulamaAciklamasi?: string | null;
+            marka?: components["schemas"]["MarkaDto"];
+            bildirim?: components["schemas"]["BildirimYapilandirmasiDto"];
+        };
+        /** @description Kurum bilgisi düzenleme isteği. */
+        KurumGuncellemeIstegi: {
+            ad?: string | null;
+            kisaAd?: string | null;
+            gorunenAd?: string | null;
+            birim?: string | null;
+            kunye?: string | null;
+            webSitesi?: string | null;
+            adres?: string | null;
+            telefon?: string | null;
+            eposta?: string | null;
+            uygulamaAdi?: string | null;
+            uygulamaKisaAdi?: string | null;
+            uygulamaAciklamasi?: string | null;
+            markaBirincil?: string | null;
+            markaVurgu?: string | null;
+            markaNotr?: string | null;
+            markaBirincilKoyu?: string | null;
+            amblem?: string | null;
+            favicon?: string | null;
+            uygulamaIkonu?: string | null;
+            ciktiAmblemi?: string | null;
+        };
         MahalleDto: {
             /** Format: int64 */
             id?: number;
@@ -10395,6 +12227,16 @@ export interface components {
             readonly toplamSayfa?: number;
             readonly oncekiVar?: boolean;
             readonly sonrakiVar?: boolean;
+        };
+        /** @description Kurumsal kimlik çekirdeği — SPA tonları bunlardan türetir. */
+        MarkaDto: {
+            birincil?: string | null;
+            vurgu?: string | null;
+            notr?: string | null;
+            birincilKoyu?: string | null;
+            amblem?: string | null;
+            favicon?: string | null;
+            uygulamaIkonu?: string | null;
         };
         MeslekDto: {
             /** Format: int64 */
@@ -10612,6 +12454,16 @@ export interface components {
         PaylasimSonucu: {
             /** Format: int32 */
             adet?: number;
+        };
+        ProblemDetails: {
+            type?: string | null;
+            title?: string | null;
+            /** Format: int32 */
+            status?: number | null;
+            detail?: string | null;
+            instance?: string | null;
+        } & {
+            [key: string]: unknown;
         };
         /**
          * Format: int32

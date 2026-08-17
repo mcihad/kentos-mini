@@ -3,6 +3,10 @@ import ajanda from './texts/ajanda.md?raw';
 import etkinlikDetay from './texts/etkinlik-detay.md?raw';
 import takvim from './texts/takvim.md?raw';
 import talepler from './texts/talepler.md?raw';
+import gorevler from './texts/gorevler.md?raw';
+import gorevDetay from './texts/gorev-detay.md?raw';
+import gorevTipleri from './texts/gorev-tipleri.md?raw';
+import ekipler from './texts/ekipler.md?raw';
 import talepDetay from './texts/talep-detay.md?raw';
 import halkGunu from './texts/halk-gunu.md?raw';
 import halkGunuBasvurular from './texts/halk-gunu-basvurular.md?raw';
@@ -24,7 +28,13 @@ import mobil from './texts/mobil.md?raw';
 import kurulum from './texts/kurulum.md?raw';
 
 /** Yardım merkezinde konuların toplandığı başlıklar — menüyle AYNI gruplar. */
-export type HelpGroup = 'Genel' | 'Halk Günü' | 'Özgeçmişler' | 'Program' | 'Yönetim';
+export type HelpGroup =
+  | 'Genel'
+  | 'İş Takip'
+  | 'Halk Günü'
+  | 'Özgeçmişler'
+  | 'Program'
+  | 'Yönetim';
 
 export type HelpEntry = {
   /** Panel başlığı. */
@@ -114,6 +124,42 @@ const KATALOG: { kalip: string; kayit: HelpEntry }[] = [
       baslik: 'Takvim',
       ozet: 'Gün, hafta, ay ve yıl görünümleri',
       metin: takvim,
+    },
+  },
+  {
+    kalip: '/gorevler/tipler',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Görev Tipleri',
+      ozet: 'Aşama, hizmet standardı ve SLA tanımları',
+      metin: gorevTipleri,
+    },
+  },
+  {
+    kalip: '/gorevler/:id',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Görev Detayı',
+      ozet: 'Aşamalar, atama, onay kapısı ve geçmiş',
+      metin: gorevDetay,
+    },
+  },
+  {
+    kalip: '/gorevler',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Görevler',
+      ozet: 'Birimin iş listesi, süzgeçler ve gecikme takibi',
+      metin: gorevler,
+    },
+  },
+  {
+    kalip: '/ekipler',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Ekipler',
+      ozet: 'Birimin kalıcı çalışma grupları ve ekip liderleri',
+      metin: ekipler,
     },
   },
   {

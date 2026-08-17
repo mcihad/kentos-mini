@@ -31,6 +31,11 @@ import Statistics from './screens/Statistics';
 import CalendarScreen from './screens/CalendarPage';
 import RequestDetail from './screens/RequestDetail';
 import Requests from './screens/Requests';
+import Tasks from './screens/Tasks';
+import TaskDetail from './screens/TaskDetail';
+import TaskForm from './screens/task/TaskForm';
+import TaskTypes from './screens/task/TaskTypes';
+import Teams from './screens/Teams';
 import Definitions from './screens/Definitions';
 import SystemErrors, { SystemErrorDetail } from './screens/SystemErrors';
 import Administration from './screens/Administration';
@@ -95,6 +100,48 @@ export default function App() {
         <Route
           path="talepler/:id"
           element={<ProtectedRoute permission={PERMISSION.talepGoruntule} policy="Ajanda"><RequestDetail /></ProtectedRoute>}
+        />
+
+        {/*
+          İŞ TAKİP.
+
+          `politika` YOK ve bu bilinçli: `Ajanda` politikası makam rollerine
+          (Admin/Sekreter/Yonetici/Baskan) açık, iş takip ise birimlerin
+          işi — park bahçelerin şefi o politikada değil ama görevini
+          görebilmeli. Kapı yalnızca izin.
+        */}
+        {/* `tipler` ve `yeni` DETAYDAN ÖNCE; aksi hâlde kimlik sanılır. */}
+        <Route
+          path="gorevler/tipler"
+          element={<ProtectedRoute permission={PERMISSION.gorevTipYonet}><TaskTypes /></ProtectedRoute>}
+        />
+        {/* Form MODAL: arkasına liste çizilir ki kapatınca boş ekran kalmasın. */}
+        <Route
+          path="gorevler/yeni"
+          element={
+            <ProtectedRoute permission={PERMISSION.gorevEkle}>
+              <>
+                <Tasks />
+                <TaskForm />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="gorevler/:id/duzenle"
+          element={<ProtectedRoute permission={PERMISSION.gorevDuzenle}><TaskForm /></ProtectedRoute>}
+        />
+        <Route
+          path="gorevler/:id"
+          element={<ProtectedRoute permission={PERMISSION.gorevGoruntule}><TaskDetail /></ProtectedRoute>}
+        />
+        <Route
+          path="gorevler"
+          element={<ProtectedRoute permission={PERMISSION.gorevGoruntule}><Tasks /></ProtectedRoute>}
+        />
+        <Route
+          path="ekipler"
+          element={<ProtectedRoute permission={[PERMISSION.ekipYonet, PERMISSION.gorevGoruntule]}><Teams /></ProtectedRoute>}
         />
 
         <Route

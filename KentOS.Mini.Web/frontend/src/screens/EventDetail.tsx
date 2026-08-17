@@ -226,10 +226,18 @@ export default function EventDetail() {
           )}
         </div>
 
-        {e.recurrenceSummary && (
+        {/*
+          Alan adı `tekrarOzeti` — İngilizce `recurrenceSummary` DEĞİL.
+
+          Ekran yıllardır olmayan bir alanı okuyordu: koşul her zaman
+          yanlıştı ve tekrar rozeti HİÇ görünmüyordu. Üretilen tipler bayat
+          olduğu için derleyici de susuyordu; iş takip modülü için tipler
+          yenilenince ortaya çıktı.
+        */}
+        {e.tekrarOzeti && (
           <p className="mt-3 inline-flex items-center gap-1.5 rounded-sm bg-sunken px-2.5 py-1.5 text-xs text-text-2">
             <Repeat size={12} className="text-text-3" />
-            {e.recurrenceSummary}
+            {e.tekrarOzeti}
             {e.tekrarBitisi && ` · ${date(e.tekrarBitisi)} tarihine kadar`}
           </p>
         )}
