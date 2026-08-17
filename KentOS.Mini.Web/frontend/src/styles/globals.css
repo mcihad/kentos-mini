@@ -1,0 +1,753 @@
+@import './tokens.css' layer(base);
+
+@import 'tailwindcss';
+
+@custom-variant dark (&:where(:is(:root[data-mod="koyu"], :root[data-tema="koyu"]) &, :is(:root[data-mod="koyu"], :root[data-tema="koyu"]) & *));
+
+@theme inline {
+  --color-canvas: var(--canvas);
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-sunken: var(--sunken);
+  --color-line: var(--line);
+  --color-line-2: var(--line-2);
+  --color-ink: var(--ink);
+  --color-ink-2: var(--ink-2);
+  --color-ink-3: var(--ink-3);
+  --color-brand: var(--brand-ui);
+  --color-brand-hover: var(--brand-hover);
+  --color-brand-soft: var(--brand-soft);
+  --color-brand-line: var(--brand-line);
+  --color-on-brand: var(--on-brand);
+  --color-accent: var(--accent-ui);
+  --color-accent-soft: var(--accent-soft);
+  --color-accent-ink: var(--accent-ink);
+  --color-warn: var(--warn);
+  --color-warn-soft: var(--warn-soft);
+  --color-ok: var(--ok);
+  --color-ok-soft: var(--ok-soft);
+  --color-on-ok: var(--on-ok);
+  --color-info: var(--info);
+  --color-info-soft: var(--info-soft);
+  --color-danger: var(--danger);
+  --color-danger-soft: var(--danger-soft);
+  --color-mute: var(--mute);
+  --color-mute-soft: var(--mute-soft);
+  --color-slate: var(--slate);
+  --color-slate-soft: var(--slate-soft);
+  --color-chrome: var(--chrome);
+  --color-simdi: var(--simdi);
+  --color-perde: var(--perde);
+  --color-perde-hafif: var(--perde-hafif);
+  --color-brand-2: var(--brand-hover);
+  --color-brand-tint: var(--brand-soft);
+  --color-gold: var(--accent-ui);
+  --color-gold-2: var(--accent-ink);
+  --color-gold-tint: var(--accent-soft);
+  --color-border: var(--line);
+  --color-border-2: var(--line-2);
+  --color-text: var(--ink);
+  --color-text-2: var(--ink-2);
+  --color-text-3: var(--ink-3);
+
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-panel: var(--nav-panel);
+  --color-nav-fg: var(--nav-ink);
+  --color-nav-ink: var(--nav-ink);
+  --color-nav-strong: var(--nav-ink-strong);
+  --color-nav-label: var(--nav-label);
+  --color-nav-border: var(--nav-line);
+  --color-nav-line: var(--nav-line);
+  --color-nav-hover: var(--nav-hover);
+  --color-nav-active: var(--nav-active);
+  --color-nav-activeFg: var(--nav-ink-strong);
+
+  --font-display: var(--font-d), Montserrat, system-ui, sans-serif;
+  --font-sans: var(--font-t), 'IBM Plex Sans', system-ui, sans-serif;
+
+  --text-3xs: var(--fs-3xs);
+  --text-2xs: var(--fs-2xs);
+  --text-xs: var(--fs-xs);
+  --text-sm: var(--fs-sm);
+  --text-base: var(--fs-md);
+  --text-lg: var(--fs-lg);
+  --text-xl: var(--fs-xl);
+  --text-2xl: var(--fs-2xl);
+  --text-3xl: var(--fs-3xl);
+  --text-4xl: var(--fs-4xl);
+
+  --spacing-1: var(--sp-1);
+  --spacing-2: var(--sp-2);
+  --spacing-3: var(--sp-3);
+  --spacing-4: var(--sp-4);
+  --spacing-5: var(--sp-5);
+  --spacing-6: var(--sp-6);
+  --spacing-7: var(--sp-7);
+  --spacing-8: var(--sp-8);
+  --spacing-10: var(--sp-10);
+  --spacing-12: var(--sp-12);
+  --spacing-16: var(--sp-16);
+  --spacing-0_5: var(--sp-05);
+  --spacing-1_5: var(--sp-15);
+  --spacing-2_5: var(--sp-25);
+  --spacing-3_5: var(--sp-35);
+  --spacing-4_5: var(--sp-45);
+
+  --radius-xs: var(--r-xs);
+  --radius-sm: var(--r-sm);
+  --radius: var(--r-md);
+  --radius-md: var(--r-md);
+  --radius-lg: var(--r-lg);
+  --radius-xl: var(--r-xl);
+  --radius-2xl: var(--r-2xl);
+  --radius-full: var(--r-pill);
+  --radius-card: var(--r-lg);
+  --radius-control: var(--r-sm);
+  --radius-win: var(--r-xl);
+  /*
+    Alt tabakanın ÜST köşesi. `rounded-t-2xl` sabit 16px yazıyordu: yarıçap
+    knob'u 3'e indirilince bütün arayüz keskinleşiyor ama tabakanın tepesi
+    yumuşak kalıyordu. Kart yarıçapının iki katı — kartla aynı olsaydı tabaka
+    "büyük bir kart" gibi durur, ekranın kendisi olduğu okunmazdı.
+
+    `clamp` üst sınır koyuyor: knob 18'de köşe 50px'e çıkıyor ve tabaka
+    baloncuğa dönüşüyordu. 30px, telefon ekranının kendi köşe yarıçapına yakın
+    duran en yumuşak değer.
+  */
+  --radius-tabaka: clamp(6px, calc(var(--r-lg) * 2), 30px);
+  --radius-pill: var(--r-pill);
+
+  --default-border-width: var(--bw);
+
+  --shadow-1: var(--sh-1);
+  --shadow-2: var(--sh-2);
+  --shadow-3: var(--sh-3);
+
+  --default-transition-duration: var(--dur);
+
+  --default-transition-timing-function: var(--ease);
+  /*
+    `--ease-spring` BURAYA YAZILMAZ. Tailwind'in `--ease-*` ad alanıyla
+    token'ımızın adı birebir aynı; `--ease-spring: var(--ease-spring)` yazmak
+    özelliği KENDİNE bağlıyor ve CSS onu "hesaplanmış değerde geçersiz" sayıp
+    `tokenlar.css`'teki gerçek eğriyi siliyordu. Sonuç sessizdi: her basma
+    yayı (`.bas-yay`, satır eylemleri, sekmeler) varsayılan yumuşatmaya
+    düşüyor, hiçbir şey bozulmuş GÖRÜNMÜYORDU. Tanım tek yerde:
+    `tokenlar.css` → `--ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1)`.
+  */
+
+  --height-ctrl: var(--h-ctrl);
+  --height-ctrl-lg: var(--h-ctrl-lg);
+  --height-ctrl-xl: var(--h-ctrl-xl);
+  --height-appbar: var(--h-appbar);
+  --height-bar-m: var(--h-bar-m);
+  --height-row: var(--h-row);
+  --height-row-m: var(--h-row-m);
+  --height-tab: var(--h-tab);
+
+  --min-height-ctrl: var(--h-ctrl);
+  --min-height-ctrl-lg: var(--h-ctrl-lg);
+  --min-height-row: var(--h-row);
+  --min-height-row-m: var(--h-row-m);
+
+  --width-side: var(--w-side);
+  --width-side-sm: var(--w-side-sm);
+}
+
+/*
+  The default border color has changed to `currentcolor` in Tailwind CSS v4,
+  so we've added these compatibility styles to make sure everything still
+  looks the same as it did with Tailwind CSS v3.
+
+  If we ever want to remove these styles, we need to add an explicit border
+  color utility to any element that depends on these defaults.
+*/
+@layer base {
+  *,
+  ::after,
+  ::before,
+  ::backdrop,
+  ::file-selector-button {
+    border-color: var(--color-gray-200, currentcolor);
+  }
+}
+
+@utility metin-guzel {
+  /* Uzun Türkçe başlıklarda daha dengeli satır kırma (design.md §3) */
+  text-wrap: pretty;
+}
+
+@utility guvenli-alt {
+  /* Mobil güvenli alan (tabbar altı) */
+  padding-bottom: env(safe-area-inset-bottom, 0px);
+}
+
+@utility kaydirma-gizle {
+  /*
+   * Yatay kaydırma çubuğunu gizler — filtre çipi şeritlerinde kullanılır.
+   * Kaydırmanın KENDİSİ açık kalır: çubuğu gizlemek içeriği erişilemez
+   * yapmaz, yalnızca 10px'lik çubuğun çip sırasını ikiye bölmesini önler.
+   */
+  scrollbar-width: none;
+  &::-webkit-scrollbar {
+    display: none;
+  }
+}
+
+@utility satir-2 {
+  /* Çok satırlı kırpma — kart açıklamalarında */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@utility katman {
+  /*
+   * EKRAN KARTINA DEVRET.
+   *
+   * Açılıp kapanan katmanlar (diyalog, açılır menü, alt sayfa, ipucu)
+   * animasyon boyunca kendi katmanına alınır: dönüşüm ve saydamlık GPU'da
+   * hesaplanır, her karede yeniden yerleşim/boyama yapılmaz. Mobilde ve
+   * uzun listelerin üstünde açılan menülerde takılma bununla gidiyor.
+   *
+   * `will-change` KALICI verilmez — sürekli açık bırakılan bir katman
+   * belleği boşuna tutar. Yalnızca animasyon durumundayken uygulanır
+   * (`[data-state]` seçicileri Radix'ten gelir).
+   *
+   * Katman yükseltmesi için `transform: translateZ(0)` KULLANILMAZ:
+   * `.katman` de bir yardımcı sınıf olduğu için Tailwind'in
+   * `-translate-x-1/2` değerini eziyordu ve ortalanmış diyaloglar
+   * animasyon bittiği anda sağ alta kayıyordu (resim görüntüleyicide
+   * yakalandı). `will-change: transform` zaten kendi katmanını açar.
+   */
+  backface-visibility: hidden;
+
+  &[data-state='open'] {
+    will-change: transform, opacity;
+  }
+
+  &[data-state='closed'] {
+    will-change: transform, opacity;
+  }
+}
+
+@utility anim-katman {
+  /* Açılır menü / ipucu / seçici panelleri */
+  &[data-state='open'] {
+    animation: katmanAcil 170ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  &[data-state='closed'] {
+    animation: katmanKapan 130ms cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  /*
+   * Animasyonlu her katman kendi bileşik katmanını açar. `will-change` yalnız
+   * başına yetmiyor: Safari'de ilk kare hâlâ ana iş parçacığında boyanıyor ve
+   * tabaka "sıçrayarak" giriyordu. Ortalanmış diyaloglarda `translateZ(0)`
+   * KULLANILMAZ — Tailwind'in `-translate-x-1/2` değerini ezip pencereyi sağ
+   * alta kaydırıyor; orada `will-change` tek başına yeterli.
+   */
+  &[data-state] {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+}
+
+@utility anim-orta {
+  /* Ortalanmış diyalog */
+  &[data-state='open'] {
+    animation: ortaAcil 200ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+  &[data-state='closed'] {
+    animation: ortaKapan 140ms cubic-bezier(0.4, 0, 1, 1);
+  }
+}
+
+@utility anim-alt {
+  /* Alt sayfa (mobil) */
+  &[data-state='open'] {
+    animation: alttanAcil 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  &[data-state='closed'] {
+    animation: alttanKapan 220ms cubic-bezier(0.4, 0, 1, 1);
+  }
+  &[data-state] {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+
+  @media (max-width: 767px) {
+    &[data-state] {
+      transform: translateZ(0);
+    }
+  }
+}
+
+@utility anim-perde {
+  /* Karartma perdesi */
+  &[data-state='open'] {
+    animation: perdeAcil 200ms ease-out;
+  }
+  &[data-state='closed'] {
+    animation: perdeKapan 160ms ease-in;
+  }
+
+  /*
+   * Perde de kendi bileşik katmanında kalsın: karartma canlanırken altındaki
+   * SAYFA yeniden boyanıyordu (uzun listelerde göze çarpıyor).
+   */
+  &[data-state] {
+    will-change: opacity;
+    backface-visibility: hidden;
+    transform: translateZ(0);
+  }
+}
+
+@utility anim-tabaka {
+  /*
+   * DUYARLI katman: mobilde alttan sayfa, masaüstünde ortalanmış pencere.
+   *
+   * Tek bir sınıfla iki animasyon gerekiyor çünkü öğenin KONUMU da kırılım
+   * noktasında değişiyor. `anim-orta` mobilde uygulanırsa `-50%` kaydırma
+   * yokken sayfa sola/yukarı zıplıyordu.
+   */
+  &[data-state='open'] {
+    animation: alttanAcil 300ms cubic-bezier(0.16, 1, 0.3, 1);
+  }
+  &[data-state='closed'] {
+    animation: alttanKapan 220ms cubic-bezier(0.4, 0, 1, 1);
+  }
+
+  @media (min-width: 768px) {
+    /* MASAÜSTÜ AYNEN KALIR: kullanıcı bu açılışı beğendi. */
+    &[data-state='open'] {
+      animation: ortaAcil 200ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    &[data-state='closed'] {
+      animation: ortaKapan 140ms cubic-bezier(0.4, 0, 1, 1);
+    }
+  }
+  &[data-state] {
+    will-change: transform, opacity;
+    backface-visibility: hidden;
+  }
+
+  @media (max-width: 767px) {
+    &[data-state] {
+      transform: translateZ(0);
+    }
+  }
+}
+
+@utility anim-yan {
+  @media (min-width: 768px) {
+    /*
+     * YANDAN açılan tabaka (yardım paneli): masaüstünde ekranın sağına
+     * yaslanıyor, ortalanmış pencere değil. Ortadan büyüyen animasyon kenara
+     * yapışık bir panelde yanlış yerden geliyormuş gibi duruyordu.
+     */
+    &[data-state='open'] {
+      animation: yandanAcil 240ms cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    &[data-state='closed'] {
+      animation: yandanKapan 160ms cubic-bezier(0.4, 0, 1, 1);
+    }
+  }
+}
+
+/* design.md §10.3 — temel kurallar */
+@layer base {
+  body {
+    @apply bg-bg text-text font-sans;
+    font-variant-numeric: tabular-nums;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  a { color: var(--brand-hover); }
+  a:hover { color: var(--gold); }
+
+  ::selection { background: var(--gold-tint); }
+
+  /* design.md §11 — klavye odağı her zaman görünür */
+  :focus-visible {
+    outline: 2px solid var(--brand-hover);
+    outline-offset: 2px;
+  }
+
+  /* design.md §11 — hareket azaltma tercihine uy */
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      transition-duration: 0.01ms !important;
+      scroll-behavior: auto !important;
+    }
+  }
+
+  /* 10px kaydırma çubuğu (design.md §10.3) */
+  ::-webkit-scrollbar { width: 10px; height: 10px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb {
+    background: var(--line-2);
+    border-radius: var(--r-pill);
+    border: 3px solid transparent;
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: var(--ink-3);
+    background-clip: content-box;
+  }
+  ::-webkit-scrollbar-corner { background: transparent }
+
+  /* Firefox ve modern tarayıcılar; `--line-2` marka rengiyle boyandığı için
+     çubuk da temayla birlikte dönüyor. Varsayılan gri şerit, koyu temada
+     arayüzle akraba durmuyordu. */
+  * {
+    scrollbar-color: var(--line-2) transparent;
+    scrollbar-width: thin;
+  }
+}
+
+@layer utilities {
+  /*
+ * ── Katman animasyonları ──────────────────────────────────────────────
+ *
+ * Yalnızca `transform` ve `opacity` canlandırılır; ikisi de düzen (layout)
+ * hesabı gerektirmez, dolayısıyla 60 fps'te kalır. `height`/`top` gibi
+ * özellikleri canlandırmak her karede yeniden yerleşim demek.
+ */
+  @keyframes katmanAcil {
+    from {
+      opacity: 0;
+      transform: translate3d(0, 4px, 0) scale(0.97);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+  }
+
+  @keyframes katmanKapan {
+    from {
+      opacity: 1;
+      transform: translate3d(0, 0, 0) scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: translate3d(0, 4px, 0) scale(0.97);
+    }
+  }
+
+  /*
+   * ORTALAMA KEYFRAME'DE DEĞİL.
+   *
+   * Tailwind 4'te `-translate-x-1/2` artık ayrı `translate` özelliğini
+   * yazıyor, `transform`u değil. Keyframe de `translate3d(-50%,-50%)`
+   * içerince ikisi TOPLANIYOR: pencere iki kat kayıp sol üstte açılıyor,
+   * animasyon bitince tekil kalan `translate` onu bir anda ortaya çekiyordu.
+   *
+   * Ortalamayı sınıf yapıyor; keyframe yalnızca ölçek ve opaklık canlandırır.
+   */
+  @keyframes ortaAcil {
+    from {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+    to {
+      opacity: 1;
+      transform: scale(1);
+    }
+  }
+
+  @keyframes ortaKapan {
+    from {
+      opacity: 1;
+      transform: scale(1);
+    }
+    to {
+      opacity: 0;
+      transform: scale(0.96);
+    }
+  }
+
+  /*
+ * Akordiyon: yükseklik `height: auto`ya canlandırılamaz, o yüzden Radix'in
+ * ölçtüğü `--radix-accordion-content-height` kullanılır. İçerik ayrıca hafifçe
+ * yukarıdan gelir — yalnızca yükseklik büyümesi, uzun listelerde içeriğin
+ * "aşağı düşmesi" gibi görünüyordu.
+ */
+  @keyframes akordiyonAc {
+    from {
+      height: 0;
+      opacity: 0;
+      transform: translate3d(0, -4px, 0);
+    }
+    to {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes akordiyonKapa {
+    from {
+      height: var(--radix-accordion-content-height);
+      opacity: 1;
+    }
+    to {
+      height: 0;
+      opacity: 0;
+    }
+  }
+
+  /*
+ * Alt tabaka: yalnızca `translate3d` — yükseklik ya da `bottom` canlandırmak
+ * her karede yeniden yerleşim demek ve telefonda görünür biçimde takılıyor.
+ * Hafif bir saydamlık eşliği hareketi yumuşatıyor; ikisi de bileşik katmanda
+ * (compositor) çalıştığı için ana iş parçacığına dokunmuyor.
+ */
+  @keyframes alttanAcil {
+    from {
+      opacity: 0.6;
+      transform: translate3d(0, 100%, 0);
+    }
+    to {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+  }
+
+  @keyframes alttanKapan {
+    from {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+    }
+    to {
+      opacity: 0.4;
+      transform: translate3d(0, 100%, 0);
+    }
+  }
+
+  @keyframes yandanAcil {
+    from {
+      opacity: 0;
+      transform: translate3d(24px, 0, 0);
+    }
+    to {
+      opacity: 1;
+      transform: none;
+    }
+  }
+  @keyframes yandanKapan {
+    from {
+      opacity: 1;
+      transform: none;
+    }
+    to {
+      opacity: 0;
+      transform: translate3d(24px, 0, 0);
+    }
+  }
+
+  @keyframes perdeAcil {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
+  @keyframes perdeKapan {
+    from {
+      opacity: 1;
+    }
+    to {
+      opacity: 0;
+    }
+  }
+}
+
+/*
+ * Hareket azaltma tercihi (design.md §11): animasyonlar kapanır ama katman
+ * ANINDA görünür — `display:none` gibi bir yan etki bırakılmaz.
+ */
+@media (prefers-reduced-motion: reduce) {
+  .anim-katman[data-state],
+  .anim-orta[data-state],
+  .anim-alt[data-state],
+  .anim-tabaka[data-state],
+  .anim-perde[data-state] {
+    animation: none !important;
+    will-change: auto;
+  }
+}
+
+/* ══════════════════════════════════════════════════════ bildirim (toast)
+
+   Toast'ta `data-[state=open]:animate-in` sınıfları vardı ama bu proje
+   `tailwindcss-animate` KULLANMIYOR: sınıflar hiçbir kurala karşılık
+   gelmiyordu, yani bildirim animasyonsuz belirip animasyonsuz kayboluyordu.
+   Kurallar burada, tek yerde.
+
+   Radix kaydırma sırasında `--radix-toast-swipe-move-x/y` değişkenlerini
+   yazıyor; öğe parmağı TAKİP etsin diye bu değişkenler doğrudan
+   `transform`a bağlanır. Bırakınca iki yol var: eşiğin altındaysa
+   `swipe=cancel` ile yerine yaylanır, üstündeyse `swipe=end` ile uçar. */
+
+@keyframes bildirimGir {
+  from { opacity: 0; transform: translateX(24px) scale(.98); }
+  to   { opacity: 1; transform: translateX(0)    scale(1); }
+}
+@keyframes bildirimGirAlttan {
+  from { opacity: 0; transform: translateY(24px) scale(.98); }
+  to   { opacity: 1; transform: translateY(0)    scale(1); }
+}
+@keyframes bildirimCik {
+  from { opacity: 1; transform: translateY(0)   scale(1); }
+  to   { opacity: 0; transform: translateY(6px) scale(.97); }
+}
+@keyframes bildirimUc      { to { opacity: 0; transform: translateX(calc(100% + 16px)); } }
+@keyframes bildirimUcAlta  { to { opacity: 0; transform: translateY(calc(100% + 16px)); } }
+
+.bildirim {
+  /* Dokunmayı tarayıcının kaydırmasına kaptırmamak için: yoksa parmak
+     hareketi sayfayı kaydırıyor, toast yerinde kalıyordu. */
+  touch-action: pan-y;
+}
+
+.bildirim[data-state='open']   { animation: bildirimGirAlttan 220ms cubic-bezier(.16,1,.3,1); }
+.bildirim[data-state='closed'] { animation: bildirimCik 140ms ease-in forwards; }
+
+/* Parmağı takip et — animasyon YOK, aksi hâlde hareket geri sekiyor. */
+.bildirim[data-swipe='move'] {
+  animation: none;
+  transform: translate(var(--radix-toast-swipe-move-x, 0), var(--radix-toast-swipe-move-y, 0));
+}
+.bildirim[data-swipe='cancel'] {
+  transform: translate(0, 0);
+  transition: transform 180ms cubic-bezier(.16,1,.3,1);
+}
+.bildirim[data-swipe='end'] { animation: bildirimUcAlta 180ms ease-out forwards; }
+
+@media (min-width: 768px) {
+  .bildirim[data-state='open'] { animation-name: bildirimGir; }
+  .bildirim[data-swipe='end']  { animation-name: bildirimUc; }
+}
+
+/* Hareketi azaltılmış modda yalnızca opaklık değişir. */
+@media (prefers-reduced-motion: reduce) {
+  .bildirim[data-state='open'],
+  .bildirim[data-state='closed'],
+  .bildirim[data-swipe='end'] { animation-duration: 1ms; }
+  .bildirim[data-swipe='cancel'] { transition-duration: 1ms; }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   NATIVE MOBİL HAREKET — design_new/design.md §6
+   ══════════════════════════════════════════════════════════════════════════
+   Her ad A/B ikizi olarak tanımlı. Sebep: aynı animasyon adı arka arkaya iki
+   kez atandığında tarayıcı onu YENİDEN TETİKLEMEZ; ekran değişiminde geçiş
+   sessizce kaybolur. İkiz adlar dönüşümlü verilerek her geçiş canlanır.
+   ══════════════════════════════════════════════════════════════════════════ */
+@keyframes itA { from { opacity: 0; transform: translate3d(26px, 0, 0) } to { opacity: 1; transform: none } }
+@keyframes itB { from { opacity: 0; transform: translate3d(26px, 0, 0) } to { opacity: 1; transform: none } }
+@keyframes geA { from { opacity: 0; transform: translate3d(-20px, 0, 0) } to { opacity: 1; transform: none } }
+@keyframes geB { from { opacity: 0; transform: translate3d(-20px, 0, 0) } to { opacity: 1; transform: none } }
+@keyframes pgA { from { opacity: 0; transform: translate3d(0, var(--sp-2), 0) } to { opacity: 1; transform: none } }
+@keyframes pgB { from { opacity: 0; transform: translate3d(0, var(--sp-2), 0) } to { opacity: 1; transform: none } }
+/* FAB menüsü: aşağıdan hafifçe yükselerek ve büyüyerek gelir — düğmeden
+   çıkıyor hissi bundan doğuyor. */
+/* Belirsiz ilerleme: liste tazelenirken üstte akan kısa şerit. Yüzde
+   göstermiyor çünkü ne kadar süreceğini bilmiyoruz; yalnızca "çalışıyor"
+   diyor. */
+@keyframes seritKay {
+  0%   { transform: translateX(-100%) }
+  100% { transform: translateX(300%) }
+}
+
+@keyframes fabIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.92) }
+  to   { opacity: 1; transform: none }
+}
+
+@keyframes rowIn { from { opacity: 0; transform: translate3d(0, 10px, 0) } to { opacity: 1; transform: none } }
+@keyframes sheetUp { from { transform: translate3d(0, 100%, 0) } to { transform: none } }
+@keyframes panelIn { from { transform: translate3d(100%, 0, 0) } to { transform: none } }
+@keyframes fadeIn { from { opacity: 0 } to { opacity: 1 } }
+@keyframes fadeOut { from { opacity: 1 } to { opacity: 0 } }
+@keyframes sheetDown { from { transform: none } to { transform: translate3d(0, 100%, 0) } }
+@keyframes nabiz { 0%, 100% { opacity: 1 } 50% { opacity: 0.4 } }
+
+/* Yardımcı sınıflar — bileşenler ham `animation` yazmaz. */
+.anim-it-a { animation: itA var(--dur) var(--ease) both }
+.anim-it-b { animation: itB var(--dur) var(--ease) both }
+.anim-ge-a { animation: geA var(--dur) var(--ease) both }
+.anim-ge-b { animation: geB var(--dur) var(--ease) both }
+.anim-pg-a { animation: pgA var(--dur) var(--ease) both }
+.anim-pg-b { animation: pgB var(--dur) var(--ease) both }
+.anim-satir { animation: rowIn var(--dur) var(--ease) both }
+/* ALT SHEET — açılış VE kapanış, `data-state` üzerinden.
+   Radix kapanırken öğeyi hemen sökmüyor; `data-state="closed"` verip
+   animasyon bitene kadar bekliyor. Tek yönlü `animation: … both` yazmak
+   bu yüzden yalnızca açılışı canlandırıyor, kapanış "pat" diye oluyordu. */
+.anim-sheet[data-state='open'] {
+  animation: sheetUp calc(var(--dur) * 1.4) var(--ease);
+}
+.anim-sheet[data-state='closed'] {
+  animation: sheetDown calc(var(--dur) * 0.9) cubic-bezier(0.4, 0, 1, 1);
+}
+.anim-sheet[data-state] {
+  will-change: transform;
+  backface-visibility: hidden;
+}
+.anim-panel { animation: panelIn calc(var(--dur) * 1.3) var(--ease) both }
+/* Perde de aynı kuralla: kapanırken sheet'le birlikte sönmeli, yoksa
+   sayfa aşağı kayarken karartma bir anda yok oluyor. */
+.anim-perde[data-state='open'] { animation: fadeIn var(--dur) var(--ease) }
+.anim-perde[data-state='closed'] { animation: fadeOut calc(var(--dur) * 0.9) var(--ease) }
+.anim-perde:not([data-state]) { animation: fadeIn var(--dur) var(--ease) both }
+.anim-nabiz { animation: nabiz 1.4s ease-in-out infinite }
+
+/* Dokunmatik geri bildirimi: mobilde basma YAYLA geri gelir (§6). */
+.bas-yay { transition: transform var(--dur) var(--ease-spring) }
+.bas-yay:active { transform: scale(0.94) }
+
+/* Sekme şeridi: taşınca kaydırılabilir ama çubuk görünmez — şerit ince ve
+   çubuk onun yarısı kadar yer kaplıyordu. Kaydırma yine parmakla, fareyle
+   ve klavyeyle mümkün. */
+.sekme-serit {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior-x: contain;
+}
+.sekme-serit::-webkit-scrollbar { display: none }
+
+/*
+  KATMAN İÇİNDEKİ KARTLAR DIŞ YARIÇAPI İZLER.
+
+  İç içe yuvarlatılmış dikdörtgenlerde doğru oran şu: **iç yarıçap = dış
+  yarıçap − aradaki boşluk**. Kart her yerde `--r-lg` kullanıyor ve sayfa
+  üstünde bu doğru; ama bir diyaloğun içinde dış köşe `--r-xl` ve arada
+  yalnızca `--sp-3` boşluk var. Yarıçap knob'u 18'e çekildiğinde pencere
+  36px, içindeki kartlar 25px oluyordu: kartlar dış köşeden daha yuvarlak
+  görünüyor ve iç içe geçmiş iki dikdörtgen yerine "balonun içinde balon"
+  gibi duruyordu.
+
+  Kural KATMANSIZ yazılıyor: Tailwind yardımcıları `@layer utilities`
+  içinde ve katmansız bir kural onları geçiyor — özgüllük yarışına
+  girmeye gerek kalmıyor.
+*/
+[role='dialog'] .rounded-card,
+[role='alertdialog'] .rounded-card,
+[data-vaul-drawer] .rounded-card,
+/* `FormBolumu` kartı yalnızca masaüstünde çiziyor (`md:rounded-card`);
+   sınıf adı farklı olduğu için ilk yazımda kural onu ıskalıyordu. */
+[role='dialog'] .md\:rounded-card,
+[role='alertdialog'] .md\:rounded-card,
+[data-vaul-drawer] .md\:rounded-card {
+  border-radius: clamp(var(--r-xs), calc(var(--r-xl) - var(--sp-3)), var(--r-lg));
+}

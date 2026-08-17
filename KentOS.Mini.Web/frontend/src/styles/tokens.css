@@ -1,0 +1,300 @@
+/**
+ * TOKEN MOTORU — design_new/design.md §2'den birebir.
+ *
+ * Üç katman, tek yön: ÇEKİRDEK → TÜRETİLMİŞ → ANLAMSAL. Her katman yalnızca
+ * kendinden öncekini okur; bileşen hiçbir zaman çekirdeğe dokunmaz
+ * (`--brand` değil `--brand-ui`).
+ *
+ * NEDEN MOTOR: eskiden her renk elle yazılmış iki sabit blok vardı (gündüz +
+ * gece). Yeni bir kurum için ya da yalnızca köşe ovalliğini değiştirmek için
+ * onlarca değeri elle tutarlı tutmak gerekiyordu. Artık 14 çekirdek knob var;
+ * geri kalan her şey `calc()` ve `color-mix()` ile ondan türüyor. Tema
+ * Tasarımcısı yalnızca bu 14 değeri yazar, tek karede bütün arayüz döner —
+ * hiçbir React bileşeni yeniden render olmaz.
+ *
+ * DÖRDÜNCÜ BİR KATMAN VAR: en altta "v1 uyum katmanı". Uygulamada 40'tan fazla
+ * ekran eski token adlarıyla (`--text`, `--border`, `--st-ok`…) yazılmış
+ * durumda. Bu katman o adları yeni anlamsal katmana bağlar, böylece motor
+ * tek dosyada değişirken çalışan hiçbir ekran bozulmuyor. Yeni yazılan
+ * bileşenler v2 adlarını kullanır; eski adlar zamanla tükenir.
+ */
+
+/* ══════════════════════════════════════════════════════════════════════════
+   KATMAN 1 — ÇEKİRDEK (14 knob · Tema Tasarımcısı bunları yazar)
+   ══════════════════════════════════════════════════════════════════════════ */
+:root {
+  --brand: #002e6d;          /* marka rengi (gündüz UI'ında doğrudan) */
+  --brand-dk: #5b93e8;       /* markanın gece karşılığı — elle dengeli */
+  --accent: #a78952;         /* vurgu */
+  --accent-dk: #d8bb80;      /* vurgunun gece karşılığı */
+  --neutral: #f5f4f0;        /* nötr taban (sıcaklık) */
+  --sp: 4px;                 /* boşluk birimi — yoğunluk */
+  --r: 10px;                 /* köşe ovalliği */
+  --fs: 14px;                /* temel yazı boyutu */
+  --fs-d: 1;                 /* başlık ölçeği çarpanı */
+  --track: 0em;              /* harf aralığı */
+  --bw: 1px;                 /* kenarlık kalınlığı */
+  --sh-a: 0.07;              /* gölge yoğunluğu (alfa) */
+  --dur: 220ms;              /* hareket süresi */
+  --font-d: 'Montserrat';    /* başlık ailesi (Gotham TR ikamesi) */
+  --font-t: 'IBM Plex Sans'; /* gövde ailesi */
+}
+
+/* Marka için NEDEN İKİ HEX: tek hex'ten hem gündüz hem gece için kontrastı
+   garanti eden varyant üretmek color-mix ile mümkün değil — beyazla karışım
+   doygunluğu düşürür, siyahla okunmaz hâle gelir. Bu yüzden her marka rengi
+   çift tanımlanır; gece modunda `--brand-ui: var(--brand-dk)` devreye girer. */
+
+/* ══════════════════════════════════════════════════════════════════════════
+   KATMAN 2 — TÜRETİLMİŞ ÖLÇEKLER (elle yazılmaz)
+   ══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* boşluk — tüm padding/gap/margin buradan, serbest px yok */
+  --sp-05: calc(var(--sp) * 0.5);  --sp-1: var(--sp);              --sp-15: calc(var(--sp) * 1.5);
+  --sp-2: calc(var(--sp) * 2);     --sp-25: calc(var(--sp) * 2.5); --sp-3: calc(var(--sp) * 3);
+  --sp-35: calc(var(--sp) * 3.5);  --sp-4: calc(var(--sp) * 4);    --sp-45: calc(var(--sp) * 4.5);
+  --sp-5: calc(var(--sp) * 5);     --sp-6: calc(var(--sp) * 6);    --sp-7: calc(var(--sp) * 7);
+  --sp-8: calc(var(--sp) * 8);     --sp-10: calc(var(--sp) * 10);  --sp-12: calc(var(--sp) * 12);
+  --sp-16: calc(var(--sp) * 16);
+
+  /* yarıçap — oranlar sabit, temel knob değişken */
+  --r-xs: calc(var(--r) * 0.35);  --r-sm: calc(var(--r) * 0.62);  --r-md: var(--r);
+  --r-lg: calc(var(--r) * 1.4);   --r-xl: calc(var(--r) * 2);     --r-2xl: calc(var(--r) * 3.2);
+  --r-pill: 999px;
+
+  /* tipografi — çarpanlar sabit; başlıklar --fs-d ile ayrıca ölçeklenir */
+  --fs-3xs: calc(var(--fs) * 0.68); --fs-2xs: calc(var(--fs) * 0.75); --fs-xs: calc(var(--fs) * 0.83);
+  --fs-sm: calc(var(--fs) * 0.91);  --fs-md: var(--fs);              --fs-lg: calc(var(--fs) * 1.08);
+  --fs-xl: calc(var(--fs) * 1.26 * var(--fs-d));
+  --fs-2xl: calc(var(--fs) * 1.55 * var(--fs-d));
+  --fs-3xl: calc(var(--fs) * 2 * var(--fs-d));
+  --fs-4xl: calc(var(--fs) * 2.55 * var(--fs-d));
+  --track-d: calc(var(--track) - 0.014em);  /* başlıklar gövdeden daha sıkı */
+
+  /* bileşen ölçüleri — hepsi --sp katı */
+  --h-ctrl: calc(var(--sp) * 9);      /* 36px  · buton, input, çip */
+  --h-ctrl-lg: calc(var(--sp) * 11);  /* 44px  · sidebar öğesi, sekme */
+  --h-ctrl-xl: calc(var(--sp) * 12);  /* 48px  · form input, birincil buton */
+  --h-appbar: calc(var(--sp) * 16);   /* 64px  · masaüstü appbar */
+  --h-bar-m: calc(var(--sp) * 13);    /* 52px  · mobil appbar */
+  --h-row: calc(var(--sp) * 13);      /* 52px  · tablo satırı */
+  --h-row-m: calc(var(--sp) * 15);    /* 60px  · mobil liste satırı */
+  --h-tab: calc(var(--sp) * 14);      /* 56px  · tabbar öğesi */
+  --w-side: calc(var(--sp) * 64);     /* 256px · sidebar */
+  --w-side-sm: calc(var(--sp) * 19);  /* 76px  · daraltılmış sidebar */
+
+  /* gölge — tek alfa knob'undan üç kademe */
+  --sh-1: 0 1px 2px rgba(var(--sh-rgb), calc(var(--sh-a) * 0.75));
+  --sh-2: 0 var(--sp-1) calc(var(--sp) * 3.5) rgba(var(--sh-rgb), var(--sh-a)),
+          0 1px 2px rgba(var(--sh-rgb), calc(var(--sh-a) * 0.7));
+  --sh-3: 0 var(--sp-6) var(--sp-16) rgba(var(--sh-rgb), calc(var(--sh-a) * 2.2)),
+          0 2px 6px rgba(var(--sh-rgb), var(--sh-a));
+
+  /* hareket */
+  --ease: cubic-bezier(0.32, 0.72, 0, 1);          /* giriş/çıkış — iOS benzeri */
+  --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* basma geri sıçraması */
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   KATMAN 3 — ANLAMSAL · GÜNDÜZ
+   Nötrler markayla HAFİFÇE boyanır: hangi marka seçilirse seçilsin bütün
+   arayüz o renkle akraba olur. Beyaz etiket kurulumunun "yapıştırılmış logo"
+   gibi durmasını engelleyen şey bu.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root,
+:root[data-mod='acik'],
+:root[data-tema='acik'] {
+  --canvas: color-mix(in oklab, var(--brand) 6%, var(--neutral));
+  --bg: color-mix(in oklab, var(--brand) 3%, var(--neutral));
+  --surface: color-mix(in oklab, var(--brand) 1%, #fff);
+  --surface-2: color-mix(in oklab, var(--brand) 4%, #fff);
+  --sunken: color-mix(in oklab, var(--brand) 9%, var(--neutral));
+  --line: color-mix(in oklab, var(--brand) 11%, #e4e2dc);
+  --line-2: color-mix(in oklab, var(--brand) 20%, #ccc9c1);
+  --ink: color-mix(in oklab, var(--brand) 14%, #0f141d);
+  --ink-2: color-mix(in oklab, var(--brand) 12%, #5a6274);
+  --ink-3: color-mix(in oklab, var(--brand) 10%, #8c93a1);
+
+  --brand-ui: var(--brand);
+  --brand-hover: color-mix(in oklab, var(--brand) 86%, #000);
+  --brand-soft: color-mix(in oklab, var(--brand) 9%, var(--surface));
+  --brand-line: color-mix(in oklab, var(--brand) 24%, var(--surface));
+  --on-brand: #fff;
+
+  --accent-ui: var(--accent);
+  --accent-soft: color-mix(in oklab, var(--accent) 15%, var(--surface));
+  --accent-ink: color-mix(in oklab, var(--accent) 72%, #241a06);
+
+  --nav-bg: var(--brand);
+  --nav-panel: var(--brand);
+  --nav-ink: color-mix(in oklab, #fff 72%, var(--brand));
+  --nav-ink-strong: #fff;
+  --nav-line: color-mix(in oklab, #fff 15%, var(--brand));
+  --nav-hover: color-mix(in oklab, #fff 8%, var(--brand));
+  --nav-active: color-mix(in oklab, #fff 15%, var(--brand));
+
+  --chrome: color-mix(in oklab, var(--brand) 2%, #fff);
+  --sh-rgb: 14, 22, 38;
+
+  /*
+    PERDE — açılan katmanın altındaki karartma.
+
+    Uzun süre `bg-perde` sınıfı vardı ama `--perde` HİÇ TANIMLI DEĞİLDİ:
+    `@theme` içindeki `--color-perde: var(--perde)` çözümsüz kalıyor ve
+    perde tamamen SAYDAM boyanıyordu. Diyalog açıkken arkadaki ekran tam
+    parlaklıkta duruyor, katman "üstte" okunmuyordu.
+
+    Renk siyah değil marka mürekkebi: nötr siyah perde kurumsal kimliği
+    kesiyor, hafif lacivert bir karartma aynı işi görüp temayla akraba
+    kalıyor. `-hafif` menü/açılır liste gibi küçük katmanlar için — tam
+    perde onların altında abartılı duruyor.
+  */
+  --perde-rgb: 8, 14, 26;
+  --perde: rgba(var(--perde-rgb), 0.46);
+  --perde-hafif: rgba(var(--perde-rgb), 0.2);
+
+  --warn: #8a6209;  --ok: #1a6a45;    --info: #1d5ca3;
+  --danger: #a33127; --mute: #6b675f;  --slate: #3b4c6e;
+  --st-mix: 13%;
+  --on-ok: color-mix(in oklab, var(--ok) 22%, #fff);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   KATMAN 3 — ANLAMSAL · GECE
+   Aynı isimler, farklı formüller. Bileşende `if (dark)` YOKTUR.
+   `data-tema` da kabul ediliyor: uygulamanın var olan tema anahtarı o.
+   ══════════════════════════════════════════════════════════════════════════ */
+:root[data-mod='koyu'],
+:root[data-tema='koyu'] {
+  --canvas: color-mix(in oklab, var(--brand) 7%, #05080d);
+  --bg: color-mix(in oklab, var(--brand) 9%, #080c13);
+  --surface: color-mix(in oklab, var(--brand) 12%, #0e141e);
+  --surface-2: color-mix(in oklab, var(--brand) 15%, #131a26);
+  --sunken: color-mix(in oklab, var(--brand) 8%, #0a0e16);
+  --line: color-mix(in oklab, var(--brand) 18%, #1b2432);
+  --line-2: color-mix(in oklab, var(--brand) 26%, #293344);
+  --ink: color-mix(in oklab, var(--brand) 4%, #e8edf5);
+  --ink-2: color-mix(in oklab, var(--brand) 8%, #9aa6b9);
+  --ink-3: color-mix(in oklab, var(--brand) 10%, #6b788d);
+
+  --brand-ui: var(--brand-dk);
+  --brand-hover: color-mix(in oklab, var(--brand-dk) 80%, #fff);
+  --brand-soft: color-mix(in oklab, var(--brand-dk) 14%, var(--surface));
+  --brand-line: color-mix(in oklab, var(--brand-dk) 28%, var(--surface));
+  --on-brand: color-mix(in oklab, var(--brand-dk) 20%, #03060b);
+
+  --accent-ui: var(--accent-dk);
+  --accent-ink: var(--accent-dk);
+  --accent-soft: color-mix(in oklab, var(--accent-dk) 13%, var(--surface));
+
+  --nav-bg: color-mix(in oklab, var(--brand) 10%, #080d15);
+  --nav-panel: color-mix(in oklab, var(--brand) 55%, #040810);
+  --nav-ink: color-mix(in oklab, #fff 62%, var(--nav-bg));
+  --nav-ink-strong: color-mix(in oklab, var(--brand) 4%, #e8edf5);
+  --nav-line: color-mix(in oklab, #fff 11%, var(--nav-bg));
+  --nav-hover: color-mix(in oklab, #fff 5%, var(--nav-bg));
+  --nav-active: color-mix(in oklab, var(--brand-dk) 14%, var(--nav-bg));
+
+  --chrome: color-mix(in oklab, var(--brand) 10%, #0b1017);
+  --sh-rgb: 0, 0, 0;
+  --sh-a: 0.42;
+
+  /* Gecede zemin zaten koyu: aynı yoğunluktaki perde hiçbir şey yapmıyor,
+     bu yüzden hem saf siyaha yaklaşıyor hem daha opak. */
+  --perde-rgb: 0, 0, 0;
+  --perde: rgba(var(--perde-rgb), 0.64);
+  --perde-hafif: rgba(var(--perde-rgb), 0.4);
+
+  --warn: #e0b457;  --ok: #5fbe90;    --info: #78adf0;
+  --danger: #e88178; --mute: #a7a29a;  --slate: #9bb2d8;
+  --st-mix: 15%;
+  --on-ok: color-mix(in oklab, var(--ok) 18%, #03060b);
+}
+
+/* Durum dolguları — moddan BAĞIMSIZ tek formül. `--st-mix` ve durum rengi
+   moda göre değiştiği için formülün kendisi iki kez yazılmaz. */
+:root {
+  --warn-soft: color-mix(in oklab, var(--warn) var(--st-mix), var(--surface));
+  --ok-soft: color-mix(in oklab, var(--ok) var(--st-mix), var(--surface));
+  --info-soft: color-mix(in oklab, var(--info) var(--st-mix), var(--surface));
+  --danger-soft: color-mix(in oklab, var(--danger) var(--st-mix), var(--surface));
+  --mute-soft: color-mix(in oklab, var(--mute) var(--st-mix), var(--surface));
+  --slate-soft: color-mix(in oklab, var(--slate) var(--st-mix), var(--surface));
+
+  /* "ŞU AN" ÇİZGİSİ AYRI BİR TOKEN.
+     Şartname §7.6 bunu `--accent-ui` ile çiziyor; bu depoda ise kullanıcı
+     geri bildirimiyle alınmış bir karar var: altın "bugün" halkasının rengi
+     ve aynı rengi "şu an" için de kullanmak ikisini karıştırıyordu. Renk
+     tehlike renginden türetiliyor, yani tema değiştiğinde o da dönüyor —
+     sabit bir kırmızı değil. */
+  --simdi: color-mix(in oklab, var(--danger) 88%, #ff2a1a);
+
+  /* Odak halkası — markanın yumuşatılmışı. */
+  --focus-ring: color-mix(in oklab, var(--brand) 26%, transparent);
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   KATMAN 4 — v1 UYUM KATMANI
+   ══════════════════════════════════════════════════════════════════════════
+   Çalışan 40+ ekran eski adlarla yazılmış. Bu katman onları yeni anlamsal
+   katmana bağlar: motor değişirken hiçbir ekran bozulmaz, hepsi tema
+   knob'larına ANINDA duyarlı hâle gelir.
+
+   `--brand` ve `--brand-2` burada YOK: `--brand` v2'de çekirdek token
+   (moddan bağımsız sabit hex) ve takma ad olarak yeniden tanımlanamaz —
+   kendi girdisini ezerdi. O ikisi Tailwind'de ve yedi çağrı yerinde
+   doğrudan `--brand-ui` / `--brand-hover` ile değiştirildi. Şartname zaten
+   bunu emrediyor (§2.4: "--brand buton zemininde KULLANILMAZ").
+   ══════════════════════════════════════════════════════════════════════════ */
+:root {
+  /* zemin ve yüzeyler */
+  --desk: var(--canvas);
+  --chrome-border: var(--line);
+  --border: var(--line);
+  --border-2: var(--line-2);
+
+  /* metin */
+  --text: var(--ink);
+  --text-2: var(--ink-2);
+  --text-3: var(--ink-3);
+
+  /* marka ve vurgu */
+  --brand-tint: var(--brand-soft);
+  --gold: var(--accent-ui);
+  --gold-2: var(--accent-ink);
+  --gold-tint: var(--accent-soft);
+  /* `--gold-strong` ÜÇ YERDEN OKUNUYOR ama tanımlı değildi: ana sayfadaki
+     rozet, rol listesindeki "korumalı" etiketi ve rol detayı. Altın zemin
+     (`--gold-tint`) boyanıyor, ÜSTÜNDEKİ YAZI ise renksiz kalıp miras alınan
+     rengi kullanıyordu — etiket okunuyordu ama vurgu tonu kayıptı. */
+  --gold-strong: var(--accent-ink);
+  --tab-active: var(--brand-ui);
+  --login-panel: var(--brand);
+
+  /* sidebar */
+  --nav-fg: var(--nav-ink);
+  --nav-fg-strong: var(--nav-ink-strong);
+  --nav-label: color-mix(in oklab, var(--nav-ink) 62%, transparent);
+  --nav-border: var(--nav-line);
+  --nav-active-bg: var(--nav-active);
+  --nav-active-fg: var(--nav-ink-strong);
+
+  /* gölgeler */
+  --shadow-1: var(--sh-1);
+  --shadow-2: var(--sh-2);
+  --shadow-3: var(--sh-3);
+
+  /* durum renkleri: metin / dolgu */
+  --st-wait: var(--warn);      --st-wait-bg: var(--warn-soft);
+  --st-ok: var(--ok);          --st-ok-bg: var(--ok-soft);
+  --st-live: var(--info);      --st-live-bg: var(--info-soft);
+  --st-no: var(--danger);      --st-no-bg: var(--danger-soft);
+  --st-cancel: var(--mute);    --st-cancel-bg: var(--mute-soft);
+  --st-done: var(--slate);     --st-done-bg: var(--slate-soft);
+
+  /* `--st-warn` ÜÇ YERDE ÇAĞRILIYOR AMA HİÇ TANIMLI DEĞİLDİ.
+     Çözülemeyen renk alan `text-[--st-warn]` sınıfı hiçbir şey boyamıyor:
+     halk günü "ilgilenilecek" bayrağı ve salon modundaki onay kutusu
+     renksiz çiziliyordu. Doğru karşılığı uyarı rengi. */
+  --st-warn: var(--warn);
+}

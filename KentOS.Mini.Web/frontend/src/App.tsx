@@ -1,0 +1,246 @@
+import { Route, Routes } from 'react-router-dom';
+import PublicDays from './screens/PublicDays';
+import Applications from './screens/publicday/Applications';
+import PublicDayDetail from './screens/publicday/PublicDayDetail';
+import ComponentLibrary from './screens/ComponentLibrary';
+import { PersonFileScreen } from './screens/publicday/PersonFile';
+import HallMode from './screens/publicday/HallMode';
+import { AppShell } from './shell/AppShell';
+import { PERMISSION } from './components/permissions';
+import { ProtectedRoute } from './auth/ProtectedRoute';
+import Agenda from './screens/Agenda';
+import Home from './screens/Home';
+import Settings from './screens/Settings';
+import InstitutionSettings from './screens/InstitutionSettings';
+import NotFound from './screens/NotFound';
+import Flowers from './screens/Flowers';
+import FloristDetail from './screens/flower/FloristDetail';
+import EventDetail from './screens/EventDetail';
+import EventFormPage from './screens/EventFormPage';
+import FileTransfer, { FileTransferDetail } from './screens/FileTransfer';
+import NotificationsScreen from './screens/Notifications';
+import HelpCenter from './help/HelpCenter';
+import InvitationDetail from './screens/InvitationDetail';
+import Invitations from './screens/Invitations';
+import ResumePool from './screens/ResumePool';
+import Protocol from './screens/Protocol';
+import ProtocolDetail from './screens/protocol/ProtocolDetail';
+import RequestFormPage from './screens/RequestForm';
+import Login from './screens/Login';
+import Statistics from './screens/Statistics';
+import CalendarScreen from './screens/CalendarPage';
+import RequestDetail from './screens/RequestDetail';
+import Requests from './screens/Requests';
+import Definitions from './screens/Definitions';
+import SystemErrors, { SystemErrorDetail } from './screens/SystemErrors';
+import Administration from './screens/Administration';
+import UnitDetailScreen from './screens/admin/UnitDetail';
+import RoleDetail from './screens/admin/RoleDetail';
+
+/**
+ * Rota tablosu — design.md §6.
+ *
+ * `basename="/"` main.tsx'te veriliyor; buradaki yollar belgeyle birebir.
+ * Modül seçme ekranı YOK: giriş sonrası doğrudan Ana Sayfa.
+ *
+ * Politika kontrolü rota düzeyinde: yetkisi olmayan bir kullanıcı ekranı
+ * hiç görmez, 403 duvarına da çarpmaz. Yetkinin KAYNAĞI yine sunucudur.
+ */
+/**
+ * Ajanda ekranları İKİ izinden biriyle açılır.
+ *
+ * Basın kullanıcısında `ajanda.goruntule` yok, `ajanda.basinGoruntule` var:
+ * ekranı açar ama sunucu listeyi yalnızca "basın katılacak" kayıtlara indirir.
+ * Tek izne bağlansaydı basın kullanıcısı kendi ajandasını hiç göremezdi.
+ */
+const AJANDA_GORME = [PERMISSION.ajandaGoruntule, PERMISSION.ajandaBasinGoruntule];
+
+export default function App() {
+  return (
+    <Routes>
+      <Route path="/giris" element={<Login />} />
+
+      <Route
+        element={
+          <ProtectedRoute>
+            <AppShell />
+          </ProtectedRoute>
+        }
+      >
+        <Route index element={<Home />} />
+
+        <Route
+          path="talepler"
+          element={<ProtectedRoute permission={PERMISSION.talepGoruntule} policy="Ajanda"><Requests /></ProtectedRoute>}
+        />
+        {/* `yeni` ve `:id/duzenle` DETAYDAN ÖNCE; aksi hâlde "yeni" bir
+            kimlik sanılır ve detay ekranı 404 gösterir. */}
+        {/* Form MODAL: arkasına liste çizilir ki kapatınca boş ekran kalmasın
+            ve kullanıcı listedeki yerini kaybetmesin. */}
+        <Route
+          path="talepler/yeni"
+          element={
+            <ProtectedRoute permission={PERMISSION.talepGoruntule} policy="Ajanda">
+              <>
+                <Requests />
+                <RequestFormPage />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="talepler/:id/duzenle"
+          element={<ProtectedRoute permission={PERMISSION.talepGoruntule} policy="Ajanda"><RequestFormPage /></ProtectedRoute>}
+        />
+        <Route
+          path="talepler/:id"
+          element={<ProtectedRoute permission={PERMISSION.talepGoruntule} policy="Ajanda"><RequestDetail /></ProtectedRoute>}
+        />
+
+        <Route
+          path="ajanda"
+          element={<ProtectedRoute permission={AJANDA_GORME} policy="Ajanda"><Agenda /></ProtectedRoute>}
+        />
+        {/* `yeni` ve `:id/duzenle` DETAYDAN ÖNCE; aksi hâlde "yeni" bir
+            kimlik sanılır ve detay ekranı 404 gösterir. */}
+        <Route
+          path="ajanda/yeni"
+          element={<ProtectedRoute permission={AJANDA_GORME} policy="Ajanda"><EventFormPage /></ProtectedRoute>}
+        />
+        <Route
+          path="ajanda/:id/duzenle"
+          element={<ProtectedRoute permission={AJANDA_GORME} policy="Ajanda"><EventFormPage /></ProtectedRoute>}
+        />
+        <Route
+          path="ajanda/:id"
+          element={<ProtectedRoute permission={AJANDA_GORME} policy="Ajanda"><EventDetail /></ProtectedRoute>}
+        />
+
+        <Route
+          path="takvim"
+          element={<ProtectedRoute permission={AJANDA_GORME} policy="Ajanda"><CalendarScreen /></ProtectedRoute>}
+        />
+        <Route
+          path="protokol"
+          element={<ProtectedRoute permission={PERMISSION.protokolGoruntule} policy="Ajanda"><Protocol /></ProtectedRoute>}
+        />
+        {/* Kişi dosyası: bilgiler + davet edildiği programlar. */}
+        <Route
+          path="protokol/:id"
+          element={<ProtectedRoute permission={PERMISSION.protokolGoruntule} policy="Ajanda"><ProtocolDetail /></ProtectedRoute>}
+        />
+        {/*
+          HALK GÜNÜ — rota SIRASI: `basvurular` mutlaka `:id`'den ÖNCE,
+          yoksa "basvurular" bir kimlik sanılır ve ayrıntı 404 verir.
+        */}
+        <Route
+          path="halk-gunu"
+          element={<ProtectedRoute permission={PERMISSION.halkgunuGoruntule} policy="Ajanda"><PublicDays /></ProtectedRoute>}
+        />
+        <Route
+          path="halk-gunu/basvurular"
+          element={<ProtectedRoute permission={PERMISSION.halkgunuGoruntule} policy="Ajanda"><Applications /></ProtectedRoute>}
+        />
+        {/* `kisi` rotası `:id`den ÖNCE: aksi hâlde kimlik sanılır. */}
+        <Route
+          path="halk-gunu/kisi"
+          element={<ProtectedRoute permission={PERMISSION.halkgunuGoruntule} policy="Ajanda"><PersonFileScreen /></ProtectedRoute>}
+        />
+        <Route
+          path="halk-gunu/:id/salon"
+          element={<ProtectedRoute permission={PERMISSION.halkgunuGorusme} policy="Ajanda"><HallMode /></ProtectedRoute>}
+        />
+        <Route
+          path="halk-gunu/:id"
+          element={<ProtectedRoute permission={PERMISSION.halkgunuGoruntule} policy="Ajanda"><PublicDayDetail /></ProtectedRoute>}
+        />
+        {/* Tasarım denetimi — izin kapısı yok: kimliği doğrulanmış
+            herkes tema uyumunu görebilmeli. */}
+        <Route path="bilesenler" element={<ComponentLibrary />} />
+        <Route
+          path="ozgecmisler"
+          element={
+            <ProtectedRoute permission={PERMISSION.ozgecmisGoruntule} policy="Ajanda">
+              <ResumePool />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="davetler"
+          element={<ProtectedRoute permission={PERMISSION.davetGoruntule} policy="Ajanda"><Invitations /></ProtectedRoute>}
+        />
+        <Route
+          path="davetler/:id"
+          element={<ProtectedRoute permission={PERMISSION.davetGoruntule} policy="Ajanda"><InvitationDetail /></ProtectedRoute>}
+        />
+
+        {/* Dosya gönderimi POLİTİKA İSTEMEZ: kendisine dosya gönderilen
+            herkes — rolü ne olursa olsun — kaydı açabilmeli. Gönderme
+            yetkisi ekranın içinde ve sunucuda denetleniyor. */}
+        <Route path="gonderim" element={<FileTransfer />} />
+        <Route path="gonderim/:id" element={<FileTransferDetail />} />
+        <Route
+          path="istatistikler"
+          element={<ProtectedRoute permission={PERMISSION.istatistikGoruntule} role="Admin"><Statistics /></ProtectedRoute>}
+        />
+        <Route
+          path="cicek"
+          element={<ProtectedRoute permission={PERMISSION.cicekGoruntule} policy="Cicek"><Flowers /></ProtectedRoute>}
+        />
+        {/* Çiçekçi dosyası: talimatlar, bağlı programlar, dönem süzgeci, çıktı. */}
+        <Route
+          path="cicek/:id"
+          element={<ProtectedRoute permission={PERMISSION.cicekGoruntule} policy="Cicek"><FloristDetail /></ProtectedRoute>}
+        />
+        <Route
+          path="yonetim"
+          element={<ProtectedRoute permission={PERMISSION.yonetimKullanici} role="Admin"><Administration /></ProtectedRoute>}
+        />
+        <Route
+          path="yonetim/birimler/:id"
+          element={<ProtectedRoute permission={PERMISSION.yonetimKullanici} role="Admin"><UnitDetailScreen /></ProtectedRoute>}
+        />
+        <Route
+          path="yonetim/roller/:ad"
+          element={<ProtectedRoute permission={PERMISSION.yonetimKullanici} role="Admin"><RoleDetail /></ProtectedRoute>}
+        />
+        {/* Hata kayıtları YALNIZCA Sistem rolüne açık — Admin bile göremez.
+            Kayıtlarda istek gövdeleri, IP adresleri ve yığın izleri var; hem
+            kişisel veri hem saldırı yüzeyini tarif eden bilgi. */}
+        <Route
+          path="hatalar"
+          element={<ProtectedRoute permission={PERMISSION.sistemHata} role="Sistem"><SystemErrors /></ProtectedRoute>}
+        />
+        <Route
+          path="hatalar/:id"
+          element={<ProtectedRoute permission={PERMISSION.sistemHata} role="Sistem"><SystemErrorDetail /></ProtectedRoute>}
+        />
+        <Route
+          path="tanimlar"
+          element={<ProtectedRoute permission={PERMISSION.tanimYonet} role="Admin"><Definitions /></ProtectedRoute>}
+        />
+        {/*
+          KURUM BİLGİLERİ. Değişiklik BÜTÜN kullanıcıların gördüğü yüzü
+          etkiliyor — kurum adı, amblem ve kurumsal renk — bu yüzden kendi
+          izniyle kapalı.
+        */}
+        <Route
+          path="kurum"
+          element={<ProtectedRoute permission={PERMISSION.sistemKurum} role="Admin"><InstitutionSettings /></ProtectedRoute>}
+        />
+
+        <Route path="bildirimler" element={<NotificationsScreen />} />
+        {/*
+          YARDIM MERKEZİ izin kapısı TAŞIMAZ.
+
+          Menüdeki her ekran izne bağlı ama yardım metni bir yetki değil bir
+          açıklama; kapatmak, ekranı göremeyen kişinin "bu ekran ne işe
+          yarıyordu?" sorusunu da cevapsız bırakırdı.
+        */}
+        <Route path="yardim" element={<HelpCenter />} />
+        <Route path="ayarlar" element={<Settings />} />
+        <Route path="*" element={<NotFound />} />
+      </Route>
+    </Routes>
+  );
+}
