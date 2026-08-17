@@ -1,0 +1,856 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin="crossorigin" />
+<link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@500;600;700&family=IBM+Plex+Sans:wght@400;500;600&family=Figtree:wght@400;500;600;700&family=Source+Sans+3:wght@400;500;600&family=Archivo:wght@500;600;700&family=Karla:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+/* ═══ KATMAN 1 · ÇEKİRDEK TOKEN'LAR (Tema Tasarımcısı bunları yazar) ═══ */
+:root{
+  --brand:#002E6D; --brand-dk:#5B93E8;
+  --accent:#A78952; --accent-dk:#D8BB80;
+  --neutral:#F5F4F0;
+  --sp:4px; --r:10px; --fs:14px; --fs-d:1; --track:0em; --bw:1px; --sh-a:.07; --dur:220ms;
+  --font-d:'Montserrat'; --font-t:'IBM Plex Sans';
+  --ease:cubic-bezier(.32,.72,0,1);
+  --ease-spring:cubic-bezier(.34,1.4,.64,1);
+
+  /* ═══ KATMAN 2 · TÜRETİLMİŞ ÖLÇEKLER ═══ */
+  --sp-05:calc(var(--sp)*.5); --sp-1:var(--sp); --sp-15:calc(var(--sp)*1.5);
+  --sp-2:calc(var(--sp)*2); --sp-25:calc(var(--sp)*2.5); --sp-3:calc(var(--sp)*3); --sp-35:calc(var(--sp)*3.5);
+  --sp-45:calc(var(--sp)*4.5);
+  --sp-4:calc(var(--sp)*4); --sp-5:calc(var(--sp)*5); --sp-6:calc(var(--sp)*6);
+  --sp-7:calc(var(--sp)*7); --sp-8:calc(var(--sp)*8); --sp-10:calc(var(--sp)*10);
+  --sp-12:calc(var(--sp)*12); --sp-16:calc(var(--sp)*16);
+  --r-xs:calc(var(--r)*.35); --r-sm:calc(var(--r)*.62); --r-md:var(--r);
+  --r-lg:calc(var(--r)*1.4); --r-xl:calc(var(--r)*2); --r-2xl:calc(var(--r)*3.2); --r-pill:999px;
+  --fs-3xs:calc(var(--fs)*.68); --fs-2xs:calc(var(--fs)*.75); --fs-xs:calc(var(--fs)*.83);
+  --fs-sm:calc(var(--fs)*.91); --fs-md:var(--fs); --fs-lg:calc(var(--fs)*1.08);
+  --fs-xl:calc(var(--fs)*1.26*var(--fs-d)); --fs-2xl:calc(var(--fs)*1.55*var(--fs-d));
+  --fs-3xl:calc(var(--fs)*2*var(--fs-d)); --fs-4xl:calc(var(--fs)*2.55*var(--fs-d));
+  --track-d:calc(var(--track) - .014em);
+  --h-ctrl:calc(var(--sp)*9); --h-ctrl-lg:calc(var(--sp)*11); --h-ctrl-xl:calc(var(--sp)*12);
+  --h-appbar:calc(var(--sp)*16); --h-bar-m:calc(var(--sp)*13); --h-row:calc(var(--sp)*13);
+  --h-row-m:calc(var(--sp)*15); --h-tab:calc(var(--sp)*14);
+  --w-side:calc(var(--sp)*64); --w-side-sm:calc(var(--sp)*19);
+  --sh-1:0 1px 2px rgba(var(--sh-rgb),calc(var(--sh-a)*.75));
+  --sh-2:0 var(--sp-1) calc(var(--sp)*3.5) rgba(var(--sh-rgb),var(--sh-a)),0 1px 2px rgba(var(--sh-rgb),calc(var(--sh-a)*.7));
+  --sh-3:0 var(--sp-6) var(--sp-16) rgba(var(--sh-rgb),calc(var(--sh-a)*2.2)),0 2px 6px rgba(var(--sh-rgb),var(--sh-a));
+}
+
+/* ═══ KATMAN 3 · ANLAMSAL RENKLER · GÜNDÜZ ═══ */
+:root,:root[data-mod="acik"]{
+  --canvas:color-mix(in oklab,var(--brand) 6%,var(--neutral));
+  --bg:color-mix(in oklab,var(--brand) 3%,var(--neutral));
+  --surface:color-mix(in oklab,var(--brand) 1%,#fff);
+  --surface-2:color-mix(in oklab,var(--brand) 4%,#fff);
+  --sunken:color-mix(in oklab,var(--brand) 9%,var(--neutral));
+  --line:color-mix(in oklab,var(--brand) 11%,#E4E2DC);
+  --line-2:color-mix(in oklab,var(--brand) 20%,#CCC9C1);
+  --ink:color-mix(in oklab,var(--brand) 14%,#0F141D);
+  --ink-2:color-mix(in oklab,var(--brand) 12%,#5A6274);
+  --ink-3:color-mix(in oklab,var(--brand) 10%,#8C93A1);
+  --brand-ui:var(--brand);
+  --brand-hover:color-mix(in oklab,var(--brand) 86%,#000);
+  --brand-soft:color-mix(in oklab,var(--brand) 9%,var(--surface));
+  --brand-line:color-mix(in oklab,var(--brand) 24%,var(--surface));
+  --on-brand:#fff;
+  --accent-ui:var(--accent);
+  --accent-soft:color-mix(in oklab,var(--accent) 15%,var(--surface));
+  --accent-ink:color-mix(in oklab,var(--accent) 72%,#241A06);
+  --nav-bg:var(--brand);
+  --nav-panel:var(--brand);
+  --nav-ink:color-mix(in oklab,#fff 72%,var(--brand));
+  --nav-ink-strong:#fff;
+  --nav-line:color-mix(in oklab,#fff 15%,var(--brand));
+  --nav-hover:color-mix(in oklab,#fff 8%,var(--brand));
+  --nav-active:color-mix(in oklab,#fff 15%,var(--brand));
+  --chrome:color-mix(in oklab,var(--brand) 2%,#fff);
+  --sh-rgb:14,22,38;
+  --warn:#8A6209; --ok:#1A6A45; --info:#1D5CA3; --danger:#A33127; --mute:#6B675F; --slate:#3B4C6E;
+  --st-mix:13%;
+}
+/* ═══ KATMAN 3 · ANLAMSAL RENKLER · GECE ═══ */
+:root[data-mod="koyu"]{
+  --canvas:color-mix(in oklab,var(--brand) 7%,#05080D);
+  --bg:color-mix(in oklab,var(--brand) 9%,#080C13);
+  --surface:color-mix(in oklab,var(--brand) 12%,#0E141E);
+  --surface-2:color-mix(in oklab,var(--brand) 15%,#131A26);
+  --sunken:color-mix(in oklab,var(--brand) 8%,#0A0E16);
+  --line:color-mix(in oklab,var(--brand) 18%,#1B2432);
+  --line-2:color-mix(in oklab,var(--brand) 26%,#293344);
+  --ink:color-mix(in oklab,var(--brand) 4%,#E8EDF5);
+  --ink-2:color-mix(in oklab,var(--brand) 8%,#9AA6B9);
+  --ink-3:color-mix(in oklab,var(--brand) 10%,#6B788D);
+  --brand-ui:var(--brand-dk);
+  --brand-hover:color-mix(in oklab,var(--brand-dk) 80%,#fff);
+  --brand-soft:color-mix(in oklab,var(--brand-dk) 14%,var(--surface));
+  --brand-line:color-mix(in oklab,var(--brand-dk) 28%,var(--surface));
+  --on-brand:color-mix(in oklab,var(--brand-dk) 20%,#03060B);
+  --accent-ui:var(--accent-dk);
+  --accent-soft:color-mix(in oklab,var(--accent-dk) 13%,var(--surface));
+  --accent-ink:var(--accent-dk);
+  --nav-bg:color-mix(in oklab,var(--brand) 10%,#080D15);
+  --nav-panel:color-mix(in oklab,var(--brand) 55%,#040810);
+  --nav-ink:color-mix(in oklab,var(--brand) 8%,#96A3B7);
+  --nav-ink-strong:color-mix(in oklab,var(--brand) 4%,#E8EDF5);
+  --nav-line:color-mix(in oklab,var(--brand) 20%,#1C2634);
+  --nav-hover:color-mix(in oklab,#fff 5%,var(--nav-bg));
+  --nav-active:color-mix(in oklab,var(--brand-dk) 14%,var(--nav-bg));
+  --chrome:color-mix(in oklab,var(--brand) 10%,#0B1017);
+  --sh-rgb:0,0,0; --sh-a:.42;
+  --warn:#E0B457; --ok:#5FBE90; --info:#78ADF0; --danger:#E88178; --mute:#A7A29A; --slate:#9BB2D8;
+  --st-mix:15%;
+}
+:root{
+  --warn-soft:color-mix(in oklab,var(--warn) var(--st-mix),var(--surface));
+  --ok-soft:color-mix(in oklab,var(--ok) var(--st-mix),var(--surface));
+  --info-soft:color-mix(in oklab,var(--info) var(--st-mix),var(--surface));
+  --danger-soft:color-mix(in oklab,var(--danger) var(--st-mix),var(--surface));
+  --mute-soft:color-mix(in oklab,var(--mute) var(--st-mix),var(--surface));
+  --slate-soft:color-mix(in oklab,var(--slate) var(--st-mix),var(--surface));
+  --on-ok:color-mix(in oklab,var(--ok) 22%,#fff);
+}
+:root[data-mod="koyu"]{--on-ok:color-mix(in oklab,var(--ok) 18%,#03060B)}
+
+*{box-sizing:border-box}
+body{margin:0;background:var(--canvas);color:var(--ink);font-family:var(--font-t),system-ui,sans-serif;font-size:var(--fs-md);letter-spacing:var(--track);-webkit-font-smoothing:antialiased;font-variant-numeric:tabular-nums}
+input,button,textarea,select{font:inherit;letter-spacing:inherit;color:inherit}
+button{-webkit-appearance:none;-webkit-tap-highlight-color:transparent}
+a{color:var(--brand-ui);text-decoration:none}
+a:hover{color:var(--accent-ui)}
+::selection{background:var(--accent-soft);color:var(--ink)}
+::placeholder{color:var(--ink-3)}
+:focus-visible{outline:2px solid var(--brand-ui);outline-offset:2px}
+::-webkit-scrollbar{width:9px;height:9px}
+::-webkit-scrollbar-thumb{background:var(--line-2);border-radius:var(--r-pill);border:3px solid transparent;background-clip:content-box}
+::-webkit-scrollbar-track{background:transparent}
+input[type=range]{-webkit-appearance:none;appearance:none;height:22px;background:transparent;cursor:pointer;width:100%}
+input[type=range]::-webkit-slider-runnable-track{height:4px;border-radius:9px;background:var(--sunken)}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;margin-top:-7px;border-radius:9px;background:var(--surface);border:2px solid var(--brand-ui);box-shadow:var(--sh-1)}
+@keyframes pgA{from{opacity:0;transform:translate3d(0,var(--sp-2),0)}to{opacity:1;transform:none}}
+@keyframes pgB{from{opacity:0;transform:translate3d(0,var(--sp-2),0)}to{opacity:1;transform:none}}
+@keyframes itA{from{opacity:0;transform:translate3d(26px,0,0)}to{opacity:1;transform:none}}
+@keyframes itB{from{opacity:0;transform:translate3d(26px,0,0)}to{opacity:1;transform:none}}
+@keyframes geA{from{opacity:0;transform:translate3d(-20px,0,0)}to{opacity:1;transform:none}}
+@keyframes geB{from{opacity:0;transform:translate3d(-20px,0,0)}to{opacity:1;transform:none}}
+@keyframes sheetUp{from{transform:translate3d(0,100%,0)}to{transform:none}}
+@keyframes panelIn{from{transform:translate3d(100%,0,0)}to{transform:none}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+@keyframes rowIn{from{opacity:0;transform:translate3d(0,10px,0)}to{opacity:1;transform:none}}
+@keyframes nabiz{0%,100%{opacity:1}50%{opacity:.4}}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+</style>
+</helmet>
+
+<div style="min-height:100vh;background:var(--canvas)">
+
+  <div style="position:sticky;top:0;z-index:70;background:var(--chrome);border-bottom:var(--bw) solid var(--line)">
+    <div style="max-width:1640px;margin:0 auto;padding:var(--sp-25, 10px) var(--sp-5);display:flex;align-items:center;gap:var(--sp-5)">
+      <div style="display:flex;align-items:center;gap:var(--sp-25, 10px);flex:none">
+        <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='none' stroke='%23A78952' stroke-width='3'/%3E%3Ctext x='32' y='41' font-size='24' text-anchor='middle' fill='%23A78952' font-family='sans-serif'%3EK%3C/text%3E%3C/svg%3E" alt="Kurum amblemi" style="width:32px;height:32px;display:block" />
+        <div>
+          <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm);letter-spacing:var(--track-d);line-height:1.2">İş Takip ve Randevu Sistemi</div>
+          <div style="font-size:var(--fs-3xs);color:var(--ink-3);letter-spacing:.08em;text-transform:uppercase;margin-top:2px">Tema tabanlı arayüz · v2</div>
+        </div>
+      </div>
+
+      <div style="display:flex;gap:var(--sp-1);flex:1;min-width:0;overflow:auto;padding:2px">
+        <sc-for list="{{ ekranlar }}" as="e" hint-placeholder-count="8">
+          <div style="--pbg:var(--sunken);--pfg:var(--ink-2);--pbd:transparent">
+            <div style="--pbg:{{ e.bg }};--pfg:{{ e.fg }};--pbd:{{ e.bd }}">
+              <button onClick="{{ e.git }}" style="height:var(--h-ctrl);padding:0 var(--sp-3);border:var(--bw) solid var(--pbd);border-radius:var(--r-sm);background:var(--pbg);color:var(--pfg);font-size:var(--fs-xs);font-weight:500;cursor:pointer;white-space:nowrap;transition:background var(--dur) var(--ease)" style-active="transform:scale(.97)">{{ e.ad }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="display:flex;align-items:center;gap:var(--sp-2);flex:none">
+        <div style="display:flex;padding:3px;background:var(--sunken);border-radius:var(--r-sm);border:var(--bw) solid var(--line)">
+          <div style="--sbg:transparent;--sfg:var(--ink-3)">
+            <div style="--sbg:{{ modAcikBg }};--sfg:{{ modAcikFg }}">
+              <button onClick="{{ modAcik }}" title="Gündüz modu" aria-label="Gündüz modu" style="width:34px;height:26px;display:grid;place-items:center;border:0;border-radius:var(--r-xs);background:var(--sbg);color:var(--sfg);cursor:pointer;transition:all var(--dur) var(--ease)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path></svg>
+              </button>
+            </div>
+          </div>
+          <div style="--sbg:transparent;--sfg:var(--ink-3)">
+            <div style="--sbg:{{ modKoyuBg }};--sfg:{{ modKoyuFg }}">
+              <button onClick="{{ modKoyu }}" title="Gece modu" aria-label="Gece modu" style="width:34px;height:26px;display:grid;place-items:center;border:0;border-radius:var(--r-xs);background:var(--sbg);color:var(--sfg);cursor:pointer;transition:all var(--dur) var(--ease)">
+                <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-25, 10px);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);font-size:var(--fs-2xs);color:var(--ink-3);white-space:nowrap">
+          <span style="width:9px;height:9px;border-radius:var(--r-xs);background:var(--brand-ui)"></span>
+          {{ temaAdi }}
+        </div>
+
+        <button onClick="{{ panelAc }}" title="Tema Tasarımcısı" aria-label="Tema Tasarımcısı" style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-3);border:0;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);font-family:var(--font-d),sans-serif;font-size:var(--fs-xs);font-weight:600;cursor:pointer;box-shadow:var(--sh-1);transition:background var(--dur) var(--ease)" style-hover="background:var(--brand-hover)" style-active="transform:scale(.97)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"></path><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>
+          Tema Tasarımcısı
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div style="max-width:1640px;margin:0 auto;padding:var(--sp-6) var(--sp-5) var(--sp-16);display:flex;flex-direction:column;gap:var(--sp-8)">
+
+    <section data-screen-label="Masaustu">
+      <div style="display:flex;align-items:baseline;gap:var(--sp-3);margin-bottom:var(--sp-3)">
+        <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-2xs);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)">Masaüstü · 1440×912</div>
+        <div style="height:1px;flex:1;background:var(--line)"></div>
+        <div style="font-size:var(--fs-2xs);color:var(--ink-3)">Sidebar + appbar + tam genişlik içerik</div>
+      </div>
+
+      <div ref="{{ olcRef }}" style="--ol:{{ olcek }}">
+        <div style="height:calc(912px * var(--ol,1));overflow:hidden">
+          <div style="width:1440px;height:912px;transform:scale(var(--ol,1));transform-origin:top left;border:var(--bw) solid var(--line);border-radius:var(--r-lg);overflow:hidden;background:var(--surface);box-shadow:var(--sh-3);display:flex;flex-direction:column">
+
+            <div style="height:36px;flex:none;display:flex;align-items:center;gap:var(--sp-25, 10px);padding:0 var(--sp-35);background:var(--sunken);border-bottom:var(--bw) solid var(--line)">
+              <div style="display:flex;gap:6px">
+                <div style="width:9px;height:9px;border-radius:99px;background:var(--line-2)"></div>
+                <div style="width:9px;height:9px;border-radius:99px;background:var(--line-2)"></div>
+                <div style="width:9px;height:9px;border-radius:99px;background:var(--line-2)"></div>
+              </div>
+              <div style="flex:1;display:flex;justify-content:center">
+                <div style="display:flex;align-items:center;gap:var(--sp-15);height:24px;padding:0 var(--sp-35);border-radius:var(--r-pill);background:var(--surface);border:var(--bw) solid var(--line);font-size:var(--fs-3xs);color:var(--ink-3)">
+                  <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                  randevu.ornek.bel.tr{{ yol }}
+                </div>
+              </div>
+              <div style="width:40px"></div>
+            </div>
+
+            <sc-if value="{{ girisMi }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;min-height:0;display:flex">
+                <div style="width:46%;flex:none;background:var(--nav-panel);color:#fff;padding:var(--sp-12) var(--sp-12);display:flex;flex-direction:column;justify-content:space-between;position:relative;overflow:hidden">
+                  <div style="position:absolute;width:440px;height:440px;border-radius:99px;border:1px solid color-mix(in oklab,var(--accent) 45%,transparent);right:-170px;bottom:-180px"></div>
+                  <div style="position:absolute;width:290px;height:290px;border-radius:99px;border:1px solid rgba(255,255,255,.09);right:-95px;bottom:-105px"></div>
+                  <div style="display:flex;align-items:center;gap:var(--sp-35);position:relative">
+                    <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='none' stroke='%23A78952' stroke-width='3'/%3E%3Ctext x='32' y='41' font-size='24' text-anchor='middle' fill='%23A78952' font-family='sans-serif'%3EK%3C/text%3E%3C/svg%3E" alt="Kurum amblemi" style="width:56px;height:56px;display:block" />
+                    <div>
+                      <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-md);letter-spacing:.03em">ÖRNEK BELEDİYESİ</div>
+                      <div style="font-size:var(--fs-xs);color:rgba(255,255,255,.62);margin-top:3px">Başkanlık Makamı</div>
+                    </div>
+                  </div>
+                  <div style="position:relative">
+                    <div style="width:46px;height:3px;background:var(--accent);margin-bottom:var(--sp-5)"></div>
+                    <h1 style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-4xl);line-height:1.16;letter-spacing:var(--track-d);margin:0 0 var(--sp-4)">İş Takip ve<br />Randevu Sistemi</h1>
+                    <p style="margin:0;font-size:var(--fs-lg);line-height:1.65;color:rgba(255,255,255,.74);max-width:380px;text-wrap:pretty">Randevu talepleri, günlük program ve etkinlik arşivi tek ekranda. Makam sekreteryası ve müdürlükler aynı takvim üzerinde çalışır.</p>
+                  </div>
+                  <div style="position:relative;font-size:var(--fs-2xs);color:rgba(255,255,255,.5)">© 2026 Örnek Belediyesi · Bilgi İşlem Müdürlüğü</div>
+                </div>
+
+                <div style="flex:1;min-width:0;display:grid;place-items:center;background:var(--surface);padding:var(--sp-10)">
+                  <div style="width:100%;max-width:376px">
+                    <h2 style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-2xl);letter-spacing:var(--track-d);margin:0 0 var(--sp-15)">Giriş Yap</h2>
+                    <p style="margin:0 0 var(--sp-7);font-size:var(--fs-sm);color:var(--ink-3)">Kurumsal hesabınızla oturum açın.</p>
+                    <div style="display:flex;flex-direction:column;gap:var(--sp-4)">
+                      <label style="display:block">
+                        <span style="display:block;font-size:var(--fs-2xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-15)">Kullanıcı Adı</span>
+                        <span style="display:flex;align-items:center;gap:var(--sp-25, 10px);height:var(--h-ctrl-xl);padding:0 var(--sp-35);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface-2)">
+                          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                          <input type="text" defaultValue="ozelkalem" style="border:0;outline:none;background:transparent;flex:1;min-width:0;font-size:var(--fs-md)" />
+                        </span>
+                      </label>
+                      <label style="display:block">
+                        <span style="display:block;font-size:var(--fs-2xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-15)">Şifre</span>
+                        <span style="display:flex;align-items:center;gap:var(--sp-25, 10px);height:var(--h-ctrl-xl);padding:0 var(--sp-15) 0 var(--sp-35);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface-2)">
+                          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                          <input type="{{ sifreTipi }}" defaultValue="belediye2026" style="border:0;outline:none;background:transparent;flex:1;min-width:0;font-size:var(--fs-md)" />
+                          <button onClick="{{ sifreCevir }}" title="Şifreyi göster" aria-label="Şifreyi göster" style="width:34px;height:34px;flex:none;display:grid;place-items:center;border:0;border-radius:var(--r-xs);background:transparent;color:var(--ink-3);cursor:pointer" style-hover="background:var(--sunken)">
+                            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                          </button>
+                        </span>
+                      </label>
+                      <div style="display:flex;align-items:center;justify-content:space-between;margin-top:2px">
+                        <div style="--kbg:var(--surface-2);--kbd:var(--line-2);--kfg:transparent">
+                          <div style="--kbg:{{ hatirlaBg }};--kbd:{{ hatirlaBd }};--kfg:{{ hatirlaFg }}">
+                            <button onClick="{{ hatirlaCevir }}" style="display:flex;align-items:center;gap:var(--sp-2);border:0;background:transparent;cursor:pointer;padding:var(--sp-15) 0;color:var(--ink-2);font-size:var(--fs-sm)">
+                              <span style="width:18px;height:18px;border-radius:var(--r-xs);border:var(--bw) solid var(--kbd);background:var(--kbg);display:grid;place-items:center;color:var(--kfg);transition:all var(--dur) var(--ease)">
+                                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+                              </span>
+                              Beni hatırla
+                            </button>
+                          </div>
+                        </div>
+                        <a href="#sifre" style="font-size:var(--fs-sm)">Şifremi unuttum</a>
+                      </div>
+                      <button onClick="{{ girisYap }}" style="height:var(--h-ctrl-xl);margin-top:var(--sp-15);display:flex;align-items:center;justify-content:center;gap:var(--sp-2);border:0;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);font-family:var(--font-d),sans-serif;font-weight:600;font-size:var(--fs-lg);cursor:pointer;box-shadow:var(--sh-2);transition:background var(--dur) var(--ease)" style-hover="background:var(--brand-hover)" style-active="transform:scale(.99)">
+                        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 17 5-5-5-5"></path><path d="M15 12H3"></path><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path></svg>
+                        Giriş Yap
+                      </button>
+                    </div>
+                    <div style="margin-top:var(--sp-7);padding-top:var(--sp-5);border-top:var(--bw) solid var(--line);font-size:var(--fs-xs);color:var(--ink-3);line-height:1.6">Erişim sorunları için Bilgi İşlem: <span style="color:var(--ink-2)">0346 221 01 10</span></div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ uygulamaMi }}" hint-placeholder-val="{{ true }}">
+              <div style="flex:1;min-height:0;display:flex;--navw:{{ navW }};--navlbl:{{ navLbl }}">
+
+                <div style="width:var(--navw);flex:none;background:var(--nav-bg);display:flex;flex-direction:column;transition:width var(--dur) var(--ease);overflow:hidden">
+                  <div style="height:var(--h-appbar);flex:none;display:flex;align-items:center;gap:var(--sp-25, 10px);padding:0 var(--sp-4);border-bottom:var(--bw) solid var(--nav-line)">
+                    <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='none' stroke='%23A78952' stroke-width='3'/%3E%3Ctext x='32' y='41' font-size='24' text-anchor='middle' fill='%23A78952' font-family='sans-serif'%3EK%3C/text%3E%3C/svg%3E" alt="" style="width:34px;height:34px;display:block;flex:none" />
+                    <div style="display:var(--navlbl);min-width:0">
+                      <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-xs);color:var(--nav-ink-strong);letter-spacing:.03em;white-space:nowrap">ÖRNEK BELEDİYESİ</div>
+                      <div style="font-size:var(--fs-3xs);color:var(--nav-ink);opacity:.72;margin-top:2px;white-space:nowrap">İş Takip ve Randevu</div>
+                    </div>
+                  </div>
+
+                  <div style="flex:1;min-height:0;overflow:auto;padding:var(--sp-35) var(--sp-25, 10px);display:flex;flex-direction:column;gap:var(--sp-4)">
+                    <sc-for list="{{ navGruplari }}" as="g" hint-placeholder-count="3">
+                      <div>
+                        <div style="display:var(--navlbl);font-size:var(--fs-3xs);font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--nav-ink);opacity:.6;padding:0 var(--sp-2) var(--sp-2)">{{ g.ad }}</div>
+                        <div style="display:flex;flex-direction:column;gap:2px">
+                          <sc-for list="{{ g.ogeler }}" as="n" hint-placeholder-count="3">
+                            <div style="--ibg:transparent;--ifg:var(--nav-ink);--ibar:transparent">
+                              <div style="--ibg:{{ n.bg }};--ifg:{{ n.fg }};--ibar:{{ n.bar }}">
+                                <button onClick="{{ n.git }}" title="{{ n.ad }}" style="position:relative;width:100%;height:var(--h-ctrl-lg);display:flex;align-items:center;gap:var(--sp-3);padding:0 var(--sp-3);border:0;border-radius:var(--r-sm);background:var(--ibg);color:var(--ifg);cursor:pointer;text-align:left;transition:background var(--dur) var(--ease)" style-hover="background:var(--nav-hover)">
+                                  <span style="position:absolute;left:0;top:50%;margin-top:-10px;width:3px;height:20px;border-radius:0 3px 3px 0;background:var(--ibar)"></span>
+                                  <span style="width:20px;display:grid;place-items:center;flex:none">{{ n.ikon }}</span>
+                                  <span style="display:var(--navlbl);font-size:var(--fs-sm);font-weight:500;white-space:nowrap;overflow:hidden;flex:1">{{ n.ad }}</span>
+                                  <sc-if value="{{ n.sayi }}" hint-placeholder-val="{{ false }}">
+                                    <span style="display:var(--navlbl);font-size:var(--fs-3xs);font-weight:700;padding:2px var(--sp-15);border-radius:var(--r-pill);background:var(--accent-ui);color:color-mix(in oklab,var(--accent) 25%,#000)">{{ n.sayi }}</span>
+                                  </sc-if>
+                                </button>
+                              </div>
+                            </div>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+
+                  <div style="flex:none;padding:var(--sp-3) var(--sp-25, 10px);border-top:var(--bw) solid var(--nav-line);display:flex;align-items:center;gap:var(--sp-25, 10px)">
+                    <div style="width:34px;height:34px;flex:none;border-radius:var(--r-sm);background:var(--nav-active);color:var(--nav-ink-strong);display:grid;place-items:center;font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-2xs)">ÖK</div>
+                    <div style="display:var(--navlbl);flex:1;min-width:0">
+                      <div style="font-size:var(--fs-xs);font-weight:600;color:var(--nav-ink-strong);white-space:nowrap">Özel Kalem</div>
+                      <div style="font-size:var(--fs-3xs);color:var(--nav-ink);opacity:.7;white-space:nowrap">Makam Sekreteryası</div>
+                    </div>
+                    <button onClick="{{ cikis }}" title="Çıkış Yap" aria-label="Çıkış Yap" style="display:var(--navlbl);width:32px;height:32px;flex:none;place-items:center;border:0;border-radius:var(--r-xs);background:transparent;color:var(--nav-ink);cursor:pointer" style-hover="background:var(--nav-hover);color:var(--nav-ink-strong)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path></svg>
+                    </button>
+                  </div>
+                </div>
+
+                <div style="flex:1;min-width:0;display:flex;flex-direction:column;background:var(--bg)">
+                  <div style="height:var(--h-appbar);flex:none;display:flex;align-items:center;gap:var(--sp-35);padding:0 var(--sp-5);background:var(--surface);border-bottom:var(--bw) solid var(--line);overflow:hidden">
+                    <button onClick="{{ daraltCevir }}" title="Menüyü daralt" aria-label="Menüyü daralt" style="width:34px;height:34px;flex:none;display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-xs);background:var(--surface-2);color:var(--ink-2);cursor:pointer;transition:all var(--dur) var(--ease)" style-hover="background:var(--sunken);color:var(--ink)">{{ daraltIkonu }}</button>
+                    <div style="min-width:0;overflow:hidden">
+                      <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-xl);letter-spacing:var(--track-d);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ baslik }}</div>
+                      <div style="font-size:var(--fs-2xs);color:var(--ink-3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ altBaslik }}</div>
+                    </div>
+                    <div style="flex:1"></div>
+                    <div style="display:flex;align-items:center;gap:var(--sp-2);flex:0 1 280px;min-width:140px;height:var(--h-ctrl);padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface-2)">
+                      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+                      <input type="text" placeholder="Talep, kişi veya konu ara" style="border:0;outline:none;background:transparent;flex:1;min-width:0;font-size:var(--fs-sm)" />
+                      <span style="font-size:var(--fs-3xs);color:var(--ink-3);border:var(--bw) solid var(--line);border-radius:var(--r-xs);padding:1px 5px;flex:none">⌘K</span>
+                    </div>
+                    <div style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);font-size:var(--fs-xs);color:var(--ink-2);white-space:nowrap">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-ui)"><path d="M8 2v3"></path><path d="M16 2v3"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path></svg>
+                      11 Ağustos 2026, Salı
+                    </div>
+                    <button title="Bildirimler" aria-label="Bildirimler" style="position:relative;width:var(--h-ctrl);height:var(--h-ctrl);flex:none;display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);color:var(--ink-2);cursor:pointer" style-hover="color:var(--ink)">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg>
+                      <span style="position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:99px;background:var(--danger);border:1.5px solid var(--surface-2)"></span>
+                    </button>
+                    <button onClick="{{ panelAc }}" title="Tema Tasarımcısı" aria-label="Tema Tasarımcısı" style="width:var(--h-ctrl);height:var(--h-ctrl);flex:none;display:grid;place-items:center;border:var(--bw) solid var(--brand-line);border-radius:var(--r-sm);background:var(--brand-soft);color:var(--brand-ui);cursor:pointer;transition:all var(--dur) var(--ease)" style-hover="background:var(--brand-ui);color:var(--on-brand)">
+                      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"></path><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>
+                    </button>
+                    <div style="width:1px;height:26px;background:var(--line)"></div>
+                    <button style="display:flex;align-items:center;gap:var(--sp-2);height:var(--h-ctrl);padding:0 var(--sp-2) 0 var(--sp-1);border:0;border-radius:var(--r-sm);background:transparent;cursor:pointer" style-hover="background:var(--sunken)">
+                      <span style="width:30px;height:30px;border-radius:var(--r-xs);background:var(--brand-ui);color:var(--on-brand);display:grid;place-items:center;font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-3xs)">ÖK</span>
+                      <span style="font-size:var(--fs-xs);font-weight:500;color:var(--ink-2);white-space:nowrap">Özel Kalem</span>
+                      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3)"><path d="m6 9 6 6 6-6"></path></svg>
+                    </button>
+                  </div>
+
+                  <div style="flex:1;min-height:0;overflow:auto;background:var(--bg);--pad:var(--sp-6);--gap:var(--sp-45, 18px);--cardpad:var(--sp-45, 18px);--stat-cols:repeat(auto-fit,minmax(158px,1fr));--main-cols:minmax(0,2.05fr) minmax(0,1fr);--detay-cols:minmax(0,1.85fr) minmax(0,1fr);--d:block;--dflex:flex;--dgrid:grid;--m:none;--mflex:none;--mgrid:none;--tbl:table;--cellh:104px;--h1:var(--fs-2xl)">
+                    <div style="animation:{{ anim }} var(--dur) var(--ease) both">
+                      <dc-import name="EkranV2" ekran="{{ ekran }}" git="{{ git }}" hint-size="100%,720px"></dc-import>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section data-screen-label="Mobil">
+      <div style="display:flex;align-items:baseline;gap:var(--sp-3);margin-bottom:var(--sp-3)">
+        <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-2xs);letter-spacing:.14em;text-transform:uppercase;color:var(--ink-2)">Mobil · 390×844</div>
+        <div style="height:1px;flex:1;background:var(--line)"></div>
+        <div style="font-size:var(--fs-2xs);color:var(--ink-3)">Native yerleşim · appbar + tabbar + push geçişler</div>
+      </div>
+
+      <div style="display:flex;justify-content:center">
+        <div style="padding:11px;background:linear-gradient(180deg,#2A3547,#0B1018);border-radius:56px;box-shadow:var(--sh-3)">
+          <div style="width:390px;height:844px;border-radius:45px;overflow:hidden;background:var(--bg);display:flex;flex-direction:column;position:relative;--pad:var(--sp-4);--gap:var(--sp-3);--cardpad:var(--sp-35);--stat-cols:repeat(2,minmax(0,1fr));--main-cols:minmax(0,1fr);--detay-cols:minmax(0,1fr);--d:none;--dflex:none;--dgrid:none;--m:block;--mflex:flex;--mgrid:grid;--tbl:none;--cellh:54px;--h1:var(--fs-xl)">
+
+            <div style="height:47px;flex:none;display:flex;align-items:flex-end;justify-content:space-between;padding:0 var(--sp-6) var(--sp-15);background:var(--surface);color:var(--ink);font-size:var(--fs-xs);font-weight:600;position:relative;z-index:20">
+              <span style="letter-spacing:.01em">14:12</span>
+              <div style="display:flex;align-items:center;gap:5px">
+                <span style="display:flex;align-items:flex-end;gap:2px">
+                  <span style="width:3px;height:4px;border-radius:1px;background:currentColor"></span>
+                  <span style="width:3px;height:6px;border-radius:1px;background:currentColor"></span>
+                  <span style="width:3px;height:9px;border-radius:1px;background:currentColor"></span>
+                  <span style="width:3px;height:11px;border-radius:1px;background:var(--ink-3)"></span>
+                </span>
+                <svg width="15" height="11" viewBox="0 0 16 12" fill="currentColor"><path d="M8 9.5 5.8 11.7a.5.5 0 0 0 .7 0L8 13.2l1.5-1.5a.5.5 0 0 0 .7 0L8 9.5Z" opacity="0"></path><path d="M8 2.2c2.1 0 4 .8 5.5 2.1l1-1.1A9.5 9.5 0 0 0 8 .7C5.4.7 3 1.7 1.2 3.2l1 1.1A8 8 0 0 1 8 2.2Zm0 3.1c1.3 0 2.5.5 3.4 1.3l1-1.1A6.5 6.5 0 0 0 8 3.8c-1.7 0-3.2.6-4.4 1.7l1 1.1A5 5 0 0 1 8 5.3Zm0 3.1c.6 0 1.1.2 1.5.6l-1.5 1.6-1.5-1.6c.4-.4 1-.6 1.5-.6Z"></path></svg>
+                <span style="width:23px;height:11px;border:1.5px solid currentColor;border-radius:3.5px;padding:1.5px;display:block;opacity:.9">
+                  <span style="display:block;width:72%;height:100%;background:currentColor;border-radius:1.5px"></span>
+                </span>
+              </div>
+            </div>
+
+            <sc-if value="{{ girisMi }}" hint-placeholder-val="{{ false }}">
+              <div style="flex:1;min-height:0;overflow:auto;background:var(--surface);padding:var(--sp-8) var(--sp-6) var(--sp-6);display:flex;flex-direction:column;animation:fadeIn var(--dur) var(--ease) both">
+                <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--sp-35)">
+                  <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='none' stroke='%23A78952' stroke-width='3'/%3E%3Ctext x='32' y='41' font-size='24' text-anchor='middle' fill='%23A78952' font-family='sans-serif'%3EK%3C/text%3E%3C/svg%3E" alt="Kurum amblemi" style="width:74px;height:74px;display:block" />
+                  <div>
+                    <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-2xs);letter-spacing:.09em;color:var(--ink-3)">ÖRNEK BELEDİYESİ</div>
+                    <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-2xl);letter-spacing:var(--track-d);margin-top:var(--sp-15)">İş Takip ve Randevu</div>
+                  </div>
+                  <div style="width:38px;height:3px;background:var(--accent-ui)"></div>
+                </div>
+
+                <div style="display:flex;flex-direction:column;gap:var(--sp-35);margin-top:var(--sp-8)">
+                  <label style="display:block">
+                    <span style="display:block;font-size:var(--fs-2xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-15)">Kullanıcı Adı</span>
+                    <span style="display:flex;align-items:center;gap:var(--sp-25, 10px);height:52px;padding:0 var(--sp-35);border:var(--bw) solid var(--line);border-radius:var(--r-md);background:var(--surface-2)">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                      <input type="text" defaultValue="ozelkalem" style="border:0;outline:none;background:transparent;flex:1;min-width:0;font-size:var(--fs-lg)" />
+                    </span>
+                  </label>
+                  <label style="display:block">
+                    <span style="display:block;font-size:var(--fs-2xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-15)">Şifre</span>
+                    <span style="display:flex;align-items:center;gap:var(--sp-25, 10px);height:52px;padding:0 var(--sp-15) 0 var(--sp-35);border:var(--bw) solid var(--line);border-radius:var(--r-md);background:var(--surface-2)">
+                      <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+                      <input type="{{ sifreTipi }}" defaultValue="belediye2026" style="border:0;outline:none;background:transparent;flex:1;min-width:0;font-size:var(--fs-lg)" />
+                      <button onClick="{{ sifreCevir }}" aria-label="Şifreyi göster" style="width:40px;height:40px;flex:none;display:grid;place-items:center;border:0;border-radius:var(--r-xs);background:transparent;color:var(--ink-3);cursor:pointer" style-active="background:var(--sunken)">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M2.062 12.348a1 1 0 0 1 0-.696 10.75 10.75 0 0 1 19.876 0 1 1 0 0 1 0 .696 10.75 10.75 0 0 1-19.876 0"></path><circle cx="12" cy="12" r="3"></circle></svg>
+                      </button>
+                    </span>
+                  </label>
+                  <button onClick="{{ girisYap }}" style="height:54px;margin-top:var(--sp-15);display:flex;align-items:center;justify-content:center;gap:var(--sp-2);border:0;border-radius:var(--r-md);background:var(--brand-ui);color:var(--on-brand);font-family:var(--font-d),sans-serif;font-weight:600;font-size:var(--fs-lg);cursor:pointer;box-shadow:var(--sh-2);transition:transform var(--dur) var(--ease-spring)" style-active="transform:scale(.97)">
+                    <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m10 17 5-5-5-5"></path><path d="M15 12H3"></path><path d="M15 3h4a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-4"></path></svg>
+                    Giriş Yap
+                  </button>
+                  <div style="display:flex;justify-content:center;margin-top:var(--sp-1)">
+                    <a href="#sifre" style="font-size:var(--fs-sm);padding:var(--sp-2)">Şifremi unuttum</a>
+                  </div>
+                </div>
+
+                <div style="margin-top:auto;text-align:center;font-size:var(--fs-2xs);color:var(--ink-3);line-height:1.6">© 2026 Örnek Belediyesi<br />Bilgi İşlem Müdürlüğü</div>
+              </div>
+            </sc-if>
+
+            <sc-if value="{{ uygulamaMi }}" hint-placeholder-val="{{ true }}">
+              <div style="height:var(--h-bar-m);flex:none;display:flex;align-items:center;gap:var(--sp-2);padding:0 var(--sp-2) 0 var(--sp-3);background:var(--surface);border-bottom:var(--bw) solid var(--line);position:relative;z-index:15">
+                <sc-if value="{{ detayMi }}" hint-placeholder-val="{{ false }}">
+                  <button onClick="{{ geri }}" aria-label="Geri" style="height:40px;display:flex;align-items:center;gap:2px;padding:0 var(--sp-2) 0 var(--sp-1);border:0;border-radius:var(--r-xs);background:transparent;color:var(--brand-ui);font-size:var(--fs-sm);font-weight:500;cursor:pointer;flex:none;transition:opacity var(--dur) var(--ease)" style-active="opacity:.5">
+                    <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+                    {{ geriAdi }}
+                  </button>
+                </sc-if>
+                <sc-if value="{{ kokMu }}" hint-placeholder-val="{{ true }}">
+                  <img src="data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='none' stroke='%23A78952' stroke-width='3'/%3E%3Ctext x='32' y='41' font-size='24' text-anchor='middle' fill='%23A78952' font-family='sans-serif'%3EK%3C/text%3E%3C/svg%3E" alt="" style="width:30px;height:30px;display:block;flex:none" />
+                </sc-if>
+                <div style="flex:1;min-width:0;text-align:{{ barHiza }};padding:0 var(--sp-1);opacity:{{ barOp }};transform:translateY({{ barY }});transition:opacity var(--dur) var(--ease),transform var(--dur) var(--ease)">
+                  <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm);letter-spacing:var(--track-d);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ baslik }}</div>
+                </div>
+                <div style="display:flex;gap:2px;flex:none">
+                  <sc-if value="{{ kokMu }}" hint-placeholder-val="{{ true }}">
+                    <button aria-label="Bildirimler" style="position:relative;width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:var(--r-xs);background:transparent;color:var(--ink-2);cursor:pointer" style-active="background:var(--sunken)">
+                      <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M10.268 21a2 2 0 0 0 3.464 0"></path><path d="M3.262 15.326A1 1 0 0 0 4 17h16a1 1 0 0 0 .74-1.673C19.41 13.956 18 12.499 18 8A6 6 0 0 0 6 8c0 4.499-1.411 5.956-2.738 7.326"></path></svg>
+                      <span style="position:absolute;top:8px;right:9px;width:7px;height:7px;border-radius:99px;background:var(--danger);border:1.5px solid var(--surface)"></span>
+                    </button>
+                  </sc-if>
+                  <button onClick="{{ panelAc }}" aria-label="Tema Tasarımcısı" style="width:40px;height:40px;display:grid;place-items:center;border:0;border-radius:var(--r-xs);background:transparent;color:var(--brand-ui);cursor:pointer" style-active="background:var(--brand-soft)">
+                    <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"></path><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>
+                  </button>
+                </div>
+              </div>
+
+              <div onScroll="{{ kaydir }}" style="flex:1;min-height:0;overflow:auto;overscroll-behavior:contain;-webkit-overflow-scrolling:touch;background:var(--bg);position:relative">
+                <div style="animation:{{ anim }} var(--dur) var(--ease) both">
+                  <sc-if value="{{ buyukBaslikVar }}" hint-placeholder-val="{{ true }}">
+                    <div style="padding:var(--sp-4) var(--sp-4) var(--sp-2);background:var(--bg)">
+                      <h1 style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-3xl);letter-spacing:var(--track-d);line-height:1.15;margin:0">{{ baslik }}</h1>
+                      <div style="font-size:var(--fs-sm);color:var(--ink-3);margin-top:var(--sp-15)">{{ altBaslik }}</div>
+                    </div>
+                  </sc-if>
+                  <dc-import name="EkranV2" ekran="{{ ekran }}" git="{{ git }}" hint-size="100%,600px"></dc-import>
+                  <div style="height:{{ altPay }}"></div>
+                </div>
+              </div>
+
+              <sc-if value="{{ fabVar }}" hint-placeholder-val="{{ true }}">
+                <button aria-label="Yeni kayıt" style="position:absolute;right:var(--sp-4);bottom:calc(var(--h-tab) + var(--sp-10));width:56px;height:56px;border-radius:var(--r-xl);border:0;background:var(--brand-ui);color:var(--on-brand);display:grid;place-items:center;box-shadow:var(--sh-3);cursor:pointer;z-index:14;transition:transform var(--dur) var(--ease-spring)" style-active="transform:scale(.92)">
+                  <svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                </button>
+              </sc-if>
+
+              <sc-if value="{{ kokMu }}" hint-placeholder-val="{{ true }}">
+                <div style="flex:none;background:var(--surface);border-top:var(--bw) solid var(--line);padding-bottom:var(--sp-5);position:relative;z-index:15">
+                  <div style="display:flex;align-items:stretch">
+                    <sc-for list="{{ sekmeler }}" as="t" hint-placeholder-count="5">
+                      <div style="flex:1;--tfg:var(--ink-3);--tw:500;--tsc:1">
+                        <div style="--tfg:{{ t.fg }};--tw:{{ t.w }};--tsc:{{ t.sc }}">
+                          <button onClick="{{ t.git }}" style="width:100%;height:var(--h-tab);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:var(--sp-1);border:0;background:transparent;color:var(--tfg);cursor:pointer;transition:color var(--dur) var(--ease)" style-active="opacity:.6">
+                            <span style="display:grid;place-items:center;transform:scale(var(--tsc));transition:transform var(--dur) var(--ease-spring)">{{ t.ikon }}</span>
+                            <span style="font-size:var(--fs-3xs);font-weight:var(--tw);letter-spacing:.01em">{{ t.ad }}</span>
+                          </button>
+                        </div>
+                      </div>
+                    </sc-for>
+                  </div>
+                  <div style="display:flex;justify-content:center;padding-top:var(--sp-1)">
+                    <div style="width:134px;height:5px;border-radius:99px;background:var(--ink);opacity:.22"></div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ menuAcik }}" hint-placeholder-val="{{ false }}">
+                <div style="position:absolute;inset:0;z-index:30;animation:fadeIn var(--dur) var(--ease) both">
+                  <div onClick="{{ menuKapat }}" style="position:absolute;inset:0;background:rgba(4,8,14,.5);backdrop-filter:blur(2px)"></div>
+                  <div style="position:absolute;left:0;right:0;bottom:0;background:var(--surface);border-radius:var(--r-2xl) var(--r-2xl) 0 0;padding:var(--sp-25, 10px) var(--sp-35) var(--sp-8);box-shadow:var(--sh-3);animation:sheetUp calc(var(--dur) * 1.4) var(--ease) both">
+                    <div style="width:44px;height:5px;border-radius:99px;background:var(--line-2);margin:0 auto var(--sp-4)"></div>
+                    <div style="font-size:var(--fs-2xs);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);padding:0 var(--sp-1) var(--sp-2)">Yönetim</div>
+                    <div style="display:flex;flex-direction:column;gap:2px">
+                      <sc-for list="{{ menuOgeleri }}" as="n" hint-placeholder-count="4">
+                        <button onClick="{{ n.git }}" style="width:100%;height:56px;display:flex;align-items:center;gap:var(--sp-35);padding:0 var(--sp-2);border:0;border-radius:var(--r-md);background:transparent;color:var(--ink);cursor:pointer;text-align:left;font-size:var(--fs-lg);font-weight:500" style-active="background:var(--sunken)">
+                          <span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:var(--r-sm);background:var(--sunken);color:var(--ink-2)">{{ n.ikon }}</span>
+                          <span style="flex:1">{{ n.ad }}</span>
+                          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none"><path d="m9 18 6-6-6-6"></path></svg>
+                        </button>
+                      </sc-for>
+                    </div>
+                    <div style="height:var(--bw);background:var(--line);margin:var(--sp-3) 0"></div>
+                    <button onClick="{{ cikis }}" style="width:100%;height:56px;display:flex;align-items:center;gap:var(--sp-35);padding:0 var(--sp-2);border:0;border-radius:var(--r-md);background:transparent;color:var(--danger);cursor:pointer;text-align:left;font-size:var(--fs-lg);font-weight:500" style-active="background:var(--danger-soft)">
+                      <span style="width:38px;height:38px;flex:none;display:grid;place-items:center;border-radius:var(--r-sm);background:var(--danger-soft)">
+                        <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="m16 17 5-5-5-5"></path><path d="M21 12H9"></path><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path></svg>
+                      </span>
+                      Çıkış Yap
+                    </button>
+                  </div>
+                </div>
+              </sc-if>
+            </sc-if>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <sc-if value="{{ panelAcik }}" hint-placeholder-val="{{ false }}">
+    <div style="position:fixed;inset:0;z-index:90">
+      <div onClick="{{ panelKapat }}" style="position:absolute;inset:0;background:rgba(4,8,14,.42);animation:fadeIn var(--dur) var(--ease) both"></div>
+      <div style="position:absolute;top:0;right:0;bottom:0;width:min(420px,100vw);background:var(--surface);border-left:var(--bw) solid var(--line);box-shadow:var(--sh-3);animation:panelIn calc(var(--dur) * 1.3) var(--ease) both;display:flex;flex-direction:column">
+        <dc-import name="TemaPaneli" deger="{{ temaDeger }}" ayarla="{{ temaAyarla }}" kapat="{{ panelKapat }}" hint-size="100%,100%"></dc-import>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;baslangicEkrani&quot;: {&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;giris&quot;,&quot;anasayfa&quot;,&quot;talepler&quot;,&quot;talep-detay&quot;,&quot;ajanda&quot;,&quot;takvim&quot;,&quot;etkinlik-detay&quot;,&quot;bilesenler&quot;],&quot;default&quot;:&quot;anasayfa&quot;,&quot;tsType&quot;:&quot;string&quot;,&quot;section&quot;:&quot;Önizleme&quot;}
+}">
+class Component extends DCLogic {
+  static IK = {
+    'layout-dashboard': '<rect width="7" height="9" x="3" y="3" rx="1"></rect><rect width="7" height="5" x="14" y="3" rx="1"></rect><rect width="7" height="9" x="14" y="12" rx="1"></rect><rect width="7" height="5" x="3" y="16" rx="1"></rect>',
+    inbox: '<polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path>',
+    'calendar-clock': '<path d="M16 14v2.2l1.6 1"></path><path d="M16 2v3"></path><path d="M21 7.338V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h2.338"></path><path d="M3 9h5.859"></path><path d="M8 2v3"></path><circle cx="16" cy="16" r="6"></circle>',
+    'calendar-days': '<path d="M8 2v3"></path><path d="M16 2v3"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect><path d="M3 9h18"></path><path d="M8 13h.01"></path><path d="M12 13h.01"></path><path d="M16 13h.01"></path><path d="M8 17h.01"></path><path d="M12 17h.01"></path><path d="M16 17h.01"></path>',
+    'chart-column': '<path d="M3 3v16a2 2 0 0 0 2 2h16"></path><path d="M18 17V9"></path><path d="M13 17V5"></path><path d="M8 17v-3"></path>',
+    'grid-2x2': '<path d="M12 3v18"></path><path d="M3 12h18"></path><rect x="3" y="3" width="18" height="18" rx="2"></rect>',
+    settings: '<path d="M9.671 4.136a2.34 2.34 0 0 1 4.659 0 2.34 2.34 0 0 0 3.319 1.915 2.34 2.34 0 0 1 2.33 4.033 2.34 2.34 0 0 0 0 3.831 2.34 2.34 0 0 1-2.33 4.033 2.34 2.34 0 0 0-3.319 1.915 2.34 2.34 0 0 1-4.659 0 2.34 2.34 0 0 0-3.32-1.915 2.34 2.34 0 0 1-2.33-4.033 2.34 2.34 0 0 0 0-3.831A2.34 2.34 0 0 1 6.35 6.051a2.34 2.34 0 0 0 3.319-1.915"></path><circle cx="12" cy="12" r="3"></circle>',
+    menu: '<path d="M4 5h16"></path><path d="M4 12h16"></path><path d="M4 19h16"></path>',
+    layers: '<path d="M12.83 2.18a2 2 0 0 0-1.66 0L2.6 6.08a1 1 0 0 0 0 1.83l8.58 3.91a2 2 0 0 0 1.66 0l8.58-3.9a1 1 0 0 0 0-1.83z"></path><path d="M2 12a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 12"></path><path d="M2 17a1 1 0 0 0 .58.91l8.6 3.91a2 2 0 0 0 1.65 0l8.58-3.9A1 1 0 0 0 22 17"></path>',
+    'panel-left-close': '<rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path><path d="m16 15-3-3 3-3"></path>',
+    'panel-left-open': '<rect width="18" height="18" x="3" y="3" rx="2"></rect><path d="M9 3v18"></path><path d="m14 9 3 3-3 3"></path>'
+  };
+
+  state = {
+    ekran: this.props.baslangicEkrani || 'anasayfa',
+    daralt: false, sifreAcik: false, hatirla: true, menu: false, panel: false,
+    olcek: 1, kaydirildi: false, animNo: 0, yon: 'ileri',
+    t: Component.varsayilan()
+  };
+
+  static PRESET = {
+    'kurumsal-acik': { ad: 'Kurumsal Gündüz', mod: 'acik', marka: 0, vurgu: 0, notr: 0, r: 10, sp: 4, fs: 14, fsd: 1, track: 0, bw: 1, sha: 7, dur: 220, font: 0 },
+    'kurumsal-koyu': { ad: 'Kurumsal Gece', mod: 'koyu', marka: 0, vurgu: 0, notr: 0, r: 10, sp: 4, fs: 14, fsd: 1, track: 0, bw: 1, sha: 42, dur: 220, font: 0 },
+    'zumrut': { ad: 'Zümrüt Belediye', mod: 'acik', marka: 1, vurgu: 0, notr: 0, r: 15, sp: 4.5, fs: 14, fsd: 1.05, track: 0, bw: 1, sha: 6, dur: 240, font: 1 },
+    'bordo': { ad: 'Bordo Belediye', mod: 'acik', marka: 2, vurgu: 1, notr: 0, r: 5, sp: 4, fs: 14, fsd: 1, track: 0, bw: 1.5, sha: 5, dur: 180, font: 2 },
+    'petrol': { ad: 'Petrol Mavisi', mod: 'acik', marka: 3, vurgu: 2, notr: 2, r: 17, sp: 4.5, fs: 15, fsd: 1, track: 0, bw: 1, sha: 8, dur: 260, font: 1 },
+    'antrasit': { ad: 'Antrasit Gece', mod: 'koyu', marka: 5, vurgu: 5, notr: 1, r: 8, sp: 4, fs: 14, fsd: 1, track: 0, bw: 1, sha: 40, dur: 200, font: 1 },
+    'kontrast': { ad: 'Yüksek Kontrast', mod: 'acik', marka: 4, vurgu: 3, notr: 1, r: 3, sp: 4, fs: 15, fsd: 1.05, track: 0.005, bw: 2, sha: 0, dur: 120, font: 2 }
+  };
+
+  static MARKA = [
+    { ad: 'Lacivert', a: '#002E6D', k: '#5B93E8' },
+    { ad: 'Zümrüt', a: '#0B5D45', k: '#4FBE94' },
+    { ad: 'Bordo', a: '#7A1F2B', k: '#E58189' },
+    { ad: 'Petrol', a: '#0E4C5C', k: '#4FB6C8' },
+    { ad: 'Mor', a: '#4B2E83', k: '#A98BE8' },
+    { ad: 'Antrasit', a: '#333A45', k: '#A6B3C6' }
+  ];
+  static VURGU = [
+    { ad: 'Altın', a: '#A78952', k: '#D8BB80' },
+    { ad: 'Bakır', a: '#A65A2E', k: '#E29A6B' },
+    { ad: 'Turkuaz', a: '#157F7F', k: '#5CC9C4' },
+    { ad: 'Kiraz', a: '#A8324A', k: '#EE8397' },
+    { ad: 'Yeşil', a: '#4A7A2B', k: '#97CE6E' },
+    { ad: 'Gri', a: '#7C8592', k: '#B3BDCB' }
+  ];
+  static NOTR = [
+    { ad: 'Sıcak kâğıt', v: '#F5F4F0' },
+    { ad: 'Nötr gri', v: '#F4F4F5' },
+    { ad: 'Soğuk mavi', v: '#F1F4F9' }
+  ];
+  static FONT = [
+    { ad: 'Kurumsal', d: 'Montserrat', t: 'IBM Plex Sans' },
+    { ad: 'Modern', d: 'Figtree', t: 'Source Sans 3' },
+    { ad: 'Editoryal', d: 'Archivo', t: 'Karla' }
+  ];
+
+  static varsayilan() {
+    return Object.assign({ preset: 'kurumsal-acik' }, Component.PRESET['kurumsal-acik']);
+  }
+
+  static EKRAN = {
+    giris: { ad: 'Giriş', alt: 'Oturum açın', yol: '/giris' },
+    anasayfa: { ad: 'Ana Sayfa', alt: 'Başkanlık Makamı · Örnek Belediye Başkanı', mAlt: '11 Ağustos 2026, Salı', yol: '/' },
+    talepler: { ad: 'Talepler', alt: '114 kayıt · 6 tanesi onay bekliyor', mAlt: '6 kayıt onay bekliyor', yol: '/talepler', fab: true },
+    'talep-detay': { ad: 'Talep Detayı', alt: 'TLP-2026-0114 · Beklemede', yol: '/talepler/114', ust: 'talepler', ustAd: 'Talepler' },
+    ajanda: { ad: 'Ajanda', alt: '11 Ağustos 2026, Salı · 6 etkinlik', mAlt: 'Salı · 6 etkinlik', yol: '/ajanda', fab: true },
+    takvim: { ad: 'Takvim', alt: 'Ağustos 2026 · 96 etkinlik', mAlt: 'Ağustos 2026', yol: '/takvim', fab: true },
+    'etkinlik-detay': { ad: 'Etkinlik Detayı', alt: 'Makam dışı ziyaret · 11 Ağustos 2026', yol: '/ajanda/8421', ust: 'ajanda', ustAd: 'Ajanda' },
+    bilesenler: { ad: 'Bileşen Kütüphanesi', alt: 'Tüm bileşenler, canlı token’larla', mAlt: 'Canlı bileşen kataloğu', yol: '/bilesenler' }
+  };
+
+  ik(ad, boy) {
+    return React.createElement('svg', {
+      width: boy || 19, height: boy || 19, viewBox: '0 0 24 24', fill: 'none',
+      stroke: 'currentColor', strokeWidth: 1.8, strokeLinecap: 'round', strokeLinejoin: 'round',
+      style: { display: 'block', flex: 'none' },
+      dangerouslySetInnerHTML: { __html: Component.IK[ad] || '' }
+    });
+  }
+
+  componentDidMount() {
+    this.uygula();
+    this.olc();
+    requestAnimationFrame(this.olc);
+    try {
+      this.go = new ResizeObserver(this.olc);
+      if (this.olcRef.current) this.go.observe(this.olcRef.current);
+    } catch (e) { window.addEventListener('resize', this.olc); }
+  }
+  componentWillUnmount() {
+    if (this.go) this.go.disconnect();
+    window.removeEventListener('resize', this.olc);
+  }
+  componentDidUpdate(p, s) { if (s.t !== this.state.t) this.uygula(); }
+
+  olcRef = React.createRef();
+  olc = () => {
+    const el = this.olcRef.current;
+    if (!el) return;
+    const o = Math.min(1, Math.max(0.5, el.clientWidth / 1440));
+    if (Math.abs(o - this.state.olcek) > 0.002) this.setState({ olcek: o });
+  };
+
+  uygula() {
+    const t = this.state.t;
+    const k = t.mod === 'koyu';
+    const m = Component.MARKA[t.marka] || Component.MARKA[0];
+    const v = Component.VURGU[t.vurgu] || Component.VURGU[0];
+    const f = Component.FONT[t.font] || Component.FONT[0];
+    const n = Component.NOTR[t.notr] || Component.NOTR[0];
+    try {
+      const r = document.documentElement;
+      r.setAttribute('data-mod', k ? 'koyu' : 'acik');
+      r.setAttribute('data-tema', t.preset);
+      const s = {
+        '--brand': m.a, '--brand-dk': m.k, '--accent': v.a, '--accent-dk': v.k,
+        '--neutral': n.v, '--r': t.r + 'px', '--sp': t.sp + 'px', '--fs': t.fs + 'px',
+        '--fs-d': String(t.fsd), '--track': t.track + 'em', '--bw': t.bw + 'px',
+        '--sh-a': String(t.sha / 100), '--dur': t.dur + 'ms',
+        '--font-d': "'" + f.d + "'", '--font-t': "'" + f.t + "'"
+      };
+      Object.keys(s).forEach((key) => r.style.setProperty(key, s[key]));
+    } catch (e) {}
+  }
+
+  git = (k) => {
+    const e = Component.EKRAN[k] || {};
+    const mevcut = Component.EKRAN[this.state.ekran] || {};
+    const ileri = !!e.ust || !mevcut.ust;
+    this.setState({ ekran: k, menu: false, animNo: this.state.animNo + 1, yon: ileri ? 'ileri' : 'geri', kaydirildi: false });
+  };
+
+  geri = () => {
+    const e = Component.EKRAN[this.state.ekran] || {};
+    this.git(e.ust || 'anasayfa');
+  };
+
+  kaydir = (e) => {
+    const y = e.target.scrollTop > 34;
+    if (y !== this.state.kaydirildi) this.setState({ kaydirildi: y });
+  };
+
+  ayarla = (anahtar, deger) => {
+    if (anahtar === 'preset') {
+      const p = Component.PRESET[deger];
+      this.setState({ t: Object.assign({ preset: deger }, p) });
+      return;
+    }
+    const t = Object.assign({}, this.state.t);
+    t[anahtar] = deger;
+    t.preset = 'ozel';
+    this.setState({ t: t });
+  };
+
+  nav(liste) {
+    return liste.map((n) => {
+      const aktif = this.state.ekran === n.k || (n.alt || []).indexOf(this.state.ekran) > -1;
+      return {
+        ad: n.ad, sayi: n.sayi || null, ikon: this.ik(n.i),
+        bg: aktif ? 'var(--nav-active)' : 'transparent',
+        fg: aktif ? 'var(--nav-ink-strong)' : 'var(--nav-ink)',
+        bar: aktif ? 'var(--accent-ui)' : 'transparent',
+        git: () => this.git(n.k)
+      };
+    });
+  }
+
+  renderVals() {
+    const s = this.state;
+    const t = s.t;
+    const e = Component.EKRAN[s.ekran] || Component.EKRAN.anasayfa;
+    const detay = !!e.ust;
+    const presetAdi = t.preset === 'ozel' ? 'Özel tema' : ((Component.PRESET[t.preset] || {}).ad || 'Tema');
+
+    const ekranPills = Object.keys(Component.EKRAN).map((k) => {
+      const a = s.ekran === k;
+      return {
+        ad: Component.EKRAN[k].ad,
+        bg: a ? 'var(--brand-ui)' : 'var(--sunken)',
+        fg: a ? 'var(--on-brand)' : 'var(--ink-2)',
+        bd: a ? 'var(--brand-ui)' : 'var(--line)',
+        git: () => this.git(k)
+      };
+    });
+
+    const sekmeTanim = [
+      { k: 'anasayfa', ad: 'Ana Sayfa', i: 'layout-dashboard' },
+      { k: 'talepler', ad: 'Talepler', i: 'inbox', alt: ['talep-detay'] },
+      { k: 'ajanda', ad: 'Ajanda', i: 'calendar-clock', alt: ['etkinlik-detay'] },
+      { k: 'takvim', ad: 'Takvim', i: 'calendar-days' }
+    ];
+    const sekmeler = sekmeTanim.map((x) => {
+      const a = s.ekran === x.k || (x.alt || []).indexOf(s.ekran) > -1;
+      return {
+        ad: x.ad, ikon: this.ik(x.i, 23),
+        fg: a ? 'var(--brand-ui)' : 'var(--ink-3)',
+        w: a ? '600' : '500', sc: a ? '1.06' : '1',
+        git: () => this.git(x.k)
+      };
+    });
+    sekmeler.push({
+      ad: 'Menü', ikon: this.ik('menu', 23),
+      fg: s.menu ? 'var(--brand-ui)' : 'var(--ink-3)',
+      w: s.menu ? '600' : '500', sc: s.menu ? '1.06' : '1',
+      git: () => this.setState({ menu: !s.menu })
+    });
+
+    const yonAnim = s.yon === 'ileri' ? 'it' : 'ge';
+    const anim = (s.animNo % 2 === 0 ? yonAnim + 'A' : yonAnim + 'B');
+
+    return {
+      ekran: s.ekran, git: this.git, geri: this.geri, kaydir: this.kaydir,
+      girisMi: s.ekran === 'giris',
+      uygulamaMi: s.ekran !== 'giris',
+      detayMi: detay, kokMu: !detay,
+      geriAdi: e.ustAd || 'Geri',
+      baslik: e.ad, altBaslik: e.alt,
+      yol: e.yol,
+      buyukBaslikVar: !detay,
+      barOp: detay ? '1' : (s.kaydirildi ? '1' : '0'),
+      barY: detay ? '0' : (s.kaydirildi ? '0' : '4px'),
+      barHiza: detay ? 'center' : 'left',
+      altPay: detay ? 'var(--sp-6)' : 'var(--sp-16)',
+      fabVar: !!e.fab,
+      anim: anim,
+      olcRef: this.olcRef, olcek: s.olcek,
+      ekranlar: ekranPills,
+      sekmeler: sekmeler,
+      navGruplari: [
+        { ad: 'Genel', ogeler: this.nav([
+          { k: 'anasayfa', ad: 'Ana Sayfa', i: 'layout-dashboard' },
+          { k: 'talepler', ad: 'Talepler', i: 'inbox', sayi: 6, alt: ['talep-detay'] }
+        ]) },
+        { ad: 'Program', ogeler: this.nav([
+          { k: 'ajanda', ad: 'Ajanda', i: 'calendar-clock', alt: ['etkinlik-detay'] },
+          { k: 'takvim', ad: 'Takvim', i: 'calendar-days' }
+        ]) },
+        { ad: 'Yönetim', ogeler: this.nav([
+          { k: 'bilesenler', ad: 'Bileşen Kütüphanesi', i: 'layers' },
+          { k: 'istatistikler', ad: 'İstatistikler', i: 'chart-column' },
+          { k: 'ayarlar', ad: 'Sistem Ayarları', i: 'settings' }
+        ]) }
+      ],
+      menuOgeleri: [
+        { ad: 'Bileşen Kütüphanesi', ikon: this.ik('layers', 19), git: () => this.git('bilesenler') },
+        { ad: 'İstatistikler', ikon: this.ik('chart-column', 19), git: () => this.setState({ menu: false }) },
+        { ad: 'Modüller', ikon: this.ik('grid-2x2', 19), git: () => this.setState({ menu: false }) },
+        { ad: 'Sistem Ayarları', ikon: this.ik('settings', 19), git: () => this.setState({ menu: false }) }
+      ],
+      menuAcik: s.menu,
+      menuKapat: () => this.setState({ menu: false }),
+      navW: s.daralt ? 'var(--w-side-sm)' : 'var(--w-side)',
+      navLbl: s.daralt ? 'none' : 'block',
+      daraltCevir: () => this.setState({ daralt: !s.daralt }),
+      daraltIkonu: this.ik(s.daralt ? 'panel-left-open' : 'panel-left-close', 17),
+      temaAdi: presetAdi,
+      modAcik: () => this.ayarla('mod', 'acik'),
+      modKoyu: () => this.ayarla('mod', 'koyu'),
+      modAcikBg: t.mod === 'acik' ? 'var(--surface)' : 'transparent',
+      modAcikFg: t.mod === 'acik' ? 'var(--accent-ui)' : 'var(--ink-3)',
+      modKoyuBg: t.mod === 'koyu' ? 'var(--surface)' : 'transparent',
+      modKoyuFg: t.mod === 'koyu' ? 'var(--accent-ui)' : 'var(--ink-3)',
+      panelAcik: s.panel,
+      panelAc: () => this.setState({ panel: true }),
+      panelKapat: () => this.setState({ panel: false }),
+      temaDeger: t,
+      temaAyarla: this.ayarla,
+      sifreTipi: s.sifreAcik ? 'text' : 'password',
+      sifreCevir: () => this.setState({ sifreAcik: !s.sifreAcik }),
+      hatirlaBg: s.hatirla ? 'var(--brand-ui)' : 'var(--surface-2)',
+      hatirlaBd: s.hatirla ? 'var(--brand-ui)' : 'var(--line-2)',
+      hatirlaFg: s.hatirla ? 'var(--on-brand)' : 'transparent',
+      hatirlaCevir: () => this.setState({ hatirla: !s.hatirla }),
+      girisYap: () => this.git('anasayfa'),
+      cikis: () => this.git('giris')
+    };
+  }
+}
+</script>
+</body>
+</html>

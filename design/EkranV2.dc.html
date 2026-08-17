@@ -1,0 +1,1252 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="padding:var(--pad);display:flex;flex-direction:column;gap:var(--gap);min-height:100%">
+
+  <sc-if value="{{ anasayfaMi }}" hint-placeholder-val="{{ true }}">
+    <div style="display:grid;grid-template-columns:var(--stat-cols);gap:var(--gap)">
+      <sc-for list="{{ kartlar }}" as="k" hint-placeholder-count="6">
+        <div style="--c:var(--info);--cb:var(--info-soft)">
+          <div style="--c:{{ k.c }};--cb:{{ k.cb }}">
+            <button onClick="{{ k.git }}" style="width:100%;text-align:left;display:block;background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);padding:var(--sp-3) var(--sp-35) 0;cursor:pointer;box-shadow:var(--sh-1);overflow:hidden;transition:border-color var(--dur) var(--ease),transform var(--dur) var(--ease-spring)" style-hover="border-color:var(--line-2)" style-active="transform:scale(.98)">
+              <span style="display:flex;align-items:flex-start;gap:var(--sp-2)">
+                <span style="flex:1;min-width:0;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3);line-height:1.35;padding-top:var(--sp-1)">{{ k.ad }}</span>
+                <span style="width:28px;height:28px;border-radius:var(--r-xs);background:var(--cb);color:var(--c);display:grid;place-items:center;flex:none">{{ k.ikon }}</span>
+              </span>
+              <span style="display:block;font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-3xl);letter-spacing:var(--track-d);color:var(--ink);margin:var(--sp-2) 0 var(--sp-3)">{{ k.sayi }}</span>
+              <span style="display:block;height:3px;margin:0 calc(var(--sp-35) * -1);background:var(--c)"></span>
+            </button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:grid;grid-template-columns:var(--main-cols);gap:var(--gap);align-items:start">
+      <div style="display:var(--d);background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+        <div style="display:flex;align-items:center;gap:var(--sp-25);padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line)">
+          <div style="flex:1;min-width:0">
+            <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm);letter-spacing:var(--track-d)">Son Talepler</div>
+            <div style="font-size:var(--fs-2xs);color:var(--ink-3);margin-top:2px">Belediye Başkanlığı · Örnek Belediye Başkanı</div>
+          </div>
+          <button onClick="{{ talepleriAc }}" style="display:flex;align-items:center;gap:var(--sp-1);height:32px;padding:0 var(--sp-25);border:var(--bw) solid var(--line);border-radius:var(--r-xs);background:var(--surface-2);color:var(--ink-2);font-size:var(--fs-2xs);font-weight:500;cursor:pointer" style-hover="background:var(--sunken);color:var(--ink)">
+            Tümü
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
+        </div>
+        <table style="width:100%;border-collapse:collapse">
+          <thead>
+            <tr>
+              <th style="text-align:left;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);padding:var(--sp-25) var(--sp-4);background:var(--surface-2);border-bottom:var(--bw) solid var(--line);width:1%;white-space:nowrap">Durum</th>
+              <th style="text-align:left;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);padding:var(--sp-25) var(--sp-2);background:var(--surface-2);border-bottom:var(--bw) solid var(--line)">Konu</th>
+              <th style="text-align:left;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);padding:var(--sp-25) var(--sp-2);background:var(--surface-2);border-bottom:var(--bw) solid var(--line);width:1%;white-space:nowrap">Ad Soyad</th>
+              <th style="text-align:right;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);padding:var(--sp-25) var(--sp-4);background:var(--surface-2);border-bottom:var(--bw) solid var(--line);width:1%;white-space:nowrap">Tarih</th>
+            </tr>
+          </thead>
+          <tbody>
+            <sc-for list="{{ sonTalepler }}" as="t" hint-placeholder-count="5">
+              <tr onClick="{{ t.ac }}" style="cursor:pointer" style-hover="background:var(--surface-2)">
+                <td style="padding:var(--sp-3) var(--sp-4);border-bottom:var(--bw) solid var(--line);vertical-align:middle">
+                  <span style="--c:{{ t.c }};--cb:{{ t.cb }}">
+                    <span style="display:inline-flex;align-items:center;gap:var(--sp-15);height:23px;padding:0 var(--sp-2);border-radius:var(--r-pill);background:var(--cb);color:var(--c);font-size:var(--fs-3xs);font-weight:600;white-space:nowrap">
+                      <span style="width:5px;height:5px;border-radius:99px;background:currentColor"></span>{{ t.durumAd }}
+                    </span>
+                  </span>
+                </td>
+                <td style="padding:var(--sp-3) var(--sp-2);border-bottom:var(--bw) solid var(--line);font-size:var(--fs-sm);line-height:1.45;color:var(--ink);min-width:220px">{{ t.konu }}</td>
+                <td style="padding:var(--sp-3) var(--sp-2);border-bottom:var(--bw) solid var(--line);font-size:var(--fs-xs);color:var(--ink-2);white-space:nowrap">{{ t.ad }}</td>
+                <td style="padding:var(--sp-3) var(--sp-4);border-bottom:var(--bw) solid var(--line);font-size:var(--fs-2xs);color:var(--ink-3);text-align:right;white-space:nowrap">{{ t.tarih }}</td>
+              </tr>
+            </sc-for>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="display:var(--d);background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+        <div style="display:flex;align-items:center;gap:var(--sp-25);padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line)">
+          <div style="flex:1;min-width:0">
+            <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm);letter-spacing:var(--track-d)">Bugünün Programı</div>
+            <div style="font-size:var(--fs-2xs);color:var(--ink-3);margin-top:2px">11 Ağustos, Salı · 6 etkinlik</div>
+          </div>
+          <span style="display:inline-flex;align-items:center;gap:var(--sp-15);height:23px;padding:0 var(--sp-2);border-radius:var(--r-pill);background:var(--accent-soft);color:var(--accent-ink);font-size:var(--fs-3xs);font-weight:600;white-space:nowrap">
+            <span style="width:5px;height:5px;border-radius:99px;background:currentColor;animation:nabiz 2s ease-in-out infinite"></span>Canlı
+          </span>
+        </div>
+        <sc-for list="{{ bugun }}" as="e" hint-placeholder-count="6">
+          <button onClick="{{ e.ac }}" style="width:100%;text-align:left;display:flex;gap:var(--sp-3);padding:var(--sp-3) var(--cardpad);border:0;border-bottom:var(--bw) solid var(--line);background:transparent;cursor:pointer" style-hover="background:var(--surface-2)">
+            <span style="--c:{{ e.c }}">
+              <span style="display:flex;flex-direction:column;align-items:flex-start;gap:var(--sp-1);width:46px;flex:none">
+                <span style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-xs);color:var(--ink)">{{ e.saat }}</span>
+                <span style="display:block;width:22px;height:2px;background:var(--c)"></span>
+              </span>
+            </span>
+            <span style="flex:1;min-width:0">
+              <span style="display:block;font-size:var(--fs-xs);line-height:1.45;color:var(--ink)">{{ e.kisaAd }}</span>
+              <span style="display:flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-2xs);color:var(--ink-3);margin-top:var(--sp-1)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                {{ e.yer }}
+              </span>
+            </span>
+          </button>
+        </sc-for>
+        <button onClick="{{ ajandayiAc }}" style="width:100%;height:var(--h-ctrl-lg);display:flex;align-items:center;justify-content:center;gap:var(--sp-15);border:0;background:var(--surface-2);color:var(--brand-ui);font-size:var(--fs-xs);font-weight:600;cursor:pointer" style-hover="background:var(--sunken)">
+          Ajandayı aç
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="m12 5 7 7-7 7"></path></svg>
+        </button>
+      </div>
+    </div>
+
+    <div style="display:var(--m)">
+      <div style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);padding:var(--sp-2) var(--sp-1) var(--sp-2)">Bugünün Programı</div>
+      <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-1)">
+        <sc-for list="{{ bugunMobil }}" as="e" hint-placeholder-count="4">
+          <div style="--c:{{ e.c }};--sep:{{ e.sep }}">
+            <button onClick="{{ e.ac }}" style="width:100%;text-align:left;display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-25) var(--sp-35);border:0;background:transparent;cursor:pointer;box-shadow:inset 0 calc(var(--bw) * -1) 0 var(--sep)" style-active="background:var(--sunken)">
+              <span style="width:3px;height:38px;border-radius:99px;background:var(--c);flex:none"></span>
+              <span style="width:44px;flex:none;font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm);color:var(--ink)">{{ e.saat }}</span>
+              <span style="flex:1;min-width:0">
+                <span style="display:block;font-size:var(--fs-sm);line-height:1.4;color:var(--ink);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">{{ e.kisaAd }}</span>
+                <span style="display:block;font-size:var(--fs-2xs);color:var(--ink-3);margin-top:3px">{{ e.yer }}</span>
+              </span>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none;opacity:.6"><path d="m9 18 6-6-6-6"></path></svg>
+            </button>
+          </div>
+        </sc-for>
+        <button onClick="{{ ajandayiAc }}" style="width:100%;height:50px;display:flex;align-items:center;justify-content:center;gap:var(--sp-15);border:0;border-top:var(--bw) solid var(--line);background:transparent;color:var(--brand-ui);font-size:var(--fs-sm);font-weight:600;cursor:pointer" style-active="background:var(--sunken)">Tüm günü gör</button>
+      </div>
+
+      <div style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.11em;text-transform:uppercase;color:var(--ink-3);padding:var(--sp-5) var(--sp-1) var(--sp-2)">Son Talepler</div>
+      <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-1)">
+        <sc-for list="{{ sonTaleplerMobil }}" as="t" hint-placeholder-count="4">
+          <div style="--c:{{ t.c }};--cb:{{ t.cb }};--sep:{{ t.sep }}">
+            <button onClick="{{ t.ac }}" style="width:100%;text-align:left;display:flex;align-items:flex-start;gap:var(--sp-25);padding:var(--sp-3) var(--sp-35);border:0;background:transparent;cursor:pointer;box-shadow:inset 0 calc(var(--bw) * -1) 0 var(--sep)" style-active="background:var(--sunken)">
+              <span style="width:30px;height:30px;flex:none;border-radius:var(--r-sm);background:var(--cb);color:var(--c);display:grid;place-items:center;margin-top:2px">{{ t.ikon }}</span>
+              <span style="flex:1;min-width:0">
+                <span style="display:block;font-size:var(--fs-sm);line-height:1.4;color:var(--ink);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">{{ t.konu }}</span>
+                <span style="display:flex;align-items:center;gap:var(--sp-15);margin-top:var(--sp-1);font-size:var(--fs-2xs);color:var(--ink-3)">
+                  {{ t.ad }}<span style="width:3px;height:3px;border-radius:99px;background:var(--line-2)"></span>{{ t.kisaTarih }}
+                </span>
+              </span>
+              <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none;opacity:.6;margin-top:var(--sp-2)"><path d="m9 18 6-6-6-6"></path></svg>
+            </button>
+          </div>
+        </sc-for>
+        <button onClick="{{ talepleriAc }}" style="width:100%;height:50px;display:flex;align-items:center;justify-content:center;border:0;border-top:var(--bw) solid var(--line);background:transparent;color:var(--brand-ui);font-size:var(--fs-sm);font-weight:600;cursor:pointer" style-active="background:var(--sunken)">Tüm talepler (114)</button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ taleplerMi }}" hint-placeholder-val="{{ false }}">
+    <div style="display:var(--mflex);align-items:center;gap:var(--sp-2);height:40px;padding:0 var(--sp-3);border-radius:var(--r-sm);background:var(--sunken);margin-bottom:var(--sp-1)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none"><path d="m21 21-4.34-4.34"></path><circle cx="11" cy="11" r="8"></circle></svg>
+      <input type="text" placeholder="Talep, kişi veya konu ara" style="border:0;outline:none;background:transparent;flex:1;min-width:0;font-size:var(--fs-sm)" />
+    </div>
+
+    <div style="display:flex;align-items:center;gap:var(--sp-25)">
+      <div style="display:flex;gap:var(--sp-15);flex:1;min-width:0;overflow:auto;padding:2px">
+        <sc-for list="{{ filtreler }}" as="f" hint-placeholder-count="5">
+          <div style="--fbg:var(--surface);--ffg:var(--ink-2);--fbd:var(--line)">
+            <div style="--fbg:{{ f.bg }};--ffg:{{ f.fg }};--fbd:{{ f.bd }}">
+              <button onClick="{{ f.sec }}" style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-3);border:var(--bw) solid var(--fbd);border-radius:var(--r-pill);background:var(--fbg);color:var(--ffg);font-size:var(--fs-xs);font-weight:500;cursor:pointer;white-space:nowrap;transition:all var(--dur) var(--ease)" style-active="transform:scale(.96)">
+                {{ f.ad }}<span style="font-size:var(--fs-3xs);font-weight:700;opacity:.65">{{ f.sayi }}</span>
+              </button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="display:var(--dflex);gap:var(--sp-2);flex:none">
+        <button style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 5H3"></path><path d="M12 19H3"></path><path d="M14 3v4"></path><path d="M16 17v4"></path><path d="M21 12h-9"></path><path d="M21 19h-5"></path><path d="M21 5h-7"></path><path d="M8 10v4"></path><path d="M8 12H3"></path></svg>
+          Filtrele
+        </button>
+        <button style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
+          Dışa Aktar
+        </button>
+        <button style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-35);border:0;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);font-family:var(--font-d),sans-serif;font-size:var(--fs-xs);font-weight:600;cursor:pointer;box-shadow:var(--sh-1);transition:background var(--dur) var(--ease)" style-hover="background:var(--brand-hover)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+          Yeni Talep
+        </button>
+      </div>
+    </div>
+
+    <div style="display:var(--d);background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+      <table style="width:100%;border-collapse:collapse">
+        <thead>
+          <tr>
+            <sc-for list="{{ kolonlar }}" as="c" hint-placeholder-count="6">
+              <th style="text-align:left;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);padding:var(--sp-3) var(--sp-2);background:var(--surface-2);border-bottom:var(--bw) solid var(--line);white-space:nowrap;width:{{ c.g }}">{{ c.ad }}</th>
+            </sc-for>
+            <th style="width:44px;background:var(--surface-2);border-bottom:var(--bw) solid var(--line)"></th>
+          </tr>
+        </thead>
+        <tbody>
+          <sc-for list="{{ liste }}" as="t" hint-placeholder-count="8">
+            <tr onClick="{{ t.ac }}" style="cursor:pointer" style-hover="background:var(--surface-2)">
+              <td style="padding:var(--sp-3) var(--sp-4);border-bottom:var(--bw) solid var(--line);vertical-align:middle">
+                <span style="--c:{{ t.c }};--cb:{{ t.cb }}">
+                  <span style="display:inline-flex;align-items:center;gap:var(--sp-15);height:24px;padding:0 var(--sp-2);border-radius:var(--r-pill);background:var(--cb);color:var(--c);font-size:var(--fs-3xs);font-weight:600;white-space:nowrap">
+                    <span style="width:5px;height:5px;border-radius:99px;background:currentColor"></span>{{ t.durumAd }}
+                  </span>
+                </span>
+              </td>
+              <td style="padding:var(--sp-3) var(--sp-2);border-bottom:var(--bw) solid var(--line);font-size:var(--fs-sm);line-height:1.45;color:var(--ink);min-width:260px">{{ t.konu }}</td>
+              <td style="padding:var(--sp-3) var(--sp-2);border-bottom:var(--bw) solid var(--line);font-size:var(--fs-xs);color:var(--ink-2);white-space:nowrap">{{ t.ad }}</td>
+              <td style="padding:var(--sp-3) var(--sp-2);border-bottom:var(--bw) solid var(--line);font-size:var(--fs-xs);color:var(--ink-2);white-space:nowrap">{{ t.tel }}</td>
+              <td style="padding:var(--sp-3) var(--sp-2);border-bottom:var(--bw) solid var(--line);white-space:nowrap">
+                <span style="display:inline-flex;align-items:center;height:22px;padding:0 var(--sp-2);border-radius:var(--r-xs);background:var(--brand-soft);color:var(--brand-ui);font-size:var(--fs-3xs);font-weight:600">{{ t.makam }}</span>
+              </td>
+              <td style="padding:var(--sp-3) var(--sp-2);border-bottom:var(--bw) solid var(--line);font-size:var(--fs-2xs);color:var(--ink-3);white-space:nowrap">{{ t.tarih }}</td>
+              <td style="padding:var(--sp-3) var(--sp-4);border-bottom:var(--bw) solid var(--line);text-align:right;color:var(--ink-3)">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+              </td>
+            </tr>
+          </sc-for>
+        </tbody>
+      </table>
+      <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--sp-25);padding:var(--sp-3) var(--sp-4);background:var(--surface-2)">
+        <div style="font-size:var(--fs-2xs);color:var(--ink-3)">{{ sayfaBilgi }}</div>
+        <div style="display:flex;gap:var(--sp-15)">
+          <button aria-label="Önceki sayfa" style="width:32px;height:32px;display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-xs);background:var(--surface);color:var(--ink-3);cursor:pointer">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+          </button>
+          <button aria-label="Sonraki sayfa" style="width:32px;height:32px;display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-xs);background:var(--surface);color:var(--ink-2);cursor:pointer" style-hover="background:var(--sunken)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:var(--m);background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-lg);overflow:hidden;box-shadow:var(--sh-1)">
+      <sc-for list="{{ liste }}" as="t" hint-placeholder-count="6">
+        <div style="--c:{{ t.c }};--cb:{{ t.cb }};--sep:{{ t.sep }};--i:{{ t.i }}">
+          <button onClick="{{ t.ac }}" style="width:100%;text-align:left;display:flex;align-items:flex-start;gap:var(--sp-25);padding:var(--sp-3) var(--sp-35);border:0;background:transparent;cursor:pointer;box-shadow:inset 0 calc(var(--bw) * -1) 0 var(--sep);animation:rowIn var(--dur) var(--ease) both;animation-delay:calc(var(--i) * 28ms)" style-active="background:var(--sunken)">
+            <span style="width:30px;height:30px;flex:none;border-radius:var(--r-sm);background:var(--cb);color:var(--c);display:grid;place-items:center;margin-top:2px">{{ t.ikon }}</span>
+            <span style="flex:1;min-width:0">
+              <span style="display:flex;align-items:center;gap:var(--sp-15);margin-bottom:var(--sp-1)">
+                <span style="font-size:var(--fs-3xs);font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--c)">{{ t.durumAd }}</span>
+                <span style="width:3px;height:3px;border-radius:99px;background:var(--line-2)"></span>
+                <span style="font-size:var(--fs-3xs);color:var(--ink-3)">{{ t.kisaTarih }}</span>
+              </span>
+              <span style="display:block;font-size:var(--fs-sm);line-height:1.45;color:var(--ink);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">{{ t.konu }}</span>
+              <span style="display:flex;align-items:center;gap:var(--sp-15);margin-top:var(--sp-15);font-size:var(--fs-2xs);color:var(--ink-3)">
+                <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+                {{ t.ad }}
+              </span>
+            </span>
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none;opacity:.6;margin-top:var(--sp-3)"><path d="m9 18 6-6-6-6"></path></svg>
+          </button>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ talepDetayMi }}" hint-placeholder-val="{{ false }}">
+    <div style="display:var(--dflex);align-items:center;gap:var(--sp-25);flex-wrap:wrap">
+      <button onClick="{{ talepleriAc }}" style="display:flex;align-items:center;gap:var(--sp-15);height:34px;padding:0 var(--sp-3) 0 var(--sp-2);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+        Talepler
+      </button>
+      <div style="flex:1"></div>
+      <button style="display:flex;align-items:center;gap:var(--sp-15);height:34px;padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg>
+        Düzenle
+      </button>
+      <button style="display:flex;align-items:center;gap:var(--sp-15);height:34px;padding:0 var(--sp-3);border:var(--bw) solid var(--danger-soft);border-radius:var(--r-sm);background:var(--danger-soft);color:var(--danger);font-size:var(--fs-xs);font-weight:600;cursor:pointer">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path></svg>
+        Reddet
+      </button>
+      <button style="display:flex;align-items:center;gap:var(--sp-15);height:34px;padding:0 var(--sp-35);border:0;border-radius:var(--r-sm);background:var(--ok);color:var(--on-ok);font-family:var(--font-d),sans-serif;font-size:var(--fs-xs);font-weight:600;cursor:pointer;box-shadow:var(--sh-1)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+        Onayla ve Randevu Ver
+      </button>
+    </div>
+
+    <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);padding:var(--cardpad)">
+      <div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-25);flex-wrap:wrap">
+        <span style="display:inline-flex;align-items:center;gap:var(--sp-15);height:24px;padding:0 var(--sp-25);border-radius:var(--r-pill);background:var(--warn-soft);color:var(--warn);font-size:var(--fs-3xs);font-weight:600">
+          <span style="width:5px;height:5px;border-radius:99px;background:currentColor"></span>Beklemede
+        </span>
+        <span style="font-size:var(--fs-2xs);color:var(--ink-3);font-family:ui-monospace,Menlo,monospace">TLP-2026-0114</span>
+        <span style="width:4px;height:4px;border-radius:99px;background:var(--line-2)"></span>
+        <span style="font-size:var(--fs-2xs);color:var(--ink-3)">Web formu</span>
+      </div>
+      <h1 style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--h1);line-height:1.3;letter-spacing:var(--track-d);margin:0;text-wrap:pretty">İl Teşkilatı Başkanı ile Görüşme Talebi</h1>
+    </div>
+
+    <div style="display:grid;grid-template-columns:var(--detay-cols);gap:var(--gap);align-items:start">
+      <div style="display:flex;flex-direction:column;gap:var(--gap);min-width:0">
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+          <div style="display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-ui)"><path d="M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2"></path><circle cx="12" cy="7" r="4"></circle></svg>
+            <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Talep Sahibi</div>
+          </div>
+          <div style="display:var(--dgrid);grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--sp-45);padding:var(--cardpad)">
+            <sc-for list="{{ talepBilgi }}" as="b" hint-placeholder-count="6">
+              <div>
+                <div style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-15)">{{ b.ad }}</div>
+                <div style="font-size:var(--fs-sm);color:var(--ink);line-height:1.5">{{ b.deger }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:var(--m)">
+            <sc-for list="{{ talepBilgi }}" as="b" hint-placeholder-count="6">
+              <div style="--sep:{{ b.sep }}">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-35);padding:var(--sp-25) var(--sp-35);box-shadow:inset 0 calc(var(--bw) * -1) 0 var(--sep)">
+                  <span style="font-size:var(--fs-xs);color:var(--ink-3);flex:none">{{ b.ad }}</span>
+                  <span style="font-size:var(--fs-sm);color:var(--ink);text-align:right;line-height:1.45">{{ b.deger }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+          <div style="display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-ui)"><path d="M6 22a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h8a2.4 2.4 0 0 1 1.704.706l3.588 3.588A2.4 2.4 0 0 1 20 8v12a2 2 0 0 1-2 2z"></path><path d="M14 2v5a1 1 0 0 0 1 1h5"></path><path d="M10 9H8"></path><path d="M16 13H8"></path><path d="M16 17H8"></path></svg>
+            <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Talep Metni</div>
+          </div>
+          <div style="padding:var(--cardpad);font-size:var(--fs-sm);line-height:1.7;color:var(--ink-2);text-wrap:pretty">İl teşkilatı yönetim kurulu üyeleri ile birlikte Sayın Başkanımızı ziyaret etmek, il genelinde yürütülen sosyal yardım çalışmaları ve mahalle ölçeğindeki altyapı talepleri hakkında görüş alışverişinde bulunmak istiyoruz. Uygun görülmesi hâlinde 5 kişilik heyet olarak katılım sağlanacaktır.</div>
+        </div>
+
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+          <div style="display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line)">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-ui)"><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"></path><path d="M15 3v5a1 1 0 0 0 1 1h5"></path></svg>
+            <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm);flex:1">Notlar</div>
+            <span style="font-size:var(--fs-3xs);font-weight:700;color:var(--ink-3);background:var(--sunken);border-radius:var(--r-pill);padding:2px var(--sp-2)">2</span>
+          </div>
+          <sc-for list="{{ notlar }}" as="n" hint-placeholder-count="2">
+            <div style="display:flex;gap:var(--sp-3);padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line)">
+              <div style="width:30px;height:30px;flex:none;border-radius:99px;background:var(--sunken);color:var(--ink-2);display:grid;place-items:center;font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-3xs)">{{ n.bas }}</div>
+              <div style="flex:1;min-width:0">
+                <div style="display:flex;align-items:baseline;gap:var(--sp-2);margin-bottom:var(--sp-1)">
+                  <span style="font-size:var(--fs-xs);font-weight:600;color:var(--ink)">{{ n.kisi }}</span>
+                  <span style="font-size:var(--fs-3xs);color:var(--ink-3)">{{ n.zaman }}</span>
+                </div>
+                <div style="font-size:var(--fs-sm);line-height:1.6;color:var(--ink-2)">{{ n.metin }}</div>
+              </div>
+            </div>
+          </sc-for>
+          <div style="display:flex;gap:var(--sp-2);padding:var(--sp-3) var(--cardpad);background:var(--surface-2)">
+            <input type="text" placeholder="Not ekleyin…" style="flex:1;min-width:0;height:var(--h-ctrl);padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);font-size:var(--fs-sm);outline:none" />
+            <button style="height:var(--h-ctrl);padding:0 var(--sp-4);border:0;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);font-size:var(--fs-xs);font-weight:600;cursor:pointer">Ekle</button>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:var(--gap);min-width:0">
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+          <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Durum Akışı</div>
+          <div style="padding:var(--cardpad)">
+            <sc-for list="{{ akis }}" as="a" hint-placeholder-count="4">
+              <div style="--c:{{ a.c }};--cb:{{ a.cb }}">
+                <div style="display:flex;gap:var(--sp-3)">
+                  <div style="display:flex;flex-direction:column;align-items:center;flex:none;width:22px">
+                    <div style="width:22px;height:22px;border-radius:99px;background:var(--cb);color:var(--c);display:grid;place-items:center">
+                      <div style="width:8px;height:8px;border-radius:99px;background:currentColor"></div>
+                    </div>
+                    <div style="width:1px;flex:1;background:var(--line);margin:3px 0"></div>
+                  </div>
+                  <div style="padding-bottom:var(--sp-4);flex:1">
+                    <div style="font-size:var(--fs-sm);font-weight:600;color:var(--ink)">{{ a.ad }}</div>
+                    <div style="font-size:var(--fs-2xs);color:var(--ink-3);margin-top:3px">{{ a.zaman }}</div>
+                  </div>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+          <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Önerilen Randevu</div>
+          <div style="padding:var(--cardpad);display:flex;flex-direction:column;gap:var(--sp-3)">
+            <div style="display:flex;align-items:center;gap:var(--sp-3)">
+              <div style="width:52px;height:52px;flex:none;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1">
+                <span style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-xl)">14</span>
+                <span style="font-size:var(--fs-3xs);letter-spacing:.08em;text-transform:uppercase;opacity:.85">Ağu</span>
+              </div>
+              <div style="min-width:0">
+                <div style="font-size:var(--fs-sm);font-weight:600;color:var(--ink)">Perşembe · 10:30 – 11:00</div>
+                <div style="display:flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-2xs);color:var(--ink-3);margin-top:var(--sp-1)">
+                  <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                  Makam
+                </div>
+              </div>
+            </div>
+            <div style="font-size:var(--fs-2xs);line-height:1.6;color:var(--ink-3);padding-top:var(--sp-3);border-top:var(--bw) solid var(--line)">Bu saat için makam takviminde çakışma yok. Onayladığınızda talep sahibine SMS gönderilir.</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div style="display:var(--mflex);gap:var(--sp-2);position:sticky;bottom:0;padding:var(--sp-3) 0 var(--sp-1);background:linear-gradient(180deg,transparent,var(--bg) 45%)">
+      <button style="flex:1;height:52px;display:flex;align-items:center;justify-content:center;border:var(--bw) solid var(--line);border-radius:var(--r-md);background:var(--surface);color:var(--danger);font-size:var(--fs-md);font-weight:600;cursor:pointer;transition:transform var(--dur) var(--ease-spring)" style-active="transform:scale(.97)">Reddet</button>
+      <button style="flex:1.8;height:52px;display:flex;align-items:center;justify-content:center;gap:var(--sp-2);border:0;border-radius:var(--r-md);background:var(--ok);color:var(--on-ok);font-family:var(--font-d),sans-serif;font-size:var(--fs-md);font-weight:600;cursor:pointer;box-shadow:var(--sh-2);transition:transform var(--dur) var(--ease-spring)" style-active="transform:scale(.97)">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 6 9 17l-5-5"></path></svg>
+        Onayla
+      </button>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ ajandaMi }}" hint-placeholder-val="{{ false }}">
+    <div style="display:var(--mflex);gap:var(--sp-15);overflow:auto;padding:2px 0 var(--sp-1);margin:0 calc(var(--pad) * -1);padding-left:var(--pad);padding-right:var(--pad)">
+      <sc-for list="{{ gunSeridi }}" as="g" hint-placeholder-count="7">
+        <div style="--gbg:var(--surface);--gfg:var(--ink);--gsub:var(--ink-3);--gbd:var(--line)">
+          <div style="--gbg:{{ g.bg }};--gfg:{{ g.fg }};--gsub:{{ g.sub }};--gbd:{{ g.bd }}">
+            <button onClick="{{ g.sec }}" style="width:50px;flex:none;display:flex;flex-direction:column;align-items:center;gap:var(--sp-1);padding:var(--sp-2) 0;border:var(--bw) solid var(--gbd);border-radius:var(--r-md);background:var(--gbg);cursor:pointer;transition:all var(--dur) var(--ease)" style-active="transform:scale(.95)">
+              <span style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.05em;text-transform:uppercase;color:var(--gsub)">{{ g.gunAdi }}</span>
+              <span style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-lg);color:var(--gfg)">{{ g.gun }}</span>
+              <span style="width:4px;height:4px;border-radius:99px;background:{{ g.nokta }}"></span>
+            </button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:var(--dflex);align-items:center;gap:var(--sp-25);flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:var(--sp-15);flex:none">
+        <button aria-label="Önceki gün" style="width:var(--h-ctrl);height:var(--h-ctrl);display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+        <button style="height:var(--h-ctrl);padding:0 var(--sp-35);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink);font-size:var(--fs-xs);font-weight:600;cursor:pointer">Bugün</button>
+        <button aria-label="Sonraki gün" style="width:var(--h-ctrl);height:var(--h-ctrl);display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+      </div>
+      <div style="display:flex;padding:3px;background:var(--sunken);border:var(--bw) solid var(--line);border-radius:var(--r-sm);flex:none">
+        <sc-for list="{{ gorunumler }}" as="g" hint-placeholder-count="3">
+          <div style="--gbg:transparent;--gfg:var(--ink-3);--gsh:none">
+            <div style="--gbg:{{ g.bg }};--gfg:{{ g.fg }};--gsh:{{ g.sh }}">
+              <button onClick="{{ g.sec }}" style="height:30px;padding:0 var(--sp-35);border:0;border-radius:var(--r-xs);background:var(--gbg);color:var(--gfg);box-shadow:var(--gsh);font-size:var(--fs-xs);font-weight:600;cursor:pointer;transition:all var(--dur) var(--ease)">{{ g.ad }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <div style="flex:1"></div>
+      <button style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M12 15V3"></path><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="m7 10 5 5 5-5"></path></svg>
+        Dışa Aktar
+      </button>
+      <button style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-35);border:0;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);font-family:var(--font-d),sans-serif;font-size:var(--fs-xs);font-weight:600;cursor:pointer;box-shadow:var(--sh-1)" style-hover="background:var(--brand-hover)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+        Yeni Etkinlik
+      </button>
+    </div>
+
+    <div style="display:flex;align-items:center;gap:var(--sp-35);padding:var(--sp-4) var(--cardpad);background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1)">
+      <div style="width:56px;height:56px;flex:none;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);display:flex;flex-direction:column;align-items:center;justify-content:center;line-height:1.1">
+        <span style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-2xl)">11</span>
+        <span style="font-size:var(--fs-3xs);letter-spacing:.08em;text-transform:uppercase;opacity:.85">Ağu</span>
+      </div>
+      <div style="flex:1;min-width:0">
+        <div style="display:flex;align-items:center;gap:var(--sp-2)">
+          <span style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--h1);letter-spacing:var(--track-d)">Salı</span>
+          <span style="display:inline-flex;align-items:center;height:22px;padding:0 var(--sp-2);border-radius:var(--r-pill);background:var(--accent-soft);color:var(--accent-ink);font-size:var(--fs-3xs);font-weight:700;letter-spacing:.05em;text-transform:uppercase">Bugün</span>
+        </div>
+        <div style="font-size:var(--fs-xs);color:var(--ink-3);margin-top:var(--sp-1)">6 etkinlik · 3 makam kabulü · 1 basın açıklaması</div>
+      </div>
+      <div style="display:var(--dflex);align-items:center;gap:var(--sp-45);flex:none">
+        <sc-for list="{{ ozet }}" as="o" hint-placeholder-count="3">
+          <div style="text-align:right">
+            <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-xl);color:var(--ink)">{{ o.sayi }}</div>
+            <div style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-top:3px">{{ o.ad }}</div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:flex;flex-direction:column;gap:var(--sp-25)">
+      <sc-for list="{{ ajanda }}" as="e" hint-placeholder-count="6">
+        <div style="--c:{{ e.c }};--cb:{{ e.cb }};--simdi:{{ e.simdi }};--foto:{{ e.foto }};--i:{{ e.i }}">
+          <div>
+            <div style="display:var(--simdi);align-items:center;gap:var(--sp-25);margin:var(--sp-1) 0 var(--sp-35)">
+              <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-2xs);color:var(--accent-ink);letter-spacing:.06em">14:12 ŞU AN</div>
+              <div style="flex:1;height:1px;background:var(--accent-ui)"></div>
+              <div style="width:7px;height:7px;border-radius:99px;background:var(--accent-ui)"></div>
+            </div>
+            <button onClick="{{ e.ac }}" style="width:100%;text-align:left;display:flex;gap:var(--sp-35);padding:0;border:0;background:transparent;cursor:pointer;animation:rowIn var(--dur) var(--ease) both;animation-delay:calc(var(--i) * 26ms)">
+              <span style="display:var(--dflex);flex-direction:column;align-items:flex-end;width:62px;flex:none;padding-top:var(--sp-35)">
+                <span style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-md);color:var(--ink)">{{ e.saat }}</span>
+                <span style="font-size:var(--fs-2xs);color:var(--ink-3);margin-top:3px">{{ e.bitis }}</span>
+              </span>
+              <span style="flex:1;min-width:0;display:flex;background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden;transition:border-color var(--dur) var(--ease)" style-hover="border-color:var(--line-2)" style-active="background:var(--surface-2)">
+                <span style="width:4px;flex:none;background:var(--c)"></span>
+                <span style="flex:1;min-width:0;padding:var(--sp-35) var(--sp-4)">
+                  <span style="display:flex;align-items:flex-start;gap:var(--sp-25)">
+                    <span style="flex:1;min-width:0">
+                      <span style="display:var(--mflex);align-items:center;gap:var(--sp-15);margin-bottom:var(--sp-15)">
+                        <span style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm);color:var(--ink)">{{ e.saat }}</span>
+                        <span style="width:3px;height:3px;border-radius:99px;background:var(--line-2)"></span>
+                        <span style="font-size:var(--fs-2xs);color:var(--ink-3)">{{ e.bitis }}</span>
+                      </span>
+                      <span style="display:block;font-size:var(--fs-md);font-weight:500;line-height:1.45;color:var(--ink);text-wrap:pretty">{{ e.ad }}</span>
+                      <span style="display:flex;align-items:center;gap:var(--sp-3);flex-wrap:wrap;margin-top:var(--sp-2)">
+                        <span style="display:flex;align-items:center;gap:var(--sp-1);font-size:var(--fs-2xs);color:var(--ink-3)">
+                          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex:none"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+                          {{ e.yer }}
+                        </span>
+                        <span style="display:inline-flex;align-items:center;height:21px;padding:0 var(--sp-2);border-radius:var(--r-xs);background:var(--cb);color:var(--c);font-size:var(--fs-3xs);font-weight:600;letter-spacing:.04em;text-transform:uppercase">{{ e.tur }}</span>
+                      </span>
+                    </span>
+                    <span style="display:var(--foto);width:28px;height:28px;flex:none;border-radius:var(--r-xs);background:var(--sunken);color:var(--ink-3);place-items:center">
+                      <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M13.997 4a2 2 0 0 1 1.76 1.05l.486.9A2 2 0 0 0 18.003 7H20a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h1.997a2 2 0 0 0 1.759-1.048l.489-.904A2 2 0 0 1 10.004 4z"></path><circle cx="12" cy="13" r="3"></circle></svg>
+                    </span>
+                  </span>
+                </span>
+              </span>
+            </button>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ takvimMi }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;align-items:center;gap:var(--sp-25);flex-wrap:wrap">
+      <div style="display:flex;align-items:center;gap:var(--sp-15);flex:none">
+        <button aria-label="Önceki ay" style="width:var(--h-ctrl);height:var(--h-ctrl);display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m15 18-6-6 6-6"></path></svg>
+        </button>
+        <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--h1);letter-spacing:var(--track-d);padding:0 var(--sp-15);white-space:nowrap">Ağustos 2026</div>
+        <button aria-label="Sonraki ay" style="width:var(--h-ctrl);height:var(--h-ctrl);display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+      </div>
+      <div style="flex:1"></div>
+      <div style="display:var(--dflex);padding:3px;background:var(--sunken);border:var(--bw) solid var(--line);border-radius:var(--r-sm);flex:none">
+        <sc-for list="{{ takvimGorunum }}" as="g" hint-placeholder-count="3">
+          <div style="--gbg:transparent;--gfg:var(--ink-3);--gsh:none">
+            <div style="--gbg:{{ g.bg }};--gfg:{{ g.fg }};--gsh:{{ g.sh }}">
+              <button onClick="{{ g.sec }}" style="height:30px;padding:0 var(--sp-35);border:0;border-radius:var(--r-xs);background:var(--gbg);color:var(--gfg);box-shadow:var(--gsh);font-size:var(--fs-xs);font-weight:600;cursor:pointer;transition:all var(--dur) var(--ease)">{{ g.ad }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+      <button style="display:var(--dflex);align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-35);border:0;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);font-family:var(--font-d),sans-serif;font-size:var(--fs-xs);font-weight:600;cursor:pointer;box-shadow:var(--sh-1);flex:none" style-hover="background:var(--brand-hover)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+        Yeni Etkinlik
+      </button>
+    </div>
+
+    <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr));background:var(--surface-2);border-bottom:var(--bw) solid var(--line)">
+        <sc-for list="{{ gunAdlari }}" as="g" hint-placeholder-count="7">
+          <div style="padding:var(--sp-25) var(--sp-2);text-align:center;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3)">{{ g }}</div>
+        </sc-for>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(7,minmax(0,1fr))">
+        <sc-for list="{{ hucreler }}" as="h" hint-placeholder-count="42">
+          <div style="--hbg:{{ h.bg }};--hfg:{{ h.fg }};--hring:{{ h.ring }}">
+            <button onClick="{{ h.sec }}" style="display:block;width:100%;text-align:left;min-height:var(--cellh);padding:var(--sp-15) var(--sp-2);border:0;border-right:var(--bw) solid var(--line);border-bottom:var(--bw) solid var(--line);background:var(--hbg);cursor:pointer;overflow:hidden;box-shadow:inset 0 0 0 1.5px var(--hring);transition:background var(--dur) var(--ease)" style-hover="background:var(--surface-2)">
+              <span style="display:flex;align-items:center;justify-content:space-between;gap:var(--sp-1)">
+                <span style="font-family:var(--font-d),sans-serif;font-weight:600;font-size:var(--fs-2xs);color:var(--hfg)">{{ h.gun }}</span>
+                <span style="display:var(--mflex);gap:3px;align-items:center">
+                  <sc-for list="{{ h.noktalar }}" as="n" hint-placeholder-count="0">
+                    <span style="--c:{{ n }}">
+                      <span style="display:block;width:5px;height:5px;border-radius:99px;background:var(--c)"></span>
+                    </span>
+                  </sc-for>
+                </span>
+              </span>
+              <span style="display:var(--d);margin-top:var(--sp-1)">
+                <sc-for list="{{ h.etkinlikler }}" as="e" hint-placeholder-count="0">
+                  <span style="--c:{{ e.c }}">
+                    <span style="display:flex;gap:var(--sp-1);align-items:flex-start;margin-bottom:3px;padding:3px var(--sp-1);border-radius:var(--r-xs);background:var(--surface-2);border-left:2px solid var(--c)">
+                      <span style="font-family:var(--font-d),sans-serif;font-weight:600;font-size:var(--fs-3xs);color:var(--ink-2);flex:none;padding-top:1px">{{ e.saat }}</span>
+                      <span style="font-size:var(--fs-3xs);line-height:1.35;color:var(--ink-2);overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical">{{ e.ad }}</span>
+                    </span>
+                  </span>
+                </sc-for>
+                <sc-if value="{{ h.fazla }}" hint-placeholder-val="{{ false }}">
+                  <span style="display:block;font-size:var(--fs-3xs);font-weight:600;color:var(--brand-ui);padding:1px var(--sp-1)">{{ h.fazla }}</span>
+                </sc-if>
+              </span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="display:var(--dflex);align-items:center;gap:var(--sp-45);flex-wrap:wrap;padding:0 2px">
+      <sc-for list="{{ turler }}" as="t" hint-placeholder-count="5">
+        <div style="--c:{{ t.c }}">
+          <div style="display:flex;align-items:center;gap:var(--sp-15)">
+            <span style="width:9px;height:9px;border-radius:var(--r-xs);background:var(--c)"></span>
+            <span style="font-size:var(--fs-2xs);color:var(--ink-3)">{{ t.ad }}</span>
+          </div>
+        </div>
+      </sc-for>
+    </div>
+
+    <div style="display:var(--m)">
+      <div style="display:flex;align-items:baseline;gap:var(--sp-2);padding:var(--sp-4) var(--sp-1) var(--sp-2)">
+        <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-lg)">{{ secilenGun }}</div>
+        <div style="font-size:var(--fs-2xs);color:var(--ink-3)">{{ secilenBilgi }}</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:var(--sp-2)">
+        <sc-for list="{{ secilenEtkinlikler }}" as="e" hint-placeholder-count="3">
+          <div style="--c:{{ e.c }};--cb:{{ e.cb }}">
+            <button onClick="{{ e.ac }}" style="width:100%;text-align:left;display:flex;background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);overflow:hidden;cursor:pointer;box-shadow:var(--sh-1);transition:transform var(--dur) var(--ease-spring)" style-active="transform:scale(.98)">
+              <span style="width:4px;flex:none;background:var(--c)"></span>
+              <span style="flex:1;min-width:0;padding:var(--sp-3) var(--sp-35)">
+                <span style="display:flex;align-items:center;gap:var(--sp-15);margin-bottom:var(--sp-1)">
+                  <span style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-xs);color:var(--ink)">{{ e.saat }}</span>
+                  <span style="display:inline-flex;align-items:center;height:19px;padding:0 var(--sp-15);border-radius:var(--r-xs);background:var(--cb);color:var(--c);font-size:var(--fs-3xs);font-weight:600;text-transform:uppercase;letter-spacing:.05em">{{ e.tur }}</span>
+                </span>
+                <span style="display:block;font-size:var(--fs-sm);line-height:1.45;color:var(--ink)">{{ e.ad }}</span>
+              </span>
+            </button>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ etkinlikDetayMi }}" hint-placeholder-val="{{ false }}">
+    <div style="display:var(--dflex);align-items:center;gap:var(--sp-25);flex-wrap:wrap">
+      <button onClick="{{ ajandayiAc }}" style="display:flex;align-items:center;gap:var(--sp-15);height:34px;padding:0 var(--sp-3) 0 var(--sp-2);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 19-7-7 7-7"></path><path d="M19 12H5"></path></svg>
+        Ajanda
+      </button>
+      <div style="flex:1"></div>
+      <button style="display:flex;align-items:center;gap:var(--sp-15);height:34px;padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"></path><path d="M15 3v5a1 1 0 0 0 1 1h5"></path></svg>
+        Not Ekle
+      </button>
+      <button style="display:flex;align-items:center;gap:var(--sp-15);height:34px;padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z"></path><path d="m15 5 4 4"></path></svg>
+        Düzenle
+      </button>
+      <button aria-label="Sil" style="width:34px;height:34px;display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--danger);cursor:pointer" style-hover="background:var(--danger-soft)">
+        <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6"></path><path d="M3 6h18"></path><path d="M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"></path></svg>
+      </button>
+    </div>
+
+    <div style="background:var(--surface);border:var(--bw) solid var(--line);border-top:3px solid var(--accent-ui);border-radius:var(--r-md);box-shadow:var(--sh-1);padding:var(--cardpad)">
+      <div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-25);flex-wrap:wrap">
+        <span style="display:inline-flex;align-items:center;height:24px;padding:0 var(--sp-25);border-radius:var(--r-xs);background:var(--accent-soft);color:var(--accent-ink);font-size:var(--fs-3xs);font-weight:600;letter-spacing:.05em;text-transform:uppercase">Tören / Açılış</span>
+        <span style="display:inline-flex;align-items:center;height:24px;padding:0 var(--sp-25);border-radius:var(--r-xs);background:var(--brand-soft);color:var(--brand-ui);font-size:var(--fs-3xs);font-weight:600;letter-spacing:.05em;text-transform:uppercase">Makam Dışı</span>
+        <span style="font-size:var(--fs-2xs);color:var(--ink-3);font-family:ui-monospace,Menlo,monospace">ETK-2026-8421</span>
+      </div>
+      <h1 style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--h1);line-height:1.3;letter-spacing:var(--track-d);margin:0 0 var(--sp-35);text-wrap:pretty">Net Market 3. Şube Açılış Töreni ( Ticaret Borsası Eski Yön. Kur. Üyesi )</h1>
+      <div style="display:flex;gap:var(--sp-45);flex-wrap:wrap">
+        <div style="display:flex;align-items:center;gap:var(--sp-15);font-size:var(--fs-sm);color:var(--ink-2)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-ui)"><circle cx="12" cy="12" r="10"></circle><path d="M12 6v6l4 2"></path></svg>
+          11 Ağustos 2026 · 11:00 – 11:30
+        </div>
+        <div style="display:flex;align-items:center;gap:var(--sp-15);font-size:var(--fs-sm);color:var(--ink-2)">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" style="color:var(--accent-ui)"><path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"></path><circle cx="12" cy="10" r="3"></circle></svg>
+          Yenimahallee Caddesi Elmas Sitesi Altı
+        </div>
+      </div>
+    </div>
+
+    <div style="display:grid;grid-template-columns:var(--detay-cols);gap:var(--gap);align-items:start">
+      <div style="display:flex;flex-direction:column;gap:var(--gap);min-width:0">
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+          <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Etkinlik Detayları</div>
+          <div style="display:var(--dgrid);grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:var(--sp-45);padding:var(--cardpad)">
+            <sc-for list="{{ etkinlikBilgi }}" as="b" hint-placeholder-count="6">
+              <div>
+                <div style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-15)">{{ b.ad }}</div>
+                <div style="font-size:var(--fs-sm);color:var(--ink);line-height:1.5">{{ b.deger }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:var(--m)">
+            <sc-for list="{{ etkinlikBilgi }}" as="b" hint-placeholder-count="6">
+              <div style="--sep:{{ b.sep }}">
+                <div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-35);padding:var(--sp-25) var(--sp-35);box-shadow:inset 0 calc(var(--bw) * -1) 0 var(--sep)">
+                  <span style="font-size:var(--fs-xs);color:var(--ink-3);flex:none">{{ b.ad }}</span>
+                  <span style="font-size:var(--fs-sm);color:var(--ink);text-align:right;line-height:1.45">{{ b.deger }}</span>
+                </div>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="--notlarG:{{ notlarGoster }};--fotoG:{{ fotoGoster }}">
+          <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+            <div style="display:flex;gap:2px;padding:0 var(--cardpad);border-bottom:var(--bw) solid var(--line)">
+              <sc-for list="{{ sekmeler }}" as="s" hint-placeholder-count="2">
+                <div style="--sfg:var(--ink-3);--sbar:transparent">
+                  <div style="--sfg:{{ s.fg }};--sbar:{{ s.bar }}">
+                    <button onClick="{{ s.sec }}" style="position:relative;height:var(--h-ctrl-lg);padding:0 var(--sp-35);border:0;background:transparent;color:var(--sfg);font-size:var(--fs-sm);font-weight:600;cursor:pointer;transition:color var(--dur) var(--ease)">
+                      {{ s.ad }}
+                      <span style="position:absolute;left:var(--sp-2);right:var(--sp-2);bottom:calc(var(--bw) * -1);height:2px;background:var(--sbar);transition:background var(--dur) var(--ease)"></span>
+                    </button>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+
+            <div style="display:var(--notlarG);padding:var(--sp-12) var(--sp-5)">
+              <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--sp-3)">
+                <div style="width:52px;height:52px;border-radius:var(--r-lg);background:var(--sunken);color:var(--ink-3);display:grid;place-items:center">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M21 9a2.4 2.4 0 0 0-.706-1.706l-3.588-3.588A2.4 2.4 0 0 0 15 3H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2z"></path><path d="M15 3v5a1 1 0 0 0 1 1h5"></path></svg>
+                </div>
+                <div>
+                  <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-md);margin-bottom:var(--sp-1)">Henüz not eklenmemiş</div>
+                  <div style="font-size:var(--fs-xs);color:var(--ink-3);line-height:1.6;max-width:300px">Etkinlik sırasında alınan notlar burada görünür. Makam sekreteryası ve basın birimi aynı nota erişir.</div>
+                </div>
+                <button style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-35);margin-top:var(--sp-1);border:0;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);font-size:var(--fs-xs);font-weight:600;cursor:pointer">
+                  <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"></path><path d="M12 5v14"></path></svg>
+                  Not Ekle
+                </button>
+              </div>
+            </div>
+
+            <div style="display:var(--fotoG);padding:var(--cardpad)">
+              <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:var(--sp-3)">
+                <sc-for list="{{ fotolar }}" as="f" hint-placeholder-count="3">
+                  <div style="aspect-ratio:4/3;border:var(--bw) solid var(--line);border-radius:var(--r-sm);background-color:var(--surface-2);background-image:repeating-linear-gradient(45deg,var(--sunken) 0 8px,transparent 8px 16px);display:grid;place-items:center;padding:var(--sp-25);text-align:center">
+                    <span style="font-family:ui-monospace,Menlo,monospace;font-size:var(--fs-3xs);color:var(--ink-3)">{{ f }}</span>
+                  </div>
+                </sc-for>
+              </div>
+              <div style="margin-top:var(--sp-35);font-size:var(--fs-2xs);color:var(--ink-3);display:flex;align-items:center;gap:var(--sp-15)">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M12 16v-4"></path><path d="M12 8h.01"></path></svg>
+                Basın biriminin yüklediği fotoğraflar burada arşivlenir.
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="display:flex;flex-direction:column;gap:var(--gap);min-width:0">
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+          <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Konum</div>
+          <div style="height:150px;background-color:var(--surface-2);background-image:repeating-linear-gradient(45deg,var(--sunken) 0 8px,transparent 8px 16px);display:grid;place-items:center;border-bottom:var(--bw) solid var(--line)">
+            <span style="font-family:ui-monospace,Menlo,monospace;font-size:var(--fs-3xs);color:var(--ink-3)">konum haritası</span>
+          </div>
+          <div style="padding:var(--sp-35) var(--cardpad);font-size:var(--fs-sm);color:var(--ink-2);line-height:1.55">SeyrantCumhuriyet Caddesi No:1, Merkez</div>
+        </div>
+
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+          <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Kayıt Bilgileri</div>
+          <div style="padding:var(--sp-15) var(--cardpad) var(--sp-35)">
+            <sc-for list="{{ kayitBilgi }}" as="b" hint-placeholder-count="4">
+              <div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-3);padding:var(--sp-25) 0;border-bottom:var(--bw) solid var(--line)">
+                <span style="font-size:var(--fs-2xs);color:var(--ink-3)">{{ b.ad }}</span>
+                <span style="font-size:var(--fs-xs);color:var(--ink);text-align:right">{{ b.deger }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <button onClick="{{ talepDetayAc }}" style="display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-35) var(--cardpad);background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);cursor:pointer;text-align:left;transition:border-color var(--dur) var(--ease)" style-hover="border-color:var(--line-2)" style-active="background:var(--surface-2)">
+          <span style="width:34px;height:34px;flex:none;border-radius:var(--r-sm);background:var(--brand-soft);color:var(--brand-ui);display:grid;place-items:center">
+            <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+          </span>
+          <span style="flex:1;min-width:0">
+            <span style="display:block;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-1)">İlgili Talep</span>
+            <span style="display:block;font-size:var(--fs-xs);color:var(--ink);line-height:1.45">TLP-2026-0097 · Mehmet DEMİR</span>
+          </span>
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);flex:none"><path d="m9 18 6-6-6-6"></path></svg>
+        </button>
+      </div>
+    </div>
+  </sc-if>
+
+  <sc-if value="{{ bilesenlerMi }}" hint-placeholder-val="{{ false }}">
+    <div style="display:flex;flex-direction:column;gap:var(--gap)">
+
+      <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+        <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);display:flex;align-items:center;gap:var(--sp-2)">
+          <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm);flex:1">Renk Token'ları</div>
+          <div style="font-size:var(--fs-3xs);color:var(--ink-3)">Tema Tasarımcısı ile canlı değişir</div>
+        </div>
+        <div style="padding:var(--cardpad);display:grid;grid-template-columns:repeat(auto-fill,minmax(126px,1fr));gap:var(--sp-25)">
+          <sc-for list="{{ renkler }}" as="r" hint-placeholder-count="14">
+            <div style="border:var(--bw) solid var(--line);border-radius:var(--r-sm);overflow:hidden">
+              <div style="height:44px;background:{{ r.deger }}"></div>
+              <div style="padding:var(--sp-15) var(--sp-2);background:var(--surface)">
+                <div style="font-family:ui-monospace,Menlo,monospace;font-size:var(--fs-3xs);color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.ad }}</div>
+                <div style="font-size:var(--fs-3xs);color:var(--ink-3);margin-top:2px">{{ r.not }}</div>
+              </div>
+            </div>
+          </sc-for>
+        </div>
+      </div>
+
+      <div style="display:grid;grid-template-columns:var(--main-cols);gap:var(--gap);align-items:start">
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+          <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Tipografi Ölçeği</div>
+          <div style="padding:var(--cardpad);display:flex;flex-direction:column;gap:var(--sp-35)">
+            <sc-for list="{{ tipografi }}" as="t" hint-placeholder-count="7">
+              <div style="display:flex;align-items:baseline;gap:var(--sp-35);border-bottom:var(--bw) solid var(--line);padding-bottom:var(--sp-25)">
+                <span style="width:74px;flex:none;font-family:ui-monospace,Menlo,monospace;font-size:var(--fs-3xs);color:var(--ink-3)">{{ t.token }}</span>
+                <span style="flex:1;min-width:0;font-family:{{ t.font }};font-size:{{ t.boy }};font-weight:{{ t.kalin }};color:var(--ink);line-height:1.25;letter-spacing:var(--track-d);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">{{ t.ornek }}</span>
+                <span style="flex:none;font-size:var(--fs-3xs);color:var(--ink-3)">{{ t.not }}</span>
+              </div>
+            </sc-for>
+          </div>
+        </div>
+
+        <div style="display:flex;flex-direction:column;gap:var(--gap)">
+          <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+            <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Yarıçap ve Gölge</div>
+            <div style="padding:var(--cardpad);display:grid;grid-template-columns:repeat(auto-fit,minmax(72px,1fr));gap:var(--sp-25)">
+              <sc-for list="{{ yaricaplar }}" as="y" hint-placeholder-count="5">
+                <div style="text-align:center">
+                  <div style="height:52px;border:var(--bw) solid var(--line);background:var(--surface-2);border-radius:{{ y.deger }};box-shadow:{{ y.golge }}"></div>
+                  <div style="font-family:ui-monospace,Menlo,monospace;font-size:var(--fs-3xs);color:var(--ink-3);margin-top:var(--sp-15)">{{ y.ad }}</div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+
+          <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+            <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Boşluk Ölçeği</div>
+            <div style="padding:var(--cardpad);display:flex;flex-direction:column;gap:var(--sp-2)">
+              <sc-for list="{{ bosluklar }}" as="b" hint-placeholder-count="6">
+                <div style="display:flex;align-items:center;gap:var(--sp-25)">
+                  <span style="width:62px;flex:none;font-family:ui-monospace,Menlo,monospace;font-size:var(--fs-3xs);color:var(--ink-3)">{{ b.ad }}</span>
+                  <span style="height:10px;border-radius:var(--r-xs);background:var(--brand-soft);border:var(--bw) solid var(--brand-line);width:{{ b.deger }}"></span>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-1);overflow:hidden">
+        <div style="padding:var(--sp-35) var(--cardpad);border-bottom:var(--bw) solid var(--line);font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Butonlar ve Durumlar</div>
+        <div style="padding:var(--cardpad);display:flex;flex-direction:column;gap:var(--sp-45)">
+          <div style="display:flex;flex-wrap:wrap;gap:var(--sp-25);align-items:center">
+            <button style="display:flex;align-items:center;gap:var(--sp-15);height:var(--h-ctrl);padding:0 var(--sp-35);border:0;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);font-family:var(--font-d),sans-serif;font-size:var(--fs-xs);font-weight:600;cursor:pointer;box-shadow:var(--sh-1)" style-hover="background:var(--brand-hover)">Birincil</button>
+            <button style="height:var(--h-ctrl);padding:0 var(--sp-35);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer" style-hover="background:var(--surface-2);color:var(--ink)">İkincil</button>
+            <button style="height:var(--h-ctrl);padding:0 var(--sp-35);border:0;border-radius:var(--r-sm);background:var(--ok);color:var(--on-ok);font-family:var(--font-d),sans-serif;font-size:var(--fs-xs);font-weight:600;cursor:pointer">Onayla</button>
+            <button style="height:var(--h-ctrl);padding:0 var(--sp-35);border:var(--bw) solid var(--danger-soft);border-radius:var(--r-sm);background:var(--danger-soft);color:var(--danger);font-size:var(--fs-xs);font-weight:600;cursor:pointer">Reddet</button>
+            <button style="height:var(--h-ctrl);padding:0 var(--sp-35);border:0;border-radius:var(--r-sm);background:transparent;color:var(--brand-ui);font-size:var(--fs-xs);font-weight:600;cursor:pointer" style-hover="background:var(--brand-soft)">Sade</button>
+            <button disabled="disabled" style="height:var(--h-ctrl);padding:0 var(--sp-35);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--sunken);color:var(--ink-3);font-size:var(--fs-xs);font-weight:500;cursor:not-allowed;opacity:.7">Pasif</button>
+            <button aria-label="İkon buton" style="width:var(--h-ctrl);height:var(--h-ctrl);display:grid;place-items:center;border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);color:var(--ink-2);cursor:pointer">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="1"></circle><circle cx="19" cy="12" r="1"></circle><circle cx="5" cy="12" r="1"></circle></svg>
+            </button>
+          </div>
+
+          <div style="display:flex;flex-wrap:wrap;gap:var(--sp-25);align-items:center">
+            <sc-for list="{{ durumlar }}" as="d" hint-placeholder-count="6">
+              <div style="--c:{{ d.c }};--cb:{{ d.cb }}">
+                <span style="display:inline-flex;align-items:center;gap:var(--sp-15);height:24px;padding:0 var(--sp-25);border-radius:var(--r-pill);background:var(--cb);color:var(--c);font-size:var(--fs-3xs);font-weight:600;white-space:nowrap">
+                  <span style="width:5px;height:5px;border-radius:99px;background:currentColor"></span>{{ d.ad }}
+                </span>
+              </div>
+            </sc-for>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:var(--sp-35)">
+            <label style="display:block">
+              <span style="display:block;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-15)">Metin alanı</span>
+              <span style="display:flex;align-items:center;gap:var(--sp-2);height:var(--h-ctrl-lg);padding:0 var(--sp-3);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface-2)">
+                <input type="text" defaultValue="Cabir Çetinkaya" style="border:0;outline:none;background:transparent;flex:1;min-width:0;font-size:var(--fs-sm)" />
+              </span>
+            </label>
+            <label style="display:block">
+              <span style="display:block;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-15)">Hatalı alan</span>
+              <span style="display:flex;align-items:center;gap:var(--sp-2);height:var(--h-ctrl-lg);padding:0 var(--sp-3);border:var(--bw) solid var(--danger);border-radius:var(--r-sm);background:var(--danger-soft)">
+                <input type="text" defaultValue="0540 585" style="border:0;outline:none;background:transparent;flex:1;min-width:0;font-size:var(--fs-sm);color:var(--danger)" />
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--danger);flex:none"><circle cx="12" cy="12" r="10"></circle><path d="M12 8v4"></path><path d="M12 16h.01"></path></svg>
+              </span>
+            </label>
+            <div>
+              <span style="display:block;font-size:var(--fs-3xs);font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-15)">Segment</span>
+              <div style="display:flex;padding:3px;background:var(--sunken);border:var(--bw) solid var(--line);border-radius:var(--r-sm);width:fit-content">
+                <span style="height:30px;padding:0 var(--sp-35);display:grid;place-items:center;border-radius:var(--r-xs);background:var(--surface);color:var(--ink);box-shadow:var(--sh-1);font-size:var(--fs-xs);font-weight:600">Gün</span>
+                <span style="height:30px;padding:0 var(--sp-35);display:grid;place-items:center;border-radius:var(--r-xs);color:var(--ink-3);font-size:var(--fs-xs);font-weight:600">Hafta</span>
+                <span style="height:30px;padding:0 var(--sp-35);display:grid;place-items:center;border-radius:var(--r-xs);color:var(--ink-3);font-size:var(--fs-xs);font-weight:600">Liste</span>
+              </div>
+            </div>
+          </div>
+
+          <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:var(--sp-35)">
+            <div style="background:var(--bg);border:var(--bw) solid var(--line);border-radius:var(--r-md);padding:var(--sp-35)">
+              <div style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-25)">Liste satırı (mobil)</div>
+              <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-lg);overflow:hidden">
+                <div style="display:flex;align-items:center;gap:var(--sp-25);padding:var(--sp-3) var(--sp-35);border-bottom:var(--bw) solid var(--line)">
+                  <span style="width:30px;height:30px;flex:none;border-radius:var(--r-sm);background:var(--warn-soft);color:var(--warn);display:grid;place-items:center">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path></svg>
+                  </span>
+                  <span style="flex:1;min-width:0">
+                    <span style="display:block;font-size:var(--fs-sm);color:var(--ink);line-height:1.4">Muhtar görüşme talebi</span>
+                    <span style="display:block;font-size:var(--fs-2xs);color:var(--ink-3);margin-top:2px">Hasan Uğur Çakır · 29.08</span>
+                  </span>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);opacity:.6;flex:none"><path d="m9 18 6-6-6-6"></path></svg>
+                </div>
+                <div style="display:flex;align-items:center;gap:var(--sp-25);padding:var(--sp-3) var(--sp-35)">
+                  <span style="width:30px;height:30px;flex:none;border-radius:var(--r-sm);background:var(--ok-soft);color:var(--ok);display:grid;place-items:center">
+                    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path></svg>
+                  </span>
+                  <span style="flex:1;min-width:0">
+                    <span style="display:block;font-size:var(--fs-sm);color:var(--ink);line-height:1.4">Kulüp başkanı ziyareti</span>
+                    <span style="display:block;font-size:var(--fs-2xs);color:var(--ink-3);margin-top:2px">Ahmet Şahin · 18.09</span>
+                  </span>
+                  <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" style="color:var(--ink-3);opacity:.6;flex:none"><path d="m9 18 6-6-6-6"></path></svg>
+                </div>
+              </div>
+            </div>
+
+            <div style="background:var(--bg);border:var(--bw) solid var(--line);border-radius:var(--r-md);padding:var(--sp-35)">
+              <div style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-25)">Boş durum</div>
+              <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);padding:var(--sp-6) var(--sp-4);display:flex;flex-direction:column;align-items:center;text-align:center;gap:var(--sp-25)">
+                <div style="width:44px;height:44px;border-radius:var(--r-md);background:var(--sunken);color:var(--ink-3);display:grid;place-items:center">
+                  <svg width="21" height="21" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 12 16 12 14 15 10 15 8 12 2 12"></polyline><path d="M5.45 5.11 2 12v6a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-6l-3.45-6.89A2 2 0 0 0 16.76 4H7.24a2 2 0 0 0-1.79 1.11z"></path></svg>
+                </div>
+                <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-sm)">Kayıt bulunamadı</div>
+                <div style="font-size:var(--fs-2xs);color:var(--ink-3);line-height:1.6;max-width:240px">Seçtiğiniz filtrelerde talep yok. Filtreleri temizleyip yeniden deneyin.</div>
+              </div>
+            </div>
+
+            <div style="background:var(--bg);border:var(--bw) solid var(--line);border-radius:var(--r-md);padding:var(--sp-35)">
+              <div style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-25)">Yükleniyor (iskelet)</div>
+              <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);padding:var(--sp-35);display:flex;flex-direction:column;gap:var(--sp-25)">
+                <div style="height:12px;width:45%;border-radius:var(--r-xs);background:var(--sunken);animation:nabiz 1.4s ease-in-out infinite"></div>
+                <div style="height:12px;width:88%;border-radius:var(--r-xs);background:var(--sunken);animation:nabiz 1.4s ease-in-out .15s infinite"></div>
+                <div style="height:12px;width:66%;border-radius:var(--r-xs);background:var(--sunken);animation:nabiz 1.4s ease-in-out .3s infinite"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;ekran&quot;: {&quot;editor&quot;:&quot;enum&quot;,&quot;options&quot;:[&quot;anasayfa&quot;,&quot;talepler&quot;,&quot;talep-detay&quot;,&quot;ajanda&quot;,&quot;takvim&quot;,&quot;etkinlik-detay&quot;,&quot;bilesenler&quot;],&quot;default&quot;:&quot;anasayfa&quot;,&quot;tsType&quot;:&quot;string&quot;},
+  &quot;git&quot;: {&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(ekran: string) =&gt; void&quot;}
+}">
+class Component extends DCLogic {
+  state = { filtre: 'tumu', gorunum: 'Gün', takvimGorunum: 'Ay', sekme: 'notlar', secilen: 11, seritGun: 11 };
+
+  static IK = {
+    hourglass: '<path d="M5 22h14"></path><path d="M5 2h14"></path><path d="M17 22v-4.172a2 2 0 0 0-.586-1.414L12 12l-4.414 4.414A2 2 0 0 0 7 17.828V22"></path><path d="M7 2v4.172a2 2 0 0 0 .586 1.414L12 12l4.414-4.414A2 2 0 0 0 17 6.172V2"></path>',
+    'circle-check': '<circle cx="12" cy="12" r="10"></circle><path d="m9 12 2 2 4-4"></path>',
+    'calendar-clock': '<path d="M16 14v2.2l1.6 1"></path><path d="M16 2v3"></path><path d="M21 7.338V5a2 2 0 0 0-2-2H5a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h2.338"></path><path d="M3 9h5.859"></path><path d="M8 2v3"></path><circle cx="16" cy="16" r="6"></circle>',
+    'circle-x': '<circle cx="12" cy="12" r="10"></circle><path d="m15 9-6 6"></path><path d="m9 9 6 6"></path>',
+    ban: '<circle cx="12" cy="12" r="10"></circle><path d="M4.929 4.929 19.07 19.071"></path>',
+    'check-check': '<path d="M18 6 7 17l-5-5"></path><path d="m22 10-7.5 7.5L13 16"></path>'
+  };
+
+  static DURUM = {
+    beklemede: ['Beklemede', 'var(--warn)', 'var(--warn-soft)', 'hourglass'],
+    onaylandi: ['Onaylandı', 'var(--ok)', 'var(--ok-soft)', 'circle-check'],
+    devam: ['Devam Ediyor', 'var(--info)', 'var(--info-soft)', 'calendar-clock'],
+    reddedildi: ['Reddedildi', 'var(--danger)', 'var(--danger-soft)', 'circle-x'],
+    iptal: ['İptal Edildi', 'var(--mute)', 'var(--mute-soft)', 'ban'],
+    tamamlandi: ['Tamamlandı', 'var(--slate)', 'var(--slate-soft)', 'check-check']
+  };
+
+  static TUR = {
+    kabul: ['Kabul', 'var(--brand-ui)', 'var(--brand-soft)'],
+    toren: ['Tören / Açılış', 'var(--accent-ui)', 'var(--accent-soft)'],
+    basin: ['Basın', 'var(--info)', 'var(--info-soft)'],
+    toplanti: ['Toplantı', 'var(--slate)', 'var(--slate-soft)'],
+    nikah: ['Nikah / Düğün', 'var(--warn)', 'var(--warn-soft)'],
+    inceleme: ['İnceleme', 'var(--ok)', 'var(--ok-soft)']
+  };
+
+  static TALEPLER = [
+    ['beklemede', 'İl Teşkilatı Başkanı ile Görüşme Talebi', 'Cabir Çetinkaya', '0540 585 81 23', '22.09.2025 19:35', '22.09'],
+    ['onaylandi', 'Geleneksel Spor Dalları Atlı Cirit Kulüp Başkanı Ahmet Şahin Saha İle İlgili Görüşme Talebi', 'Ahmet Şahin', '0543 568 91 30', '18.09.2025 10:21', '18.09'],
+    ['devam', 'Cumhuriyet İlköğretim Okulu ziyaret', 'Ayşe YILMAZ', '—', '16.09.2025 16:49', '16.09'],
+    ['beklemede', 'Yıldızeliler Dernek Başkanı Fevzi Uçar ve Dernek Yönetimi Ziyaret Amaçlı Görüşme Talebi', 'Fevzi Uçar', '0542 785 71 04', '16.09.2025 15:39', '16.09'],
+    ['onaylandi', 'Gelecek Partisi İl Başkanı Kadir Aydın Sayın Başkanımız İle Görüşme Talebi', 'Kadir Aydın', '0507 313 18 55', '11.09.2025 15:43', '11.09'],
+    ['tamamlandi', 'Selçuklu Mahalle Muhtarı Hasan Uğur Çakır Görüşme Talebi', 'Hasan Uğur Çakır', '0530 611 48 30', '29.08.2025 13:54', '29.08'],
+    ['devam', 'Aydoğan Mahallesi Muhtarı Akın Yıldırım Görüşme Talebi', 'Akın Yıldırım', '0543 236 53 98', '27.08.2025 13:31', '27.08'],
+    ['tamamlandi', 'Yerel Gazete İmtiyaz Sahibi Görüşme Talebi', 'Muhsin Kaya', '0532 275 15 91', '27.08.2025 10:49', '27.08'],
+    ['beklemede', 'Genç Kültür Platformu Başkanı Özgür Özkan çekim için görüşme talep eder', 'Özgür Özkan', '0542 585 12 58', '26.08.2025 09:30', '26.08'],
+    ['devam', 'Adana’da esnaf Ertan Arık ziyaret amaçlı başkanımız ile görüşmek ister', 'Ertan Arık', '0536 706 37 64', '26.08.2025 08:12', '26.08']
+  ];
+
+  static BUGUN = [
+    ['11:00', '11:30', 'Net Market 3. Şube Açılış Töreni ( Ticaret Borsası Eski Yön. Kur. Üyesi )', 'Market 3. Şube Açılışı', 'Yenimahallee Caddesi', 'toren', false],
+    ['11:30', '12:00', 'Hayat Ağacı Derneği İle Kırtasiye Yardımı ile İlgili Basın Açıklaması', 'Kırtasiye Yardımı Basın Açıklaması', 'Makam', 'basin', false],
+    ['13:20', '13:30', 'TSO Yönetim Kurulu Başkanı Zeki Özdemir Kabul', 'TSO Başkanı Zeki Özdemir Kabul', 'Makam', 'kabul', true],
+    ['13:30', '14:00', '4 Eylül Tarım ve Fuarcılık Komitesi Kabul (TSO, Ticaret Odası, Ziraat Odası, Tarım İl Md.)', 'Tarım ve Fuarcılık Komitesi', 'Makam', 'kabul', true],
+    ['14:00', '14:45', 'LGS ve YKS’de Dereceye Giren Öğrencileri Kabul', 'LGS ve YKS Dereceye Girenler', 'Makam', 'kabul', false],
+    ['15:00', '16:00', 'Halfelik Caddesi İnceleme', 'Halfelik Caddesi İnceleme', 'Halfelik Caddesi', 'inceleme', false]
+  ];
+
+  static TEMMUZ = {
+    27: [['09:00', 'Başkan Yardımcıları ve Genel Müdürler ile Toplantı', 'toplanti']],
+    31: [['09:30', 'Media Markt Mağaza Açılış Töreni', 'toren']]
+  };
+  static TEMMUZ_FAZLA = { 27: '+5 daha', 28: '+10 daha', 29: '+10 daha', 30: '+8 daha', 31: '+9 daha' };
+
+  static AY = {
+    3: [['15:30', 'Hatice Kurt Kabul', 'kabul']],
+    4: [['09:00', '4 Eylül 112 Acil Sağlık Merkezi Temel Atma', 'toren']],
+    5: [['11:30', 'Taha Akgül Kabul', 'kabul']],
+    6: [['14:15', 'Grup Meclis Toplantısı', 'toplanti']],
+    7: [['14:00', 'Emin Fırın Adlı İşyeri Açılışı', 'toren']],
+    10: [['11:00', 'Ravza Cami Temel Atma Töreni', 'toren']],
+    11: [['11:00', 'Net Market 3. Şube Açılış Töreni', 'toren'], ['13:20', 'TSO Başkanı Zeki Özdemir Kabul', 'kabul']],
+    12: [['13:00', 'Grup Meclis Toplantısı', 'toplanti']],
+    13: [['13:00', 'Halk Günü', 'kabul']],
+    15: [['12:30', 'MHP İl Başkanlığı 15. Olağan Kongresi', 'toplanti']],
+    18: [['16:00', 'Ümit Alpan Kabul', 'kabul'], ['19:00', 'Yeliz Altunel & İsmet Küçük Nikâh Töreni', 'nikah']],
+    19: [['15:00', 'Organize Sanayi Bölgesi Yönetim Kurulu Toplantısı', 'toplanti']],
+    20: [['20:00', 'Furkan Yurt & Betül Doğan Düğün Töreni', 'nikah']],
+    21: [['18:00', 'Habibe & Burak Çiftinin Nikâh Kıyılması', 'nikah']],
+    27: [['21:00', 'Çetin Yıldız’ın Kızının Düğün Töreni', 'nikah']],
+    29: [['10:00', 'İlçe Köyü Geleneksel Piknik', 'toplanti']]
+  };
+  static FAZLA = { 3: '+7 daha', 4: '+5 daha', 5: '+5 daha', 6: '+5 daha', 7: '+2 daha', 10: '+6 daha', 11: '+4 daha', 12: '+4 daha', 13: '+3 daha', 15: '+2 daha', 18: '+1 daha', 19: '+1 daha', 21: '+3 daha' };
+  static GUN_ADI = ['Pzt', 'Sal', 'Çar', 'Per', 'Cum', 'Cmt', 'Paz'];
+
+  ik(ad, boy) {
+    return React.createElement('svg', {
+      width: boy || 16, height: boy || 16, viewBox: '0 0 24 24', fill: 'none',
+      stroke: 'currentColor', strokeWidth: 1.9, strokeLinecap: 'round', strokeLinejoin: 'round',
+      style: { display: 'block', flex: 'none' },
+      dangerouslySetInnerHTML: { __html: Component.IK[ad] || '' }
+    });
+  }
+
+  git = (k) => { const f = this.props.git; if (f) f(k); };
+
+  talep(t, i, son) {
+    const d = Component.DURUM[t[0]];
+    return {
+      durumAd: d[0], c: d[1], cb: d[2], ikon: this.ik(d[3], 16),
+      konu: t[1], ad: t[2], tel: t[3], tarih: t[4], kisaTarih: t[5],
+      makam: 'Örnek Belediye Başkanı', i: i,
+      sep: son ? 'transparent' : 'var(--line)',
+      ac: () => this.git('talep-detay')
+    };
+  }
+
+  seg(liste, aktif, ayarla) {
+    return liste.map((ad) => ({
+      ad: ad,
+      bg: ad === aktif ? 'var(--surface)' : 'transparent',
+      fg: ad === aktif ? 'var(--ink)' : 'var(--ink-3)',
+      sh: ad === aktif ? 'var(--sh-1)' : 'none',
+      sec: () => ayarla(ad)
+    }));
+  }
+
+  renderVals() {
+    const s = this.state;
+    const ekran = this.props.ekran || 'anasayfa';
+
+    const kartTanim = [
+      ['Beklemede', 6, 'hourglass', 'var(--warn)', 'var(--warn-soft)'],
+      ['Onaylandı', 29, 'circle-check', 'var(--ok)', 'var(--ok-soft)'],
+      ['Devam Ediyor', 66, 'calendar-clock', 'var(--info)', 'var(--info-soft)'],
+      ['Reddedildi', 0, 'circle-x', 'var(--danger)', 'var(--danger-soft)'],
+      ['İptal Edildi', 0, 'ban', 'var(--mute)', 'var(--mute-soft)'],
+      ['Tamamlandı', 13, 'check-check', 'var(--slate)', 'var(--slate-soft)']
+    ];
+
+    const filtreTanim = [['tumu', 'Tümü', 114], ['beklemede', 'Beklemede', 6], ['onaylandi', 'Onaylandı', 29], ['devam', 'Devam Ediyor', 66], ['tamamlandi', 'Tamamlandı', 13]];
+    const filtreli = Component.TALEPLER.filter((t) => s.filtre === 'tumu' || t[0] === s.filtre);
+    const liste = filtreli.map((t, i) => this.talep(t, i, i === filtreli.length - 1));
+    const son5 = Component.TALEPLER.slice(0, 5);
+    const son4 = Component.TALEPLER.slice(0, 4);
+
+    const bugun = Component.BUGUN.map((e, i) => {
+      const tur = Component.TUR[e[5]];
+      return {
+        saat: e[0], bitis: e[1], ad: e[2], kisaAd: e[3], yer: e[4],
+        tur: tur[0], c: tur[1], cb: tur[2], foto: e[6] ? 'grid' : 'none', i: i,
+        sep: i === Component.BUGUN.length - 1 ? 'transparent' : 'var(--line)',
+        ac: () => this.git('etkinlik-detay')
+      };
+    });
+    const bugunMobil = bugun.slice(0, 4).map((e, i) => Object.assign({}, e, { sep: i === 3 ? 'transparent' : 'var(--line)' }));
+    const ajanda = bugun.map((e, i) => Object.assign({}, e, { simdi: i === 4 ? 'flex' : 'none' }));
+
+    const gunler = [];
+    for (let i = 0; i < 42; i++) {
+      const n = 27 + i;
+      let gun, ay;
+      if (n <= 31) { gun = n; ay = 'T'; }
+      else if (n <= 62) { gun = n - 31; ay = 'A'; }
+      else { gun = n - 62; ay = 'E'; }
+      gunler.push({ gun: gun, ay: ay, disAy: ay !== 'A' });
+    }
+    const hucreler = gunler.map((g) => {
+      const veri = g.ay === 'A' ? (Component.AY[g.gun] || []) : (g.ay === 'T' ? (Component.TEMMUZ[g.gun] || []) : []);
+      const etkinlikler = veri.map((v) => ({ saat: v[0], ad: v[1], c: Component.TUR[v[2]][1] }));
+      const bugunMu = g.ay === 'A' && g.gun === 11;
+      const secili = g.ay === 'A' && g.gun === s.secilen;
+      return {
+        gun: g.gun,
+        bg: bugunMu ? 'var(--brand-soft)' : (g.disAy ? 'var(--surface-2)' : 'var(--surface)'),
+        fg: g.disAy ? 'var(--ink-3)' : (bugunMu ? 'var(--brand-ui)' : 'var(--ink-2)'),
+        ring: bugunMu ? 'var(--accent-ui)' : (secili ? 'var(--line-2)' : 'transparent'),
+        etkinlikler: etkinlikler,
+        noktalar: etkinlikler.slice(0, 3).map((e) => e.c),
+        fazla: (g.ay === 'A' ? Component.FAZLA[g.gun] : (g.ay === 'T' ? Component.TEMMUZ_FAZLA[g.gun] : null)) || null,
+        sec: () => this.setState({ secilen: g.disAy ? s.secilen : g.gun })
+      };
+    });
+
+    const secVeri = (Component.AY[s.secilen] || []).map((v) => {
+      const tur = Component.TUR[v[2]];
+      return { saat: v[0], ad: v[1], tur: tur[0], c: tur[1], cb: tur[2], ac: () => this.git('etkinlik-detay') };
+    });
+
+    const serit = [];
+    for (let g = 8; g <= 14; g++) {
+      const aktif = g === s.seritGun;
+      const varMi = !!Component.AY[g];
+      serit.push({
+        gun: g, gunAdi: Component.GUN_ADI[(g + 4) % 7],
+        bg: aktif ? 'var(--brand-ui)' : 'var(--surface)',
+        fg: aktif ? 'var(--on-brand)' : 'var(--ink)',
+        sub: aktif ? 'var(--on-brand)' : 'var(--ink-3)',
+        bd: aktif ? 'var(--brand-ui)' : 'var(--line)',
+        nokta: varMi ? (aktif ? 'var(--on-brand)' : 'var(--accent-ui)') : 'transparent',
+        sec: () => this.setState({ seritGun: g })
+      });
+    }
+
+    const renkler = [
+      ['--brand', 'Marka'], ['--brand-ui', 'Etkileşim'], ['--brand-soft', 'Marka dolgu'],
+      ['--accent-ui', 'Vurgu'], ['--accent-soft', 'Vurgu dolgu'],
+      ['--bg', 'Zemin'], ['--surface', 'Yüzey'], ['--surface-2', 'Yüzey 2'], ['--sunken', 'Gömülü'],
+      ['--line', 'Kenarlık'], ['--ink', 'Metin'], ['--ink-2', 'İkincil'], ['--ink-3', 'Üçüncül'],
+      ['--warn', 'Beklemede'], ['--ok', 'Onaylandı'], ['--info', 'Devam'], ['--danger', 'Reddedildi'],
+      ['--slate', 'Tamamlandı']
+    ].map((r) => ({ ad: r[0], not: r[1], deger: 'var(' + r[0] + ')' }));
+
+    const tipografi = [
+      ['--fs-4xl', 'var(--fs-4xl)', 'Giriş başlığı', '700', 'var(--font-d)'],
+      ['--fs-3xl', 'var(--fs-3xl)', 'Mobil büyük başlık', '700', 'var(--font-d)'],
+      ['--fs-2xl', 'var(--fs-2xl)', 'Ekran başlığı H1', '700', 'var(--font-d)'],
+      ['--fs-xl', 'var(--fs-xl)', 'Appbar başlığı', '700', 'var(--font-d)'],
+      ['--fs-lg', 'var(--fs-lg)', 'Vurgulu gövde metni', '500', 'var(--font-t)'],
+      ['--fs-md', 'var(--fs-md)', 'Gövde metni · temel ölçü', '400', 'var(--font-t)'],
+      ['--fs-sm', 'var(--fs-sm)', 'Tablo hücresi, liste satırı', '400', 'var(--font-t)'],
+      ['--fs-xs', 'var(--fs-xs)', 'Meta bilgi, buton etiketi', '500', 'var(--font-t)'],
+      ['--fs-2xs', 'var(--fs-2xs)', 'Alan etiketi, çip', '600', 'var(--font-t)'],
+      ['--fs-3xs', 'var(--fs-3xs)', 'Kolon başlığı, tabbar', '600', 'var(--font-t)']
+    ].map((t) => ({ token: t[0], boy: t[1], ornek: t[2], kalin: t[3], font: t[4], not: t[0] === '--fs-md' ? 'temel' : '' }));
+
+    const yaricaplar = [
+      ['--r-xs', 'var(--r-xs)', 'var(--sh-1)'], ['--r-sm', 'var(--r-sm)', 'var(--sh-1)'],
+      ['--r-md', 'var(--r-md)', 'var(--sh-2)'], ['--r-lg', 'var(--r-lg)', 'var(--sh-2)'],
+      ['--r-xl', 'var(--r-xl)', 'var(--sh-3)']
+    ].map((y) => ({ ad: y[0], deger: y[1], golge: y[2] }));
+
+    const bosluklar = [
+      ['--sp-1', 'var(--sp-1)'], ['--sp-2', 'var(--sp-2)'], ['--sp-3', 'var(--sp-3)'],
+      ['--sp-4', 'var(--sp-4)'], ['--sp-6', 'var(--sp-6)'], ['--sp-8', 'var(--sp-8)'],
+      ['--sp-12', 'var(--sp-12)'], ['--sp-16', 'var(--sp-16)']
+    ].map((b) => ({ ad: b[0], deger: b[1] }));
+
+    const durumlar = Object.keys(Component.DURUM).map((k) => {
+      const d = Component.DURUM[k];
+      return { ad: d[0], c: d[1], cb: d[2] };
+    });
+
+    return {
+      anasayfaMi: ekran === 'anasayfa',
+      taleplerMi: ekran === 'talepler',
+      talepDetayMi: ekran === 'talep-detay',
+      ajandaMi: ekran === 'ajanda',
+      takvimMi: ekran === 'takvim',
+      etkinlikDetayMi: ekran === 'etkinlik-detay',
+      bilesenlerMi: ekran === 'bilesenler',
+
+      kartlar: kartTanim.map((k) => ({
+        ad: k[0], sayi: k[1], ikon: this.ik(k[2], 16), c: k[3], cb: k[4],
+        git: () => this.git('talepler')
+      })),
+      sonTalepler: son5.map((t, i) => this.talep(t, i, i === 4)),
+      sonTaleplerMobil: son4.map((t, i) => this.talep(t, i, i === 3)),
+      bugun: bugun, bugunMobil: bugunMobil, ajanda: ajanda,
+      gunSeridi: serit,
+      ozet: [{ sayi: '3', ad: 'Kabul' }, { sayi: '2', ad: 'Makam Dışı' }, { sayi: '1', ad: 'Basın' }],
+      gorunumler: this.seg(['Gün', 'Hafta', 'Liste'], s.gorunum, (a) => this.setState({ gorunum: a })),
+      takvimGorunum: this.seg(['Hafta', 'Ay', 'Liste'], s.takvimGorunum, (a) => this.setState({ takvimGorunum: a })),
+
+      kolonlar: [
+        { ad: 'Durum', g: '1%' }, { ad: 'Konu', g: 'auto' }, { ad: 'Ad Soyad', g: '1%' },
+        { ad: 'Telefon', g: '1%' }, { ad: 'Makam', g: '1%' }, { ad: 'Tarih', g: '1%' }
+      ],
+      filtreler: filtreTanim.map((f) => ({
+        ad: f[1], sayi: f[2],
+        bg: s.filtre === f[0] ? 'var(--brand-ui)' : 'var(--surface)',
+        fg: s.filtre === f[0] ? 'var(--on-brand)' : 'var(--ink-2)',
+        bd: s.filtre === f[0] ? 'var(--brand-ui)' : 'var(--line)',
+        sec: () => this.setState({ filtre: f[0] })
+      })),
+      liste: liste,
+      sayfaBilgi: liste.length + ' kayıt gösteriliyor · toplam 114',
+
+      talepBilgi: [
+        { ad: 'Ad Soyad', deger: 'Cabir Çetinkaya' },
+        { ad: 'Telefon', deger: '0540 585 81 23' },
+        { ad: 'Kurum / Ünvan', deger: 'Örnek İl Teşkilatı' },
+        { ad: 'Makam', deger: 'Örnek Belediye Başkanı' },
+        { ad: 'Talep Türü', deger: 'Görüşme / Ziyaret' },
+        { ad: 'Kişi Sayısı', deger: '5 kişilik heyet' }
+      ].map((b, i, a) => Object.assign({}, b, { sep: i === a.length - 1 ? 'transparent' : 'var(--line)' })),
+      notlar: [
+        { bas: 'ÖK', kisi: 'Özel Kalem', zaman: '22.09.2025 19:52', metin: 'Talep sahibi ile telefonda görüşüldü, 14 Ağustos sabahı uygun olduğunu bildirdi.' },
+        { bas: 'MS', kisi: 'Makam Sekreteryası', zaman: '23.09.2025 09:10', metin: 'Aynı gün 11:00’de basın açıklaması var, randevu 10:30 – 11:00 aralığına alınmalı.' }
+      ],
+      akis: [
+        { ad: 'Talep oluşturuldu', zaman: '22.09.2025 19:35 · Web formu', c: 'var(--slate)', cb: 'var(--slate-soft)' },
+        { ad: 'Özel Kalem incelemesi', zaman: '22.09.2025 19:50 · Özel Kalem', c: 'var(--slate)', cb: 'var(--slate-soft)' },
+        { ad: 'Makam onayı bekliyor', zaman: 'Şu an bu adımda', c: 'var(--warn)', cb: 'var(--warn-soft)' },
+        { ad: 'Randevu oluşturulacak', zaman: 'Onay sonrası ajandaya işlenir', c: 'var(--ink-3)', cb: 'var(--sunken)' }
+      ],
+
+      etkinlikBilgi: [
+        { ad: 'Etkinlik Tipi', deger: 'Tören / Açılış' },
+        { ad: 'Durum', deger: 'Makam dışı ziyaret' },
+        { ad: 'İrtibat Kişisi', deger: 'Mehmet DEMİR' },
+        { ad: 'İrtibat Telefonu', deger: '0532 418 55 06' },
+        { ad: 'Tarih / Saat', deger: '11 Ağustos 2026 · 11:00 – 11:30' },
+        { ad: 'Katılım', deger: 'Başkan + Basın birimi' }
+      ].map((b, i, a) => Object.assign({}, b, { sep: i === a.length - 1 ? 'transparent' : 'var(--line)' })),
+      kayitBilgi: [
+        { ad: 'Tekrar durumu', deger: 'Tekrarlanmıyor' },
+        { ad: 'Oluşturma tarihi', deger: '10.08.2026 17:28' },
+        { ad: 'Son güncelleme', deger: '11.08.2026 10:22' },
+        { ad: 'Oluşturan', deger: 'Özel Kalem' }
+      ],
+      sekmeler: [
+        { ad: 'Notlar', fg: s.sekme === 'notlar' ? 'var(--ink)' : 'var(--ink-3)', bar: s.sekme === 'notlar' ? 'var(--accent-ui)' : 'transparent', sec: () => this.setState({ sekme: 'notlar' }) },
+        { ad: 'Fotoğraflar', fg: s.sekme === 'fotograflar' ? 'var(--ink)' : 'var(--ink-3)', bar: s.sekme === 'fotograflar' ? 'var(--accent-ui)' : 'transparent', sec: () => this.setState({ sekme: 'fotograflar' }) }
+      ],
+      notlarGoster: s.sekme === 'notlar' ? 'block' : 'none',
+      fotoGoster: s.sekme === 'fotograflar' ? 'block' : 'none',
+      fotolar: ['açılış kurdelesi', 'konuşma', 'toplu fotoğraf'],
+
+      gunAdlari: Component.GUN_ADI,
+      hucreler: hucreler,
+      turler: [
+        { ad: 'Kabul', c: 'var(--brand-ui)' },
+        { ad: 'Tören / Açılış', c: 'var(--accent-ui)' },
+        { ad: 'Basın', c: 'var(--info)' },
+        { ad: 'Toplantı', c: 'var(--slate)' },
+        { ad: 'Nikah / Düğün', c: 'var(--warn)' }
+      ],
+      secilenGun: s.secilen + ' Ağustos, ' + Component.GUN_ADI[(s.secilen + 4) % 7],
+      secilenBilgi: secVeri.length + ' etkinlik',
+      secilenEtkinlikler: secVeri,
+
+      renkler: renkler, tipografi: tipografi, yaricaplar: yaricaplar,
+      bosluklar: bosluklar, durumlar: durumlar,
+
+      talepleriAc: () => this.git('talepler'),
+      ajandayiAc: () => this.git('ajanda'),
+      talepDetayAc: () => this.git('talep-detay')
+    };
+  }
+}
+</script>
+</body>
+</html>

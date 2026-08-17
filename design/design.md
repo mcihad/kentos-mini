@@ -5,6 +5,14 @@
 Bu dosya tek başına yeterlidir: buradaki değerlerle uygulama birebir yeniden üretilebilir.
 Belirsizlik bırakılmamıştır — her ölçü bir token'a, her token bir kurala bağlıdır.
 
+> **Bu klasördeki `.dc.html` dosyaları Claude tasarım tuvali önizlemeleridir.**
+> Inline stil kullanırlar; içlerinde Tailwind/Radix YOKTUR. Görsel
+> referanstır — kaynak kod olarak kopyalanmaz.
+>
+> İçlerindeki örnek veriler (kişi adları, kurum adları, adresler)
+> **uydurmadır**. Şartname ilk yazıldığında canlı sistemden alınmış gerçek
+> kayıtlar taşıyordu; depo açık kaynak olduğu için hepsi değiştirildi.
+
 | Dosya | İçerik |
 |---|---|
 | `Is Takip ve Randevu Sistemi v2.dc.html` | Token motoru (CSS), uygulama kabuğu, masaüstü + mobil çerçeveler, tema durumu |
@@ -557,7 +565,7 @@ export interface Talep {
   adSoyad: string;
   telefon?: string;
   kurum?: string;
-  makam: string;              // 'Dr. Adem UZUN'
+  makam: string;              // 'Örnek Belediye Başkanı'
   tur: string;                // 'Görüşme / Ziyaret'
   kisiSayisi?: number;
   metin: string;

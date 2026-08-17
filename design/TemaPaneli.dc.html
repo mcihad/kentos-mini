@@ -1,0 +1,370 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<div style="display:flex;flex-direction:column;height:100%;min-height:0;background:var(--surface)">
+
+  <div style="flex:none;display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-4) var(--sp-45);border-bottom:var(--bw) solid var(--line);background:var(--surface)">
+    <div style="width:36px;height:36px;flex:none;border-radius:var(--r-sm);background:var(--brand-soft);color:var(--brand-ui);display:grid;place-items:center">
+      <svg width="19" height="19" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22a1 1 0 0 1 0-20 10 9 0 0 1 10 9 5 5 0 0 1-5 5h-2.25a1.75 1.75 0 0 0-1.4 2.8l.3.4a1.75 1.75 0 0 1-1.4 2.8z"></path><circle cx="13.5" cy="6.5" r=".5" fill="currentColor"></circle><circle cx="17.5" cy="10.5" r=".5" fill="currentColor"></circle><circle cx="6.5" cy="12.5" r=".5" fill="currentColor"></circle><circle cx="8.5" cy="7.5" r=".5" fill="currentColor"></circle></svg>
+    </div>
+    <div style="flex:1;min-width:0">
+      <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-lg);letter-spacing:var(--track-d)">Tema Tasarımcısı</div>
+      <div style="font-size:var(--fs-2xs);color:var(--ink-3);margin-top:2px">{{ durum }}</div>
+    </div>
+    <button onClick="{{ sifirla }}" title="Varsayılana dön" style="height:var(--h-ctrl);padding:0 var(--sp-25);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface-2);color:var(--ink-2);font-size:var(--fs-2xs);font-weight:500;cursor:pointer;flex:none" style-hover="background:var(--sunken);color:var(--ink)">Sıfırla</button>
+    <button onClick="{{ kapat }}" aria-label="Kapat" style="width:var(--h-ctrl);height:var(--h-ctrl);flex:none;display:grid;place-items:center;border:0;border-radius:var(--r-sm);background:var(--sunken);color:var(--ink-2);cursor:pointer" style-hover="color:var(--ink)">
+      <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>
+    </button>
+  </div>
+
+  <div style="flex:1;min-height:0;overflow:auto;padding:var(--sp-45)">
+
+    <div style="margin-bottom:var(--sp-7)">
+      <div style="font-size:var(--fs-2xs);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-25)">Hazır Temalar</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:var(--sp-2)">
+        <sc-for list="{{ presetler }}" as="p" hint-placeholder-count="7">
+          <div style="--pbd:var(--line);--pbg:var(--surface);--pfg:var(--ink-2)">
+            <div style="--pbd:{{ p.bd }};--pbg:{{ p.bg }};--pfg:{{ p.fg }}">
+              <button onClick="{{ p.sec }}" style="width:100%;display:flex;align-items:center;gap:var(--sp-2);padding:var(--sp-25);border:var(--bw) solid var(--pbd);border-radius:var(--r-sm);background:var(--pbg);cursor:pointer;text-align:left;transition:all var(--dur) var(--ease)" style-hover="border-color:var(--line-2)">
+                <span style="display:flex;flex:none">
+                  <span style="width:15px;height:22px;border-radius:var(--r-xs) 0 0 var(--r-xs);background:{{ p.c1 }}"></span>
+                  <span style="width:9px;height:22px;background:{{ p.c2 }}"></span>
+                  <span style="width:9px;height:22px;border-radius:0 var(--r-xs) var(--r-xs) 0;background:{{ p.c3 }}"></span>
+                </span>
+                <span style="flex:1;min-width:0;font-size:var(--fs-2xs);font-weight:600;color:var(--pfg);line-height:1.3">{{ p.ad }}</span>
+              </button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-bottom:var(--sp-7)">
+      <div style="font-size:var(--fs-2xs);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-25)">Renk</div>
+
+      <div style="display:flex;padding:3px;background:var(--sunken);border:var(--bw) solid var(--line);border-radius:var(--r-sm);margin-bottom:var(--sp-35)">
+        <sc-for list="{{ modlar }}" as="m" hint-placeholder-count="2">
+          <div style="flex:1;--mbg:transparent;--mfg:var(--ink-3);--msh:none">
+            <div style="--mbg:{{ m.bg }};--mfg:{{ m.fg }};--msh:{{ m.sh }}">
+              <button onClick="{{ m.sec }}" style="width:100%;height:32px;display:flex;align-items:center;justify-content:center;gap:var(--sp-15);border:0;border-radius:var(--r-xs);background:var(--mbg);color:var(--mfg);box-shadow:var(--msh);font-size:var(--fs-xs);font-weight:600;cursor:pointer;transition:all var(--dur) var(--ease)">{{ m.ikon }}{{ m.ad }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="font-size:var(--fs-xs);font-weight:500;color:var(--ink-2);margin-bottom:var(--sp-2);display:flex;justify-content:space-between">
+        <span>Marka rengi</span><span style="color:var(--ink-3);font-family:ui-monospace,Menlo,monospace;font-size:var(--fs-3xs)">{{ markaKod }}</span>
+      </div>
+      <div style="display:flex;gap:var(--sp-15);margin-bottom:var(--sp-35);flex-wrap:wrap">
+        <sc-for list="{{ markalar }}" as="c" hint-placeholder-count="6">
+          <div style="--cbd:transparent">
+            <div style="--cbd:{{ c.bd }}">
+              <button onClick="{{ c.sec }}" title="{{ c.ad }}" aria-label="{{ c.ad }}" style="width:38px;height:32px;border-radius:var(--r-xs);border:2px solid var(--cbd);background:{{ c.renk }};cursor:pointer;padding:0;box-shadow:var(--sh-1);transition:transform var(--dur) var(--ease-spring)" style-hover="transform:scale(1.06)"></button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="font-size:var(--fs-xs);font-weight:500;color:var(--ink-2);margin-bottom:var(--sp-2);display:flex;justify-content:space-between">
+        <span>Vurgu rengi</span><span style="color:var(--ink-3);font-family:ui-monospace,Menlo,monospace;font-size:var(--fs-3xs)">{{ vurguKod }}</span>
+      </div>
+      <div style="display:flex;gap:var(--sp-15);margin-bottom:var(--sp-35);flex-wrap:wrap">
+        <sc-for list="{{ vurgular }}" as="c" hint-placeholder-count="6">
+          <div style="--cbd:transparent">
+            <div style="--cbd:{{ c.bd }}">
+              <button onClick="{{ c.sec }}" title="{{ c.ad }}" aria-label="{{ c.ad }}" style="width:38px;height:32px;border-radius:var(--r-xs);border:2px solid var(--cbd);background:{{ c.renk }};cursor:pointer;padding:0;box-shadow:var(--sh-1);transition:transform var(--dur) var(--ease-spring)" style-hover="transform:scale(1.06)"></button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+
+      <div style="font-size:var(--fs-xs);font-weight:500;color:var(--ink-2);margin-bottom:var(--sp-2)">Nötr taban</div>
+      <div style="display:flex;gap:var(--sp-15)">
+        <sc-for list="{{ notrler }}" as="n" hint-placeholder-count="3">
+          <div style="flex:1;--nbd:var(--line);--nbg:var(--surface);--nfg:var(--ink-2)">
+            <div style="--nbd:{{ n.bd }};--nbg:{{ n.bg }};--nfg:{{ n.fg }}">
+              <button onClick="{{ n.sec }}" style="width:100%;height:34px;border:var(--bw) solid var(--nbd);border-radius:var(--r-xs);background:var(--nbg);color:var(--nfg);font-size:var(--fs-3xs);font-weight:500;cursor:pointer;transition:all var(--dur) var(--ease)">{{ n.ad }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-bottom:var(--sp-7)">
+      <div style="font-size:var(--fs-2xs);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-25)">Form ve Geometri</div>
+      <sc-for list="{{ kaydiraclar }}" as="k" hint-placeholder-count="7">
+        <div style="margin-bottom:var(--sp-35)">
+          <div style="display:flex;align-items:baseline;justify-content:space-between;gap:var(--sp-2);margin-bottom:var(--sp-1)">
+            <span style="font-size:var(--fs-xs);font-weight:500;color:var(--ink-2)">{{ k.ad }}</span>
+            <span style="font-size:var(--fs-3xs);font-weight:600;color:var(--brand-ui);font-family:ui-monospace,Menlo,monospace">{{ k.etiket }}</span>
+          </div>
+          <input type="range" min="{{ k.min }}" max="{{ k.max }}" step="{{ k.adim }}" value="{{ k.deger }}" onChange="{{ k.degistir }}" aria-label="{{ k.ad }}" />
+          <div style="display:flex;justify-content:space-between;font-size:var(--fs-3xs);color:var(--ink-3);margin-top:2px">
+            <span>{{ k.solEtiket }}</span><span>{{ k.sagEtiket }}</span>
+          </div>
+        </div>
+      </sc-for>
+
+      <div style="font-size:var(--fs-xs);font-weight:500;color:var(--ink-2);margin-bottom:var(--sp-2)">Kenarlık kalınlığı</div>
+      <div style="display:flex;gap:var(--sp-15)">
+        <sc-for list="{{ kenarliklar }}" as="b" hint-placeholder-count="3">
+          <div style="flex:1;--bbd:var(--line);--bbg:var(--surface);--bfg:var(--ink-2)">
+            <div style="--bbd:{{ b.bd }};--bbg:{{ b.bg }};--bfg:{{ b.fg }}">
+              <button onClick="{{ b.sec }}" style="width:100%;height:34px;border:var(--bw) solid var(--bbd);border-radius:var(--r-xs);background:var(--bbg);color:var(--bfg);font-size:var(--fs-3xs);font-weight:600;cursor:pointer;transition:all var(--dur) var(--ease)">{{ b.ad }}</button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-bottom:var(--sp-7)">
+      <div style="font-size:var(--fs-2xs);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-25)">Yazı Tipi Çifti</div>
+      <div style="display:flex;flex-direction:column;gap:var(--sp-2)">
+        <sc-for list="{{ fontlar }}" as="f" hint-placeholder-count="3">
+          <div style="--fbd:var(--line);--fbg:var(--surface);--fdot:transparent;--fring:transparent">
+            <div style="--fbd:{{ f.bd }};--fbg:{{ f.bg }};--fdot:{{ f.dot }};--fring:{{ f.ring }}">
+              <button onClick="{{ f.sec }}" style="width:100%;display:flex;align-items:center;gap:var(--sp-3);padding:var(--sp-25) var(--sp-3);border:var(--bw) solid var(--fbd);border-radius:var(--r-sm);background:var(--fbg);cursor:pointer;text-align:left;box-shadow:inset 0 0 0 1px var(--fring);transition:all var(--dur) var(--ease)" style-hover="border-color:var(--line-2)">
+                <span style="width:16px;height:16px;flex:none;border-radius:99px;border:var(--bw) solid var(--line-2);display:grid;place-items:center">
+                  <span style="width:8px;height:8px;border-radius:99px;background:var(--fdot)"></span>
+                </span>
+                <span style="flex:1;min-width:0">
+                  <span style="display:block;font-family:{{ f.d }},sans-serif;font-weight:700;font-size:var(--fs-md);color:var(--ink);line-height:1.2">{{ f.ornekBaslik }}</span>
+                  <span style="display:block;font-family:{{ f.t }},sans-serif;font-size:var(--fs-2xs);color:var(--ink-3);margin-top:3px">{{ f.aciklama }}</span>
+                </span>
+              </button>
+            </div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+
+    <div style="margin-bottom:var(--sp-7)">
+      <div style="font-size:var(--fs-2xs);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);margin-bottom:var(--sp-25)">Canlı Önizleme</div>
+      <div style="border:var(--bw) solid var(--line);border-radius:var(--r-md);background:var(--bg);padding:var(--sp-35);display:flex;flex-direction:column;gap:var(--sp-25)">
+        <div style="background:var(--surface);border:var(--bw) solid var(--line);border-radius:var(--r-md);box-shadow:var(--sh-2);padding:var(--sp-3)">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:var(--sp-2);margin-bottom:var(--sp-2)">
+            <span style="font-size:var(--fs-3xs);font-weight:600;letter-spacing:.07em;text-transform:uppercase;color:var(--ink-3)">Beklemede</span>
+            <span style="display:inline-flex;align-items:center;gap:var(--sp-15);height:22px;padding:0 var(--sp-2);border-radius:var(--r-pill);background:var(--warn-soft);color:var(--warn);font-size:var(--fs-3xs);font-weight:600">
+              <span style="width:5px;height:5px;border-radius:99px;background:currentColor"></span>Onay
+            </span>
+          </div>
+          <div style="font-family:var(--font-d),sans-serif;font-weight:700;font-size:var(--fs-2xl);letter-spacing:var(--track-d);color:var(--ink)">6</div>
+          <div style="font-size:var(--fs-2xs);color:var(--ink-3);margin-top:var(--sp-1);line-height:1.5">Makam onayı bekleyen randevu talebi</div>
+        </div>
+        <div style="display:flex;gap:var(--sp-2)">
+          <button style="flex:1;height:var(--h-ctrl);border:0;border-radius:var(--r-sm);background:var(--brand-ui);color:var(--on-brand);font-family:var(--font-d),sans-serif;font-size:var(--fs-xs);font-weight:600;cursor:pointer;box-shadow:var(--sh-1)">Onayla</button>
+          <button style="flex:1;height:var(--h-ctrl);border:var(--bw) solid var(--line);border-radius:var(--r-sm);background:var(--surface);color:var(--ink-2);font-size:var(--fs-xs);font-weight:500;cursor:pointer">Ertele</button>
+        </div>
+      </div>
+    </div>
+
+    <div>
+      <div style="display:flex;align-items:center;gap:var(--sp-2);margin-bottom:var(--sp-25)">
+        <div style="font-size:var(--fs-2xs);font-weight:600;letter-spacing:.12em;text-transform:uppercase;color:var(--ink-3);flex:1">Token Çıktısı</div>
+        <div style="font-size:var(--fs-3xs);color:var(--ink-3)">globals.css içine yapıştırın</div>
+      </div>
+      <pre style="margin:0;padding:var(--sp-3);background:var(--sunken);border:var(--bw) solid var(--line);border-radius:var(--r-sm);font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:10.5px;line-height:1.65;color:var(--ink-2);overflow:auto;max-height:230px;white-space:pre">{{ cssCikti }}</pre>
+    </div>
+  </div>
+</div>
+
+</x-dc>
+<script type="text/x-dc" data-dc-script data-props="{
+  &quot;deger&quot;: {&quot;editor&quot;:null,&quot;tsType&quot;:&quot;TemaDegerleri&quot;},
+  &quot;ayarla&quot;: {&quot;editor&quot;:null,&quot;tsType&quot;:&quot;(anahtar: string, deger: unknown) =&gt; void&quot;},
+  &quot;kapat&quot;: {&quot;editor&quot;:null,&quot;tsType&quot;:&quot;() =&gt; void&quot;}
+}">
+class Component extends DCLogic {
+  static IK = {
+    sun: '<circle cx="12" cy="12" r="4"></circle><path d="M12 2v2"></path><path d="M12 20v2"></path><path d="m4.93 4.93 1.41 1.41"></path><path d="m17.66 17.66 1.41 1.41"></path><path d="M2 12h2"></path><path d="M20 12h2"></path><path d="m6.34 17.66-1.41 1.41"></path><path d="m19.07 4.93-1.41 1.41"></path>',
+    moon: '<path d="M20.985 12.486a9 9 0 1 1-9.473-9.472c.405-.022.617.46.402.803a6 6 0 0 0 8.268 8.268c.344-.215.825-.004.803.401"></path>'
+  };
+
+  static MARKA = [
+    { ad: 'Lacivert', a: '#002E6D', k: '#5B93E8' },
+    { ad: 'Zümrüt', a: '#0B5D45', k: '#4FBE94' },
+    { ad: 'Bordo', a: '#7A1F2B', k: '#E58189' },
+    { ad: 'Petrol', a: '#0E4C5C', k: '#4FB6C8' },
+    { ad: 'Mor', a: '#4B2E83', k: '#A98BE8' },
+    { ad: 'Antrasit', a: '#333A45', k: '#A6B3C6' }
+  ];
+  static VURGU = [
+    { ad: 'Altın', a: '#A78952', k: '#D8BB80' },
+    { ad: 'Bakır', a: '#A65A2E', k: '#E29A6B' },
+    { ad: 'Turkuaz', a: '#157F7F', k: '#5CC9C4' },
+    { ad: 'Kiraz', a: '#A8324A', k: '#EE8397' },
+    { ad: 'Yeşil', a: '#4A7A2B', k: '#97CE6E' },
+    { ad: 'Gri', a: '#7C8592', k: '#B3BDCB' }
+  ];
+  static NOTR = [
+    { ad: 'Sıcak kâğıt', v: '#F5F4F0' },
+    { ad: 'Nötr gri', v: '#F4F4F5' },
+    { ad: 'Soğuk mavi', v: '#F1F4F9' }
+  ];
+  static FONT = [
+    { ad: 'Kurumsal', d: 'Montserrat', t: 'IBM Plex Sans', ornek: 'Başkanlık Makamı', not: 'Montserrat + IBM Plex Sans' },
+    { ad: 'Modern', d: 'Figtree', t: 'Source Sans 3', ornek: 'Başkanlık Makamı', not: 'Figtree + Source Sans 3' },
+    { ad: 'Editoryal', d: 'Archivo', t: 'Karla', ornek: 'Başkanlık Makamı', not: 'Archivo + Karla' }
+  ];
+  static PRESET = [
+    ['kurumsal-acik', 'Kurumsal Gündüz'], ['kurumsal-koyu', 'Kurumsal Gece'], ['zumrut', 'Zümrüt Belediye'],
+    ['bordo', 'Bordo Belediye'], ['petrol', 'Petrol Mavisi'], ['antrasit', 'Antrasit Gece'],
+    ['kontrast', 'Yüksek Kontrast']
+  ];
+  static PRESET_RENK = {
+    'kurumsal-acik': ['#002E6D', '#A78952', '#F5F4F0'],
+    'kurumsal-koyu': ['#5B93E8', '#D8BB80', '#0E141E'],
+    'zumrut': ['#0B5D45', '#A78952', '#F5F4F0'],
+    'bordo': ['#7A1F2B', '#A65A2E', '#F5F4F0'],
+    'petrol': ['#0E4C5C', '#157F7F', '#F1F4F9'],
+    'antrasit': ['#A6B3C6', '#B3BDCB', '#12161C'],
+    'kontrast': ['#4B2E83', '#A8324A', '#F4F4F5']
+  };
+
+  ik(ad) {
+    return React.createElement('svg', {
+      width: 14, height: 14, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor',
+      strokeWidth: 2, strokeLinecap: 'round', strokeLinejoin: 'round',
+      style: { display: 'block', flex: 'none' },
+      dangerouslySetInnerHTML: { __html: Component.IK[ad] || '' }
+    });
+  }
+
+  d() { return this.props.deger || {}; }
+  set(k, v) { const f = this.props.ayarla; if (f) f(k, v); }
+  sayi(k) { return (e) => this.set(k, parseFloat(e.target.value)); }
+
+  cssUret() {
+    const t = this.d();
+    const m = Component.MARKA[t.marka] || Component.MARKA[0];
+    const v = Component.VURGU[t.vurgu] || Component.VURGU[0];
+    const n = Component.NOTR[t.notr] || Component.NOTR[0];
+    const f = Component.FONT[t.font] || Component.FONT[0];
+    return [
+      ':root{',
+      '  --brand:' + m.a + ';       --brand-dk:' + m.k + ';',
+      '  --accent:' + v.a + ';      --accent-dk:' + v.k + ';',
+      '  --neutral:' + n.v + ';',
+      '  --sp:' + t.sp + 'px;   --r:' + t.r + 'px;   --bw:' + t.bw + 'px;',
+      '  --fs:' + t.fs + 'px;  --fs-d:' + t.fsd + ';  --track:' + t.track + 'em;',
+      '  --sh-a:' + (t.sha / 100).toFixed(2) + ';  --dur:' + t.dur + 'ms;',
+      "  --font-d:'" + f.d + "'; --font-t:'" + f.t + "';",
+      '}',
+      'html[data-mod="' + t.mod + '"] { /* anlamsal katman devralınır */ }'
+    ].join('\n');
+  }
+
+  renderVals() {
+    const t = this.d();
+    const secBd = 'var(--brand-ui)';
+
+    const presetler = Component.PRESET.map((p) => {
+      const a = t.preset === p[0];
+      const r = Component.PRESET_RENK[p[0]] || ['#000', '#000', '#000'];
+      return {
+        ad: p[1], c1: r[0], c2: r[1], c3: r[2],
+        bd: a ? secBd : 'var(--line)',
+        bg: a ? 'var(--brand-soft)' : 'var(--surface)',
+        fg: a ? 'var(--brand-ui)' : 'var(--ink-2)',
+        sec: () => this.set('preset', p[0])
+      };
+    });
+
+    const modlar = [
+      { k: 'acik', ad: 'Gündüz', i: 'sun' },
+      { k: 'koyu', ad: 'Gece', i: 'moon' }
+    ].map((m) => {
+      const a = t.mod === m.k;
+      return {
+        ad: m.ad, ikon: this.ik(m.i),
+        bg: a ? 'var(--surface)' : 'transparent',
+        fg: a ? 'var(--ink)' : 'var(--ink-3)',
+        sh: a ? 'var(--sh-1)' : 'none',
+        sec: () => this.set('mod', m.k)
+      };
+    });
+
+    const koyuMu = t.mod === 'koyu';
+    const markalar = Component.MARKA.map((c, i) => ({
+      ad: c.ad, renk: koyuMu ? c.k : c.a,
+      bd: t.marka === i ? secBd : 'transparent',
+      sec: () => this.set('marka', i)
+    }));
+    const vurgular = Component.VURGU.map((c, i) => ({
+      ad: c.ad, renk: koyuMu ? c.k : c.a,
+      bd: t.vurgu === i ? secBd : 'transparent',
+      sec: () => this.set('vurgu', i)
+    }));
+    const notrler = Component.NOTR.map((c, i) => {
+      const a = t.notr === i;
+      return {
+        ad: c.ad,
+        bd: a ? secBd : 'var(--line)',
+        bg: a ? 'var(--brand-soft)' : 'var(--surface)',
+        fg: a ? 'var(--brand-ui)' : 'var(--ink-2)',
+        sec: () => this.set('notr', i)
+      };
+    });
+
+    const kaydiraclar = [
+      { ad: 'Köşe ovalliği', anahtar: 'r', deger: t.r, min: 0, max: 20, adim: 1, etiket: t.r + 'px', sol: 'Keskin', sag: 'Oval' },
+      { ad: 'Gölge yoğunluğu', anahtar: 'sha', deger: t.sha, min: 0, max: 55, adim: 1, etiket: (t.sha / 100).toFixed(2), sol: 'Yok', sag: 'Belirgin' },
+      { ad: 'Boşluk birimi (yoğunluk)', anahtar: 'sp', deger: t.sp, min: 3.2, max: 5.2, adim: 0.1, etiket: t.sp + 'px', sol: 'Kompakt', sag: 'Geniş' },
+      { ad: 'Temel yazı boyutu', anahtar: 'fs', deger: t.fs, min: 12, max: 17, adim: 0.5, etiket: t.fs + 'px', sol: '12', sag: '17' },
+      { ad: 'Başlık ölçeği', anahtar: 'fsd', deger: t.fsd, min: 0.9, max: 1.3, adim: 0.05, etiket: '×' + t.fsd, sol: 'Sakin', sag: 'İddialı' },
+      { ad: 'Harf aralığı', anahtar: 'track', deger: t.track, min: -0.02, max: 0.04, adim: 0.005, etiket: t.track + 'em', sol: 'Dar', sag: 'Geniş' },
+      { ad: 'Hareket süresi', anahtar: 'dur', deger: t.dur, min: 0, max: 400, adim: 10, etiket: t.dur + 'ms', sol: 'Kapalı', sag: 'Yumuşak' }
+    ].map((k) => ({
+      ad: k.ad, deger: k.deger, min: k.min, max: k.max, adim: k.adim,
+      etiket: k.etiket, solEtiket: k.sol, sagEtiket: k.sag,
+      degistir: this.sayi(k.anahtar)
+    }));
+
+    const kenarliklar = [
+      { v: 1, ad: '1px' }, { v: 1.5, ad: '1.5px' }, { v: 2, ad: '2px' }
+    ].map((b) => {
+      const a = t.bw === b.v;
+      return {
+        ad: b.ad,
+        bd: a ? secBd : 'var(--line)',
+        bg: a ? 'var(--brand-soft)' : 'var(--surface)',
+        fg: a ? 'var(--brand-ui)' : 'var(--ink-2)',
+        sec: () => this.set('bw', b.v)
+      };
+    });
+
+    const fontlar = Component.FONT.map((f, i) => {
+      const a = t.font === i;
+      return {
+        d: f.d, t: f.t, ornekBaslik: f.ornek, aciklama: f.not,
+        bd: a ? secBd : 'var(--line)',
+        bg: a ? 'var(--brand-soft)' : 'var(--surface)',
+        dot: a ? 'var(--brand-ui)' : 'transparent',
+        ring: a ? secBd : 'transparent',
+        sec: () => this.set('font', i)
+      };
+    });
+
+    const mk = Component.MARKA[t.marka] || Component.MARKA[0];
+    const vk = Component.VURGU[t.vurgu] || Component.VURGU[0];
+
+    return {
+      durum: t.preset === 'ozel' ? 'Özel yapılandırma · kaydedilmedi' : 'Hazır tema seçili',
+      presetler, modlar, markalar, vurgular, notrler, kaydiraclar, kenarliklar, fontlar,
+      markaKod: koyuMu ? mk.k : mk.a,
+      vurguKod: koyuMu ? vk.k : vk.a,
+      cssCikti: this.cssUret(),
+      sifirla: () => this.set('preset', 'kurumsal-acik'),
+      kapat: () => { const f = this.props.kapat; if (f) f(); }
+    };
+  }
+}
+</script>
+</body>
+</html>
