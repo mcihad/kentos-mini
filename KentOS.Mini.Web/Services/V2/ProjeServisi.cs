@@ -63,7 +63,9 @@ public class ProjeServisi(
     IIsOlayServisi _olaylar,
     IIsEkServisi _ekler,
     IIsYorumServisi _yorumlar,
-    IGorevServisi _gorevler) : IProjeServisi
+    IGorevServisi _gorevler,
+    IMessageService _mesajlar,
+    ILogger<ProjeServisi> _kayit) : IProjeServisi
 {
     /// <summary>Kapanmış proje durumları — ölçüm bitti.</summary>
     private static readonly ProjeDurumu[] Kapali = [ProjeDurumu.Tamamlandi, ProjeDurumu.Iptal];
@@ -527,6 +529,14 @@ public class ProjeServisi(
         if (yoneticiId is { } y && y > 0 && uyeler.All(u => u.KullaniciId != y))
             throw new BusinessRuleException("Proje yöneticisi, proje ekibinin üyesi olmalı.");
 
+        // Kimlerin YENİ olduğunu bilmek için önceki liste, silmeden önce okunuyor.
+        var oncekiUyeler = await _context.ProjeUyeleri
+            .Where(u => u.ProjeId == id)
+            .Select(u => u.KullaniciId)
+            .ToListAsync(iptal);
+
+        var oncekiYonetici = proje.YoneticiId;
+
         await _context.ProjeUyeleri.Where(u => u.ProjeId == id).ExecuteDeleteAsync(iptal);
 
         foreach (var u in uyeler.DistinctBy(x => x.KullaniciId))
@@ -549,7 +559,81 @@ public class ProjeServisi(
         await _olaylar.YazAsync(IsVarligi.Proje, id, GorevOlayTipi.Atandi,
             $"Proje ekibi güncellendi ({uyeler.Count} kişi).", iptal: iptal);
 
+        /*
+          YALNIZCA YENİ ÜYELERE bildiriliyor.
+
+          Ekip her düzenlemede silinip yeniden yazılıyor; bütün listeye
+          bildirmek, tek kişi eklendiğinde ekipteki herkese "projeye
+          eklendiniz" göndermek olurdu. İkinci kez aynı bildirimi alan kişi
+          üçüncüsünü hiç okumaz.
+        */
+        var yeniler = uyeler.Select(u => u.KullaniciId)
+            .Where(k => !oncekiUyeler.Contains(k))
+            .ToList();
+
+        await BildirAsync(yeniler, proje,
+            "Projeye eklendiniz",
+            $"{proje.Ad} projesinin ekibine eklendiniz.", iptal);
+
+        // Yöneticilik AYRI bir bildirim: ekipte olmakla projeyi yürütmek
+        // aynı sorumluluk değil.
+        if (yoneticiId is { } yeniYonetici && yeniYonetici > 0 && yeniYonetici != oncekiYonetici)
+        {
+            await BildirAsync([yeniYonetici], proje,
+                "Proje yöneticisi oldunuz",
+                $"{proje.Ad} projesinin yöneticiliğine atandınız.", iptal);
+        }
+
         return await DetayaCevirAsync(proje, iptal);
+    }
+
+    // ── iç: bildirim ───────────────────────────────────────────────────
+
+    /// <summary>
+    /// Proje bildirimini mevcut kuyruğa yazar.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>NotifikasyonTip.Always</c> ZORUNLU: <c>HasReceiveNotification</c>
+    /// başka bir tipte, kullanıcının ayar satırı yoksa <c>false</c> dönüyor ve
+    /// bildirim sessizce düşüyor.
+    /// </para>
+    /// <para>
+    /// <c>NotificationAction.None</c>: proje modülü yalnızca web ve yayındaki
+    /// mobil sürümler <c>Proje</c> varlığını tanımıyor. Web istemcisi varlık
+    /// adına bakarak <c>/projeler/{id}</c>'ye gidiyor — bu eşleme dört yerde
+    /// birden tutuluyor ve <c>BildirimYoluTests</c> denetliyor.
+    /// </para>
+    /// <para>
+    /// İşlemi yapan kişiye kendi işlemi bildirilmez; kendini projeye ekleyen
+    /// yöneticiye "projeye eklendiniz" demek gürültüden ibaret.
+    /// </para>
+    /// </remarks>
+    private async Task BildirAsync(
+        IEnumerable<long> hedefler, Project proje, string baslik, string icerik,
+        CancellationToken iptal)
+    {
+        try
+        {
+            var benim = await _kullanici.GetUserIdAsync();
+
+            var liste = hedefler.Where(h => h > 0 && h != benim).Distinct().ToList();
+            if (liste.Count == 0) return;
+
+            var veri = new TokenDataDto(
+                NotificationEntity.Proje, (int)proje.Id, NotificationAction.None);
+
+            await _mesajlar.CreateForUsersAsync(
+                liste, baslik, icerik,
+                SendMessageType.PushNotification,
+                NotifikasyonTip.Always,
+                veri.ToJson());
+        }
+        catch (Exception hata)
+        {
+            // Bildirim yazılamadı diye projenin kendisi geri alınmaz.
+            _kayit.LogWarning(hata, "Proje bildirimi yazılamadı: {ProjeId}", proje.Id);
+        }
     }
 
     // ── iç: erişim ve doğrulama ────────────────────────────────────────

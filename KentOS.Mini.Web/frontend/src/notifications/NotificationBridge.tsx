@@ -58,12 +58,35 @@ export function NotificationBridge() {
       qc.invalidateQueries({ queryKey: ['bildirim'] });
 
       // Bildirim, açık bir ekranın verisini bayatlatmış olabilir:
-      if (veri?.entity?.toLowerCase() === 'ajanda') {
+      const varlik = veri?.entity?.toLowerCase();
+
+      if (varlik === 'ajanda') {
         qc.invalidateQueries({ queryKey: queryKeys.event.all() });
-      } else if (veri?.entity?.toLowerCase() === 'talep') {
+      } else if (varlik === 'talep') {
         qc.invalidateQueries({ queryKey: queryKeys.request.all() });
-      } else if (veri?.entity?.toLowerCase() === 'dosya') {
+      } else if (varlik === 'dosya') {
         qc.invalidateQueries({ queryKey: ['gonderim'] });
+      } else if (varlik === 'ozgecmis') {
+        qc.invalidateQueries({ queryKey: ['ozgecmis'] });
+      } else if (varlik === 'gorev') {
+        /*
+          GÖREV BİLDİRİMİ ÜÇ ÖNBELLEĞİ BİRDEN DÜŞÜRÜYOR.
+
+          Atama, durum değişimi ve süre aşımı; görev listesinde de, bağlı
+          olduğu projenin panosunda da, gecikme panosunda da görünüyor.
+          Yalnızca görev anahtarını düşürmek, açık duran bir proje panosunda
+          eski durumu bırakırdı.
+        */
+        qc.invalidateQueries({ queryKey: ['gorev'] });
+        qc.invalidateQueries({ queryKey: ['proje'] });
+        qc.invalidateQueries({ queryKey: ['is-istatistik'] });
+      } else if (varlik === 'proje') {
+        qc.invalidateQueries({ queryKey: ['proje'] });
+      } else if (varlik === 'gelenkutusu') {
+        // Bekleyen sayısı menüdeki rozeti besliyor: devir bildirimi gelince
+        // rozet hemen artmalı, bir dakikalık tazelik süresi beklenmemeli.
+        qc.invalidateQueries({ queryKey: ['gelen-kutusu'] });
+        qc.invalidateQueries({ queryKey: ['gorev'] });
       }
     });
 

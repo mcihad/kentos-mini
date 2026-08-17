@@ -46,6 +46,51 @@ namespace KentOS.Mini.Web.Services
                 .Distinct()!
                 .Cast<string>();
 
+        /// <summary>
+        /// Kullanıcının push satırlarını üretir; jetonu YOKSA da bir satır yazar.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>Ölçülmüş kayıp:</b> önceden satırlar yalnızca jeton başına
+        /// üretiliyordu. Tarayıcı bildirimine hiç izin vermemiş bir
+        /// kullanıcının <c>FcmToken</c> ve <c>WebFcmToken</c> alanları boş
+        /// olduğu için döngü hiç dönmüyor ve <b>tek bir satır bile
+        /// yazılmıyordu</b>. Bildirim merkezi de okunmamış rozeti de aynı
+        /// <c>Messages</c> tablosunu okuduğundan, o kullanıcı bildirimi
+        /// HİÇBİR YERDE görmüyordu: ne telefonunda, ne uygulamanın içinde.
+        /// Görev atandığını öğrenmesinin tek yolu listeyi kendiliğinden
+        /// açmaktı.
+        /// </para>
+        /// <para>
+        /// Jetonsuz satırın jetonu boş ve <c>IsSuccess = true</c>: gönderilecek
+        /// bir yer yok, dolayısıyla kuyrukta bekleyecek bir iş de yok. İşçinin
+        /// bekleyen sorgusu (<c>IsSuccess == false</c>) onu hiç görmüyor,
+        /// bildirim merkezi ise görüyor. Kayıt, bildirimin KENDİSİ; push yalnızca
+        /// bir kanal.
+        /// </para>
+        /// </remarks>
+        private IEnumerable<Message> PushSatirlari(
+            AppUser kullanici, string title, string content,
+            SendMessageType type, NotifikasyonTip notifyTip, string? data)
+        {
+            var jetonlar = PushHedefleri(kullanici).ToList();
+
+            if (jetonlar.Count == 0)
+            {
+                var uygulamaIci = BuildMessage(
+                    kullanici.Id, string.Empty, title, content, type, notifyTip, data);
+
+                uygulamaIci.IsSuccess = true;
+                uygulamaIci.FailMessage = "Cihaz jetonu yok — yalnızca uygulama içi.";
+
+                yield return uygulamaIci;
+                yield break;
+            }
+
+            foreach (var jeton in jetonlar)
+                yield return BuildMessage(kullanici.Id, jeton, title, content, type, notifyTip, data);
+        }
+
         public async Task CreateAsync(long userId, string token, string title, string content, SendMessageType type, NotifikasyonTip notifyTip, string? data)
         {
             try
@@ -73,10 +118,10 @@ namespace KentOS.Mini.Web.Services
                         return;
                     }
 
-                    foreach (var jeton in PushHedefleri(kullanici))
+                    foreach (var satir in PushSatirlari(
+                        kullanici, title, content, type, notifyTip, data))
                     {
-                        await _context.Messages.AddAsync(
-                            BuildMessage(userId, jeton, title, content, type, notifyTip, data));
+                        await _context.Messages.AddAsync(satir);
                     }
                 }
                 else
@@ -173,11 +218,12 @@ namespace KentOS.Mini.Web.Services
                 }
                 if (type == SendMessageType.PushNotification)
                 {
-                    // Her dolu jeton için AYRI satır (mobil + web).
-                    foreach (var jeton in PushHedefleri(user))
+                    // Her dolu jeton için AYRI satır (mobil + web); jeton hiç
+                    // yoksa uygulama içi için TEK satır.
+                    foreach (var satir in PushSatirlari(
+                        user, title, content, type, notifyTip, data))
                     {
-                        await _context.Messages.AddAsync(
-                            BuildMessage(user.Id, jeton, title, content, type, notifyTip, data));
+                        await _context.Messages.AddAsync(satir);
                     }
                 }
                 else if (type == SendMessageType.SMS && user.PhoneNumber != null)

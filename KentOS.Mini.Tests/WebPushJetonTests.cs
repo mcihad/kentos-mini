@@ -181,8 +181,27 @@ public class WebPushJetonTests(SunucuTestOrtami ortam) : IClassFixture<SunucuTes
         Assert.Equal("SADECE-MOBIL", satirlar[0].Token);
     }
 
+    /// <summary>
+    /// Jetonsuz kullanıcıya UYGULAMA İÇİ satır yazılır ama kuyruğa girmez.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Bu test önce "hiç satır üretilmez" diyordu ve derdi haklıydı: null
+    /// jetonlu satırlar kuyrukta takılıp duruyordu. Ama çözüm fazla
+    /// geniştiy: bildirim merkezi ve okunmamış rozeti AYNI <c>Messages</c>
+    /// tablosunu okuyor, dolayısıyla satırı hiç yazmamak, tarayıcı
+    /// bildirimine izin vermemiş kullanıcının bildirimi <b>hiçbir yerde</b>
+    /// görememesi demekti — ne telefonunda ne uygulamanın içinde. Görev
+    /// atandığını öğrenmesinin tek yolu listeyi kendiliğinden açmaktı.
+    /// </para>
+    /// <para>
+    /// Yeni kural ikisini birden karşılıyor: satır VAR (merkez görüyor) ama
+    /// <c>IsSuccess</c> işaretli, yani işçinin bekleyen sorgusuna hiç
+    /// düşmüyor.
+    /// </para>
+    /// </remarks>
     [Fact]
-    public async Task Jetonu_olmayan_kullaniciya_satir_uretilmez()
+    public async Task Jetonu_olmayan_kullaniciya_uygulama_ici_satir_yazilir()
     {
         using var db = Baglam();
         var (a, _) = await IkiKullaniciAsync(db);
@@ -191,8 +210,13 @@ public class WebPushJetonTests(SunucuTestOrtami ortam) : IClassFixture<SunucuTes
             a.Id, "yoksayilir", "B", "I",
             SendMessageType.PushNotification, NotifikasyonTip.Always, null);
 
-        // ÖNCEDEN: null jetonla bir satır üretilip kuyrukta takılıyordu.
-        Assert.Empty(await db.Messages.Where(m => m.UserId == a.Id).ToListAsync());
+        var satir = Assert.Single(await db.Messages.Where(m => m.UserId == a.Id).ToListAsync());
+
+        Assert.True(string.IsNullOrEmpty(satir.Token));
+
+        // Gönderilecek yer yok: kuyrukta bekleyen bir iş de olmamalı.
+        Assert.True(satir.IsSuccess,
+            "Jetonsuz satır kuyrukta bekliyor; işçi her turda onu yeniden denemeye çalışır.");
     }
 
     [Fact]

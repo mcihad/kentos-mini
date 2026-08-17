@@ -25,17 +25,39 @@ import type { AppNotification } from '../data/types';
  * </p>
  */
 export function resolveNotificationPath(b: AppNotification): string | null {
-  if (!b.varlik || !b.varlikId || b.eylem === 'None') return null;
+  /*
+    `eylem === 'None'` YOLU KAPATMIYOR.
+
+    Sunucu yeni varlıkları (Gorev, Ozgecmis, Dosya) bilerek `None` ile
+    gönderiyor: yayındaki eski mobil sürümler onları tanımıyor ve sessizce
+    `talep`e düşürüp var olmayan bir talebi açıyorlar. `None`, MOBİLE
+    "hiçbir yere gitme" demek — web'e "detayı açma" demek değil. Bu satır
+    varlığa bakmadan `null` döndürdüğü için iş takip modülünün bütün
+    bildirimleri, bildirim merkezinde de tıklanamaz duruyordu.
+    Ayrıntı: `fcm.ts` içindeki `notificationPath`.
+  */
+  if (!b.varlik) return null;
+
+  const kimlikVar = !!b.varlikId && b.varlikId > 0;
 
   switch (b.varlik.toLowerCase()) {
     case 'ajanda':
-      return `/ajanda/${b.varlikId}`;
+      return kimlikVar ? `/ajanda/${b.varlikId}` : null;
     case 'talep':
-      return `/talepler/${b.varlikId}`;
+      return kimlikVar ? `/talepler/${b.varlikId}` : null;
     case 'oneri':
-      return `/oneriler/${b.varlikId}`;
+      return kimlikVar ? `/oneriler/${b.varlikId}` : null;
     case 'dosya':
-      return `/gonderim/${b.varlikId}`;
+      return kimlikVar ? `/gonderim/${b.varlikId}` : null;
+    case 'ozgecmis':
+      return kimlikVar ? `/ozgecmisler/${b.varlikId}` : null;
+    case 'gorev':
+      return kimlikVar ? `/gorevler/${b.varlikId}` : null;
+    case 'proje':
+      return kimlikVar ? `/projeler/${b.varlikId}` : null;
+    // Gelen kutusu bir LİSTE ekranı: kaydın ayrı detay sayfası yok.
+    case 'gelenkutusu':
+      return '/gelen-kutusu';
     default:
       return null;
   }

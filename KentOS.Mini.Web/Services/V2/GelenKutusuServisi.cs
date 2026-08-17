@@ -374,7 +374,16 @@ public class GelenKutusuServisi(
 
             if (hedefler.Count == 0) return;
 
-            var veri = new TokenDataDto(NotificationEntity.Gorev, 0, NotificationAction.None);
+            /*
+              VARLIK `GelenKutusu`, `Gorev` DEĞİL.
+
+              Burada kimlik olarak `0` yazılıyordu ve bildirime dokunan
+              kullanıcı hiçbir yere gitmiyordu: gidilecek bir görev kimliği
+              yok, çünkü devir KABUL EDİLMEDEN görev oluşmuyor. Doğru hedef
+              kaydın kendisi değil, kararın verildiği ekran — gelen kutusu
+              listesi. Kimlik yine 0: liste ekranının kimliği olmaz.
+            */
+            var veri = new TokenDataDto(NotificationEntity.GelenKutusu, 0, NotificationAction.None);
 
             await _mesajlar.CreateForUsersAsync(
                 hedefler, baslik, icerik,

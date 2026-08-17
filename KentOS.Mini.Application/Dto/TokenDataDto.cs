@@ -58,7 +58,38 @@ namespace KentOS.Mini.Application.Dto
         /// yanlış bir yere gitmesi değil.
         /// </para>
         /// </remarks>
-        Gorev
+        Gorev,
+
+        /// <summary>
+        /// Birimler arası devir — gelen kutusuna düşen kayıt.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Ayrı bir varlık, çünkü devir kaydının <b>kendi detay sayfası
+        /// yok</b>: karar gelen kutusu listesinin içinde veriliyor. Önceden
+        /// bu bildirimler <c>Gorev</c> varlığıyla ve kimlik olarak
+        /// <c>0</c> ile gönderiliyordu; tıklayan kullanıcı hiçbir yere
+        /// gitmiyordu, çünkü gidilecek bir görev kimliği yoktu — devri
+        /// kabul etmeden görev zaten oluşmuyor.
+        /// </para>
+        /// <para>
+        /// <c>Dosya</c>, <c>Ozgecmis</c> ve <c>Gorev</c> ile aynı gerekçeyle
+        /// SONA eklendi ve bildirim <c>NotificationAction.None</c> ile
+        /// gidiyor: bu değeri tanımayan eski mobil sürümler varlığı sessizce
+        /// <c>talep</c>'e düşürüp var olmayan bir talebi açardı.
+        /// </para>
+        /// </remarks>
+        GelenKutusu,
+
+        /// <summary>
+        /// Proje — ekibe alınma, yöneticiliğe atanma, kilometre taşı.
+        /// </summary>
+        /// <remarks>
+        /// <c>Gorev</c> ile aynı gerekçe: sondadır ve
+        /// <c>NotificationAction.None</c> ile gider. Proje modülü de
+        /// yalnızca web.
+        /// </remarks>
+        Proje
     }
 
     public enum NotificationAction

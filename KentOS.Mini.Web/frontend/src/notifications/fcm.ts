@@ -229,21 +229,67 @@ export function onForegroundMessage(
 /**
  * `fcmData` sözleşmesini uygulama içi yola çevirir.
  *
- * Mobildeki `routeFromTokenData` ile AYNI davranış: aynı bildirim iki
+ * <p>
+ * Mobildeki `routeFromTokenData` ile aynı VARLIK eşlemesi: aynı bildirim iki
  * platformda farklı yere götürürse kullanıcı hangisine güveneceğini bilemez.
+ * </p>
+ *
+ * <h3>`action === 'None'` ARTIK YOLU KAPATMIYOR</h3>
+ *
+ * <p>
+ * Buradaki ilk satır <code>None</code> gelen her bildirimi varlığına
+ * bakmadan <code>null</code>'a düşürüyordu. Sunucu ise <code>Gorev</code>,
+ * <code>Ozgecmis</code> ve <code>Dosya</code> gibi YENİ varlıkları bilerek
+ * <code>None</code> ile gönderiyor: yayındaki eski mobil sürümler bu
+ * varlıkları tanımıyor ve <code>fromString</code>'in <code>orElse</code>'i
+ * yüzünden sessizce <code>talep</code>'e düşürüp var olmayan bir talebi
+ * açmaya çalışıyorlar. <code>None</code>, mobil tarafın "hiçbir yere gitme"
+ * işareti.
+ * </p>
+ *
+ * <p>
+ * Sunucudaki yorum bu kararı anlatırken "web istemcisi varlık adına bakarak
+ * doğru yere yönlendirir" diyordu — <b>ama o kısım hiç yazılmamıştı</b>.
+ * Sonuç: iş takip modülünün bütün bildirimleri tıklanınca hiçbir şey
+ * yapmıyordu. <code>None</code> artık yalnızca "ALT EKRAN açma" demek;
+ * varlığın kendi detayına gitmeyi engellemiyor.
+ * </p>
+ *
+ * <p>
+ * Yol yine de <code>null</code> olabilir: tanınmayan varlık ya da geçersiz
+ * kimlik. Bilinmeyeni bir yere yönlendirmek, kullanıcıyı yanlış kaydın
+ * üstüne düşürmekten kötüdür.
+ * </p>
  */
 export function notificationPath(veri?: NotificationPayload): string | null {
-  if (!veri || veri.action === 'None') return null;
+  if (!veri) return null;
+
   const id = veri.id;
-  switch (veri.entity?.toLowerCase()) {
+  const varlik = veri.entity?.toLowerCase();
+
+  // Kimliksiz bildirim yalnızca liste ekranına gidebilir; detay yolu
+  // kurulamaz. `0` da geçersiz: sunucu kimliği bilmediğinde onu yazıyordu.
+  const kimlikVar = id != null && Number(id) > 0;
+
+  switch (varlik) {
     case 'ajanda':
-      return `/ajanda/${id}`;
+      return kimlikVar ? `/ajanda/${id}` : null;
     case 'talep':
-      return `/talepler/${id}`;
+      return kimlikVar ? `/talepler/${id}` : null;
     case 'oneri':
-      return `/oneriler/${id}`;
+      return kimlikVar ? `/oneriler/${id}` : null;
     case 'dosya':
-      return `/gonderim/${id}`;
+      return kimlikVar ? `/gonderim/${id}` : null;
+    case 'ozgecmis':
+      return kimlikVar ? `/ozgecmisler/${id}` : null;
+    case 'gorev':
+      return kimlikVar ? `/gorevler/${id}` : null;
+    case 'proje':
+      return kimlikVar ? `/projeler/${id}` : null;
+    // Gelen kutusu bir LİSTE ekranı: kaydın kendi detay sayfası yok, karar
+    // listenin içinde veriliyor.
+    case 'gelenkutusu':
+      return '/gelen-kutusu';
     default:
       return null;
   }

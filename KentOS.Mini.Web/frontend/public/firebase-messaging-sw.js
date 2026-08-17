@@ -97,13 +97,33 @@ self.addEventListener('notificationclick', (olay) => {
   let yol = '/';
   try {
     const veri = JSON.parse((olay.notification.data && olay.notification.data.fcmData) || '{}');
-    if (veri.action !== 'None' && veri.id) {
-      const varlik = String(veri.entity || '').toLowerCase();
+
+    /*
+      `action !== 'None'` KOŞULU KALDIRILDI.
+
+      Sunucu yeni varlıkları (Gorev, Ozgecmis, Dosya) bilerek `None` ile
+      gönderiyor; bu, yayındaki eski MOBİL sürümlere "hiçbir yere gitme"
+      demek — web'e "detayı açma" demek değil. Koşul burada dururken arka
+      planda gelen bir görev bildirimine dokunmak kullanıcıyı ana sayfaya
+      atıyordu. Aynı düzeltme `fcm.ts` ve `NotificationCenter.tsx`
+      içinde de var; bu eşleme DÖRT yerde birden tutuluyor ve sunucu
+      tarafındaki `BildirimYoluTests` dördünü de denetliyor.
+    */
+    const varlik = String(veri.entity || '').toLowerCase();
+    const kimlikVar = veri.id != null && Number(veri.id) > 0;
+
+    if (kimlikVar) {
       if (varlik === 'ajanda') yol = '/ajanda/' + veri.id;
       else if (varlik === 'talep') yol = '/talepler/' + veri.id;
       else if (varlik === 'oneri') yol = '/oneriler/' + veri.id;
       else if (varlik === 'dosya') yol = '/gonderim/' + veri.id;
+      else if (varlik === 'ozgecmis') yol = '/ozgecmisler/' + veri.id;
+      else if (varlik === 'gorev') yol = '/gorevler/' + veri.id;
+      else if (varlik === 'proje') yol = '/projeler/' + veri.id;
     }
+
+    // Gelen kutusu bir LİSTE ekranı: kimlik olmadan da gidilebiliyor.
+    if (varlik === 'gelenkutusu') yol = '/gelen-kutusu';
   } catch (e) { /* biçim bozuk — ana ekrana git */ }
 
   olay.waitUntil(

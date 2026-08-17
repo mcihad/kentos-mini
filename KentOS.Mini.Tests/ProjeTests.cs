@@ -58,7 +58,8 @@ public class ProjeTests(SunucuTestOrtami ortam) : IClassFixture<SunucuTestOrtami
             new EkipServisi(baglam, etkin), _mesajlar, TestKapsayici.Bos,
             NullLogger<GorevServisi>.Instance);
 
-        var proje = new ProjeServisi(baglam, kullanici, etkin, olaylar, ekler, yorumlar, gorev);
+        var proje = new ProjeServisi(baglam, kullanici, etkin, olaylar, ekler, yorumlar, gorev,
+            _mesajlar, NullLogger<ProjeServisi>.Instance);
 
         return (proje, gorev, baglam);
     }
