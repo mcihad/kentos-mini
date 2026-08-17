@@ -331,6 +331,12 @@ builder.Services.AddScoped<IBirimAgaci, BirimAgaci>();
 builder.Services.AddScoped<IEtkinBirim, EtkinBirim>();
 builder.Services.AddScoped<IIsEkServisi, IsEkServisi>();
 builder.Services.AddScoped<IIsYorumServisi, IsYorumServisi>();
+builder.Services.AddScoped<IIsOlayServisi, IsOlayServisi>();
+
+// İŞ TAKİP — görev çekirdeği.
+builder.Services.AddScoped<IGorevTipiServisi, GorevTipiServisi>();
+builder.Services.AddScoped<IEkipServisi, EkipServisi>();
+builder.Services.AddScoped<IGorevServisi, GorevServisi>();
 
 builder.Services.AddScoped<IHataKaydiServisi, HataKaydiServisi>();
 builder.Services.AddScoped<IOturumServisi, OturumServisi>();

@@ -309,6 +309,7 @@ TABLE gorevler
   adres
   baslama_tarihi
   baslik
+  bekleme_baslangic
   bekleme_dakika
   birim_id
   boylam

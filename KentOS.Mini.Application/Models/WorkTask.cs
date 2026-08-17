@@ -184,6 +184,21 @@ public class WorkTask
     [Column("bekleme_dakika")]
     public int BeklemeDakika { get; set; }
 
+    /// <summary>
+    /// Beklemeye alındığı an. Beklemeden çıkınca <see cref="BeklemeDakika"/>'ya
+    /// eklenir ve <c>null</c>'a döner.
+    /// </summary>
+    /// <remarks>
+    /// <b>Neden ayrı bir kolon:</b> beklemenin ne zaman başladığını
+    /// <see cref="GuncellemeTarihi"/>'nden okumak denendi ve yanlış çıkıyor —
+    /// bekleyen bir görevin başlığı düzenlendiğinde o damga da değişir ve
+    /// bekleme süresi olduğundan kısa ölçülürdü. Zaman çizelgesinden okumak
+    /// da olmaz: çizelge yazımı istisna yutuyor, yani hiç yazılmamış olabilir.
+    /// </remarks>
+    [Display(Name = "Bekleme başlangıcı")]
+    [Column("bekleme_baslangic")]
+    public DateTime? BeklemeBaslangic { get; set; }
+
     // ── akış ───────────────────────────────────────────────────────────
 
     /// <summary>İade ya da ret gerekçesi — ikisinde de ZORUNLU.</summary>

@@ -40,7 +40,25 @@ namespace KentOS.Mini.Application.Dto
         /// mobil sürümler varlığı sessizce <c>talep</c>'e düşürüyor ve var
         /// olmayan bir talebin detayını açmaya çalışırdı.
         /// </remarks>
-        Ozgecmis
+        Ozgecmis,
+
+        /// <summary>
+        /// İş takip görevi — atama, aşama, onay ve süre aşımı bildirimleri.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <c>Dosya</c> ve <c>Ozgecmis</c> ile aynı gerekçe: SONA eklendi ve
+        /// bildirim <c>NotificationAction.None</c> ile gider. Bu değeri
+        /// tanımayan eski mobil sürümler varlığı sessizce <c>talep</c>'e
+        /// düşürüyor ve var olmayan bir talebin detayını açardı.
+        /// </para>
+        /// <para>
+        /// İş takip modülü zaten <b>yalnızca web</b> — mobil uygulamada görev
+        /// ekranı yok. Bildirimin mobilde bir yere gitmemesi doğru davranış;
+        /// yanlış bir yere gitmesi değil.
+        /// </para>
+        /// </remarks>
+        Gorev
     }
 
     public enum NotificationAction

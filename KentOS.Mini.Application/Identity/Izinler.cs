@@ -133,6 +133,20 @@ public static class Izinler
     // `[a-z]+\.[a-zA-Z]+` deseniyle tarıyor ve `isTakip.goruntule` o desene
     // takılmıyor.
     public const string GorevBirimKapsam = "gorev.birimKapsam";
+    public const string GorevGoruntule = "gorev.goruntule";
+    public const string GorevEkle = "gorev.ekle";
+    public const string GorevDuzenle = "gorev.duzenle";
+    public const string GorevSil = "gorev.sil";
+    public const string GorevAtama = "gorev.atama";
+
+    /// <summary>Kendi üzerindeki görevin aşamasını tamamlar — SAHA personelinin izni.</summary>
+    public const string GorevAsama = "gorev.asama";
+
+    /// <summary>Tamamlanma beyanını onaylar ya da iade eder — YÖNETİCİ izni.</summary>
+    public const string GorevOnayla = "gorev.onayla";
+
+    public const string GorevTipYonet = "gorev.tipYonet";
+    public const string EkipYonet = "ekip.yonet";
 
     // ─────────────────────────────────────────────────────────── sistem
     public const string SistemHata = "sistem.hata";
@@ -273,6 +287,29 @@ public static class Izinler
             "Kendi biriminin ALTINDAKİ bir birimi seçip o birimin işlerini görür ve yönetir. " +
             "Başkan yardımcısının bağlı müdürlükleri takip etmesi için. Yalnızca kendi alt ağacı — " +
             "üst ya da yan birimler açılmaz."),
+
+        new(GorevGoruntule, "İş Takip", "Görevleri görüntüle",
+            "Biriminin görevlerini, aşamalarını ve zaman çizelgesini görür. Başka birimin görevleri görünmez."),
+        new(GorevEkle, "İş Takip", "Görev aç",
+            "Yeni görev ve alt görev açar. Görev, tipinden aşamalarını ve süre hedefini devralır."),
+        new(GorevDuzenle, "İş Takip", "Görev düzenle",
+            "Görevin başlığını, açıklamasını, konumunu ve planlanan tarihlerini değiştirir; " +
+            "görevi başlatır, beklemeye alır ve iptal eder."),
+        new(GorevSil, "İş Takip", "Görev sil",
+            "Görevi tümüyle siler; dosyaları, yorumları ve zaman çizelgesi GERİ GELMEZ. " +
+            "Yapılmayacak işi kapatmak için silmek yerine İPTAL kullanılır."),
+        new(GorevAtama, "İş Takip", "Görev ata",
+            "Görevi kişiye ya da ekibe verir. Ekibe atandığında bildirim ekip liderine gider."),
+        new(GorevAsama, "İş Takip", "Aşama tamamla",
+            "Görevin aşamalarını sırayla tamamlar ve kanıt (not, fotoğraf) yükler. Saha personelinin izni."),
+        new(GorevOnayla, "İş Takip", "Görev onayla",
+            "Personelin tamamlanma beyanını ONAYLAR ya da gerekçeyle İADE eder. " +
+            "Bu izin olmadan hiçbir görev tamamlanmış sayılmaz."),
+        new(GorevTipYonet, "İş Takip", "Görev tipi yönetimi",
+            "Görev tiplerini, aşamalarını, hizmet standardı ve SLA sürelerini tanımlar. " +
+            "Değişiklik YENİ açılan görevleri etkiler; açılmış görevler aşamalarını kopya olarak taşır."),
+        new(EkipYonet, "İş Takip", "Ekip yönetimi",
+            "Biriminin çalışma ekiplerini kurar, üye ve lider atar."),
 
         new(SistemHata, "Sistem", "Hata kayıtları",
             "Sunucu hatalarını görüntüler. Kayıtlar istek gövdeleri, IP adresleri ve yığın izleri içerir."),

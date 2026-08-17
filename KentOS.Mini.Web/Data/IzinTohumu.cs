@@ -50,7 +50,13 @@ public static class IzinTohumu
 
         // `Ajanda` politikasındaki roller (Admin/Sekreter/Yonetici/Baskan).
         [UserRoles.Sekreter] = [.. AjandaModulu],
-        [UserRoles.Yonetici] = [.. AjandaModulu],
+
+        // İŞ TAKİP yalnızca `Yonetici`ye veriliyor. Sekreter ve Başkan'a da
+        // vermek, makamın işini yürüten rollere birimlerin iş takibini de
+        // açmak olurdu; modül birimin işi için kuruldu. Kurum isterse rol
+        // ekranından tek tıkla genişletir — tersi (fazla verileni geri almak)
+        // kimsenin fark etmediği bir yetki genişlemesi bırakırdı.
+        [UserRoles.Yonetici] = [.. AjandaModulu, .. IsTakipModulu],
         // İstatistik ucu eskiden `[Authorize(Roles = "Admin,Sistem")]` idi —
         // Başkan'a vermek geçiş gününde YETKİ GENİŞLETMEK olurdu. Yönetici
         // isterse rol ekranından açar; tohumun işi eski durumu korumak.
@@ -79,6 +85,22 @@ public static class IzinTohumu
         [UserRoles.Sibeski] = [Izinler.GonderimGoruntule],
         [UserRoles.BaskanOzel] = [Izinler.GonderimGoruntule],
     };
+
+    /// <summary>
+    /// İş takip modülünün izinleri.
+    /// </summary>
+    /// <remarks>
+    /// <c>gorev.sil</c> BİLEREK yok: silme dosyaları, yorumları ve zaman
+    /// çizelgesini geri dönülmez biçimde götürüyor. Yapılmayacak bir işi
+    /// kapatmanın yolu iptal ve o <c>gorev.duzenle</c> ile zaten mümkün.
+    /// Silme yetkisi gerçekten gerekiyorsa rol ekranından açılır.
+    /// </remarks>
+    private static string[] IsTakipModulu =>
+    [
+        Izinler.GorevGoruntule, Izinler.GorevEkle, Izinler.GorevDuzenle,
+        Izinler.GorevAtama, Izinler.GorevAsama, Izinler.GorevOnayla,
+        Izinler.GorevBirimKapsam, Izinler.GorevTipYonet, Izinler.EkipYonet,
+    ];
 
     /// <summary>`Ajanda` politikasının kapsadığı modüllerin tüm izinleri.</summary>
     private static string[] AjandaModulu =>

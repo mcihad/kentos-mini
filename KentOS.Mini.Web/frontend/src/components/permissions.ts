@@ -86,6 +86,15 @@ export const PERMISSION = {
   tanimYonet: 'tanim.yonet',
 
   gorevBirimKapsam: 'gorev.birimKapsam',
+  gorevGoruntule: 'gorev.goruntule',
+  gorevEkle: 'gorev.ekle',
+  gorevDuzenle: 'gorev.duzenle',
+  gorevSil: 'gorev.sil',
+  gorevAtama: 'gorev.atama',
+  gorevAsama: 'gorev.asama',
+  gorevOnayla: 'gorev.onayla',
+  gorevTipYonet: 'gorev.tipYonet',
+  ekipYonet: 'ekip.yonet',
 
   sistemHata: 'sistem.hata',
   sistemKurum: 'sistem.kurum',
