@@ -8,8 +8,18 @@ namespace KentOS.Mini.Web.Services
     public class FirebaseWorker(
         IServiceProvider _services,
         ISMSService _smsService,
+        Options.SmsOptions _smsAyari,
         ILogger<FirebaseWorker> _logger) : BackgroundService
     {
+        /// <summary>
+        /// SMS ayarı eksik uyarısı verildi mi.
+        /// </summary>
+        /// <remarks>
+        /// İşçi on saniyede bir dönüyor; uyarıyı her turda yazmak günlüğü
+        /// dakikada altı satırla dolduruyor ve asıl hatayı gömüyordu.
+        /// </remarks>
+        private bool _smsUyarisiVerildi;
+
         protected override async Task ExecuteAsync(CancellationToken stoppingToken)
         {
             while (!stoppingToken.IsCancellationRequested)
@@ -43,11 +53,41 @@ namespace KentOS.Mini.Web.Services
                 .OrderBy(x => x.Id)
                 .Take(200)
                 .ToListAsync();
-            var messaging = FirebaseAdmin.Messaging.FirebaseMessaging.DefaultInstance;
+
+            /*
+              SMS, FIREBASE'E BAĞLI DEĞİL.
+
+              Burada `FirebaseMessaging.DefaultInstance` KOŞULSUZ okunuyordu.
+              Kimlik dosyası yoksa (açılışta yalnızca uyarı veriliyor,
+              uygulama ayakta kalıyor) bu satır istisna fırlatıyor, istisnayı
+              dışarıdaki `catch` yutuyor ve TURUN TAMAMI atlanıyordu — sırada
+              bekleyen SMS'ler dâhil. Yani "Firebase kurulmamış" bir
+              kurulumda SMS hiç gitmiyordu ve tek belirtisi, kimsenin
+              bakmadığı bir günlük satırıydı.
+
+              Erişim artık yalnızca push dalında ve orada da null denetimiyle.
+            */
+            var firebaseKurulu = FirebaseApp.DefaultInstance is not null;
+
+            if (!firebaseKurulu && messages.Any(m => m.MessageType == SendMessageType.PushNotification))
+            {
+                _logger.LogWarning(
+                    "Firebase kurulu değil; {Sayi} push bildirimi atlanıyor. SMS gönderimi etkilenmiyor.",
+                    messages.Count(m => m.MessageType == SendMessageType.PushNotification));
+            }
+
             foreach (var message in messages)
             {
                 if (message.MessageType == SendMessageType.PushNotification)
                 {
+                    /*
+                      Kurulu değilse mesaja DOKUNULMUYOR: `RetryCount`
+                      artırmak, kimlik dosyası sonradan konulduğunda üç turda
+                      tükenmiş ve kalıcı olarak ölmüş bir kuyruk bırakırdı.
+                      Yapılandırma hatası, mesajın hatası değil.
+                    */
+                    if (!firebaseKurulu) continue;
+
                     var fcmMessage = new FirebaseAdmin.Messaging.Message()
                     {
                         Notification = new FirebaseAdmin.Messaging.Notification
@@ -70,7 +110,11 @@ namespace KentOS.Mini.Web.Services
                     try
                     {
                         _logger.LogInformation("Notifikasyon gönderiliyor.");
-                        response = await messaging.SendAsync(fcmMessage);
+                        // `DefaultInstance` yalnızca BURADA okunuyor: yukarıda
+                        // koşulsuz okunması, Firebase'siz kurulumlarda SMS
+                        // kuyruğunu da durduruyordu.
+                        response = await FirebaseAdmin.Messaging.FirebaseMessaging
+                            .DefaultInstance.SendAsync(fcmMessage);
                         _logger.LogInformation("Notifikasyon gönderildi.");
 
                         if (!string.IsNullOrEmpty(response))
@@ -118,6 +162,31 @@ namespace KentOS.Mini.Web.Services
                 }
                 else if (message.MessageType == SendMessageType.SMS)
                 {
+                    /*
+                      AYARLAR EKSİKSE MESAJ HARCANMIYOR.
+
+                      `SMSService` eksik ayarda istisna fırlatıyor; buradaki
+                      `catch` onu `RetryCount++` olarak sayıyordu ve üçüncü
+                      turda mesaj kalıcı olarak ölüyordu. Sonra ayar
+                      düzeltilse bile o SMS'ler bir daha hiç denenmiyordu —
+                      kuyrukta "başarısız" görünüp duruyorlardı.
+
+                      Yapılandırma hatası mesajın hatası değil: sayaç
+                      artırılmıyor, tur atlanıyor ve sebep bir kez
+                      loglanıyor.
+                    */
+                    if (!_smsAyari.IsConfigured)
+                    {
+                        if (!_smsUyarisiVerildi)
+                        {
+                            _smsUyarisiVerildi = true;
+                            _logger.LogError(
+                                "SMS ayarları eksik (Sms__Url / Sms__Username / Sms__Password). " +
+                                "Kuyruktaki SMS'ler ayar gelene kadar BEKLETİLİYOR, düşürülmüyor.");
+                        }
+                        continue;
+                    }
+
                     try
                     {
                         _logger.LogInformation("SMS gönderiliyor.");
@@ -132,6 +201,29 @@ namespace KentOS.Mini.Web.Services
                             message.RetryCount++;
                             message.FailMessage = "Bir hata oluştu.";
                         }
+                    }
+                    catch (InvalidOperationException ex)
+                    {
+                        /*
+                          YAPILANDIRMA HATASI, MESAJIN HATASI DEĞİL.
+
+                          `SMSService` eksik ayarda bu türü fırlatıyor.
+                          Yukarıdaki bekçi çoğu durumu zaten kesiyor ama
+                          ayarın servise nasıl ulaştığı tek bir yol değil
+                          (ortam değişkeni, .env, appsettings) ve bekçiyle
+                          servisin gördüğü değer ayrışabiliyor. Sayaç burada
+                          da artmıyor: aksi hâlde üç turda kuyruk kalıcı
+                          olarak ölüyor ve ayar düzeltilse bile o SMS'ler bir
+                          daha denenmiyordu.
+                        */
+                        if (!_smsUyarisiVerildi)
+                        {
+                            _smsUyarisiVerildi = true;
+                            _logger.LogError(ex,
+                                "SMS gönderilemiyor: sağlayıcı ayarları eksik. " +
+                                "Kuyruk BEKLETİLİYOR, mesajlar düşürülmüyor.");
+                        }
+                        continue;
                     }
                     catch (Exception ex)
                     {
