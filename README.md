@@ -44,6 +44,16 @@ dotnet run --project KentOS.Mini.Web
 Ön yüz derlemesi `dotnet build/run/publish` ile otomatik tetiklenir.
 Adım adım: [`kurulum.md`](kurulum.md).
 
+### Kapsayıcı ile
+
+```bash
+cp .env.example .env
+docker compose up --build        # uygulama + PostgreSQL
+```
+
+Yayına alma (Dokploy): [`DOKPLOY.md`](DOKPLOY.md). İmaj ön yüzü de kendisi
+derler; ayrı bir derleme hattı gerekmez.
+
 ## Başka bir kurumda çalıştırmak
 
 Uygulama **tek bir kuruma bağlı değildir**. Kaynak ağacında hiçbir kurumun adı,

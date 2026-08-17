@@ -399,3 +399,10 @@ KentOS.Mini.Web/frontend/*.tsbuildinfo
 
 # Firebase yönetici hizmet hesabı — özel anahtar içerir.
 *-firebase-adminsdk-*.json
+
+# ── İşletim sistemi çöpü ────────────────────────────────────────────────
+# macOS Finder her klasörde bırakıyor; bir kez depoya girince her dizin
+# değişikliğinde gürültü üretiyor.
+.DS_Store
+**/.DS_Store
+Thumbs.db

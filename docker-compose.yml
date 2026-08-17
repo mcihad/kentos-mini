@@ -1,0 +1,63 @@
+# ═══════════════════════════════════════════════════════════════════════════
+#  KentOS.Mini — yerel kapsayıcı koşumu
+#
+#  Bu dosya YEREL DENEME içindir. Dokploy'da uygulamayı doğrudan
+#  `Dockerfile` ile dağıtmak daha uygun: veritabanını Dokploy'un kendi
+#  PostgreSQL hizmeti olarak açıp bağlantı dizesini ortam değişkeni
+#  vermek, compose içinde ikinci bir veritabanı taşımaktan kolay ve
+#  yedekleme de Dokploy'un yönetiminde kalıyor.
+#
+#  Çalıştırmak için:
+#      cp .env.example .env      # doldurun
+#      docker compose up --build
+# ═══════════════════════════════════════════════════════════════════════════
+
+services:
+  uygulama:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    environment:
+      # `.env` içindeki değeri EZER: kapsayıcıdan veritabanı ana bilgisayar
+      # adıyla görünüyor, `127.0.0.1` kapsayıcının kendisini gösterirdi.
+      ConnectionStrings__DefaultConnection: >-
+        Host=veritabani;Port=5432;Database=workcollab;Username=workcollab;Password=workcollab;Maximum Pool Size=25
+    depends_on:
+      veritabani:
+        condition: service_healthy
+    volumes:
+      # YÜKLENEN DOSYALAR KALICI OLMALI. Bu bağ olmadan her yeniden dağıtımda
+      # etkinlik fotoğrafları, talep ekleri ve özgeçmişler kaybolur.
+      # Nesne deposu kullanılıyorsa (`Storage__Provider=S3`) gerekmez.
+      - yuklemeler:/uygulama/wwwroot/uploads
+      # Firebase hizmet hesabı — imaja GİRMEZ (bkz. .dockerignore), dışarıdan
+      # salt okunur bağlanır. Bildirim kullanmıyorsanız bu satırı silin.
+      # - ./firebase-service-account.json:/uygulama/firebase-service-account.json:ro
+    restart: unless-stopped
+
+  veritabani:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: workcollab
+      POSTGRES_USER: workcollab
+      POSTGRES_PASSWORD: workcollab
+      # Saat dilimi uygulamayla AYNI olmalı: damgalar
+      # `timestamp without time zone` ve iki taraf ayrı dilimdeyse
+      # kaydedilen saat ile okunan saat farklı olur.
+      TZ: Europe/Istanbul
+    volumes:
+      - veritabani-verisi:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U workcollab -d workcollab"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  yuklemeler:
+  veritabani-verisi:
