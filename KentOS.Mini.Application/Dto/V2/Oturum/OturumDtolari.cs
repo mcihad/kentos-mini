@@ -82,6 +82,17 @@ public class BenYaniti
     public bool DosyaGonderebilir { get; set; }
 
     /// <summary>
+    /// Saha personeli mi — giriş sonrası nereye ineceğini belirler.
+    /// </summary>
+    /// <remarks>
+    /// Yanındaki iki alan birer YETKİ, bu değil. Neyi yapabileceğini izinler
+    /// söylüyor; bu alan yalnızca varsayılan ekranı seçiyor ve hiçbir uç ona
+    /// bakmıyor.
+    /// </remarks>
+    [JsonPropertyName("sahaPersoneli")]
+    public bool SahaPersoneli { get; set; }
+
+    /// <summary>
     /// Sunucudaki yetki politikalarının istemci karşılığı.
     /// </summary>
     /// <remarks>

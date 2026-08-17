@@ -380,6 +380,7 @@ builder.Services.AddScoped<IDavetCiktiServisi, DavetCiktiServisi>();
 builder.Services.AddScoped<IDosyaGonderimiServisi, DosyaGonderimiServisi>();
 builder.Services.AddScoped<V2HataFiltresi>();
 builder.Services.AddScoped<V2DogrulamaFiltresi>();
+builder.Services.AddScoped<VatandasPortaliFiltresi>();
 builder.Services.AddValidatorsFromAssemblyContaining<GirisIstegiDogrulayici>(ServiceLifetime.Scoped);
 
 // Dosya deposu: STORAGE__PROVIDER=Local (varsayılan, mevcut davranış) ya da

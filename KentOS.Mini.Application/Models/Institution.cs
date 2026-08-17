@@ -146,6 +146,26 @@ public class Institution
     [Column("cikti_amblemi")]
     public string? PrintLogo { get; set; }
 
+    // ── Yetenekler ─────────────────────────────────────────────────────
+
+    /// <summary>
+    /// Vatandaş şikayet portalı (<c>/bildir</c>) açık mı.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>VARSAYILAN KAPALI ve bu bilinçli.</b> Bayrak açıkken uygulamanın tek
+    /// anonim yazma ucu dünyaya açılıyor; böyle bir yüzeyin bir kurulumda
+    /// kimse istemeden var olması kabul edilemez. Açmak yöneticinin ayrı bir
+    /// kararı olmalı, kurulumun yan etkisi değil.
+    /// </para>
+    /// <para>
+    /// Kapalıyken uçlar <b>404</b> dönüyor, 403 değil: 403, saldırgana "burada
+    /// bir şey var, sadece kapalı" bilgisini verirdi.
+    /// </para>
+    /// </remarks>
+    [Column("vatandas_bildirimi_acik")]
+    public bool CitizenReportEnabled { get; set; }
+
     // ── Denetim ────────────────────────────────────────────────────────
 
     [Column("olusturma_tarihi")]

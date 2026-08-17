@@ -24,6 +24,14 @@ export type Me = {
   gizliEtkinlikEkleyebilir: boolean;
   /** Dosya gönderimi başlatabilir mi (almak yetki istemez). */
   dosyaGonderebilir: boolean;
+  /**
+   * Saha personeli mi — giriş sonrası VARSAYILAN ekranı belirler.
+   *
+   * Yukarıdaki iki alan birer yetki, bu değil: ne yapabileceğini izinler
+   * söylüyor, bu alan yalnızca nereye ineceğini. İzinleri olan biri panele
+   * geçebilir; bir kapı değil, bir kısayol.
+   */
+  sahaPersoneli?: boolean;
   /** Sunucudaki politikaların istemci karşılığı — menüleri şekillendirir. */
   yetkiler: string[];
   /**
@@ -39,7 +47,14 @@ export type Me = {
 type SessionContextValue = {
   me: Me | null;
   ready: boolean;
-  signIn: (kullaniciAdi: string, parola: string) => Promise<void>;
+  /**
+   * Giriş yapar ve OTURUM SAHİBİNİ döner.
+   *
+   * Dönüş değeri, girişten sonra nereye gidileceğine karar veren çağıranın
+   * işine yarıyor: `me` durumu bu çağrının ardından ancak bir sonraki
+   * render'da dolduğu için, çağıran onu bekleyemiyordu.
+   */
+  signIn: (kullaniciAdi: string, parola: string) => Promise<Me>;
   signOut: () => Promise<void>;
   hasPolicy: (politika: string) => boolean;
 
@@ -123,6 +138,7 @@ export function SessionProvider({ children }: { children: React.ReactNode }) {
     tokenStore.write(tokenResponse);
     const user = await api.get<Me>('/oturum/ben');
     setMe(user);
+    return user;
   }, []);
 
   const signOut = useCallback(async () => {

@@ -331,6 +331,7 @@ function KullaniciFormu({
   const [telefon, setTelefon] = useState(mevcut?.telefon ?? '');
   const [birimId, setBirimId] = useState<number | ''>(mevcut?.birimId ?? '');
   const [secili, setSecili] = useState<string[]>(mevcut?.roller ?? []);
+  const [sahaPersoneli, setSahaPersoneli] = useState(mevcut?.sahaPersoneli ?? false);
   const [smsGonder, setSmsGonder] = useState(true);
 
   const kaydet = useMutation({
@@ -344,6 +345,7 @@ function KullaniciFormu({
         telefon: telefon || null,
         birimId: birimId === '' ? null : birimId,
         roller: secili,
+        sahaPersoneli,
       };
       return mevcut
         ? api.put(`/yonetim/kullanicilar/${mevcut.id}`, govde)
@@ -516,6 +518,19 @@ function KullaniciFormu({
             demekti ve hangisinin geçerli olduğu ekrandan anlaşılmıyordu.
             Sütunlar veritabanında duruyor ama okunmuyor.
           */}
+
+          {/*
+            SAHA PERSONELİ ROLE BAĞLANMADI ve bu bilinçli. Yukarıdaki iki alan
+            birer YETKİYDİ ve yetkinin kaynağı roldür; bu ise kullanıcıya özel
+            bir tercih: aynı rolün iki üyesinden biri sahada olabilir, öteki
+            masada. Rolle ifade edilemeyen tek şey bu yüzden burada duruyor.
+          */}
+          <Switch
+            isaretli={sahaPersoneli}
+            degistir={setSahaPersoneli}
+            etiket="Saha personeli"
+            aciklama="Giriş yapınca panele değil saha ekranına iner. Yetkilerini değiştirmez; izinleri varsa panele geçebilir."
+          />
 
           {!mevcut && (
             <Switch

@@ -44,6 +44,18 @@ public class KurumBilgisiDto
 
     [JsonPropertyName("marka")] public MarkaDto Marka { get; set; } = new();
     [JsonPropertyName("bildirim")] public BildirimYapilandirmasiDto? Bildirim { get; set; }
+
+    /// <summary>
+    /// Vatandaş şikayet portalı açık mı.
+    /// </summary>
+    /// <remarks>
+    /// Bu DTO anonim okunabiliyor ve bayrak da anonim görünüyor — çünkü
+    /// zaten gözlenebilir: portal adresine giren herkes açık mı kapalı mı
+    /// olduğunu bir saniyede öğrenir. Gizlemeye çalışmak, SPA'nın kapalı
+    /// portalı düzgün bir "şu an kapalı" ekranıyla karşılamasını engellemekten
+    /// başka bir işe yaramazdı.
+    /// </remarks>
+    [JsonPropertyName("vatandasBildirimi")] public bool VatandasBildirimi { get; set; }
 }
 
 /// <summary>Kurumsal kimlik çekirdeği — SPA tonları bunlardan türetir.</summary>
@@ -100,6 +112,9 @@ public class KurumGuncellemeIstegi
     [JsonPropertyName("favicon")] public string? Favicon { get; set; }
     [JsonPropertyName("uygulamaIkonu")] public string? UygulamaIkonu { get; set; }
     [JsonPropertyName("ciktiAmblemi")] public string? CiktiAmblemi { get; set; }
+
+    /// <summary>Vatandaş şikayet portalını aç/kapat.</summary>
+    [JsonPropertyName("vatandasBildirimi")] public bool VatandasBildirimi { get; set; }
 }
 
 // ═══════════════════════════════════════════════════════════════════ servis
@@ -207,6 +222,24 @@ public class InstitutionService(
         kayit.AppIcon = Kirp(istek.UygulamaIkonu);
         kayit.PrintLogo = Kirp(istek.CiktiAmblemi);
 
+        /*
+          PORTALIN AÇILIP KAPANMASI KAYDA GEÇİYOR.
+
+          Diğer alanlar bir görünüm tercihi; bu bayrak bir GÜVENLİK kararı ve
+          "kim ne zaman açtı" sorusunun sonradan sorulacağı tek alan.
+          `Guncelleyen`/`GuncellemeTarihi` bunu ancak son değişiklik için
+          söylüyor, bu yüzden ayrıca loglanıyor.
+        */
+        if (kayit.CitizenReportEnabled != istek.VatandasBildirimi)
+        {
+            _logger.LogWarning(
+                "Vatandaş bildirim portalı {Durum}: {Kullanici}",
+                istek.VatandasBildirimi ? "AÇILDI" : "KAPATILDI",
+                await _mevcutKullanici.GetFullNameAsync());
+        }
+
+        kayit.CitizenReportEnabled = istek.VatandasBildirimi;
+
         kayit.GuncellemeTarihi = DateTime.Now;
         kayit.Guncelleyen = await _mevcutKullanici.GetFullNameAsync();
 
@@ -291,6 +324,7 @@ public class InstitutionService(
             ? (string.IsNullOrWhiteSpace(k.ApplicationName) ? _uygulamaAyari.ResolvedShortName : k.ApplicationName)
             : k.ApplicationShortName,
         UygulamaAciklamasi = k.ApplicationDescription,
+        VatandasBildirimi = k.CitizenReportEnabled,
         Marka = new MarkaDto
         {
             Birincil = k.BrandPrimary,

@@ -95,6 +95,11 @@ public class OturumController(
             // gizli etkinlik anahtarını ve gönder düğmesini sessizce kapatırdı.
             GizliEtkinlikEkleyebilir = izinler.Contains(Application.Identity.Izinler.AjandaGizliEtkinlik),
             DosyaGonderebilir = izinler.Contains(Application.Identity.Izinler.GonderimGonder),
+            // Bu alan SÜTUNDAN okunuyor, izinden değil: yukarıdaki ikisi birer
+            // yetki ve yetkinin kaynağı rol; bu ise kullanıcıya özel bir tercih
+            // ve rolle ifade edilemez. Aynı rolün iki üyesinden biri sahada
+            // olabilir, öteki masada.
+            SahaPersoneli = kullanici.SahaPersoneli,
             // Arayüzün menüleri şekillendirmesi için; yetkinin kaynağı yine sunucu.
             //
             // İKİ LİSTE BİR ARADA: `yetkiler` eski beş politika (sahadaki eski

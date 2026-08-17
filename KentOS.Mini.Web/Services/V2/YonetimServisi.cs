@@ -139,6 +139,7 @@ public class YonetimServisi(
             EmailConfirmed = true,
             GizliEtkinlikEkleyebilir = istek.GizliEtkinlikEkleyebilir,
             DosyaGonderebilir = istek.DosyaGonderebilir,
+            SahaPersoneli = istek.SahaPersoneli,
         };
 
         var sonuc = await _kullaniciYoneticisi.CreateAsync(kullanici, istek.Parola);
@@ -200,6 +201,7 @@ public class YonetimServisi(
         kullanici.BirimId = istek.BirimId;
         kullanici.GizliEtkinlikEkleyebilir = istek.GizliEtkinlikEkleyebilir;
         kullanici.DosyaGonderebilir = istek.DosyaGonderebilir;
+        kullanici.SahaPersoneli = istek.SahaPersoneli;
         // FcmToken ve WebFcmToken'a DOKUNULMAZ: cihaz bağlantısı yönetim
         // formunun konusu değil, cihazın kendisi kaydeder.
 
@@ -602,6 +604,7 @@ public class YonetimServisi(
                 WebBagli = !string.IsNullOrWhiteSpace(k.WebFcmToken),
                 GizliEtkinlikEkleyebilir = k.GizliEtkinlikEkleyebilir,
                 DosyaGonderebilir = k.DosyaGonderebilir,
+                SahaPersoneli = k.SahaPersoneli,
             });
         }
 
@@ -797,6 +800,7 @@ public class YonetimServisi(
         WebBagli = !string.IsNullOrWhiteSpace(k.WebFcmToken),
         GizliEtkinlikEkleyebilir = k.GizliEtkinlikEkleyebilir,
         DosyaGonderebilir = k.DosyaGonderebilir,
+        SahaPersoneli = k.SahaPersoneli,
     };
 
     private static string HatalariBirlestir(IdentityResult sonuc) =>

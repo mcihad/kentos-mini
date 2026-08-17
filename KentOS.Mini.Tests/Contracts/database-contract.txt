@@ -45,6 +45,7 @@ TABLE AspNetUsers
   password_hash
   phone_number
   phone_number_confirmed
+  saha_personeli
   security_stamp
   soyad
   two_factor_enabled
@@ -512,6 +513,7 @@ TABLE kurum_bilgileri
   uygulama_adi
   uygulama_ikonu
   uygulama_kisa_adi
+  vatandas_bildirimi_acik
   web_sitesi
 TABLE mahalleler
   ad

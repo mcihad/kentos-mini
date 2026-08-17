@@ -65,6 +65,16 @@ public class KullaniciOzetDto
     /// <summary>Dosya gönderimi BAŞLATABİLİR mi (almak yetki istemez).</summary>
     [JsonPropertyName("dosyaGonderebilir")]
     public bool DosyaGonderebilir { get; set; }
+
+    /// <summary>
+    /// Saha personeli mi — giriş sonrası varsayılan ekranı belirler.
+    /// </summary>
+    /// <remarks>
+    /// Yanındaki iki alan birer yetki, bu değil: neyi yapabileceğini izinleri
+    /// söylüyor, bu alan yalnızca nereye ineceğini.
+    /// </remarks>
+    [JsonPropertyName("sahaPersoneli")]
+    public bool SahaPersoneli { get; set; }
 }
 
 /// <summary>Kullanıcı oluşturma isteği.</summary>
@@ -110,6 +120,10 @@ public class KullaniciOlusturIstegi
 
     [JsonPropertyName("dosyaGonderebilir")]
     public bool DosyaGonderebilir { get; set; }
+
+    /// <summary>Giriş sonrası saha ekranına insin mi.</summary>
+    [JsonPropertyName("sahaPersoneli")]
+    public bool SahaPersoneli { get; set; }
 
     /// <summary>Kullanıcıya SMS ile giriş bilgisi gönderilsin mi?</summary>
     [JsonPropertyName("smsGonder")]
@@ -160,6 +174,10 @@ public class KullaniciGuncelleIstegi
 
     [JsonPropertyName("dosyaGonderebilir")]
     public bool DosyaGonderebilir { get; set; }
+
+    /// <summary>Giriş sonrası saha ekranına insin mi.</summary>
+    [JsonPropertyName("sahaPersoneli")]
+    public bool SahaPersoneli { get; set; }
 }
 
 /// <summary>Yönetici tarafından parola sıfırlama.</summary>

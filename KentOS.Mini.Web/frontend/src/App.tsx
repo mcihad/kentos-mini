@@ -35,7 +35,8 @@ import WorkDashboard from './screens/WorkDashboard';
 import FieldHome from './screens/field/FieldHome';
 import FieldReport from './screens/field/FieldReport';
 import FieldTask from './screens/field/FieldTask';
-import { BareLayout } from './shell/BareLayout';
+import { PortalLayout } from './shell/PortalLayout';
+import { SahaLayout } from './shell/SahaLayout';
 import Statistics from './screens/Statistics';
 import CalendarScreen from './screens/CalendarPage';
 import RequestDetail from './screens/RequestDetail';
@@ -84,21 +85,22 @@ export default function App() {
         `AppShell` de yok — kurumsal menüyü göstermek anlamsız, orada kimse
         oturum açmış değil.
       */}
-      <Route element={<BareLayout geriYok />}>
+      <Route element={<PortalLayout />}>
         <Route path="/bildir" element={<ReportPortal />} />
       </Route>
 
       {/*
-        SAHA — KABUKSUZ ama KİMLİK DOĞRULAMALI.
+        SAHA — KENDİ KABUĞUNDA ve KİMLİK DOĞRULAMALI.
 
-        Kenar çubuğu, sekme çubuğu ve bildirim ikonu yok: saha personeli
-        telefonu tek elle, güneş altında, eldivenle kullanıyor ve ekranın
-        tamamı işe ayrılmalı.
+        Panelin kabuğu yirmi yedi menü öğesi taşıyan kurumsal bir yüzey;
+        sahada yapılan iş ise üç şeyden biri. `SahaLayout` renkli üst şerit
+        ve alt sekme çubuğuyla telefonda yerli uygulama gibi duruyor,
+        sekmeleri de kullanıcının izinlerine göre kuruyor.
       */}
       <Route
         element={
           <ProtectedRoute>
-            <BareLayout />
+            <SahaLayout />
           </ProtectedRoute>
         }
       >
@@ -109,6 +111,12 @@ export default function App() {
         <Route
           path="/saha/tespit"
           element={<ProtectedRoute permission={[PERMISSION.sahaTespit, PERMISSION.gorevEkle]}><FieldReport /></ProtectedRoute>}
+        />
+        {/* Panelin haritasıyla AYNI bileşen: iki harita, iki yerde
+            düzeltilecek bir kümeleme mantığı demekti. */}
+        <Route
+          path="/saha/harita"
+          element={<ProtectedRoute permission={PERMISSION.gorevGoruntule}><WorkMapScreen /></ProtectedRoute>}
         />
         <Route
           path="/saha/gorev/:id"

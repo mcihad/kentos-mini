@@ -23,6 +23,9 @@ namespace KentOS.Mini.Web.Controllers.V2;
 /// <b>Kırılan kuralın karşılığında konan korumalar:</b>
 /// </para>
 /// <list type="bullet">
+///   <item><b>Kurum ayarındaki bayrak kapalıysa uçlar HİÇ YOK</b> (404).
+///         Portal varsayılan olarak kapalı; açmak yöneticinin ayrı bir
+///         kararı.</item>
 ///   <item>Tek controller, üç yazma ucu — yüzey mümkün olduğunca dar.</item>
 ///   <item>Her uçta HIZ SINIRI, IP başına.</item>
 ///   <item>Telefon doğrulaması: kod karma olarak saklanıyor, deneme sınırlı,
@@ -47,6 +50,18 @@ namespace KentOS.Mini.Web.Controllers.V2;
 [Route("api/v2/bildir")]
 [ServiceFilter(typeof(V2HataFiltresi))]
 [ServiceFilter(typeof(V2DogrulamaFiltresi))]
+/*
+  KAPI HER ŞEYDEN ÖNCE.
+
+  Varsayılan sırada kapalı portal, bozuk bir gövdeye 400 dönüyordu: yani
+  "burada bir uç var, sadece gövden hatalı" diyordu. Kapalı portal hiç var
+  olmamış bir portaldan ayırt edilememeli.
+
+  `-2001` keyfi değil: 400'ü döndüren şey bizim doğrulama filtremiz değil,
+  `[ApiController]`'ın kendi `ModelStateInvalidFilter`'ı ve o `-2000`'de
+  çalışıyor. Kapının ondan da önde olması gerekiyordu. Ölçüldü.
+*/
+[ServiceFilter(typeof(VatandasPortaliFiltresi), Order = -2001)]
 [Produces("application/json")]
 [EnableRateLimiting(HizSiniri.VatandasPortali)]
 public class BildirimPortalController(

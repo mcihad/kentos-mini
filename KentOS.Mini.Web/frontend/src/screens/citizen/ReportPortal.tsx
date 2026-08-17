@@ -1,5 +1,5 @@
 import {
-  Camera, Check, CheckCircle2, Loader2, MapPin, MessageSquare, Phone, X,
+  Camera, Check, CheckCircle2, Loader2, Lock, MapPin, MessageSquare, Phone, X,
 } from 'lucide-react';
 import { useRef, useState } from 'react';
 import { Button } from '../../components/Button';
@@ -7,6 +7,7 @@ import { Card } from '../../components/Card';
 import { FieldWrapper, Input, Textarea } from '../../components/Field';
 import { useToast } from '../../components/Toast';
 import { portal } from '../../data/citizen';
+import { useInstitution } from '../../institution/institution';
 import { LocationPicker } from '../map/LocationPicker';
 
 type Adim = 'telefon' | 'kod' | 'form' | 'bitti';
@@ -32,6 +33,7 @@ type Adim = 'telefon' | 'kod' | 'form' | 'bitti';
  */
 export default function ReportPortal() {
   const { bildir } = useToast();
+  const kurum = useInstitution();
 
   const [adim, setAdim] = useState<Adim>('telefon');
   const [telefon, setTelefon] = useState('');
@@ -126,6 +128,45 @@ export default function ReportPortal() {
 
   // ── bitti ──────────────────────────────────────────────────────────
 
+  /*
+    PORTAL KAPALIYSA FORM HİÇ ÇİZİLMİYOR.
+
+    Asıl kapı SUNUCUDA: bayrak kapalıyken uçlar 404 dönüyor ve bu ekranı
+    gizlemek portalı kapatmıyor. Buradaki denetim, kapalı bir portalda formu
+    doldurup "gönder"e bastıktan sonra hata almanın önüne geçmek için —
+    kullanıcının emeğini boşa harcatmamak.
+
+    Bayrak `undefined` ise (eski sunucu) form AÇILIYOR: yeni bir alanın
+    yokluğunu "kapalı" saymak, yükseltme sırasında portalı sessizce
+    kapatırdı.
+  */
+  if (kurum.vatandasBildirimi === false) {
+    return (
+      <Card className="p-6 text-center">
+        <span className="mx-auto grid h-16 w-16 place-items-center rounded-full bg-sunken text-ink-3">
+          <Lock size={28} />
+        </span>
+        <h1 className="mt-3 font-display text-lg font-bold text-ink">
+          Bildirim kanalı şu anda kapalı
+        </h1>
+        <p className="mt-1.5 text-sm text-text-2">
+          {kurum.gorunenAd || kurum.ad} çevrim içi bildirim almayı geçici olarak
+          durdurdu.
+        </p>
+
+        {(kurum.telefon || kurum.eposta) && (
+          <div className="mt-4 space-y-1 rounded-control border border-line bg-sunken px-4 py-3 text-sm text-ink">
+            {/* Kapalı bir kapıyı gösterip yol tarif etmemek, vatandaşı
+                başladığı yere geri yollamak olurdu. */}
+            <p className="text-2xs uppercase tracking-wide text-ink-3">Bize ulaşın</p>
+            {kurum.telefon && <p className="tabular-nums">{kurum.telefon}</p>}
+            {kurum.eposta && <p className="break-all">{kurum.eposta}</p>}
+          </div>
+        )}
+      </Card>
+    );
+  }
+
   if (adim === 'bitti') {
     return (
       <Card className="p-5 text-center">
@@ -164,10 +205,13 @@ export default function ReportPortal() {
 
   return (
     <div className="space-y-3.5">
-      <div>
-        <h1 className="font-display text-xl font-bold text-ink">Bildirim gönder</h1>
+      <div className="rounded-card border border-line bg-surface p-4 shadow-1">
+        <h1 className="font-display text-xl font-bold leading-tight text-ink">
+          Şikayet ve istek bildirimi
+        </h1>
         <p className="mt-1 text-sm text-text-2">
-          Gördüğünüz sorunu bize iletin; ilgili birime yönlendirelim.
+          Gördüğünüz sorunu bize iletin; ilgili birime yönlendirelim. Takip
+          numaranızı SMS ile göndeririz.
         </p>
       </div>
 

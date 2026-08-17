@@ -52,6 +52,14 @@ export type Institution = {
   uygulamaAciklamasi?: string | null;
   marka: Brand;
   bildirim?: NotificationConfig | null;
+  /**
+   * Vatandaş şikayet portalı açık mı.
+   *
+   * Asıl kapı SUNUCUDA: bayrak kapalıyken uçlar 404 dönüyor. Buradaki değer
+   * yalnızca ekranın "şu an kapalı" diyebilmesi için — kapatmayı ön yüze
+   * bırakmak, portalı kapatmak değil gizlemek olurdu.
+   */
+  vatandasBildirimi?: boolean;
 };
 
 /**

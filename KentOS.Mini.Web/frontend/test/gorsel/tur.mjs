@@ -47,7 +47,9 @@ const EKRANLAR = [
   { ad: 'harita', yol: '/harita', bekle: 'nokta' },
   { ad: 'gelen-kutusu', yol: '/gelen-kutusu', bekle: 'Bekliyor' },
   { ad: 'is-panosu', yol: '/is-panosu', bekle: 'Birim karnesi' },
-  { ad: 'saha', yol: '/saha', bekle: 'Tespit gir' },
+  // Çapa alt sekme çubuğunda: "İşlerim" saha kabuğunun her ekranında var,
+  // ekranın içeriği ise kullanıcının izinlerine göre değişiyor.
+  { ad: 'saha', yol: '/saha', bekle: 'İşlerim' },
   // NOT: alan etiketleri CSS ile BÜYÜK HARFE çevriliyor ("NE GÖRDÜNÜZ?") ve
   // `innerText` dönüşmüş hâli veriyor; çıpa dönüşümden etkilenmeyen bir
   // düğme metni.

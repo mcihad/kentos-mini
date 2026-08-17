@@ -11958,6 +11958,7 @@ export interface components {
             roller?: string[] | null;
             gizliEtkinlikEkleyebilir?: boolean;
             dosyaGonderebilir?: boolean;
+            sahaPersoneli?: boolean;
             yetkiler?: string[] | null;
             izinler?: string[] | null;
         };
@@ -13572,6 +13573,7 @@ export interface components {
             roller?: string[] | null;
             gizliEtkinlikEkleyebilir?: boolean;
             dosyaGonderebilir?: boolean;
+            sahaPersoneli?: boolean;
         };
         KullaniciOlusturIstegi: {
             kullaniciAdi?: string | null;
@@ -13586,6 +13588,7 @@ export interface components {
             roller?: string[] | null;
             gizliEtkinlikEkleyebilir?: boolean;
             dosyaGonderebilir?: boolean;
+            sahaPersoneli?: boolean;
             smsGonder?: boolean;
         };
         KullaniciOzetDto: {
@@ -13605,6 +13608,7 @@ export interface components {
             webBagli?: boolean;
             gizliEtkinlikEkleyebilir?: boolean;
             dosyaGonderebilir?: boolean;
+            sahaPersoneli?: boolean;
         };
         KullaniciOzetDtoSayfaliSonuc: {
             veriler?: components["schemas"]["KullaniciOzetDto"][] | null;
@@ -13635,6 +13639,8 @@ export interface components {
             uygulamaAciklamasi?: string | null;
             marka?: components["schemas"]["MarkaDto"];
             bildirim?: components["schemas"]["BildirimYapilandirmasiDto"];
+            /** @description Vatandaş şikayet portalı açık mı. */
+            vatandasBildirimi?: boolean;
         };
         /** @description Kurum bilgisi düzenleme isteği. */
         KurumGuncellemeIstegi: {
@@ -13658,6 +13664,8 @@ export interface components {
             favicon?: string | null;
             uygulamaIkonu?: string | null;
             ciktiAmblemi?: string | null;
+            /** @description Vatandaş şikayet portalını aç/kapat. */
+            vatandasBildirimi?: boolean;
         };
         MahalleDto: {
             /** Format: int64 */

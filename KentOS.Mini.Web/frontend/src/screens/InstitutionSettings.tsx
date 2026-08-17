@@ -1,8 +1,9 @@
-import { Building2, Palette, RotateCcw, Save } from 'lucide-react';
+import { Building2, Check, Copy, ExternalLink, Palette, RotateCcw, Save } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Button } from '../components/Button';
 import { FieldWrapper, Input, Textarea } from '../components/Field';
 import { FormSection } from '../components/FormSection';
+import { Switch } from '../components/Switch';
 import { useToast } from '../components/Toast';
 import { api } from '../data/client';
 import {
@@ -56,6 +57,8 @@ type Form = {
   favicon: string;
   uygulamaIkonu: string;
   ciktiAmblemi: string;
+  /** Vatandaş şikayet portalı açık mı — tek boolean alan. */
+  vatandasBildirimi: boolean;
 };
 
 const BOS: Form = {
@@ -64,6 +67,7 @@ const BOS: Form = {
   uygulamaAdi: '', uygulamaKisaAdi: '', uygulamaAciklamasi: '',
   markaBirincil: '', markaVurgu: '', markaNotr: '', markaBirincilKoyu: '',
   amblem: '', favicon: '', uygulamaIkonu: '', ciktiAmblemi: '',
+  vatandasBildirimi: false,
 };
 
 function kurumdanForm(k: Institution): Form {
@@ -88,6 +92,7 @@ function kurumdanForm(k: Institution): Form {
     favicon: k.marka.favicon ?? '',
     uygulamaIkonu: k.marka.uygulamaIkonu ?? '',
     ciktiAmblemi: '',
+    vatandasBildirimi: k.vatandasBildirimi ?? false,
   };
 }
 
@@ -252,6 +257,32 @@ export default function InstitutionSettings() {
         </div>
       </FormSection>
 
+      <FormSection
+        baslik="VATANDAŞ ŞİKAYET PORTALI"
+        aciklama="Kapalıyken sayfa da uçları da hiç yok; açmak bilinçli bir karar olmalı."
+      >
+        <div className="space-y-3 p-3.5">
+          <Switch
+            isaretli={form.vatandasBildirimi}
+            degistir={(a) => setForm((f) => ({ ...f, vatandasBildirimi: a }))}
+            etiket="Vatandaş şikayet bildirebilsin"
+            aciklama="Açıkken herkese açık bir bildirim sayfası yayına girer. Telefon doğrulaması ile IP ve numara başına hız sınırı her zaman uygulanır."
+          />
+
+          {form.vatandasBildirimi ? (
+            <PortalAdresi kaydedilmemis={degisti} />
+          ) : (
+            /*
+              KAPALIYKEN ADRES GÖSTERİLMİYOR: kapalı bir adresi kopyalatmak,
+              afişe bastırıp çalışmadığını sonra öğrenmenin en kısa yolu.
+            */
+            <p className="text-2xs text-ink-3">
+              Açtığınızda paylaşılacak adres burada görünecek.
+            </p>
+          )}
+        </div>
+      </FormSection>
+
       {/*
         Kaydet çubuğu MOBİLDE SABİT: form uzun ve alta inmeden kaydedememek,
         kullanıcıyı her değişiklikte sayfanın dibine yolluyordu.
@@ -357,3 +388,71 @@ function GorselAlani({
 
 /** Menüde kullanılan ikon — tek yerden okunsun diye burada duruyor. */
 export const InstitutionSettingsIcon = Palette;
+
+/**
+ * PAYLAŞILACAK PORTAL ADRESİ.
+ *
+ * <p>
+ * Adres sunucudan GELMİYOR, tarayıcının kendi kökünden üretiliyor. Sebebi
+ * pratik: uygulamanın dışarıdan görünen adresi <code>.env</code>'de bile her
+ * zaman doğru olmuyor (ters vekil, alan adı değişikliği, test kopyası).
+ * Yöneticinin o an baktığı adres, paylaşacağı adresin ta kendisi.
+ * </p>
+ *
+ * <p>
+ * <b>Kopyalama, panoya gerçekten yazıldığını bekliyor.</b> Pano izni
+ * reddedilirse (güvensiz bağlam) düğme "kopyalandı" demiyor ve metin
+ * seçilebilir kalıyor — sessizce başarılı görünmek, afişe yanlış adres
+ * bastırabilirdi.
+ * </p>
+ */
+function PortalAdresi({ kaydedilmemis }: { kaydedilmemis: boolean }) {
+  const [kopyalandi, setKopyalandi] = useState(false);
+  const adres = `${window.location.origin}/bildir`;
+
+  async function kopyala() {
+    try {
+      await navigator.clipboard.writeText(adres);
+      setKopyalandi(true);
+      window.setTimeout(() => setKopyalandi(false), 2000);
+    } catch {
+      // Pano izni yok. Metin ekranda ve seçilebilir; elle kopyalanabilir.
+    }
+  }
+
+  return (
+    <div className="rounded-control border border-border bg-surface-2 p-3">
+      <p className="text-2xs font-semibold uppercase tracking-[0.08em] text-ink-3">
+        Paylaşılacak adres
+      </p>
+
+      <div className="mt-1.5 flex flex-wrap items-center gap-2">
+        <code className="min-w-0 flex-1 select-all break-all font-mono text-sm text-ink">
+          {adres}
+        </code>
+
+        <Button type="button" varyant="ikincil" className="h-9" onClick={kopyala}>
+          {kopyalandi ? <Check size={15} /> : <Copy size={15} />}
+          {kopyalandi ? 'Kopyalandı' : 'Kopyala'}
+        </Button>
+
+        <a href={adres} target="_blank" rel="noreferrer">
+          <Button type="button" varyant="sade" className="h-9">
+            <ExternalLink size={15} />
+            Aç
+          </Button>
+        </a>
+      </div>
+
+      {kaydedilmemis && (
+        /*
+          Anahtar açıldı ama HENÜZ KAYDEDİLMEDİ: adres çalışmaz. Bunu
+          söylememek, "linki açtım hata verdi" turuna yol açardı.
+        */
+        <p className="mt-2 text-2xs text-warn">
+          Adres, değişiklikleri kaydettikten sonra çalışır.
+        </p>
+      )}
+    </div>
+  );
+}

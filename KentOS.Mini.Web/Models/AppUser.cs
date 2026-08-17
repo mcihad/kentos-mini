@@ -64,6 +64,26 @@ namespace KentOS.Mini.Application.Models
         [Column("dosya_gonderebilir")]
         public bool DosyaGonderebilir { get; set; }
 
+        /// <summary>
+        /// Bu kullanıcı SAHA personeli mi?
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// İşaretliyse giriş sonrası panele değil <c>/saha</c>'ya iniyor. Saha
+        /// personeli günde onlarca kez giriş yapıyor ve her seferinde masaüstü
+        /// için tasarlanmış bir panelden geçip aradığını bulmak zorundaydı.
+        /// </para>
+        /// <para>
+        /// <b>Bu bir YETKİ DEĞİL, bir varsayılan.</b> Ne yapabileceğini
+        /// izinleri belirliyor; bu alan yalnızca nereye ineceğini söylüyor ve
+        /// izinleri olan biri panele geçebiliyor. Yetki olarak kurulsaydı izin
+        /// kataloğuna girmesi ve her uçta denetlenmesi gerekirdi; oysa hiçbir
+        /// uç bu alana bakmıyor — bakmamalı da.
+        /// </para>
+        /// </remarks>
+        [Column("saha_personeli")]
+        public bool SahaPersoneli { get; set; }
+
         /**
         [NotMapped]
         [DataType(DataType.Password)]

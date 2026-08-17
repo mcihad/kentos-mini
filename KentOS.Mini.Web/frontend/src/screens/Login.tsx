@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { useSession } from '../auth/SessionProvider';
+import { inisYolu } from '../auth/inisEkrani';
 import { ApiError } from '../data/client';
 import { buyukHarf, useInstitution } from '../institution/institution';
 
@@ -41,8 +42,8 @@ export default function Login() {
   const [gonderiliyor, setGonderiliyor] = useState(false);
 
   if (me) {
-    const donus = new URLSearchParams(konum.search).get('donus');
-    return <Navigate to={donus || '/'} replace />;
+    // Zaten açık bir oturumla giriş ekranına gelindi (geri tuşu, yer imi).
+    return <Navigate to={inisYolu(me, new URLSearchParams(konum.search).get('donus'))} replace />;
   }
 
   async function gonder(e: React.FormEvent<HTMLFormElement>) {
@@ -53,8 +54,12 @@ export default function Login() {
 
     const f = new FormData(e.currentTarget);
     try {
-      await signIn(String(f.get('kullaniciAdi') ?? ''), String(f.get('parola') ?? ''));
-      gezin(new URLSearchParams(konum.search).get('donus') || '/', { replace: true });
+      const kullanici = await signIn(
+        String(f.get('kullaniciAdi') ?? ''), String(f.get('parola') ?? ''));
+
+      // `me` durumu ancak bir sonraki render'da doluyor; hedefi `signIn`in
+      // döndürdüğü kayıttan çözüyoruz.
+      gezin(inisYolu(kullanici, new URLSearchParams(konum.search).get('donus')), { replace: true });
     } catch (h) {
       if (h instanceof ApiError) {
         setAlanHatalari(h.fieldErrors);

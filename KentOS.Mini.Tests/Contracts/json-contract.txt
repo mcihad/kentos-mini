@@ -1095,6 +1095,7 @@ DTO KentOS.Mini.Application.Dto.V2.Oturum.BenYaniti
   izinler
   kullaniciAdi
   roller
+  sahaPersoneli
   soyad
   tamAd
   unvan
@@ -1209,6 +1210,7 @@ DTO KentOS.Mini.Application.Dto.V2.Yonetim.KullaniciGuncelleIstegi
   gizliEtkinlikEkleyebilir
   kullaniciAdi
   roller
+  sahaPersoneli
   soyad
   telefon
   unvan
@@ -1221,6 +1223,7 @@ DTO KentOS.Mini.Application.Dto.V2.Yonetim.KullaniciOlusturIstegi
   kullaniciAdi
   parola
   roller
+  sahaPersoneli
   smsGonder
   soyad
   telefon
@@ -1236,6 +1239,7 @@ DTO KentOS.Mini.Application.Dto.V2.Yonetim.KullaniciOzetDto
   kullaniciAdi
   mobilBagli
   roller
+  sahaPersoneli
   soyad
   telefon
   unvan
