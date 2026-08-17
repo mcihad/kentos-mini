@@ -42,7 +42,11 @@ public class EkipController(IEkipServisi _servis) : V2ControllerBase
         [FromBody] EkipKayitDto istek, CancellationToken iptal)
     {
         var ekip = await _servis.OlusturAsync(istek, iptal);
-        return CreatedAtAction(nameof(GetirAsync), new { id = ekip.Id }, ekip);
+
+        // Adres ELLE yazılıyor — MVC eylem adından `Async` ekini düşürdüğü
+        // için `nameof(GetirAsync)` hiçbir rotayla eşleşmiyor ve uç 500
+        // dönüyordu. Gerekçenin tamamı `GorevTipiController`de yazılı.
+        return Created($"/api/v2/ekip/{ekip.Id}", ekip);
     }
 
     [HttpPut("{id:long}")]

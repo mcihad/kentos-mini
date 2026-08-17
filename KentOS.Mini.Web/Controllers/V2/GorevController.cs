@@ -62,7 +62,11 @@ public class GorevController(
         [FromBody] GorevKayitDto istek, CancellationToken iptal)
     {
         var gorev = await _servis.OlusturAsync(istek, iptal);
-        return CreatedAtAction(nameof(GetirAsync), new { id = gorev.Id }, gorev);
+
+        // Adres ELLE yazılıyor — MVC eylem adından `Async` ekini düşürdüğü
+        // için `nameof(GetirAsync)` hiçbir rotayla eşleşmiyor ve uç 500
+        // dönüyordu. Gerekçenin tamamı `GorevTipiController`de yazılı.
+        return Created($"/api/v2/gorev/{gorev.Id}", gorev);
     }
 
     [HttpPut("{id:long}")]

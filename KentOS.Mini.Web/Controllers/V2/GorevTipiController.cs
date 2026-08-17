@@ -49,7 +49,14 @@ public class GorevTipiController(IGorevTipiServisi _servis) : V2ControllerBase
         [FromBody] GorevTipiKayitDto istek, CancellationToken iptal)
     {
         var tip = await _servis.OlusturAsync(istek, iptal);
-        return CreatedAtAction(nameof(GetirAsync), new { id = tip.Id }, tip);
+
+        // Adres ELLE yazılıyor, `CreatedAtAction(nameof(GetirAsync), ...)` ile
+        // DEĞİL. Sebebi canlı ölçümde çıktı: MVC eylem adından `Async` ekini
+        // düşürüyor, dolayısıyla `nameof` ile üretilen "GetirAsync" hiçbir
+        // rotayla eşleşmiyor ve uç 201 yerine 500 dönüyordu. Hata yalnızca
+        // istek gerçekten atıldığında görünüyor — derleyici `nameof`u geçerli
+        // sayıyor.
+        return Created($"/api/v2/gorev-tipi/{tip.Id}", tip);
     }
 
     [HttpPut("{id:long}")]
