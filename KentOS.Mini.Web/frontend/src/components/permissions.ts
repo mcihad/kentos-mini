@@ -85,6 +85,8 @@ export const PERMISSION = {
   yonetimOturumKaydi: 'yonetim.oturumKaydi',
   tanimYonet: 'tanim.yonet',
 
+  gorevBirimKapsam: 'gorev.birimKapsam',
+
   sistemHata: 'sistem.hata',
   sistemKurum: 'sistem.kurum',
 } as const;

@@ -127,6 +127,13 @@ public static class Izinler
     public const string YonetimOturumKaydi = "yonetim.oturumKaydi";
     public const string TanimYonet = "tanim.yonet";
 
+    // ────────────────────────────────────────────────────────── iş takip
+    //
+    // Alan adı BİTİŞİK küçük harf (`gorev`, `ekip`): senkron testi adları
+    // `[a-z]+\.[a-zA-Z]+` deseniyle tarıyor ve `isTakip.goruntule` o desene
+    // takılmıyor.
+    public const string GorevBirimKapsam = "gorev.birimKapsam";
+
     // ─────────────────────────────────────────────────────────── sistem
     public const string SistemHata = "sistem.hata";
     public const string SistemKurum = "sistem.kurum";
@@ -261,6 +268,11 @@ public static class Izinler
             "Kimin ne zaman, hangi IP'den giriş yaptığını görüntüler."),
         new(TanimYonet, "Yönetim", "Tanım yönetimi",
             "Etkinlik tipi, durum, mahalle, meslek gibi referans listelerini düzenler."),
+
+        new(GorevBirimKapsam, "İş Takip", "Alt birim kapsamı",
+            "Kendi biriminin ALTINDAKİ bir birimi seçip o birimin işlerini görür ve yönetir. " +
+            "Başkan yardımcısının bağlı müdürlükleri takip etmesi için. Yalnızca kendi alt ağacı — " +
+            "üst ya da yan birimler açılmaz."),
 
         new(SistemHata, "Sistem", "Hata kayıtları",
             "Sunucu hatalarını görüntüler. Kayıtlar istek gövdeleri, IP adresleri ve yığın izleri içerir."),

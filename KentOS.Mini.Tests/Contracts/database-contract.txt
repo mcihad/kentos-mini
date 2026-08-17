@@ -316,6 +316,29 @@ TABLE icmesuyu_analizleri
   tds
   tsertlik
   updated
+TABLE is_ekleri
+  aciklama
+  ad
+  boyut
+  dosya_yolu
+  icerik_turu
+  id
+  olusturma_tarihi
+  resim_mi
+  varlik_id
+  varlik_turu
+  yukleyen
+TABLE is_yorumlari
+  guncelleme_tarihi
+  id
+  metin
+  olusturma_tarihi
+  silindi
+  ust_yorum_id
+  varlik_id
+  varlik_turu
+  yazan
+  yazan_id
 TABLE izinler
   aciklama
   ad

@@ -46,6 +46,14 @@ namespace KentOS.Mini.Web.Data
         /// </summary>
         public DbSet<Institution> KurumBilgileri { get; set; }
 
+        // ── İş takip: ORTAK ek ve yorum ──
+        //
+        // ÇOK BİÇİMLİ: bağ `(varlik_turu, varlik_id)` ikilisiyle kuruluyor,
+        // yabancı anahtar yok. Gerekçesi ve bedeli `WorkAttachment` sınıfının
+        // başında yazılı. Kapsam yalnızca iş takip modülü.
+        public DbSet<WorkAttachment> IsEkleri { get; set; }
+        public DbSet<WorkComment> IsYorumlari { get; set; }
+
         // ── Halk Günü ──
         public DbSet<HalkGunu> HalkGunleri { get; set; }
         public DbSet<HalkGunuDilim> HalkGunuDilimleri { get; set; }
@@ -169,6 +177,31 @@ namespace KentOS.Mini.Web.Data
             builder.Entity<Institution>(entity =>
             {
                 entity.Property(e => e.Id).ValueGeneratedNever();
+            });
+
+            // ══════════════════════════ İş takip: ortak ek ve yorum
+            builder.Entity<WorkAttachment>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                // ARAMA HER ZAMAN İKİLİ ANAHTARLA yapılır: "şu görevin
+                // ekleri". Tek başına `varlik_id` üzerinde indeks işe
+                // yaramaz — beş ayrı varlık türü aynı sayıları kullanıyor.
+                entity.HasIndex(e => new { e.VarlikTuru, e.VarlikId });
+            });
+
+            builder.Entity<WorkComment>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => new { e.VarlikTuru, e.VarlikId });
+
+                // Yanıt zinciri: üst yorum silinirse yanıtlar KÖKE ÇIKAR,
+                // silinmez. Cascade, bir yanlış tıklamada bütün alt
+                // konuşmayı götürürdü.
+                entity.HasOne(e => e.UstYorum)
+                      .WithMany(e => e.Yanitlar)
+                      .HasForeignKey(e => e.UstYorumId)
+                      .OnDelete(DeleteBehavior.SetNull);
             });
 
             // ══════════════════════════════════════════════ Halk Günü

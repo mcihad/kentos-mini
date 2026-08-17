@@ -68,7 +68,15 @@
 	<!-- ================= Ön yüz (Vite) derlemesi ================= -->
 	<PropertyGroup>
 		<OnYuzDizini>$(MSBuildProjectDirectory)/frontend</OnYuzDizini>
-		<OnYuzCikti>$(MSBuildProjectDirectory)/wwwroot/yeni</OnYuzCikti>
+		<!-- Vite çıktısı `wwwroot` KÖKÜNE yazıyor (`vite.config.ts` → outDir
+		     '../wwwroot', assetsDir 'uygulama'). Bu değer bir dönem
+		     `wwwroot/yeni` idi — uygulama o adres altındayken doğruydu, köke
+		     taşınınca kaldı. -->
+		<OnYuzCikti>$(MSBuildProjectDirectory)/wwwroot</OnYuzCikti>
+		<!-- Damga `obj` altında: `wwwroot/yeni` artık üretilmiyor ve temiz bir
+		     klonda o dizin hiç yok — `Touch` "yol bulunamadı" ile derlemeyi
+		     kırıyordu. `obj` her derlemede zaten var. -->
+		<OnYuzDamga>$(MSBuildProjectDirectory)/obj/vite-damga</OnYuzDamga>
 		<SkipFrontend Condition="'$(SkipFrontend)'==''">false</SkipFrontend>
 		<NpmKomutu Condition="'$(NpmKomutu)'==''">npm</NpmKomutu>
 		<!-- node_modules ve üretilmiş çıktı proje dosyalarına DAHİL EDİLMEZ:
@@ -110,18 +118,26 @@
 	</Target>
 
 	<!-- Girdiler/Çıktılar sayesinde ön yüzde değişiklik yoksa hedef tamamen atlanır. -->
-	<Target Name="OnYuzDerle" AfterTargets="Build" DependsOnTargets="OnYuzKur" Condition="'$(SkipFrontend)'!='true'" Inputs="@(OnYuzGirdileri)" Outputs="$(OnYuzCikti)/.vite-damga">
+	<Target Name="OnYuzDerle" AfterTargets="Build" DependsOnTargets="OnYuzKur" Condition="'$(SkipFrontend)'!='true'" Inputs="@(OnYuzGirdileri)" Outputs="$(OnYuzDamga)">
 		<Exec WorkingDirectory="$(OnYuzDizini)" Command="$(NpmKomutu) run build" />
-		<Touch Files="$(OnYuzCikti)/.vite-damga" AlwaysCreate="true" />
+		<Touch Files="$(OnYuzDamga)" AlwaysCreate="true" />
 	</Target>
 
-	<!-- Publish: Content öğeleri değerlendirme anında toplanıyor ve wwwroot/yeni
-	     o an henüz YOK. Bu yüzden çıktı publish listesine elle eklenir. -->
+	<!-- Publish: Content öğeleri DEĞERLENDİRME anında toplanıyor; Vite çıktısı
+	     (`index.html`, `uygulama/`) o an henüz üretilmemiş olabiliyor ve ayrıca
+	     `.gitignore`'da olduğu için temiz bir klonda hiç yok. Bu yüzden publish
+	     listesine elle eklenir.
+
+	     `uploads/` DIŞARIDA: kullanıcı dosyaları (özgeçmiş, etkinlik fotoğrafı)
+	     yayın çıktısına girmemeli — geliştirme makinesindeki belgeleri sunucuya
+	     taşırdı. -->
 	<Target Name="OnYuzYayinla" AfterTargets="OnYuzDerle" BeforeTargets="ComputeFilesToPublish" Condition="'$(SkipFrontend)'!='true'">
 		<ItemGroup>
-			<_OnYuzDosyalari Include="$(OnYuzCikti)/**/*" Exclude="$(OnYuzCikti)/.vite-damga" />
+			<_OnYuzDosyalari Include="$(OnYuzCikti)/uygulama/**/*" />
+			<_OnYuzDosyalari Include="$(OnYuzCikti)/index.html" />
+			<_OnYuzDosyalari Include="$(OnYuzCikti)/firebase-messaging-sw.js" />
 			<ResolvedFileToPublish Include="@(_OnYuzDosyalari)">
-				<RelativePath>wwwroot/yeni/%(RecursiveDir)%(Filename)%(Extension)</RelativePath>
+				<RelativePath>wwwroot/$([MSBuild]::MakeRelative('$(OnYuzCikti)', '%(FullPath)'))</RelativePath>
 				<CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
 			</ResolvedFileToPublish>
 		</ItemGroup>

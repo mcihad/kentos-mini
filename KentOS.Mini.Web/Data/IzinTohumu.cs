@@ -110,6 +110,13 @@ public static class IzinTohumu
 
         Izinler.OneriGoruntule, Izinler.OneriYanitla,
         Izinler.GonderimGoruntule,
+
+
+        // İŞ TAKİP — `gorev.birimKapsam` tohumla DAĞITILMAZ.
+        //
+        // Başka bir birim adına iş yapmak bir VEKÂLET, varsayılan değil:
+        // kimin hangi müdürlüğü takip edeceği kuruma göre değişir ve rol
+        // ekranından açıkça verilir.
     ];
 
     public static async Task UygulaAsync(AppDbContext context)

@@ -49,7 +49,7 @@ Yeni bir ekran ya da bileşen eklerken sırasıyla:
 
 React 18 + TypeScript + Vite · TanStack Query/Table/Virtual · **Radix UI** (headless) · **lucide-react** · Tailwind CSS · date-fns (`tr` yerelleştirmesi) · dnd-kit (takvim) · firebase (web push).
 
-Kütüphane seçimi `design_new/design.md` §10.1'den gelir. **Yeni bir UI
+Kütüphane seçimi `design/design.md` §10.1'den gelir. **Yeni bir UI
 kütüphanesi eklemek kullanıcının onayına bağlıdır** — kural "asla ekleme"
 değil, "kendi başına ekleme".
 
@@ -66,7 +66,16 @@ erişilebilirlik sözleşmesi aynen duruyor.
 
 ## Tasarım sistemi — bağlayıcı
 
-Tek kaynak: **`/Users/cihad/Projects/workcollab/design/design.md`**. Renk, tipografi, ölçü, bileşen sınıfları ve ekran düzenleri orada birebir yazılı. Uydurma yok.
+Tek kaynak: **`design/design.md`** (depo kökünde, sürüm 2.0 — token tabanlı,
+çok kiracılı). Renk, tipografi, ölçü, bileşen sınıfları ve ekran düzenleri
+orada birebir yazılı. Uydurma yok.
+
+> Bu dosya bir dönem depo DIŞINDA, mutlak bir yolla işaret ediliyordu
+> (`/Users/cihad/Projects/workcollab/design/design.md`) — ve o yoldaki dosya
+> **eski v1 sürümüydü**, içinde kurum adı geçiyordu. Yeni depoyu klonlayan
+> hiç kimse tasarım sistemine ulaşamıyordu. Şartname artık depoda ve beyaz
+> etiket sözleşmesine uygun: renkler kurum kaydından gelir, şartname yalnızca
+> varsayılan preset'i tarif eder.
 
 **En önemli kural: hiçbir bileşen renk değeri hard-code etmez.** Yalnızca token kullanılır.
 

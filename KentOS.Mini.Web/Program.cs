@@ -322,6 +322,16 @@ builder.Services.AddScoped<IAnalizService, AnalizService>();
 // Kurum bilgisi VERİTABANINDAN okunur (tek satır), `.env` yalnızca ilk
 // tohumlamayı yapar. Böylece kurum adı/amblem/renk arayüzden düzenlenebilir.
 builder.Services.AddScoped<IInstitutionService, InstitutionService>();
+// İŞ TAKİP — ortak altyapı.
+//
+// `IBirimAgaci` özyinelemeli CTE ile alt ağacı TEK sorguda okur (eski
+// `GetDescendants` her seviye için ayrı sorgu atıyor). `IEtkinBirim`
+// "alt birim adına iş yapma" vekâletini çözer ve başlığı doğrular.
+builder.Services.AddScoped<IBirimAgaci, BirimAgaci>();
+builder.Services.AddScoped<IEtkinBirim, EtkinBirim>();
+builder.Services.AddScoped<IIsEkServisi, IsEkServisi>();
+builder.Services.AddScoped<IIsYorumServisi, IsYorumServisi>();
+
 builder.Services.AddScoped<IHataKaydiServisi, HataKaydiServisi>();
 builder.Services.AddScoped<IOturumServisi, OturumServisi>();
 builder.Services.AddScoped<IWebBildirimServisi, WebBildirimServisi>();

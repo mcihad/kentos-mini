@@ -61,27 +61,20 @@ public class IzinKataloguSenkronTests
             web.OrderBy(x => x, StringComparer.Ordinal));
     }
 
-    [Fact]
-    public void MOBIL_izin_sabitleri_sunucuyla_ayni()
-    {
-        // Mobil AYRI bir depo ama aynı çalışma dizininde duruyor.
-        var yol = Path.Combine(
-            Directory.GetParent(DepoKoku())!.FullName,
-            "workcollab", "lib", "consts", "izinler.dart");
-
-        if (!File.Exists(yol))
-        {
-            // Yalnızca sunucu deposu klonlanmışsa test anlamsız; sessizce
-            // geçmek yerine ATLANIR ki "kontrol edildi" sanılmasın.
-            throw Xunit.Sdk.SkipException.ForSkip($"Mobil depo yok: {yol}");
-        }
-
-        var mobil = DosyadanAdlar(yol, @"'(?<ad>[a-z]+\.[a-zA-Z]+)'");
-
-        Assert.Equal(
-            Izinler.Adlar.OrderBy(x => x, StringComparer.Ordinal),
-            mobil.OrderBy(x => x, StringComparer.Ordinal));
-    }
+    // ── MOBİL AYNA TESTİ KALDIRILDI ────────────────────────────────────
+    //
+    // Test, kardeş bir dizindeki Flutter deposunu (`../workcollab/lib/consts/
+    // izinler.dart`) SABİT YOLLA okuyordu. KentOS.Mini ayrı bir depo olarak
+    // ayrıldığında o yol artık çözülmüyor: test atlanmaya başladı ve
+    // "atlandı" ile "geçti" arasındaki fark koşum çıktısında kayboldu —
+    // bekçi kapanmıştı ama kimse fark etmiyordu.
+    //
+    // Mobil uygulama artık bu ürünün parçası değil; kendi deposunda yaşıyor
+    // ve yalnızca DOKUNULMAYAN v1 API sözleşmesine bağlı. İzin kataloğu ise
+    // v2 yüzeyine ait — mobilin okuduğu bir şey değil.
+    //
+    // Depo DIŞINDAKİ bir dosyaya uzanan test, klonlayan kişide ya yanlış
+    // kırmızı ya da yanlış yeşil üretir; ikisi de bekçisizlikten kötüdür.
 
     [Fact]
     public void Her_izin_EN_AZ_BIR_ucta_kullaniliyor()
