@@ -99,7 +99,12 @@ export function Segment<T extends string>({
   degistir: (d: T) => void;
 }) {
   return (
-    <div role="tablist" className="flex gap-1 rounded-sm border border-line bg-sunken p-1">
+    /*
+      İç boşluk `SegmentedSelect` ile AYNI (2 piksel dolgu + 1 piksel
+      kenarlık): aynı denetim iki farklı ölçüyle çizilince, masaüstünden
+      telefona geçen kullanıcı için iki ayrı bileşen gibi duruyordu.
+    */
+    <div role="tablist" className="flex gap-0.5 rounded-sm border border-line bg-sunken p-0.5">
       {secenekler.map((s) => {
         const aktif = s.deger === deger;
         return (

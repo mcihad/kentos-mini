@@ -152,7 +152,9 @@ function AppShellIc() {
           )}
         </div>
 
-        <nav className="min-h-0 flex-1 overflow-y-auto px-2.5 py-3">
+        {/* `kaydirma-krom`: kenar çubuğu her iki temada da lacivert, gövdeye
+            göre ayarlanmış çubuk rengi burada zemine karışıyordu. */}
+        <nav className="kaydirma-krom min-h-0 flex-1 overflow-y-auto px-2.5 py-3">
           {gorunurGruplar.map((grup) => (
             <div key={grup.baslik} className="mb-4">
               {!daraltilmis && (

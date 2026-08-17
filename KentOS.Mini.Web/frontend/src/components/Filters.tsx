@@ -28,7 +28,15 @@ export function SegmentedSelect<T extends string>({
       onValueChange={(d) => d && degistir(d as T)}
       aria-label={etiket}
       className={cn(
-        'inline-flex h-9 items-center gap-0.5 rounded-control border border-border bg-sunken p-0.5',
+        /*
+          RAY DÖRT YANDAN EŞİT: `items-center` + sabit `h-8` öğe, 36 piksellik
+          rayın içinde yanlarda 3 (1 kenarlık + 2 dolgu), üstte ve altta 2
+          piksel bırakıyordu — pil kutusunun içinde yatay olarak yüzüyor,
+          dikeyde kenara yapışıyordu. Öğe artık kendi yüksekliğini
+          dayatmıyor, rayı `items-stretch` ile dolduruyor: iç boşluk her
+          kenarda 3 piksel.
+        */
+        'inline-flex h-9 items-stretch gap-0.5 rounded-control border border-border bg-sunken p-0.5',
         className,
       )}
     >
@@ -37,7 +45,12 @@ export function SegmentedSelect<T extends string>({
           key={s.deger}
           value={s.deger}
           className={cn(
-            'inline-flex h-8 items-center gap-1.5 rounded-sm px-3 text-sm font-medium',
+            /*
+              İÇ YARIÇAP DIŞTAN KÜÇÜK (globals.css'teki iç içe yarıçap kuralı):
+              ikisi de `--r-sm` iken pilin köşeleri rayın köşelerinden dışarı
+              taşıyor, aradaki 3 piksel köşelerde kapanıyordu.
+            */
+            'inline-flex items-center gap-1.5 rounded-xs px-3 text-sm font-medium',
             'text-text-2 transition-colors hover:text-text',
             'data-[state=on]:bg-surface data-[state=on]:text-text data-[state=on]:shadow-1',
           )}

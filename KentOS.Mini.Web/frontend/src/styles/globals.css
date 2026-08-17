@@ -386,27 +386,48 @@
     }
   }
 
-  /* 10px kaydırma çubuğu (design.md §10.3) */
+  /*
+    10px kaydırma çubuğu (design.md §10.3) — Safari ve eski WebKit için.
+
+    Renk `--cubuk` üzerinden okunuyor: `var()` çubuğu çizen ELEMANIN kendi
+    değeriyle çözülüyor, dolayısıyla kroma sahip bir kap (`.kaydirma-krom`)
+    kendi tonunu buraya da geçiriyor.
+  */
   ::-webkit-scrollbar { width: 10px; height: 10px; }
   ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb {
-    background: var(--line-2);
+    background: var(--cubuk);
     border-radius: var(--r-pill);
     border: 3px solid transparent;
     background-clip: content-box;
   }
   ::-webkit-scrollbar-thumb:hover {
-    background: var(--ink-3);
+    background: var(--cubuk-us);
     background-clip: content-box;
   }
   ::-webkit-scrollbar-corner { background: transparent }
 
-  /* Firefox ve modern tarayıcılar; `--line-2` marka rengiyle boyandığı için
-     çubuk da temayla birlikte dönüyor. Varsayılan gri şerit, koyu temada
-     arayüzle akraba durmuyordu. */
+  /*
+    Chrome ve Firefox bu standart özelliği kullanıyor ve VARSA yukarıdaki
+    `::-webkit-scrollbar` kurallarını tamamen yok sayıyor — ikisi bu yüzden
+    aynı rengi okumak zorunda. Renk markayla boyanmış nötrden geliyor,
+    böylece çubuk temayla birlikte dönüyor; tarayıcı varsayılanı olan gri
+    şerit koyu temada arayüzle akraba durmuyordu.
+  */
   * {
-    scrollbar-color: var(--line-2) transparent;
+    scrollbar-color: var(--cubuk) transparent;
     scrollbar-width: thin;
+  }
+
+  /*
+    KENDİ KROMU OLAN KAPLAR. Kenar çubuğu her iki temada da lacivert:
+    gövdeye göre ayarlanmış `--cubuk` orada koyu temada zemine karışıyor.
+    Sınıf yalnızca değişkeni değiştiriyor; çubuğu çizen kurallar tek yerde
+    kalıyor.
+  */
+  .kaydirma-krom {
+    --cubuk: var(--nav-cubuk);
+    --cubuk-us: var(--nav-cubuk-us);
   }
 }
 

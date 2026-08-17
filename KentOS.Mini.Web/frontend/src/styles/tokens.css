@@ -104,6 +104,19 @@
 :root,
 :root[data-mod='acik'],
 :root[data-tema='acik'] {
+  /*
+    TARAYICIYA TEMAYI SÖYLER — açılır `select` listesi, tarih seçici,
+    otomatik doldurma zemini, aşırı kaydırma boşluğu ve sistem çubukları
+    bizim CSS'imize değil buna bakıyor.
+
+    `ThemeProvider` bunu ayrıca satır içi de yazıyor ve orada kalıyor;
+    buradaki bildirim REACT ÇALIŞMADAN ÖNCEKİ ana ait. `index.html` temayı
+    ilk boyamada bir betikle uyguluyor, satır içi `color-scheme` ise ancak
+    sağlayıcı bağlandığında geliyordu — arada kalan karede koyu tema açık
+    sistem yüzeyleriyle çiziliyordu.
+  */
+  color-scheme: light;
+
   --canvas: color-mix(in oklab, var(--brand) 6%, var(--neutral));
   --bg: color-mix(in oklab, var(--brand) 3%, var(--neutral));
   --surface: color-mix(in oklab, var(--brand) 1%, #fff);
@@ -180,6 +193,9 @@
    ══════════════════════════════════════════════════════════════════════════ */
 :root[data-mod='koyu'],
 :root[data-tema='koyu'] {
+  /* Açık temadaki gerekçenin aynısı — tarayıcının kendi çizdiği yüzeyler. */
+  color-scheme: dark;
+
   --canvas: color-mix(in oklab, var(--brand) 7%, #05080d);
   --bg: color-mix(in oklab, var(--brand) 9%, #080c13);
   --surface: color-mix(in oklab, var(--brand) 12%, #0e141e);
@@ -305,6 +321,20 @@
   --nav-border: var(--nav-line);
   --nav-active-bg: var(--nav-active);
   --nav-active-fg: var(--nav-ink-strong);
+
+  /*
+    KAYDIRMA ÇUBUĞU — yüzeyin paletinden, sabit griden değil.
+
+    `--cubuk` gövde yüzeylerinde geçerli olan varsayılan; kendi kroma sahip
+    kaplar (kenar çubuğu) `.kaydirma-krom` ile kendi tonunu geçiriyor.
+    Tek bir küresel renk kullanılırken lacivert kenar çubuğunun çubuğu koyu
+    temada zeminine karışıp görünmez oluyordu: `--line-2` gövdeye göre
+    ayarlı ve orada kroma göre değil.
+  */
+  --cubuk: var(--line-2);
+  --cubuk-us: var(--ink-3);
+  --nav-cubuk: color-mix(in oklab, #fff 30%, var(--nav-bg));
+  --nav-cubuk-us: color-mix(in oklab, #fff 52%, var(--nav-bg));
 
   /* gölgeler */
   --shadow-1: var(--sh-1);
