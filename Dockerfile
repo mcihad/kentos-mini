@@ -88,13 +88,16 @@ EXPOSE 8080
 # (`Storage__Provider=S3`) kullanılıyorsa bu uyarı geçersiz.
 VOLUME ["/uygulama/wwwroot/uploads"]
 
-COPY --from=sunucu /yayin ./
-
-# Kök olmayan kullanıcı. `wwwroot/uploads` ve `wwwroot/yeni` altına yazılıyor,
-# bu yüzden sahiplik devrediliyor.
+# Kök olmayan kullanıcı KOPYADAN ÖNCE oluşturulur.
+#
+# Önce `COPY` sonra `chown -R` yapmak, 131 MB'lık uygulama katmanının
+# TAMAMINI ikinci bir katman olarak yeniden yazıyordu — imaj bu yüzden iki
+# kat büyüktü. `COPY --chown` sahipliği kopyalarken veriyor.
 RUN useradd --create-home --shell /usr/sbin/nologin uygulama \
  && mkdir -p /uygulama/wwwroot/uploads \
- && chown -R uygulama:uygulama /uygulama
+ && chown uygulama:uygulama /uygulama /uygulama/wwwroot /uygulama/wwwroot/uploads
+
+COPY --from=sunucu --chown=uygulama:uygulama /yayin ./
 USER uygulama
 
 # Sağlık denetimi: kurum ucu anonim ve veritabanına dokunuyor, yani
