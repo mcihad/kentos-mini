@@ -69,6 +69,37 @@ function gecerliRenk(deger: string | null | undefined): deger is string {
   return typeof deger === 'string' && /^#[0-9a-fA-F]{6}$/.test(deger.trim());
 }
 
+/** WCAG bağıl parlaklık (0 = siyah, 1 = beyaz). */
+function parlaklik(hex: string): number {
+  const s = hex.trim().slice(1);
+  const kanal = (i: number) => {
+    const v = parseInt(s.slice(i, i + 2), 16) / 255;
+    return v <= 0.03928 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+  };
+  return 0.2126 * kanal(0) + 0.7152 * kanal(2) + 0.0722 * kanal(4);
+}
+
+/**
+ * ZEMİN TONU AÇIK OLMAK ZORUNDA.
+ *
+ * `--neutral` bir "kurumsal gri" değil, sayfanın ZEMİN TABANI: `--bg`,
+ * `--canvas` ve `--sunken` ondan türüyor (`tokens.css`). Fabrika değerleri
+ * (#F5F4F0, #F4F4F5, #F1F4F9) hep beyaza yakın.
+ *
+ * Kurum kaydına kurumsal gri (%85 gri, #4D4D4F) yazıldığında bütün uygulama
+ * koyu griye döndü ve ikincil metinler — tarih satırı, kart etiketleri,
+ * giriş ekranındaki açıklama — zeminle aynı tona düşüp okunmaz oldu. Hata
+ * hiçbir yerde patlamıyor: geçerli bir hex, geçerli bir CSS değeri.
+ *
+ * Bu yüzden değer YALNIZCA yeterince açıksa kabul ediliyor. Kurum arayüzden
+ * koyu bir ton seçse bile arayüz okunabilir kalır.
+ */
+const EN_DUSUK_ZEMIN_PARLAKLIGI = 0.6;
+
+function zeminOlabilirMi(deger: string | null | undefined): deger is string {
+  return gecerliRenk(deger) && parlaklik(deger) >= EN_DUSUK_ZEMIN_PARLAKLIGI;
+}
+
 /**
  * Kurumun renklerini 0. palet seçeneğine yazar.
  *
@@ -94,8 +125,19 @@ export function markaPaletiniUygula(marka: {
     koyu: FABRIKA.vurgu.koyu,
   };
 
-  if (gecerliRenk(marka.notr)) {
+  if (zeminOlabilirMi(marka.notr)) {
     NEUTRAL_COLORS[0] = { ad: 'Kurumsal zemin', deger: marka.notr.trim() };
+  } else {
+    // Fabrika zeminine dön. Koyu bir değer sessizce kabul edilseydi arayüz
+    // okunmaz hâle gelirdi; sessiz kalmak yerine sebebini söylüyoruz.
+    NEUTRAL_COLORS[0] = { ...FABRIKA.notr };
+    if (gecerliRenk(marka.notr)) {
+      console.warn(
+        `[kurum] Zemin tonu (${marka.notr}) sayfa zemini için fazla koyu; ` +
+        `fabrika değeri (${FABRIKA.notr.deger}) kullanıldı. ` +
+        'Bu alan kurumsal gri değil, beyaza yakın bir ZEMİN tonu bekler.',
+      );
+    }
   }
 }
 

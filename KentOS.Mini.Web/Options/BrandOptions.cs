@@ -20,8 +20,24 @@ public sealed class BrandOptions
     /// <summary>Vurgu rengi (#RRGGBB).</summary>
     public string Accent { get; set; } = "#A78952";
 
-    /// <summary>Nötr/gri temel (#RRGGBB).</summary>
-    public string Neutral { get; set; } = "#4D4D4F";
+    /// <summary>
+    /// ZEMİN TONU — kurumsal gri DEĞİL.
+    /// </summary>
+    /// <remarks>
+    /// Sayfanın zemin tabanı; arayüzdeki <c>--bg</c>, <c>--canvas</c> ve
+    /// <c>--sunken</c> bu renkten türetiliyor, yani <b>beyaza yakın</b> olmak
+    /// zorunda.
+    ///
+    /// <para>
+    /// Varsayılan bir dönem kurumun %85 grisiydi (<c>#4D4D4F</c>) ve
+    /// tohumlanan her kurulumda bütün uygulama koyu griye dönüyor, ikincil
+    /// metinler zeminle aynı tona düşüp okunmaz oluyordu. Hata hiçbir yerde
+    /// patlamıyordu: geçerli bir hex, geçerli bir CSS değeri. Arayüz artık
+    /// fazla koyu bir zemin tonunu reddediyor (<c>theme/palettes.ts</c>), ama
+    /// varsayılanın da doğru olması gerekiyor.
+    /// </para>
+    /// </remarks>
+    public string Neutral { get; set; } = "#F5F4F0";
 
     /// <summary>
     /// Koyu temada birincil rengin okunabilir karşılığı. Boşsa SPA
