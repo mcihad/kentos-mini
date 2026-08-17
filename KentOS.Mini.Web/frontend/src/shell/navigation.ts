@@ -1,6 +1,6 @@
 import {
   Bell, Bug, Building2, CalendarDays, ChartColumn, ClipboardCheck, ClipboardList,
-  Flower2, Landmark, ListChecks,
+  FolderKanban, Flower2, Landmark, ListChecks,
   FileUser, LayoutDashboard, MailCheck, Paperclip, Settings, SlidersHorizontal, UserPlus, Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -124,6 +124,11 @@ export const NAVIGATION: NavigationGroup[] = [
         yol: '/gorevler', etiket: 'Görevler', ikon: ClipboardCheck,
         izin: PERMISSION.gorevGoruntule,
         altYollar: ['/gorevler/'], haric: ['/gorevler/tipler'],
+      },
+      {
+        yol: '/projeler', etiket: 'Projeler', ikon: FolderKanban,
+        izin: PERMISSION.projeGoruntule,
+        altYollar: ['/projeler/'],
       },
       {
         yol: '/ekipler', etiket: 'Ekipler', ikon: Users,

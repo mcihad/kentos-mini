@@ -7,6 +7,8 @@ import gorevler from './texts/gorevler.md?raw';
 import gorevDetay from './texts/gorev-detay.md?raw';
 import gorevTipleri from './texts/gorev-tipleri.md?raw';
 import ekipler from './texts/ekipler.md?raw';
+import projeler from './texts/projeler.md?raw';
+import projeDetay from './texts/proje-detay.md?raw';
 import talepDetay from './texts/talep-detay.md?raw';
 import halkGunu from './texts/halk-gunu.md?raw';
 import halkGunuBasvurular from './texts/halk-gunu-basvurular.md?raw';
@@ -151,6 +153,24 @@ const KATALOG: { kalip: string; kayit: HelpEntry }[] = [
       baslik: 'Görevler',
       ozet: 'Birimin iş listesi, süzgeçler ve gecikme takibi',
       metin: gorevler,
+    },
+  },
+  {
+    kalip: '/projeler/:id',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Proje Detayı',
+      ozet: 'Kilometre taşları, kanban panosu ve gantt çizelgesi',
+      metin: projeDetay,
+    },
+  },
+  {
+    kalip: '/projeler',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Projeler',
+      ozet: 'Görevlerin çatısı, ilerleme ve gecikme takibi',
+      metin: projeler,
     },
   },
   {

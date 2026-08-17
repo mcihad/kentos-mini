@@ -158,14 +158,6 @@ public class ProjeServisi(
         _context.Projeler.Add(proje);
         await _context.SaveChangesAsync(iptal);
 
-        // Pano sütunu VERİLMEMİŞSE varsayılan kurulur.
-        //
-        // Boş bir pano, kanban sekmesini açan kullanıcıya "burada iş yok"
-        // değil "burası bozuk" dedirtirdi. Varsayılan dört sütun, görev
-        // akışının kendisiyle aynı: atandı → başladı → onay → tamamlandı.
-        if (istek.PanoSutunlari.Count == 0)
-            istek.PanoSutunlari = VarsayilanPano();
-
         await AltKayitlariYazAsync(proje.Id, istek, iptal);
 
         await _olaylar.YazAsync(IsVarligi.Proje, proje.Id, GorevOlayTipi.Olusturuldu,
@@ -581,10 +573,26 @@ public class ProjeServisi(
             throw new BusinessRuleException("Bitiş tarihi başlangıçtan önce olamaz.");
     }
 
-    /// <summary>Varsayılan kanban sütunları — görev akışının kendisi.</summary>
+    /// <summary>
+    /// Varsayılan kanban sütunları — NORMAL AKIŞIN TAMAMI.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>Basladi</c> sütunu ÖNCE yoktu ve tarayıcıda ölçüldüğünde şu çıktı:
+    /// başlatılan görev hiçbir sütuna eşleşmiyor, "Sütunsuz"a düşüyor ve
+    /// oradan sürüklenemediği için panoda kilitleniyordu. Panonun varsayılanı,
+    /// görevin gerçekten geçtiği bütün durumları kapsamak zorunda.
+    /// </para>
+    /// <para>
+    /// <c>Beklemede</c>, <c>IadeEdildi</c> ve <c>Reddedildi</c> BİLEREK yok:
+    /// üçü de istisna hâli ve görev ekranından yönetiliyor. Panoya konsalardı
+    /// çoğu zaman boş duran üç sütun, asıl işi ekranın dışına iterdi.
+    /// </para>
+    /// </remarks>
     private static List<PanoSutunuDto> VarsayilanPano() =>
     [
         new() { Ad = "Atandı", GorevDurumu = GorevDurumu.Atandi, Renk = "#0E4C5C" },
+        new() { Ad = "Başladı", GorevDurumu = GorevDurumu.Basladi, Renk = "#157F7F" },
         new() { Ad = "Devam ediyor", GorevDurumu = GorevDurumu.DevamEdiyor, Renk = "#1E5FBF" },
         new() { Ad = "Onay bekliyor", GorevDurumu = GorevDurumu.TamamlanmaBekliyor, Renk = "#A78952" },
         new() { Ad = "Tamamlandı", GorevDurumu = GorevDurumu.Tamamlandi, Renk = "#4A7A2B" },
@@ -595,6 +603,20 @@ public class ProjeServisi(
     {
         await _context.ProjeUyeleri.Where(u => u.ProjeId == projeId).ExecuteDeleteAsync(iptal);
         await _context.PanoSutunlari.Where(s => s.ProjeId == projeId).ExecuteDeleteAsync(iptal);
+
+        /*
+          PANO HİÇBİR ZAMAN BOŞ KALMAZ.
+
+          Sütun listesi tam liste olarak yazılıyor; gövdesinde sütun taşımayan
+          bir güncelleme panoyu siliyordu ve ölçümde görüldü: kanban sekmesi
+          "pano kurulmamış" diyor ama arayüzde sütun ekleme yolu yok, yani
+          proje kalıcı olarak panosuz kalıyordu.
+
+          Sıfır sütunlu bir panonun meşru bir kullanımı da yok — bu yüzden
+          liste boş kaldığında varsayılan geri kuruluyor. Kurum kendi
+          sütunlarını tanımladığında bu dal hiç çalışmaz.
+        */
+        var sutunlar = istek.PanoSutunlari.Count > 0 ? istek.PanoSutunlari : VarsayilanPano();
 
         foreach (var u in istek.Uyeler.DistinctBy(x => x.KullaniciId))
         {
@@ -608,7 +630,7 @@ public class ProjeServisi(
         }
 
         var sutunSira = 1;
-        foreach (var s in istek.PanoSutunlari)
+        foreach (var s in sutunlar)
         {
             _context.PanoSutunlari.Add(new BoardColumn
             {

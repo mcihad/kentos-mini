@@ -89,13 +89,73 @@ public class ProjeTests(SunucuTestOrtami ortam) : IClassFixture<SunucuTestOrtami
         var (proje, _, _) = Kur();
         var p = await proje.OlusturAsync(Kayit());
 
-        Assert.Equal(4, p.PanoSutunlari.Count);
-        Assert.Equal([1, 2, 3, 4], p.PanoSutunlari.Select(s => s.SiraNo));
+        Assert.Equal(5, p.PanoSutunlari.Count);
+        Assert.Equal([1, 2, 3, 4, 5], p.PanoSutunlari.Select(s => s.SiraNo));
 
         // Her sütun bir GÖREV DURUMUNA eşli — ayrı bir durum kaynağı yok.
-        Assert.Contains(p.PanoSutunlari, s => s.GorevDurumu == GorevDurumu.Atandi);
-        Assert.Contains(p.PanoSutunlari, s => s.GorevDurumu == GorevDurumu.Tamamlandi);
         Assert.All(p.PanoSutunlari, s => Assert.False(string.IsNullOrWhiteSpace(s.GorevDurumuAd)));
+
+        /*
+          VARSAYILAN PANO NORMAL AKIŞIN TAMAMINI KAPSAR.
+
+          `Basladi` sütunu önce yoktu ve tarayıcıda ölçüldüğünde şu çıktı:
+          başlatılan görev hiçbir sütuna eşleşmiyor, "Sütunsuz"a düşüyor ve
+          oradan sürüklenemediği için panoda kilitleniyordu.
+        */
+        GorevDurumu[] normalAkis =
+        [
+            GorevDurumu.Atandi, GorevDurumu.Basladi, GorevDurumu.DevamEdiyor,
+            GorevDurumu.TamamlanmaBekliyor, GorevDurumu.Tamamlandi,
+        ];
+
+        Assert.Equal(normalAkis, p.PanoSutunlari.Select(s => s.GorevDurumu));
+    }
+
+    /// <summary>
+    /// GÜNCELLEMEDE PANO BOŞ KALMAZ.
+    /// </summary>
+    /// <remarks>
+    /// Sütun listesi tam liste olarak yazılıyor; gövdesinde sütun taşımayan
+    /// bir güncelleme panoyu siliyordu ve tarayıcıda ölçüldüğünde görüldü:
+    /// kanban sekmesi "pano kurulmamış" diyor ama arayüzde sütun ekleme yolu
+    /// yok, yani proje kalıcı olarak panosuz kalıyordu.
+    /// </remarks>
+    [Fact]
+    public async Task Guncellemede_bos_sutun_listesi_varsayilana_doner()
+    {
+        PostgresYoksaAtla();
+        await _ortam.TemelVerileriKurAsync();
+
+        var (proje, _, _) = Kur();
+        var p = await proje.OlusturAsync(Kayit());
+
+        var bos = Kayit(p.Ad);
+        bos.PanoSutunlari = [];
+
+        var sonra = await proje.GuncelleAsync(p.Id, bos);
+
+        Assert.Equal(5, sonra.PanoSutunlari.Count);
+        Assert.Contains(sonra.PanoSutunlari, s => s.GorevDurumu == GorevDurumu.Basladi);
+    }
+
+    /// <summary>Kurum kendi sütunlarını tanımlarsa varsayılan DEVREYE GİRMEZ.</summary>
+    [Fact]
+    public async Task Ozel_sutunlar_varsayilanla_degistirilmez()
+    {
+        PostgresYoksaAtla();
+        await _ortam.TemelVerileriKurAsync();
+
+        var (proje, _, _) = Kur();
+        var kayit = Kayit();
+        kayit.PanoSutunlari =
+        [
+            new PanoSutunuDto { Ad = "Sahada", GorevDurumu = GorevDurumu.DevamEdiyor },
+            new PanoSutunuDto { Ad = "Atölyede", GorevDurumu = GorevDurumu.DevamEdiyor },
+        ];
+
+        var p = await proje.OlusturAsync(kayit);
+
+        Assert.Equal(["Sahada", "Atölyede"], p.PanoSutunlari.Select(s => s.Ad));
     }
 
     /// <summary>Bitiş başlangıçtan önce olamaz — gantt çubuğu negatif genişlik alırdı.</summary>
@@ -302,27 +362,36 @@ public class ProjeTests(SunucuTestOrtami ortam) : IClassFixture<SunucuTestOrtami
 
         Assert.Equal(GorevDurumu.Atandi, g.Durum);
 
-        // `Atandi` → `Basladi` geçerli; ama varsayılan panoda `Basladi`
-        // sütunu yok. `DevamEdiyor` sütununa taşımak da geçersiz (önce
-        // başlaması gerekiyor) — bu, panonun akışa saygılı olduğunun kanıtı.
+        var basladiSutunu = p.PanoSutunlari.First(s => s.GorevDurumu == GorevDurumu.Basladi);
         var devamSutunu = p.PanoSutunlari.First(s => s.GorevDurumu == GorevDurumu.DevamEdiyor);
 
+        // SIRA ATLANAMAZ: atanmış görev doğrudan "devam ediyor"a geçemez,
+        // önce başlaması gerekiyor — panonun akışa saygılı olduğunun kanıtı.
         await Assert.ThrowsAsync<BusinessRuleException>(() =>
             proje.KartTasiAsync(p.Id, new KartTasimaDto
             {
                 GorevId = g.Id, HedefSutunId = devamSutunu.Id,
             }));
 
-        // Görevi başlatıp yeniden dene.
-        await gorev.DurumDegistirAsync(g.Id, new GorevDurumIstegiDto { Durum = GorevDurumu.Basladi });
-
+        // "Başladı" sütununa taşımak geçerli ve görevi BAŞLATIR.
         var pano = await proje.KartTasiAsync(p.Id, new KartTasimaDto
+        {
+            GorevId = g.Id, HedefSutunId = basladiSutunu.Id,
+        });
+
+        Assert.Contains(
+            pano.Sutunlar.First(s => s.Sutun.Id == basladiSutunu.Id).Kartlar,
+            k => k.Id == g.Id);
+
+        // Oradan "devam ediyor"a taşımak da geçerli.
+        pano = await proje.KartTasiAsync(p.Id, new KartTasimaDto
         {
             GorevId = g.Id, HedefSutunId = devamSutunu.Id,
         });
 
-        var devamKartlari = pano.Sutunlar.First(s => s.Sutun.Id == devamSutunu.Id).Kartlar;
-        Assert.Contains(devamKartlari, k => k.Id == g.Id);
+        Assert.Contains(
+            pano.Sutunlar.First(s => s.Sutun.Id == devamSutunu.Id).Kartlar,
+            k => k.Id == g.Id);
     }
 
     /// <summary>

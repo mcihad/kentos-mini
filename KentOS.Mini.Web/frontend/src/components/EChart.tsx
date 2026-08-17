@@ -1,9 +1,11 @@
 import * as echarts from 'echarts/core';
-import { BarChart, LineChart, PieChart } from 'echarts/charts';
+import { BarChart, CustomChart, LineChart, PieChart } from 'echarts/charts';
 import {
+  DataZoomComponent,
   DatasetComponent,
   GridComponent,
   LegendComponent,
+  MarkLineComponent,
   TitleComponent,
   TooltipComponent,
 } from 'echarts/components';
@@ -37,6 +39,13 @@ echarts.use([
   BarChart,
   LineChart,
   PieChart,
+  // GANTT: hazır bir gantt tipi yok, çubuklar `CustomChart` ile çiziliyor.
+  // `DataZoom` uzun projelerde tarih aralığını daraltmak, `MarkLine` ise
+  // "bugün" çizgisini basmak için — gecikmeyi çizgiye bakarak okumak,
+  // tarihleri tek tek karşılaştırmaktan hızlı.
+  CustomChart,
+  DataZoomComponent,
+  MarkLineComponent,
   GridComponent,
   TooltipComponent,
   LegendComponent,

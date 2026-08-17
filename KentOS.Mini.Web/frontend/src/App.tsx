@@ -36,6 +36,9 @@ import TaskDetail from './screens/TaskDetail';
 import TaskForm from './screens/task/TaskForm';
 import TaskTypes from './screens/task/TaskTypes';
 import Teams from './screens/Teams';
+import Projects from './screens/Projects';
+import ProjectDetail from './screens/ProjectDetail';
+import ProjectForm from './screens/project/ProjectForm';
 import Definitions from './screens/Definitions';
 import SystemErrors, { SystemErrorDetail } from './screens/SystemErrors';
 import Administration from './screens/Administration';
@@ -138,6 +141,30 @@ export default function App() {
         <Route
           path="gorevler"
           element={<ProtectedRoute permission={PERMISSION.gorevGoruntule}><Tasks /></ProtectedRoute>}
+        />
+        {/* `yeni` DETAYDAN ÖNCE; aksi hâlde kimlik sanılır. */}
+        <Route
+          path="projeler/yeni"
+          element={
+            <ProtectedRoute permission={PERMISSION.projeYonet}>
+              <>
+                <Projects />
+                <ProjectForm />
+              </>
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="projeler/:id/duzenle"
+          element={<ProtectedRoute permission={PERMISSION.projeYonet}><ProjectForm /></ProtectedRoute>}
+        />
+        <Route
+          path="projeler/:id"
+          element={<ProtectedRoute permission={PERMISSION.projeGoruntule}><ProjectDetail /></ProtectedRoute>}
+        />
+        <Route
+          path="projeler"
+          element={<ProtectedRoute permission={PERMISSION.projeGoruntule}><Projects /></ProtectedRoute>}
         />
         <Route
           path="ekipler"

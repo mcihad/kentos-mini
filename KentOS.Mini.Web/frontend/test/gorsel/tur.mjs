@@ -32,10 +32,16 @@ const EKRANLAR = [
   // İŞ TAKİP. Liste boş açılabilir; çıpa iki görünümde de duran arama alanı.
   { ad: 'gorevler', yol: '/gorevler', secici: 'main input[type="search"]' },
   { ad: 'gorev-detay', yol: '/gorevler/5', bekle: 'Aşamalar' },
-  { ad: 'gorev-detay-dosya', yol: '/gorevler/5?sekme=tartisma', bekle: 'Aşamalar' },
+  { ad: 'gorev-detay-dosya', yol: '/gorevler/5?sekme=tartisma', bekle: 'Yorumlar' },
   { ad: 'gorev-form', yol: '/gorevler/yeni', bekle: 'Vazgeç' },
   { ad: 'gorev-tipleri', yol: '/gorevler/tipler', bekle: 'Tip ekle' },
   { ad: 'ekipler', yol: '/ekipler', bekle: 'Ekip kur' },
+  // PROJE. Liste kart düzeninde; çıpa iki görünümde de duran arama alanı.
+  { ad: 'projeler', yol: '/projeler', secici: 'main input[type="search"]' },
+  { ad: 'proje-detay', yol: '/projeler/2', bekle: 'Kilometre taşları' },
+  { ad: 'proje-pano', yol: '/projeler/2?sekme=pano', bekle: 'Sütunsuz' },
+  { ad: 'proje-gantt', yol: '/projeler/2?sekme=gantt', bekle: 'Gantt' },
+  { ad: 'proje-form', yol: '/projeler/yeni', bekle: 'Vazgeç' },
   { ad: 'ajanda-liste', yol: '/ajanda?sekme=liste', bekle: 'Yeni etkinlik' },
   { ad: 'ajanda-silinmis', yol: '/ajanda?sekme=silinmis', bekle: 'Yeni etkinlik' },
   { ad: 'etkinlik-form', yol: '/ajanda/yeni', bekle: 'Yeni etkinlik' },

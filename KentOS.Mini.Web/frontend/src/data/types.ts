@@ -151,6 +151,51 @@ export type Team = S['EkipDto'];
 export type TeamSave = S['EkipKayitDto'];
 export type TeamMember = S['EkipUyeDto'];
 
+// ── proje ──
+export type ProjectSummary = S['ProjeOzetDto'];
+export type ProjectDetail = S['ProjeDetayDto'];
+export type ProjectSave = S['ProjeKayitDto'];
+export type ProjectMember = S['ProjeUyeDto'];
+export type ProjectMemberRequest = S['ProjeUyeIstegiDto'];
+export type ProjectTeamRequest = S['ProjeEkibiIstegiDto'];
+export type Milestone = S['KilometreTasiDto'];
+export type BoardColumn = S['PanoSutunuDto'];
+export type Board = S['PanoDto'];
+export type BoardColumnCards = S['PanoSutunKartlariDto'];
+export type CardMove = S['KartTasimaDto'];
+export type GanttRow = S['GanttSatiriDto'];
+
+/** Proje durumları — `ProjeDurumu` ile birebir. */
+export const PROJECT_STATUS = {
+  planlaniyor: 0,
+  devam: 1,
+  durduruldu: 2,
+  tamamlandi: 3,
+  iptal: 4,
+} as const;
+
+/**
+ * Proje durum etiketleri — YALNIZCA süzgeç için.
+ *
+ * Kayıt satırları etiketi sunucudan alıyor (`durumAd`, `durumRenk`); süzgeç
+ * ise henüz seçilmemiş durumları da göstermek zorunda ve o adlar hiçbir
+ * satırda bulunmuyor. Görev durumlarındaki gerekçenin aynısı.
+ */
+export const PROJECT_STATUS_LABELS: Record<number, string> = {
+  0: 'Planlanıyor',
+  1: 'Devam ediyor',
+  2: 'Durduruldu',
+  3: 'Tamamlandı',
+  4: 'İptal edildi',
+};
+
+/** Proje üye rolleri — `ProjeUyeRolu`. */
+export const PROJECT_MEMBER_ROLE_LABELS: Record<number, string> = {
+  0: 'Yönetici',
+  1: 'Üye',
+  2: 'İzleyici',
+};
+
 export type WorkEvent = S['IsOlayDto'];
 export type WorkEventChange = S['IsOlayDegisiklikDto'];
 export type WorkAttachment = S['IsEkDto'];

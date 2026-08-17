@@ -7106,6 +7106,438 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/proje": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Sayfa?: number;
+                    Boyut?: number;
+                    Ara?: string;
+                    Sirala?: string;
+                    Azalan?: boolean;
+                    Atla?: number;
+                    TemizArama?: string;
+                    altBirimlerDahil?: boolean;
+                    yalnizAcik?: boolean;
+                    yoneticiId?: number;
+                    durumlar?: components["schemas"]["ProjeDurumu"][];
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjeOzetDtoSayfaliSonuc"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ProjeKayitDto"];
+                    "text/json": components["schemas"]["ProjeKayitDto"];
+                    "application/*+json": components["schemas"]["ProjeKayitDto"];
+                };
+            };
+            responses: {
+                /** @description Created */
+                201: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjeDetayDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/proje/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjeDetayDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ProjeKayitDto"];
+                    "text/json": components["schemas"]["ProjeKayitDto"];
+                    "application/*+json": components["schemas"]["ProjeKayitDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjeDetayDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        /**
+         * Projeyi siler — GÖREVLERİ SİLMEZ, bağlarını boşaltır.
+         * @description Proje bir çatı, işin sahibi değil. Cascade kursaydık bir projeyi
+         *     silmek altındaki bütün işi ve kanıtını da götürürdü.
+         */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/proje/{id}/uye": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        /**
+         * Proje ekibini yazar — TAM LİSTE.
+         * @description Ayrı izin (`proje.uyeYonet`): ekibi düzenlemek ile projenin
+         *     tarihini ve bütçesini değiştirmek farklı ağırlıkta işler. Proje
+         *     yöneticisine ekibini kurma yetkisi verirken bütçeyi de açmak zorunda
+         *     kalmamak gerekiyor.
+         */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["ProjeEkibiIstegiDto"];
+                    "text/json": components["schemas"]["ProjeEkibiIstegiDto"];
+                    "application/*+json": components["schemas"]["ProjeEkibiIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProjeDetayDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/proje/{id}/pano": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PanoDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/proje/{id}/pano/tasi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Kartı başka sütuna taşır — yani görevin DURUMUNU değiştirir.
+         * @description Geçiş durum akışından geçiyor; panoyu akışın dışında tutsaydık kartı
+         *     sürükleyerek onay kapısını atlamak mümkün olurdu.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["KartTasimaDto"];
+                    "text/json": components["schemas"]["KartTasimaDto"];
+                    "application/*+json": components["schemas"]["KartTasimaDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PanoDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/proje/{id}/gantt": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GanttSatiriDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/proje/{id}/kilometre-tasi/{tasId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Kilometre taşını tamamlar ya da yeniden açar.
+         * @description Tamamlanma ELLE işaretleniyor. "Bağlı görevlerin hepsi bitince
+         *     kendiliğinden" denebilirdi ama hiç görev bağlanmamış bir taş açılır
+         *     açılmaz tamamlanmış görünürdü.
+         */
+        post: {
+            parameters: {
+                query?: {
+                    tamamlandi?: boolean;
+                };
+                header?: never;
+                path: {
+                    id: number;
+                    tasId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KilometreTasiDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/protokol": {
         parameters: {
             query?: never;
@@ -11122,6 +11554,23 @@ export interface components {
             readonly oncekiVar?: boolean;
             readonly sonrakiVar?: boolean;
         };
+        GanttSatiriDto: {
+            /** Format: int64 */
+            id?: number;
+            tur?: string | null;
+            ad?: string | null;
+            /** Format: date-time */
+            baslangic?: string | null;
+            /** Format: date-time */
+            bitis?: string | null;
+            renk?: string | null;
+            /** Format: int32 */
+            ilerleme?: number;
+            gecikti?: boolean;
+            durumAd?: string | null;
+            /** Format: int64 */
+            kilometreTasiId?: number | null;
+        };
         /** @description Kişi geçmişindeki tek satır — dört kaynaktan biri. */
         GecmisSatiriDto: {
             /** @description `talep` · `etkinlik` · `halkgunu` */
@@ -11980,6 +12429,12 @@ export interface components {
             /** @description Kullanıcının KENDİ birimi mi? */
             kendiBirimi?: boolean;
         };
+        KartTasimaDto: {
+            /** Format: int64 */
+            gorevId?: number;
+            /** Format: int64 */
+            hedefSutunId?: number;
+        };
         /**
          * Format: int32
          * @enum {integer}
@@ -12019,6 +12474,24 @@ export interface components {
             ad?: string | null;
             baslik?: string | null;
             aciklama?: string | null;
+        };
+        KilometreTasiDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            siraNo?: number;
+            ad: string;
+            aciklama?: string | null;
+            /** Format: date-time */
+            hedefTarih?: string | null;
+            tamamlandi?: boolean;
+            /** Format: date-time */
+            tamamlanmaTarihi?: string | null;
+            /** Format: int32 */
+            gorevToplam?: number;
+            /** Format: int32 */
+            gorevBiten?: number;
+            gecikti?: boolean;
         };
         /** @description VATANDAŞ DOSYASI — tek kişinin kurumla bütün geçmişi. */
         KisiDosyasiDto: {
@@ -12433,6 +12906,26 @@ export interface components {
             /** Format: date-time */
             goruntulemeTarihi?: string | null;
         };
+        PanoDto: {
+            /** Format: int64 */
+            projeId?: number;
+            sutunlar?: components["schemas"]["PanoSutunKartlariDto"][] | null;
+            dagitilmayanlar?: components["schemas"]["GorevOzetDto"][] | null;
+        };
+        PanoSutunKartlariDto: {
+            sutun?: components["schemas"]["PanoSutunuDto"];
+            kartlar?: components["schemas"]["GorevOzetDto"][] | null;
+        };
+        PanoSutunuDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int32 */
+            siraNo?: number;
+            ad: string;
+            renk?: string | null;
+            gorevDurumu?: components["schemas"]["GorevDurumu"];
+            gorevDurumuAd?: string | null;
+        };
         ParolaSifirlaIstegi: {
             yeniParola?: string | null;
             smsGonder?: boolean;
@@ -12471,6 +12964,164 @@ export interface components {
          * @enum {integer}
          */
         ProgramTasarimi: 1 | 2 | 3 | 4 | 5 | 6;
+        ProjeDetayDto: {
+            /** Format: int64 */
+            id?: number;
+            ad?: string | null;
+            kod?: string | null;
+            renk?: string | null;
+            durum?: components["schemas"]["ProjeDurumu"];
+            durumAd?: string | null;
+            durumRenk?: string | null;
+            /** Format: int64 */
+            birimId?: number;
+            birimAd?: string | null;
+            /** Format: int64 */
+            yoneticiId?: number | null;
+            yoneticiAd?: string | null;
+            /** Format: date-time */
+            baslangic?: string | null;
+            /** Format: date-time */
+            bitis?: string | null;
+            /** Format: date-time */
+            tamamlanmaTarihi?: string | null;
+            /** Format: double */
+            butce?: number | null;
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            /** Format: int32 */
+            uyeSayisi?: number;
+            /** Format: int32 */
+            gorevToplam?: number;
+            /** Format: int32 */
+            gorevBiten?: number;
+            /** Format: int32 */
+            gorevGeciken?: number;
+            /** Format: int32 */
+            kilometreTasiToplam?: number;
+            /** Format: int32 */
+            kilometreTasiBiten?: number;
+            gecikti?: boolean;
+            aciklama?: string | null;
+            olusturan?: string | null;
+            /** Format: date-time */
+            olusturmaTarihi?: string;
+            uyeler?: components["schemas"]["ProjeUyeDto"][] | null;
+            kilometreTaslari?: components["schemas"]["KilometreTasiDto"][] | null;
+            panoSutunlari?: components["schemas"]["PanoSutunuDto"][] | null;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        ProjeDurumu: 0 | 1 | 2 | 3 | 4;
+        /** @description Proje ekibi yazma isteği. */
+        ProjeEkibiIstegiDto: {
+            /** Format: int64 */
+            yoneticiId?: number | null;
+            uyeler?: components["schemas"]["ProjeUyeIstegiDto"][] | null;
+        };
+        ProjeKayitDto: {
+            ad: string;
+            kod?: string | null;
+            aciklama?: string | null;
+            renk?: string | null;
+            durum?: components["schemas"]["ProjeDurumu"];
+            /** Format: int64 */
+            yoneticiId?: number | null;
+            /** Format: date-time */
+            baslangic?: string | null;
+            /** Format: date-time */
+            bitis?: string | null;
+            /** Format: double */
+            butce?: number | null;
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            uyeler?: components["schemas"]["ProjeUyeIstegiDto"][] | null;
+            kilometreTaslari?: components["schemas"]["KilometreTasiDto"][] | null;
+            panoSutunlari?: components["schemas"]["PanoSutunuDto"][] | null;
+        };
+        ProjeOzetDto: {
+            /** Format: int64 */
+            id?: number;
+            ad?: string | null;
+            kod?: string | null;
+            renk?: string | null;
+            durum?: components["schemas"]["ProjeDurumu"];
+            durumAd?: string | null;
+            durumRenk?: string | null;
+            /** Format: int64 */
+            birimId?: number;
+            birimAd?: string | null;
+            /** Format: int64 */
+            yoneticiId?: number | null;
+            yoneticiAd?: string | null;
+            /** Format: date-time */
+            baslangic?: string | null;
+            /** Format: date-time */
+            bitis?: string | null;
+            /** Format: date-time */
+            tamamlanmaTarihi?: string | null;
+            /** Format: double */
+            butce?: number | null;
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            /** Format: int32 */
+            uyeSayisi?: number;
+            /** Format: int32 */
+            gorevToplam?: number;
+            /** Format: int32 */
+            gorevBiten?: number;
+            /** Format: int32 */
+            gorevGeciken?: number;
+            /** Format: int32 */
+            kilometreTasiToplam?: number;
+            /** Format: int32 */
+            kilometreTasiBiten?: number;
+            gecikti?: boolean;
+        };
+        ProjeOzetDtoSayfaliSonuc: {
+            veriler?: components["schemas"]["ProjeOzetDto"][] | null;
+            /** Format: int32 */
+            sayfa?: number;
+            /** Format: int32 */
+            boyut?: number;
+            /** Format: int64 */
+            toplam?: number;
+            /** Format: int32 */
+            readonly toplamSayfa?: number;
+            readonly oncekiVar?: boolean;
+            readonly sonrakiVar?: boolean;
+        };
+        ProjeUyeDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            kullaniciId?: number;
+            ad?: string | null;
+            rol?: components["schemas"]["ProjeUyeRolu"];
+            rolAd?: string | null;
+            yoneticiMi?: boolean;
+        };
+        ProjeUyeIstegiDto: {
+            /** Format: int64 */
+            kullaniciId?: number;
+            rol?: components["schemas"]["ProjeUyeRolu"];
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        ProjeUyeRolu: 0 | 1 | 2;
         /**
          * @description Bir protokol kişisinin DAVET GEÇMİŞİ — hangi törene çağrıldı, ne cevap
          *     verdi, ne not düşüldü.

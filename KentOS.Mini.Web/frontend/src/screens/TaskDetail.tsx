@@ -3,7 +3,7 @@ import {
   MessageSquare, Paperclip, Pencil, Trash2, User, Users,
 } from 'lucide-react';
 import { useState } from 'react';
-import { Link, useNavigate, useParams } from 'react-router-dom';
+import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import { Button, IconButton } from '../components/Button';
 import { Card, CardHeader } from '../components/Card';
 import { ColoredBadge } from '../components/Color';
@@ -24,7 +24,8 @@ import { TaskAssignments } from './task/TaskAssignments';
 import { TaskDiscussion } from './task/TaskDiscussion';
 import { StatusDialog } from './task/StatusDialog';
 
-type Sekme = 'akis' | 'tartisma' | 'gecmis';
+const GOREV_SEKMELERI = ['akis', 'tartisma', 'gecmis'] as const;
+type Sekme = (typeof GOREV_SEKMELERI)[number];
 
 /**
  * GÖREV DETAYI — işin yürütüldüğü ekran.
@@ -49,7 +50,24 @@ export default function TaskDetail() {
   const { bildir } = useToast();
   const { hasPermission } = useSession();
 
-  const [sekme, setSekme] = useState<Sekme>('akis');
+  /*
+    ETKİN SEKME URL'DE (`?sekme=pano`).
+
+    Bileşen içinde tutulan sekme, görsel turun ve derin bağlantının
+    erişemediği bir ekran demek: pano ve gantt tek başına açılamıyor,
+    dolayısıyla oradaki davranış hiç doğrulanamıyordu. Ajanda ve yönetim
+    ekranlarındaki gerekçenin aynısı.
+  */
+  const [sorgu, setSorgu] = useSearchParams();
+  const sekmeDegeri = sorgu.get('sekme') as Sekme | null;
+  const sekme: Sekme =
+    sekmeDegeri && GOREV_SEKMELERI.includes(sekmeDegeri) ? sekmeDegeri : 'akis';
+
+  const setSekme = (d: Sekme) => {
+    if (d === 'akis') sorgu.delete('sekme');
+    else sorgu.set('sekme', d);
+    setSorgu(sorgu, { replace: true });
+  };
   const [silOnayi, setSilOnayi] = useState(false);
   const [durumIstegi, setDurumIstegi] = useState<{ durum: number; ad: string } | null>(null);
 
