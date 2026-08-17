@@ -6,6 +6,7 @@ import { FieldWrapper, Input, Secim, Textarea } from '../../components/Field';
 import { useToast } from '../../components/Toast';
 import { useUsableTaskTypes, useTask, useTaskMutations } from '../../data/tasks';
 import { useProject, useProjects } from '../../data/projects';
+import { LocationPicker } from '../map/LocationPicker';
 import { TASK_PRIORITY_LABELS, type TaskSave } from '../../data/types';
 
 /**
@@ -210,40 +211,38 @@ export default function TaskForm() {
       </FieldWrapper>
 
       {/*
-        KOORDİNAT şimdilik elle giriliyor.
+        KONUM HARİTADAN ve "konumumu bul" düğmesinden geliyor.
 
-        Harita seçici (MapLibre) planın 3. fazında; o gelene kadar alan boş
-        bırakılabiliyor. Tipi "konum zorunlu" olan görevlerde ise sunucu
-        koordinatsız kaydı reddediyor, bu yüzden alan burada da zorunlu
-        işaretleniyor — kullanıcının reddedilecek bir formu doldurup
-        göndermesi gereksiz.
+        Burada iki tane `number` alanı vardı ve kullanıcıdan enlem/boylam
+        yazması bekleniyordu — kimse bir noktanın koordinatını ezbere
+        bilmez. `LocationPicker` zaten vatandaş portalında ve saha
+        tespitinde kullanılıyordu; bu form Faz 1'den kalma olduğu için
+        harita gelince güncellenmemişti.
+
+        Tipi "konum zorunlu" olan görevlerde sunucu koordinatsız kaydı
+        reddediyor, bu yüzden alan burada da zorunlu işaretleniyor —
+        kullanıcının reddedilecek bir formu doldurup göndermesi gereksiz.
       */}
-      <div className="grid grid-cols-2 gap-3">
-        <FieldWrapper etiket="Enlem" id="gorev-enlem" zorunlu={konumZorunlu}>
-          <Input
-            id="gorev-enlem"
-            type="number"
-            step="0.000001"
-            value={form.enlem ?? ''}
-            onChange={(e) =>
-              setForm({ ...form, enlem: e.target.value ? Number(e.target.value) : null })
+      <FieldWrapper
+        etiket="Konum"
+        id="gorev-konum"
+        zorunlu={konumZorunlu}
+        ipucu="Haritaya dokunarak işaretleyin ya da bulunduğunuz yeri alın."
+      >
+        <div id="gorev-konum">
+          <LocationPicker
+            deger={
+              form.enlem != null && form.boylam != null
+                ? { enlem: form.enlem, boylam: form.boylam }
+                : null
             }
-            placeholder="39.747700"
-          />
-        </FieldWrapper>
-        <FieldWrapper etiket="Boylam" id="gorev-boylam" zorunlu={konumZorunlu}>
-          <Input
-            id="gorev-boylam"
-            type="number"
-            step="0.000001"
-            value={form.boylam ?? ''}
-            onChange={(e) =>
-              setForm({ ...form, boylam: e.target.value ? Number(e.target.value) : null })
+            degistir={(k) =>
+              setForm({ ...form, enlem: k?.enlem ?? null, boylam: k?.boylam ?? null })
             }
-            placeholder="37.017900"
+            yukseklik={200}
           />
-        </FieldWrapper>
-      </div>
+        </div>
+      </FieldWrapper>
 
       {/* ── Proje bağı ── */}
       <FieldWrapper

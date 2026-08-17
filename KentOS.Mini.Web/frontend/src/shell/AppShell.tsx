@@ -285,6 +285,20 @@ function AppShellIc() {
           </button>
 
           {/*
+            KURUM AMBLEMİ — kurum ayarlarından geliyor, koda yazılı değil.
+
+            YALNIZCA MOBİLDE. Şeridin en solundaki öğe ve markayı gösteren tek
+            yer: kenar çubuğu telefonda hiç açılmıyor. Masaüstünde kenar
+            çubuğunun tepesinde zaten aynı amblem duruyor ve şeritte de
+            göstermek onu üst üste iki kez çizmek olurdu.
+          */}
+          <img
+            src={kurum.marka.amblem ?? '/amblem.png'}
+            alt=""
+            className="mr-0.5 h-8 w-8 shrink-0 object-contain md:hidden"
+          />
+
+          {/*
             Başlık HER ZAMAN görünür. Bir dönem iOS'un "large title" devri
             uygulanmıştı: appbar başlığı 34px kaydırılana kadar gizliydi.
             Ekranın adı, kullanıcının "neredeyim" sorusunun tek cevabı ve onu

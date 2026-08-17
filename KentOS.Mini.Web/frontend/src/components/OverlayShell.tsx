@@ -70,7 +70,7 @@ export function OverlayShell({
     Görünen başlığın KENDİSİ `Title` oluyor; ayrıca `sr-only` bir kopya
     koymak, ekran okuyucuya başlığı iki kez okuturdu.
   */
-  const baslikSeridi = (Baslik: typeof Dialog.Title) => (
+  const baslikSeridi = (Baslik: typeof Dialog.Title, aciklamaGoster: boolean) => (
     <div
       /*
         Şerit MASAÜSTÜNDE de `cursor-grab` taşımaz; sürükleme mobile ait.
@@ -79,22 +79,18 @@ export function OverlayShell({
       */
       className={cn(
         /*
-          BAŞLIK ŞERİDİ ALÇALDI.
-
-          `py-2.5` + tutamağın `my-2.5`'i üst üste binince tabakanın tepesi
-          neredeyse 70 piksel kaplıyordu ve asıl içerik ekranın aşağısına
-          itiliyordu — küçük ekranda görünen alanın beşte biri başlıktı.
-
-          Şerit artık `items-center`: eskiden `items-start` idi ve açıklaması
+          Şerit `items-center`: eskiden `items-start` idi ve açıklaması
           olmayan tabakalarda başlık ile kapatma düğmesi hizasız kalıyordu.
         */
-        'flex shrink-0 items-center gap-2.5 border-b border-line px-3.5 py-2',
-        // Zemin ve köşe ŞERİDİN DEĞİL, `baslikBlogu` sarmalayıcısının işi:
-        // mobilde tutamak da aynı renkli bloğun içinde olmalı.
+        'flex shrink-0 items-center gap-2.5 border-b border-line px-4 py-2.5',
+        // Zemin ve köşe ŞERİDİN DEĞİL, sarmalayıcısının işi: mobilde tutamak
+        // da aynı renkli bloğun içinde olmalı.
         //
-        // Üstteki fazladan boşluk TUTAMAĞA ait: tutamak artık akıştan
-        // çıkarılıp şeridin üzerine bindiriliyor, kendi satırını kaplamıyor.
-        !masaustu && 'cursor-grab pt-3.5 active:cursor-grabbing',
+        // MOBİLDE ÜST BOŞLUK DAHA FAZLA çünkü tutamak akışta değil, şeridin
+        // üzerine bindirilmiş; `pt-[21px]` ona hem yer açıyor hem de başlıkla
+        // arasında nefes bırakıyor. Tutamağı kendi satırına koymak tepeyi iki
+        // ayrı banda bölüyordu.
+        !masaustu && 'cursor-grab pt-[21px] active:cursor-grabbing',
       )}
     >
       {ikon && (
@@ -106,17 +102,26 @@ export function OverlayShell({
         <Baslik asChild>
           <h2 className="font-display text-base font-bold tracking-[var(--track-d)]">{baslik}</h2>
         </Baslik>
-        {aciklama && <p className="mt-0.5 text-2xs leading-[1.45] text-ink-3">{aciklama}</p>}
+        {aciklama && aciklamaGoster && (
+          <p className="mt-0.5 text-2xs leading-[1.45] text-ink-3">{aciklama}</p>
+        )}
       </div>
       {/* Kapatma düğmesi sürükleme alanının DIŞINDA: aksi hâlde düğmeye
           basmak tabakayı aşağı çekmeye başlıyor ve tık kaybediliyordu. */}
       <span data-vaul-no-drag>
-        {/* Kenarlıksız: başlığın yanındaki tek düğme çerçeveliyken tabakanın
-            tepesine yapıştırılmış bir kutu gibi duruyordu. Kenarlık kalkınca
-            16 piksellik çarpı şeridin içinde kayboldu — çerçeve gittiği için
-            ikonun KENDİSİ görünür ağırlığı taşımak zorunda. */}
-        <IconButton etiket="Kapat" varyant="sade" onClick={kapat}>
-          <X size={19} />
+        {/*
+          Kenarlıksız ve YUVARLAK: başlığın yanındaki tek düğme çerçeveliyken
+          tabakanın tepesine yapıştırılmış bir kutu gibi duruyordu. Çerçeve
+          gidince görünür ağırlığı ikonun KENDİSİ taşımak zorunda — 16
+          piksellik çarpı şeridin içinde kayboluyordu.
+        */}
+        <IconButton
+          etiket="Kapat"
+          varyant="sade"
+          onClick={kapat}
+          className="-mr-1 h-9 w-9 rounded-full"
+        >
+          <X size={18} />
         </IconButton>
       </span>
     </div>
@@ -131,7 +136,13 @@ export function OverlayShell({
               veriyor. Düz karartma bağlamı tamamen siliyordu. */}
           <Drawer.Overlay className="fixed inset-0 z-50 bg-perde backdrop-blur-[3px]" />
           <Drawer.Content
-            aria-describedby={undefined}
+            /*
+              `aria-describedby`'ı ANCAK açıklama yoksa siliyoruz. Radix,
+              anahtarın VARLIĞINA bakıyor (değerine değil): koşulsuz
+              `undefined` geçmek, aşağıdaki `Drawer.Description` bağını da
+              koparırdı.
+            */
+            {...(aciklama ? {} : { 'aria-describedby': undefined })}
             onOpenAutoFocus={(e) => e.preventDefault()}
             className="fixed inset-x-0 bottom-0 z-50 flex max-h-[92dvh] flex-col rounded-t-tabaka bg-surface shadow-3 outline-none"
           >
@@ -148,13 +159,24 @@ export function OverlayShell({
               {/*
                 TUTAMAK AKIŞTAN ÇIKTI.
 
-                Kendi satırında dururken tepeye ~19 piksel ekliyordu; oysa
-                sadece 5 piksellik bir çizgi. Artık şeridin üzerine bindirilmiş
-                ve ona yer açan şey şeridin `pt-3.5`'i — aynı görüntü, yarısı
-                kadar yükseklik.
+                Kendi satırında dururken tepe iki ayrı banda bölünüyordu:
+                üstte renkli ama boş bir şerit, altında başlık. Artık başlık
+                şeridinin üzerine bindirilmiş; ona yer açan şey şeridin
+                `pt-[21px]`'i.
               */}
-              <Drawer.Handle className="!absolute !inset-x-0 !top-[7px] !z-10 !mx-auto !my-0 !h-[5px] !w-10 !bg-line-2" />
-              {baslikSeridi(Drawer.Title)}
+              <Drawer.Handle className="!absolute !inset-x-0 !top-[9px] !z-10 !mx-auto !my-0 !h-1 !w-9 !bg-line-2" />
+              {/*
+                AÇIKLAMA MOBİLDE BAŞLIĞA GİRMİYOR — yalnızca ekran okuyucuya.
+
+                İki satırlık bir tepe, telefonda görünür alanın onda birini
+                yardım metnine ayırmak demekti. Cümle formu açıklıyor ama
+                formu doldurmak için gerekli değil; masaüstünde yer bol,
+                orada duruyor.
+              */}
+              {aciklama && (
+                <Drawer.Description className="sr-only">{aciklama}</Drawer.Description>
+              )}
+              {baslikSeridi(Drawer.Title, false)}
             </div>
             {children}
           </Drawer.Content>
@@ -182,7 +204,8 @@ export function OverlayShell({
           {/* Masaüstünde tutamak yok; blok yalnızca şeridi taşıyor ama zemin
               ve köşe yine burada — iki dal aynı görünsün. */}
           <div className="shrink-0 overflow-hidden rounded-t-win bg-brand-soft">
-            {baslikSeridi(Dialog.Title)}
+            {/* Masaüstünde açıklama şeritte duruyor: orada yer kıt değil. */}
+            {baslikSeridi(Dialog.Title, true)}
           </div>
           {children}
         </Dialog.Content>

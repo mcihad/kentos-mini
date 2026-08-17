@@ -1,4 +1,4 @@
-import { Crosshair, Loader2 } from 'lucide-react';
+import { Crosshair, Loader2, MapPin } from 'lucide-react';
 import * as maplibregl from 'maplibre-gl';
 import { useEffect, useRef, useState } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
@@ -152,39 +152,8 @@ export function LocationPicker({
         <div className="rounded-control border border-dashed border-line px-3 py-3">
           <p className="text-2xs text-text-3">
             Bu tarayıcı harita çizimini desteklemiyor. Konumunuzu aşağıdaki
-            düğmeyle bulabilir ya da koordinatı elle girebilirsiniz.
+            düğmeyle alabilirsiniz.
           </p>
-
-          <div className="mt-2 grid grid-cols-2 gap-2">
-            <Input
-              type="number"
-              step="0.000001"
-              value={deger?.enlem ?? ''}
-              onChange={(e) =>
-                degistir(
-                  e.target.value
-                    ? { enlem: Number(e.target.value), boylam: deger?.boylam ?? 0 }
-                    : null,
-                )
-              }
-              placeholder="Enlem"
-              aria-label="Enlem"
-            />
-            <Input
-              type="number"
-              step="0.000001"
-              value={deger?.boylam ?? ''}
-              onChange={(e) =>
-                degistir(
-                  e.target.value
-                    ? { enlem: deger?.enlem ?? 0, boylam: Number(e.target.value) }
-                    : null,
-                )
-              }
-              placeholder="Boylam"
-              aria-label="Boylam"
-            />
-          </div>
         </div>
       )}
 
@@ -200,17 +169,72 @@ export function LocationPicker({
         </Button>
 
         {deger && (
-          <span className="shrink-0 font-mono text-2xs tabular-nums text-ink-3">
-            {deger.enlem.toFixed(5)}, {deger.boylam.toFixed(5)}
-          </span>
+          <Button varyant="sade" className="h-11 shrink-0" onClick={() => degistir(null)}>
+            Temizle
+          </Button>
         )}
       </div>
 
-      {!deger && haritaVar && (
-        <p className="text-2xs text-text-3">
-          Haritaya dokunarak da işaretleyebilirsiniz.
+      {deger ? (
+        <p className="flex items-center gap-1.5 text-2xs text-text-2">
+          <MapPin size={13} className="shrink-0 text-brand" />
+          Konum işaretlendi
+          {/* Koordinat GİZLENMİYOR ama ikincil: doğrulanabilir olmalı,
+              kullanıcıdan yazması beklenmemeli. */}
+          <span className="font-mono tabular-nums text-ink-3">
+            {deger.enlem.toFixed(5)}, {deger.boylam.toFixed(5)}
+          </span>
         </p>
+      ) : (
+        haritaVar && (
+          <p className="text-2xs text-text-3">Haritaya dokunarak da işaretleyebilirsiniz.</p>
+        )
       )}
+
+      {/*
+        ELLE KOORDİNAT — açılır kapanır ve VARSAYILAN KAPALI.
+
+        Kimse bir noktanın enlemini boylamını ezbere bilmez; bu alanların
+        formun ortasında durması "böyle doldurulur" demekti. Yine de
+        tamamen kaldırmak, hem haritanın çizilemediği hem konum izninin
+        reddedildiği bir cihazda "konum zorunlu" bir görevi açılamaz
+        yapardı. Kaçış yolu duruyor, sadece yoldan çekildi.
+      */}
+      <details className="group">
+        <summary className="cursor-pointer list-none text-2xs text-ink-3 underline-offset-2 hover:underline">
+          Koordinatı elle gir
+        </summary>
+        <div className="mt-2 grid grid-cols-2 gap-2">
+          <Input
+            type="number"
+            step="0.000001"
+            value={deger?.enlem ?? ''}
+            onChange={(e) =>
+              degistir(
+                e.target.value
+                  ? { enlem: Number(e.target.value), boylam: deger?.boylam ?? 0 }
+                  : null,
+              )
+            }
+            placeholder="Enlem"
+            aria-label="Enlem"
+          />
+          <Input
+            type="number"
+            step="0.000001"
+            value={deger?.boylam ?? ''}
+            onChange={(e) =>
+              degistir(
+                e.target.value
+                  ? { enlem: deger?.enlem ?? 0, boylam: Number(e.target.value) }
+                  : null,
+              )
+            }
+            placeholder="Boylam"
+            aria-label="Boylam"
+          />
+        </div>
+      </details>
     </div>
   );
 }

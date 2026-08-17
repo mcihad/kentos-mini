@@ -58,7 +58,9 @@ export function BottomSheet({
       <Drawer.Portal>
         <Drawer.Overlay className="fixed inset-0 z-50 bg-perde backdrop-blur-[3px] md:hidden" />
         <Drawer.Content
-          aria-describedby={undefined}
+          /* Anahtarın VARLIĞI Radix için anlamlı: koşulsuz `undefined`
+             geçmek `Drawer.Description` bağını koparırdı. */
+          {...(aciklama ? {} : { 'aria-describedby': undefined })}
           className={cn(
             'fixed inset-x-0 bottom-0 z-50 flex max-h-[86dvh] flex-col md:hidden',
             'rounded-t-tabaka bg-surface shadow-3 outline-none',
@@ -89,28 +91,31 @@ export function BottomSheet({
             */}
             <Drawer.Handle
               className={cn(
-                '!h-[5px] !w-10 !bg-line-2',
-                baslikGizli ? '!mb-1.5 !mt-2' : '!absolute !inset-x-0 !top-[7px] !z-10 !mx-auto !my-0',
+                '!h-1 !w-9 !bg-line-2',
+                baslikGizli ? '!mb-2 !mt-2.5' : '!absolute !inset-x-0 !top-[9px] !z-10 !mx-auto !my-0',
               )}
             />
 
             {baslikGizli ? (
               <Drawer.Title className="sr-only">{baslik}</Drawer.Title>
             ) : (
-              <div className="flex items-center gap-2.5 border-b border-line px-3.5 pb-2 pt-3.5">
+              /* `pt-[21px]` tutamağa yer açıyor: tutamak akışta değil, bu
+                 şeridin üzerine bindirilmiş. Kendi satırında dururken tepe,
+                 biri boş iki ayrı banda bölünüyordu. */
+              <div className="flex min-h-9 items-center gap-2.5 border-b border-line px-4 pb-2.5 pt-[21px]">
                 <div className="min-w-0 flex-1">
                   <Drawer.Title asChild>
                     <h2 className="font-display text-base font-bold tracking-[var(--track-d)]">
                       {baslik}
                     </h2>
                   </Drawer.Title>
-                  {aciklama && (
-                    <p className="mt-0.5 text-2xs leading-[1.45] text-ink-3">{aciklama}</p>
-                  )}
                 </div>
               </div>
             )}
-            {aciklama && baslikGizli && (
+            {/* AÇIKLAMA GÖRÜNMÜYOR, yalnızca ekran okuyucuya gidiyor: iki
+                satırlık bir tepe telefonda görünür alandan çok şey alıyor ve
+                cümle formu doldurmak için gerekli değil. */}
+            {aciklama && (
               <Drawer.Description className="sr-only">{aciklama}</Drawer.Description>
             )}
           </div>
