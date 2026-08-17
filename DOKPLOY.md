@@ -16,6 +16,22 @@ olsun; iç ağ üzerinden hizmet adıyla erişilir.
 > uygulama farklı dilimdeyse kaydedilen saat ile okunan saat birbirini
 > tutmaz ve bu, hata olarak değil "ajanda yanlış" olarak görünür.
 
+### PostGIS
+
+Harita ve konum sorguları için gerekli. Dokploy'un Postgres servisinde
+**süper kullanıcı** ile bir kez:
+
+```sql
+CREATE EXTENSION IF NOT EXISTS postgis;
+```
+
+Uygulama imajı `postgis/postgis` tabanlı bir veritabanı bekler; düz
+`postgres` imajında uzantı **yüklü değildir** ve komut `undefined_file`
+hatası verir.
+
+Atlarsanız uygulama yine açılır — yalnızca harita ekranı boş kalır. Açılış
+günlüğünde uyarı görürsünüz.
+
 ## 2. Uygulama
 
 **Application** oluşturun, kaynak olarak bu depoyu ve `Dockerfile`'ı seçin.

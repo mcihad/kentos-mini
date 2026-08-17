@@ -521,6 +521,47 @@ using (var scope = app.Services.CreateScope())
 
     await DataSeeder.EnsureInitialData(serviceProvider);
 
+    /*
+      POSTGIS DENETİMİ — uygulamayı DURDURMAZ, uyarır.
+
+      Uzantı kurulu değilse iş takip modülünün konum kolonları hiç
+      oluşturulmuyor (göç bunu bilerek tolere ediyor) ve harita boş kalıyor.
+      Geri kalan her şey çalışmaya devam ediyor; bu yüzden açılışta patlamak
+      yanlış olurdu — harita dışındaki bütün modüller kullanılabilirken
+      uygulamayı kapatmak orantısız.
+
+      Ama SESSİZ kalmak da yanlış: kurulumu yapan kişi haritanın neden boş
+      olduğunu aylarca arayabilirdi. Uyarı, ne yapılacağını da söylüyor.
+    */
+    try
+    {
+        var baglam = serviceProvider.GetRequiredService<AppDbContext>();
+
+        var postgisVar = await baglam.Database
+            .SqlQuery<bool>($"SELECT EXISTS (SELECT 1 FROM pg_extension WHERE extname = 'postgis') AS \"Value\"")
+            .FirstAsync();
+
+        if (postgisVar)
+        {
+            logger.LogInformation("PostGIS kurulu — harita ve konum sorguları etkin.");
+        }
+        else
+        {
+            logger.LogWarning(
+                "PostGIS KURULU DEĞİL. Görev, proje ve vatandaş bildirimlerinde konum " +
+                "kolonu oluşturulmadı; harita ekranı boş kalacak. Düzeltmek için " +
+                "veritabanı yöneticisi bir kez şunu çalıştırmalı: " +
+                "CREATE EXTENSION postgis;  Ardından uygulamayı yeniden başlatın " +
+                "(göç konum kolonlarını o zaman ekler).");
+        }
+    }
+    catch (Exception hata)
+    {
+        // Denetimin kendisi başarısız olursa da açılış sürüyor: bu bir
+        // bilgilendirme, bir kapı değil.
+        logger.LogWarning(hata, "PostGIS denetimi yapılamadı.");
+    }
+
     // Geliştirme verisi (birimler, örnek kullanıcılar, tekrar eden ve gizli
     // etkinlikler, talepler). ÜRETİMDE ÇALIŞMAZ — `DataSeeder`'dan ayrı
     // tutulmasının sebebi budur: o koşulsuz çalışıyor ve buraya konulan her

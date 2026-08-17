@@ -54,6 +54,35 @@ uygulama sunucusu aynı veritabanına bağlanacaksa bunu `false` yapın ve
 migration'ı yayın hattında tek seferde çalıştırın; aksi hâlde iki örnek aynı
 anda şema değiştirmeye kalkar.
 
+### PostGIS — harita için gerekli
+
+İş takip modülü görevlerin, projelerin ve vatandaş bildirimlerinin konumunu
+coğrafi bir kolonda tutuyor. Bu kolon yalnızca **PostGIS uzantısı kuruluysa**
+oluşturuluyor.
+
+Uzantıyı **süper kullanıcı** bir kez açmalı — uygulamanın kendi rolünün buna
+yetkisi yok ve olmamalı:
+
+```sql
+\c workcollab
+CREATE EXTENSION IF NOT EXISTS postgis;
+```
+
+Sonra uygulamayı **yeniden başlatın**: göç konum kolonlarını o açılışta
+ekler.
+
+**Atlarsanız ne olur?** Uygulama açılır ve her şey çalışır; yalnızca
+**harita ekranı boş kalır** ve yarıçap/alan sorguları yapılamaz. Göç bunu
+bilerek tolere ediyor — PostGIS'siz bir kurulumda uygulamanın hiç açılmaması,
+harita dışındaki bütün modüller kullanılabilirken orantısız olurdu.
+
+Açılış günlüğü durumu yazar:
+
+```
+info: PostGIS kurulu — harita ve konum sorguları etkin.
+warn: PostGIS KURULU DEĞİL. ... CREATE EXTENSION postgis;
+```
+
 ---
 
 ## 3. `.env`
