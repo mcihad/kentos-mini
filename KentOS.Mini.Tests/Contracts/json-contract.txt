@@ -539,6 +539,21 @@ DTO KentOS.Mini.Application.Dto.V2.Etkinlik.ZamanIstegi
   baslangic
   bitis
   kapsam
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.BildirimRetDto
+  not
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.BildirimYonlendirmeDto
+  birimId
+  gorevTipiId
+  not
+  oncelik
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.DogrulamaIstegiDto
+  telefon
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.DogrulamaOnayDto
+  kod
+  telefon
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.DogrulamaSonucuDto
+  bilet
+  gecerlilik
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.EkipDto
   acikGorevSayisi
   aciklama
@@ -766,6 +781,17 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.GorevTipiKayitDto
   renk
   slaSaat
   varsayilanOncelik
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.IsHaritaNoktasiDto
+  adres
+  baslik
+  boylam
+  durumAd
+  enlem
+  gecikti
+  id
+  renk
+  takipNo
+  tur
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.IsOlayDegisiklikDto
   alan
   eski
@@ -890,6 +916,54 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.ProjeUyeDto
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.ProjeUyeIstegiDto
   kullaniciId
   rol
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.SahaTespitiDto
+  aciklama
+  adres
+  baslik
+  boylam
+  enlem
+  gorevTipiId
+  kendimeAta
+  mahalleId
+  oncelik
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.VatandasBildirimiDto
+  aciklama
+  adSoyad
+  adres
+  ayniNumaradanOnceki
+  birimAd
+  birimId
+  boylam
+  durum
+  durumAd
+  durumRenk
+  ekSayisi
+  enlem
+  gorevId
+  gorevTakipNo
+  id
+  islemNotu
+  islemTarihi
+  isleyen
+  konu
+  mahalleAd
+  mahalleId
+  olusturmaTarihi
+  takipNo
+  telefon
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.VatandasBildirimiIstegiDto
+  aciklama
+  adSoyad
+  adres
+  bilet
+  boylam
+  enlem
+  konu
+  mahalleId
+  telefon
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.VatandasBildirimiSonucuDto
+  takipNo
+  yuklemeAnahtari
 DTO KentOS.Mini.Application.Dto.V2.Ortak.HataDetayDto
   adet
   aiRaporu

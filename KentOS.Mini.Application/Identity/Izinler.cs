@@ -152,6 +152,10 @@ public static class Izinler
     public const string ProjeYonet = "proje.yonet";
     public const string ProjeUyeYonet = "proje.uyeYonet";
 
+    public const string BildirimKarsila = "bildirim.karsila";
+    public const string BildirimYonlendir = "bildirim.yonlendir";
+    public const string SahaTespit = "saha.tespit";
+
     // ─────────────────────────────────────────────────────────── sistem
     public const string SistemHata = "sistem.hata";
     public const string SistemKurum = "sistem.kurum";
@@ -322,6 +326,15 @@ public static class Izinler
             "Kart taşımak görevin DURUMUNU değiştirir; onay kapısı yine geçerlidir."),
         new(ProjeUyeYonet, "İş Takip", "Proje ekibi",
             "Projeye üye ekler, çıkarır ve proje yöneticisini belirler."),
+
+        new(BildirimKarsila, "İş Takip", "Vatandaş bildirimlerini görüntüle",
+            "Vatandaş portalından gelen bildirimleri, fotoğraflarını ve iletişim bilgilerini görür. " +
+            "Kayıtlar KİŞİSEL VERİ içerir: ad, telefon, adres ve konum."),
+        new(BildirimYonlendir, "İş Takip", "Vatandaş bildirimini yönlendir",
+            "Gelen bildirimi ilgili birime yönlendirerek GÖREV AÇAR ya da gerekçeyle işleme almaz. " +
+            "Yönlendirme, kullanıcının göremediği bir birime de iş yazabilir — akışın gereği budur."),
+        new(SahaTespit, "İş Takip", "Saha tespiti",
+            "Sahada görülen sorunu konum ve fotoğrafla doğrudan kendi biriminin görevi olarak açar."),
 
         new(SistemHata, "Sistem", "Hata kayıtları",
             "Sunucu hatalarını görüntüler. Kayıtlar istek gövdeleri, IP adresleri ve yığın izleri içerir."),

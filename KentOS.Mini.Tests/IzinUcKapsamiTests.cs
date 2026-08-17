@@ -65,6 +65,23 @@ public class IzinUcKapsamiTests
         // okunabilmeli. Yanıtta gizli hiçbir şey yok — hepsi sayfanın görünen
         // yüzü. Aynı controller'ın YAZMA ucu `sistem.kurum` istiyor.
         "InstitutionController.KurumAsync",
+
+        /*
+          VATANDAŞ PORTALI — uygulamanın TEK anonim yazma yüzeyi.
+
+          Kimliği doğrulanmamış bir vatandaştan bildirim almanın başka yolu
+          yok; izin kapısı koymak ucu hiç kullanılamaz yapardı. Kuralın
+          kırılması karşılığında konan korumalar controller'ın kendi
+          belgesinde tek tek yazılı: IP başına hız sınırı, numara başına ayrı
+          sınır, karma saklanan ve deneme sınırlı doğrulama kodu, imzalı ve
+          kısa ömürlü bilet, yalnızca takip numarası dönen yanıt.
+
+          BURAYA YENİ UÇ EKLEMEK BİLİNÇLİ BİR KARARDIR. Controller yalnızca
+          YAZIYOR; okuma ucu yok ve olmamalı — takip numarasıyla sorgulama
+          eklenirse numarayı bilen herkese o vatandaşın adını, telefonunu ve
+          adresini açardı.
+        */
+        "BildirimPortalController",
     ];
 
     private static bool BilerekAcik(MethodInfo uc)

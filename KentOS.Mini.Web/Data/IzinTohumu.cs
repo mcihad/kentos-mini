@@ -102,6 +102,8 @@ public static class IzinTohumu
         Izinler.GorevBirimKapsam, Izinler.GorevTipYonet, Izinler.EkipYonet,
 
         Izinler.ProjeGoruntule, Izinler.ProjeYonet, Izinler.ProjeUyeYonet,
+
+        Izinler.BildirimKarsila, Izinler.BildirimYonlendir, Izinler.SahaTespit,
     ];
 
     /// <summary>`Ajanda` politikasının kapsadığı modüllerin tüm izinleri.</summary>

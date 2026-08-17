@@ -72,6 +72,10 @@ namespace KentOS.Mini.Web.Data
         public DbSet<Milestone> KilometreTaslari { get; set; }
         public DbSet<BoardColumn> PanoSutunlari { get; set; }
 
+        // Vatandaş katmanı — dışarıdan gelen ilk kayıt.
+        public DbSet<CitizenReport> VatandasBildirimleri { get; set; }
+        public DbSet<PhoneVerification> TelefonDogrulamalari { get; set; }
+
         // ── Halk Günü ──
         public DbSet<HalkGunu> HalkGunleri { get; set; }
         public DbSet<HalkGunuDilim> HalkGunuDilimleri { get; set; }
@@ -367,6 +371,32 @@ namespace KentOS.Mini.Web.Data
                 entity.HasOne(e => e.Proje).WithMany(p => p.PanoSutunlari)
                       .HasForeignKey(e => e.ProjeId).OnDelete(DeleteBehavior.Cascade);
                 entity.HasIndex(e => new { e.ProjeId, e.SiraNo });
+            });
+
+            // ═══════════════════════════════════════ İş takip: vatandaş
+            builder.Entity<CitizenReport>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasIndex(e => e.TakipNo).IsUnique();
+
+                // Karşılama ekranının tam sorgusu: bekleyenler, en yeni önce.
+                entity.HasIndex(e => new { e.Durum, e.OlusturmaTarihi });
+
+                // Hız sınırı ve mükerrer arama: aynı numaradan gelenler.
+                entity.HasIndex(e => new { e.TelefonSade, e.OlusturmaTarihi });
+
+                entity.HasOne(e => e.Birim).WithMany()
+                      .HasForeignKey(e => e.BirimId).OnDelete(DeleteBehavior.SetNull);
+                entity.HasOne(e => e.Mahalle).WithMany()
+                      .HasForeignKey(e => e.MahalleId).OnDelete(DeleteBehavior.SetNull);
+            });
+
+            builder.Entity<PhoneVerification>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+
+                // Doğrulama sorgusu: numaranın EN YENİ kodu.
+                entity.HasIndex(e => new { e.TelefonSade, e.OlusturmaTarihi });
             });
 
             // ══════════════════════════════════════════════ Halk Günü

@@ -338,6 +338,16 @@ builder.Services.AddScoped<IGorevTipiServisi, GorevTipiServisi>();
 builder.Services.AddScoped<IEkipServisi, EkipServisi>();
 builder.Services.AddScoped<IGorevServisi, GorevServisi>();
 builder.Services.AddScoped<IProjeServisi, ProjeServisi>();
+builder.Services.AddScoped<IVatandasBildirimServisi, VatandasBildirimServisi>();
+builder.Services.AddScoped<ISahaServisi, SahaServisi>();
+
+// VATANDAŞ PORTALI hız sınırı — yalnızca anonim uçlar için.
+builder.Services.AddVatandasHizSiniri();
+
+// Portalın kısa ömürlü bileti ve yükleme anahtarı JWT anahtarıyla
+// imzalanıyor; ayrı bir sır tanımlamak kurulumda unutulabilecek bir ayar
+// daha demekti.
+VatandasBildirimServisi.ImzaAnahtariniKur(jwtAyari.Secret);
 
 builder.Services.AddScoped<IHataKaydiServisi, HataKaydiServisi>();
 builder.Services.AddScoped<IOturumServisi, OturumServisi>();
@@ -573,6 +583,10 @@ app.UseUzakDepoKopruSu();
 app.UseStaticFiles();
 app.UseCookiePolicy();
 app.UseRouting();
+// Hız sınırlayıcı KİMLİK DOĞRULAMADAN ÖNCE: sınıra takılan istek, kimlik
+// çözümlemenin maliyetini hiç ödememeli.
+app.UseRateLimiter();
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();

@@ -710,6 +710,15 @@ TABLE sistem_hatalari
   yigin_izi
   yol
   yontem
+TABLE telefon_dogrulamalari
+  deneme
+  dogrulandi
+  gecerlilik
+  id
+  ip
+  kod_karmasi
+  olusturma_tarihi
+  telefon_sade
 TABLE user_settings
   agenda_on_created
   agenda_on_deleted
@@ -733,3 +742,23 @@ TABLE user_settings
   request_on_status_change
   request_on_updated
   user_id
+TABLE vatandas_bildirimleri
+  aciklama
+  ad_soyad
+  adres
+  birim_id
+  boylam
+  durum
+  enlem
+  gorev_id
+  id
+  ip
+  islem_notu
+  islem_tarihi
+  isleyen
+  konu
+  mahalle_id
+  olusturma_tarihi
+  takip_no
+  telefon
+  telefon_sade

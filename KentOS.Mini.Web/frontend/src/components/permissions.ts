@@ -98,6 +98,9 @@ export const PERMISSION = {
   projeGoruntule: 'proje.goruntule',
   projeYonet: 'proje.yonet',
   projeUyeYonet: 'proje.uyeYonet',
+  bildirimKarsila: 'bildirim.karsila',
+  bildirimYonlendir: 'bildirim.yonlendir',
+  sahaTespit: 'saha.tespit',
 
   sistemHata: 'sistem.hata',
   sistemKurum: 'sistem.kurum',

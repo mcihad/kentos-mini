@@ -71,6 +71,21 @@ public class IsEkServisi(
     ICurrentUserService _kullanici,
     ILogger<IsEkServisi> _logger) : IIsEkServisi
 {
+    /// <summary>Oturum varsa adı, yoksa <c>null</c>.</summary>
+    private async Task<string?> YukleyenAdiAsync()
+    {
+        try
+        {
+            return await _kullanici.GetFullNameAsync();
+        }
+        catch
+        {
+            // Anonim istek — vatandaş portalı. Yutulan tek şey ADIN
+            // çözülememesi; yükleme kuralları (boyut, uzantı) yerinde.
+            return null;
+        }
+    }
+
     /// <summary>Depo anahtarının kökü — veritabanındaki yolla birebir aynı.</summary>
     private const string Kok = "uploads/is";
 
@@ -141,7 +156,14 @@ public class IsEkServisi(
             Boyut = dosya.Icerik.LongLength,
             ResimMi = dosya.IcerikTuru is not null && ResimTurleri.Contains(dosya.IcerikTuru),
             Aciklama = string.IsNullOrWhiteSpace(aciklama) ? null : aciklama.Trim(),
-            Yukleyen = await _kullanici.GetFullNameAsync(),
+            // YÜKLEYEN ADI ZORUNLU DEĞİL.
+            //
+            // Vatandaş portalı ANONİM ve `ICurrentUserService` orada
+            // "Kullanıcı bulunamadı" fırlatıyor; ölçümde tam olarak bu çıktı:
+            // fotoğraf yüklenemiyor, kayıt ekransız kalıyordu. Ad yalnızca
+            // bilgilendirme — kimin yüklediğini bilmemek, yüklemeyi hiç
+            // kabul etmemekten iyi.
+            Yukleyen = await YukleyenAdiAsync(),
         };
 
         _context.IsEkleri.Add(kayit);

@@ -33,6 +33,25 @@ public interface IGorevServisi
     Task<SayfaliSonuc<GorevOzetDto>> ListeAsync(GorevSuzgecDto suzgec, CancellationToken iptal = default);
     Task<GorevDetayDto> GetirAsync(long id, CancellationToken iptal = default);
     Task<GorevDetayDto> OlusturAsync(GorevKayitDto istek, CancellationToken iptal = default);
+
+    /// <summary>
+    /// Görevi BELİRTİLEN birimde açar — vatandaş karşılama akışı için.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Normal yol görevi <b>etkin birimde</b> açıyor. Karşılama personelinin
+    /// işi ise tam tersi: gelen bildirimi kendi birimine değil ilgili
+    /// müdürlüğe yönlendirmek. Etkin birime bağlı kalsaydı bütün vatandaş
+    /// şikayetleri karşılama biriminin iş listesinde birikirdi.
+    /// </para>
+    /// <para>
+    /// <b>Bu, görünürlük kapısını AŞAR</b> ve bilerek öyle: kullanıcı hedef
+    /// birimi görmese de oraya iş yazabiliyor. Kapı bu yüzden ucun kendisinde
+    /// (<c>bildirim.yonlendir</c> izni); metot istemciye açık bir uç değil.
+    /// </para>
+    /// </remarks>
+    Task<GorevDetayDto> OlusturAsync(
+        GorevKayitDto istek, long? hedefBirimId, CancellationToken iptal = default);
     Task<GorevDetayDto> GuncelleAsync(long id, GorevKayitDto istek, CancellationToken iptal = default);
     Task SilAsync(long id, CancellationToken iptal = default);
 
@@ -184,10 +203,17 @@ public class GorevServisi(
 
     // ── oluşturma ──────────────────────────────────────────────────────
 
+    public Task<GorevDetayDto> OlusturAsync(
+        GorevKayitDto istek, CancellationToken iptal = default) =>
+        OlusturAsync(istek, null, iptal);
+
     public async Task<GorevDetayDto> OlusturAsync(
-        GorevKayitDto istek, CancellationToken iptal = default)
+        GorevKayitDto istek, long? hedefBirimId, CancellationToken iptal = default)
     {
-        var birim = await _etkinBirim.IdAsync(iptal);
+        // Hedef birim verilmişse ONA, yoksa etkin birime açılıyor.
+        var birim = hedefBirimId is > 0
+            ? hedefBirimId.Value
+            : await _etkinBirim.IdAsync(iptal);
         if (birim <= 0) throw new BusinessRuleException("Görev açmak için bir birime bağlı olmalısınız.");
 
         // Alt görev üst görevin BİRİMİNİ devralır: ekip yöneticisi büyük bir

@@ -1,6 +1,6 @@
 import {
   ArrowLeft, Building2, Calendar, CheckCircle2, Circle, FolderKanban,
-  MapPin, Pencil, Trash2, User, Wallet,
+  MapPin, Pencil, Plus, Trash2, User, Wallet,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -271,6 +271,20 @@ export default function ProjectDetail() {
                     {k.gecikti && (
                       <span className="shrink-0 text-2xs font-medium text-(--st-no)">gecikti</span>
                     )}
+
+                    {/* Hedefe DOĞRUDAN iş bağlamak en sık işlem; görev
+                        formunu proje ve taş seçili açıyor. */}
+                    {hasPermission(PERMISSION.gorevEkle) && !k.tamamlandi && (
+                      <Link
+                        to={`/gorevler/yeni?proje=${projeId}&tas=${k.id}`}
+                        className="shrink-0"
+                        title={`${k.ad} hedefine görev ekle`}
+                      >
+                        <IconButton etiket={`${k.ad} hedefine görev ekle`}>
+                          <Plus size={16} />
+                        </IconButton>
+                      </Link>
+                    )}
                   </li>
                 ))}
               </ol>
@@ -291,13 +305,39 @@ export default function ProjectDetail() {
 
       {sekme === 'gorevler' && (
         <Card>
-          <CardHeader baslik="Projenin görevleri" aciklama={`${toplam} görev`} />
+          <CardHeader
+            baslik="Projenin görevleri"
+            aciklama={`${toplam} görev`}
+            eylem={
+              hasPermission(PERMISSION.gorevEkle) ? (
+                // Proje ÖNCEDEN SEÇİLİ açılıyor: kullanıcı zaten bu projenin
+                // içinden "görev ekle" dedi, listeden yeniden bulmak zorunda
+                // kalmamalı.
+                <Link to={`/gorevler/yeni?proje=${projeId}`}>
+                  <Button varyant="sade">
+                    <Plus size={14} />
+                    Görev ekle
+                  </Button>
+                </Link>
+              ) : undefined
+            }
+          />
           {(gorevler.data?.veriler ?? []).length === 0 ? (
             <div className="px-3.5 pb-4">
               <EmptyState
                 ikon={FolderKanban}
                 baslik="Görev yok"
-                aciklama="Görev açarken proje seçerek buraya bağlayabilirsiniz."
+                aciklama="Projeye bağlı bir iş yok."
+                eylem={
+                  hasPermission(PERMISSION.gorevEkle) ? (
+                    <Link to={`/gorevler/yeni?proje=${projeId}`}>
+                      <Button>
+                        <Plus size={14} />
+                        Görev ekle
+                      </Button>
+                    </Link>
+                  ) : undefined
+                }
               />
             </div>
           ) : (

@@ -5,6 +5,7 @@ import { FormModal } from '../../components/FormModal';
 import { FieldWrapper, Input, Secim, Textarea } from '../../components/Field';
 import { useToast } from '../../components/Toast';
 import { useUsableTaskTypes, useTask, useTaskMutations } from '../../data/tasks';
+import { useProject, useProjects } from '../../data/projects';
 import { TASK_PRIORITY_LABELS, type TaskSave } from '../../data/types';
 
 /**
@@ -31,6 +32,12 @@ export default function TaskForm() {
   const gorevId = id ? Number(id) : undefined;
   const ustGorevId = sorgu.get('ust') ? Number(sorgu.get('ust')) : undefined;
 
+  // Proje ekranından gelindiyse proje ÖNCEDEN seçili gelir: kullanıcı zaten
+  // o projenin içinden "görev ekle" dedi, listeden yeniden bulmak zorunda
+  // kalmamalı.
+  const acilisProjesi = sorgu.get('proje') ? Number(sorgu.get('proje')) : undefined;
+  const acilisTasi = sorgu.get('tas') ? Number(sorgu.get('tas')) : undefined;
+
   const { data: mevcut } = useTask(gorevId);
   const tipler = useUsableTaskTypes();
   const m = useTaskMutations(gorevId);
@@ -45,6 +52,8 @@ export default function TaskForm() {
     enlem: null,
     boylam: null,
     planlananBitis: null,
+    projeId: acilisProjesi ?? null,
+    kilometreTasiId: acilisTasi ?? null,
     atamalar: [],
   });
 
@@ -62,11 +71,22 @@ export default function TaskForm() {
       enlem: mevcut.enlem ?? null,
       boylam: mevcut.boylam ?? null,
       planlananBitis: mevcut.planlananBitis ?? null,
+      projeId: mevcut.projeId ?? null,
+      kilometreTasiId: mevcut.kilometreTasiId ?? null,
       atamalar: [],
     });
   }, [mevcut]);
 
   const duzenleme = !!gorevId;
+
+  // Proje listesi yalnızca AÇIK projeler: tamamlanmış bir projeye yeni iş
+  // bağlamak, kapanmış bir ölçümü geçmişe dönük değiştirmek olurdu.
+  const projeler = useProjects({ boyut: 200, yalnizAcik: true, sirala: 'ad' });
+
+  // Kilometre taşları SEÇİLEN projeden; ayrı bir uç yok çünkü proje detayı
+  // onları zaten taşıyor.
+  const secilenProje = useProject(form.projeId ?? undefined);
+
   const secilenTip = tipler.liste.find((t) => t.id === form.gorevTipiId);
   const konumZorunlu = !!secilenTip?.konumZorunlu;
   const konumEksik = konumZorunlu && (form.enlem == null || form.boylam == null);
@@ -224,6 +244,62 @@ export default function TaskForm() {
           />
         </FieldWrapper>
       </div>
+
+      {/* ── Proje bağı ── */}
+      <FieldWrapper
+        etiket="Proje"
+        id="gorev-proje"
+        ipucu="Bağlanan görev projenin panosunda ve gantt çizelgesinde görünür."
+      >
+        <Secim
+          id="gorev-proje"
+          value={form.projeId ?? ''}
+          onChange={(e) =>
+            setForm({
+              ...form,
+              projeId: e.target.value ? Number(e.target.value) : null,
+              // Proje değişince eski kilometre taşı ARTIK GEÇERSİZ: başka
+              // projenin hedefine bağlı bir görev, iki projeyi birbirine
+              // karıştırırdı.
+              kilometreTasiId: null,
+            })
+          }
+        >
+          <option value="">Projesiz</option>
+          {(projeler.data?.veriler ?? []).map((p) => (
+            <option key={p.id} value={p.id!}>
+              {p.kod ? `${p.kod} · ` : ''}
+              {p.ad}
+            </option>
+          ))}
+        </Secim>
+      </FieldWrapper>
+
+      {form.projeId && (secilenProje.data?.kilometreTaslari ?? []).length > 0 && (
+        <FieldWrapper
+          etiket="Kilometre taşı"
+          id="gorev-tas"
+          ipucu="Gantt çizelgesinde bu hedefin altında öbeklenir."
+        >
+          <Secim
+            id="gorev-tas"
+            value={form.kilometreTasiId ?? ''}
+            onChange={(e) =>
+              setForm({
+                ...form,
+                kilometreTasiId: e.target.value ? Number(e.target.value) : null,
+              })
+            }
+          >
+            <option value="">Hedefe bağlı değil</option>
+            {(secilenProje.data?.kilometreTaslari ?? []).map((k) => (
+              <option key={k.id} value={k.id!}>
+                {k.ad}
+              </option>
+            ))}
+          </Secim>
+        </FieldWrapper>
+      )}
 
       <FieldWrapper
         etiket="Planlanan bitiş"
