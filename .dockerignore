@@ -1,0 +1,44 @@
+# Derleme bağlamını küçük tutar ve — daha önemlisi — sırların ve kullanıcı
+# dosyalarının imaja girmesini engeller.
+
+# ── Sırlar ──
+# `.env` imaja GİRMEZ. Ayarlar çalışma anında ortam değişkeni olarak verilir
+# (Dokploy'da "Environment"). İmaja gömülürse aynı imajı başka bir kuruma
+# vermek imkânsız olur ve sır imaj katmanında kalıcı iz bırakır.
+.env
+.env.local
+.env.*.local
+*-firebase-adminsdk-*.json
+
+# ── Kullanıcı dosyaları ──
+# Gerçek özgeçmişler, etkinlik fotoğrafları, gönderilen belgeler.
+# Çalışma anında birimden (volume) gelir.
+KentOS.Mini.Web/wwwroot/uploads/
+KentOS.Mini.Web/dosyalar/
+
+# ── Derleme çıktıları ve bağımlılıklar ──
+# İmaj bunları kendisi üretiyor; kopyalamak hem yavaş hem de yerel makinenin
+# çıktısını imaja sızdırır.
+**/bin/
+**/obj/
+**/node_modules/
+KentOS.Mini.Web/wwwroot/uygulama/
+KentOS.Mini.Web/wwwroot/yeni/
+KentOS.Mini.Web/wwwroot/index.html
+KentOS.Mini.Web/wwwroot/firebase-messaging-sw.js
+**/*.tsbuildinfo
+
+# ── Depo ve araç dosyaları ──
+.git/
+.gitignore
+.github/
+.vs/
+.vscode/
+.idea/
+*.user
+*.suo
+
+# ── Dökümanlar ──
+# İmajın içinde işe yaramıyorlar.
+*.md
+!README.md
