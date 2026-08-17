@@ -39,6 +39,7 @@ export function HelpButton() {
         Ekranın adı zaten `title`da ve `aria-label`da yazılı.
       */}
       <IconButton
+      varyant="sade"
         etiket={`${kayit.baslik} — bu ekran nasıl kullanılır?`}
         onClick={() => setAcik(true)}
       >

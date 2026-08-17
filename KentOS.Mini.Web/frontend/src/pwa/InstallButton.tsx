@@ -29,6 +29,7 @@ export function InstallButton() {
   return (
     <>
       <IconButton
+        varyant="sade"
         etiket="Uygulamayı kur"
         onClick={() => setAcik(true)}
         className="border-brand-soft bg-brand-soft text-brand hover:text-brand"

@@ -123,7 +123,10 @@ export function NotificationCenter() {
       type="button"
       aria-label={okunmamis > 0 ? `Bildirimler — ${okunmamis} okunmamış` : 'Bildirimler'}
       title="Bildirimler"
-      className="relative grid h-[38px] w-[38px] place-items-center rounded-control border border-border bg-surface-2 text-text-2 transition-colors hover:text-text"
+      // Appbar'daki öteki düğmelerle AYNI dil: kenarlıksız, zemin üzerine
+      // gelince beliriyor. Kendi `<button>`ı çünkü rozet için `relative`
+      // konumlandırma ve sayı balonu gerekiyor.
+      className="relative grid h-[38px] w-[38px] place-items-center rounded-control text-text-2 transition-colors hover:bg-surface-2 hover:text-text active:bg-surface-2"
     >
       <Bell size={17} strokeWidth={1.8} />
       {okunmamis > 0 && (

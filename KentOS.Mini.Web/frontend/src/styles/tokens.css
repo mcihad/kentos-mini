@@ -137,6 +137,20 @@
   --sh-rgb: 14, 22, 38;
 
   /*
+    APPBAR GÖLGESİ — şeridi içerikten AYIRAN şey.
+
+    Önce yalnızca `border-b` vardı; sayfa kaydırılınca içerik çizginin
+    altından geçiyor ve şerit sayfaya yapışık, düz duruyordu. Gölge, sabit
+    duran şeridin içeriğin ÜSTÜNDE olduğunu söylüyor.
+
+    Aydınlıkta çizgi + çok hafif bir düşüm yetiyor; gölge belirgin olsaydı
+    kâğıt üstüne yapıştırılmış bir bant gibi görünürdü.
+  */
+  --appbar-shadow:
+    0 1px 0 rgba(var(--sh-rgb), 0.06),
+    0 2px 6px rgba(var(--sh-rgb), 0.045);
+
+  /*
     PERDE — açılan katmanın altındaki karartma.
 
     Uzun süre `bg-perde` sınıfı vardı ama `--perde` HİÇ TANIMLI DEĞİLDİ:
@@ -198,6 +212,19 @@
   --chrome: color-mix(in oklab, var(--brand) 10%, #0b1017);
   --sh-rgb: 0, 0, 0;
   --sh-a: 0.42;
+
+  /*
+    GECEDE GÖLGE GÖRÜNMEZ — zemin zaten koyu.
+
+    Aynı gölgeyi kullansaydık şerit ile içerik arasında hiçbir ayrım
+    kalmazdı. Ayrımı taşıyan şey burada gölge değil, üstteki ince AÇIK
+    çizgi: karanlıkta yükseklik ışıkla anlatılıyor. Altında yine de bir
+    parça karartma var, yoksa geçiş sert bir çizgiye dönüşüyor.
+  */
+  --appbar-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.045),
+    0 1px 0 rgba(0, 0, 0, 0.5),
+    0 4px 12px rgba(0, 0, 0, 0.32);
 
   /* Gecede zemin zaten koyu: aynı yoğunluktaki perde hiçbir şey yapmıyor,
      bu yüzden hem saf siyaha yaklaşıyor hem daha opak. */

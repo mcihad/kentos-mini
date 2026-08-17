@@ -73,18 +73,31 @@ export function BottomSheet({
           */}
           <div
             className={cn(
-              'shrink-0 overflow-hidden rounded-t-tabaka',
+              'relative shrink-0 overflow-hidden rounded-t-tabaka',
               baslikGizli ? 'bg-surface' : 'bg-brand-soft',
             )}
           >
             {/* Tutamak vaul'un kendi bileşeni: sürükleme alanını da o
                 tanımlıyor, bizim ayrıca bir jest bağlamamız gerekmiyor. */}
-            <Drawer.Handle className="!my-3 !h-[5px] !w-11 !bg-line-2" />
+            {/*
+              BAŞLIK VARSA TUTAMAK AKIŞTA DEĞİL.
+
+              5 piksellik bir çizgi için kendi satırını açmak tepeye ~19 piksel
+              ekliyordu. Şeridin üzerine bindiriliyor, ona yer açan şey
+              şeridin `pt-3.5`'i. Başlık gizliyken bindirecek bir şey yok:
+              orada tutamak akışta kalır, yoksa blok tamamen çöker.
+            */}
+            <Drawer.Handle
+              className={cn(
+                '!h-[5px] !w-10 !bg-line-2',
+                baslikGizli ? '!mb-1.5 !mt-2' : '!absolute !inset-x-0 !top-[7px] !z-10 !mx-auto !my-0',
+              )}
+            />
 
             {baslikGizli ? (
               <Drawer.Title className="sr-only">{baslik}</Drawer.Title>
             ) : (
-              <div className="flex items-start gap-2.5 border-b border-line px-3.5 pb-2.5">
+              <div className="flex items-center gap-2.5 border-b border-line px-3.5 pb-2 pt-3.5">
                 <div className="min-w-0 flex-1">
                   <Drawer.Title asChild>
                     <h2 className="font-display text-base font-bold tracking-[var(--track-d)]">

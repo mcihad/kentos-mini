@@ -78,10 +78,23 @@ export function OverlayShell({
         tabakayı parmakla indirmenin güvenilir yeri bu şerit.
       */
       className={cn(
-        'flex shrink-0 items-start gap-2.5 border-b border-line px-3.5 py-2.5',
+        /*
+          BAŞLIK ŞERİDİ ALÇALDI.
+
+          `py-2.5` + tutamağın `my-2.5`'i üst üste binince tabakanın tepesi
+          neredeyse 70 piksel kaplıyordu ve asıl içerik ekranın aşağısına
+          itiliyordu — küçük ekranda görünen alanın beşte biri başlıktı.
+
+          Şerit artık `items-center`: eskiden `items-start` idi ve açıklaması
+          olmayan tabakalarda başlık ile kapatma düğmesi hizasız kalıyordu.
+        */
+        'flex shrink-0 items-center gap-2.5 border-b border-line px-3.5 py-2',
         // Zemin ve köşe ŞERİDİN DEĞİL, `baslikBlogu` sarmalayıcısının işi:
         // mobilde tutamak da aynı renkli bloğun içinde olmalı.
-        !masaustu && 'cursor-grab active:cursor-grabbing',
+        //
+        // Üstteki fazladan boşluk TUTAMAĞA ait: tutamak artık akıştan
+        // çıkarılıp şeridin üzerine bindiriliyor, kendi satırını kaplamıyor.
+        !masaustu && 'cursor-grab pt-3.5 active:cursor-grabbing',
       )}
     >
       {ikon && (
@@ -98,8 +111,12 @@ export function OverlayShell({
       {/* Kapatma düğmesi sürükleme alanının DIŞINDA: aksi hâlde düğmeye
           basmak tabakayı aşağı çekmeye başlıyor ve tık kaybediliyordu. */}
       <span data-vaul-no-drag>
-        <IconButton etiket="Kapat" onClick={kapat}>
-          <X size={16} />
+        {/* Kenarlıksız: başlığın yanındaki tek düğme çerçeveliyken tabakanın
+            tepesine yapıştırılmış bir kutu gibi duruyordu. Kenarlık kalkınca
+            16 piksellik çarpı şeridin içinde kayboldu — çerçeve gittiği için
+            ikonun KENDİSİ görünür ağırlığı taşımak zorunda. */}
+        <IconButton etiket="Kapat" varyant="sade" onClick={kapat}>
+          <X size={19} />
         </IconButton>
       </span>
     </div>
@@ -127,8 +144,16 @@ export function OverlayShell({
               tek parça olmalı — tutamak başlığın bir parçası, ayrı bir şerit
               değil.
             */}
-            <div className="shrink-0 overflow-hidden rounded-t-tabaka bg-brand-soft">
-              <Drawer.Handle className="!my-2.5 !h-[5px] !w-11 !bg-line-2" />
+            <div className="relative shrink-0 overflow-hidden rounded-t-tabaka bg-brand-soft">
+              {/*
+                TUTAMAK AKIŞTAN ÇIKTI.
+
+                Kendi satırında dururken tepeye ~19 piksel ekliyordu; oysa
+                sadece 5 piksellik bir çizgi. Artık şeridin üzerine bindirilmiş
+                ve ona yer açan şey şeridin `pt-3.5`'i — aynı görüntü, yarısı
+                kadar yükseklik.
+              */}
+              <Drawer.Handle className="!absolute !inset-x-0 !top-[7px] !z-10 !mx-auto !my-0 !h-[5px] !w-10 !bg-line-2" />
               {baslikSeridi(Drawer.Title)}
             </div>
             {children}

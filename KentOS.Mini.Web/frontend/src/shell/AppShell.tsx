@@ -262,7 +262,19 @@ function AppShellIc() {
           `gap-2` (8px) dört boşlukta 32px yiyordu, `gap-1` ile 16px'e iniyor
           ve başlığa o kadar yer açılıyor. Masaüstünde eski ritim duruyor.
         */}
-        <header className="sticky top-0 z-30 flex h-bar-m shrink-0 items-center gap-1 border-b border-border bg-surface px-3 md:h-appbar md:gap-2 md:px-[26px]">
+        {/*
+          KENARLIK YERİNE GÖLGE.
+
+          Şerit `sticky` ve içerik altından geçiyor; düz bir `border-b` bunu
+          anlatmıyordu — sayfa kaydırılınca appbar içeriğe yapışık, sayfanın
+          bir parçasıymış gibi duruyordu. Gölge, şeridin içeriğin ÜSTÜNDE
+          olduğunu söylüyor.
+
+          Gölge TEMAYA GÖRE değişiyor: aydınlıkta hafif bir düşüm, gecede
+          üstte ince bir açık çizgi — karanlıkta yükseklik gölgeyle değil
+          ışıkla anlatılıyor. İkisi de `--appbar-shadow` altında tanımlı.
+        */}
+        <header className="sticky top-0 z-30 flex h-bar-m shrink-0 items-center gap-1 appbar-golge bg-surface px-3 md:h-appbar md:gap-2 md:px-[26px]">
           <button
             onClick={() => setDaraltilmis((d) => !d)}
             aria-label={daraltilmis ? 'Menüyü genişlet' : 'Menüyü daralt'}
@@ -324,6 +336,7 @@ function AppShellIc() {
           */}
           <IconButton
             etiket="Tema Tasarımcısı"
+            varyant="sade"
             onClick={() => setTemaPaneli(true)}
             className="text-brand"
           >
@@ -342,6 +355,7 @@ function AppShellIc() {
           */}
           <IconButton
             etiket={etkinTema === 'acik' ? 'Koyu temaya geç' : 'Açık temaya geç'}
+            varyant="sade"
             onClick={temaDegistir}
           >
             {etkinTema === 'acik' ? <Moon size={17} strokeWidth={1.8} /> : <Sun size={17} strokeWidth={1.8} />}
@@ -349,7 +363,12 @@ function AppShellIc() {
 
           {/* Mobilde kenar çubuğu yok; çıkış oradaki kullanıcı bloğuyla
               birlikte erişilemez kalıyordu. */}
-          <IconButton etiket="Çıkış yap" onClick={() => setCikisSorusu(true)} className="md:hidden">
+          <IconButton
+            etiket="Çıkış yap"
+            varyant="sade"
+            onClick={() => setCikisSorusu(true)}
+            className="md:hidden"
+          >
             <LogOut size={17} strokeWidth={1.8} />
           </IconButton>
         </header>

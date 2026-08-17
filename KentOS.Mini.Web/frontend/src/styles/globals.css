@@ -412,6 +412,20 @@
 
 @layer utilities {
   /*
+    APPBAR GÖLGESİ.
+
+    Tailwind'in `shadow-(--degisken)` yardımcısı denendi ve ÇALIŞMADI:
+    üretilen kural rengi çözemiyor ve dört adet saydam gölgeye düşüyordu
+    (tarayıcıda ölçüldü — `box-shadow` tamamen `rgba(0,0,0,0)`). Değer
+    doğrudan yazılıyor.
+
+    Gölgenin kendisi temaya göre `--appbar-shadow` altında tanımlı.
+  */
+  .appbar-golge {
+    box-shadow: var(--appbar-shadow);
+  }
+
+  /*
  * ── Katman animasyonları ──────────────────────────────────────────────
  *
  * Yalnızca `transform` ve `opacity` canlandırılır; ikisi de düzen (layout)

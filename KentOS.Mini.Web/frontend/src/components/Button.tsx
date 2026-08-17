@@ -48,14 +48,40 @@ export const Button = forwardRef<HTMLButtonElement, Props>(function Button(
   );
 });
 
+/**
+ * İkon butonunun görünümü.
+ *
+ * <p>
+ * <b>cerceveli</b> — kenarlıklı ve dolgulu. İçerik arasında tek başına duran
+ * eylemler için: kart köşesindeki sil düğmesi gibi, çevresinde onu buton
+ * olarak okutacak başka bir ipucu yoksa.
+ * </p>
+ * <p>
+ * <b>sade</b> — kenarlıksız, zemini yalnızca üzerine gelince beliriyor.
+ * Düğmelerin YAN YANA dizildiği yerler için: appbar ve tabaka başlığında
+ * dört-beş kenarlıklı kutu, şeridi bir araç çubuğuna değil bir kutu
+ * ızgarasına çeviriyordu.
+ * </p>
+ */
+type IkonVaryanti = 'cerceveli' | 'sade';
+
 type IkonProps = React.ButtonHTMLAttributes<HTMLButtonElement> & {
   /** Erişilebilirlik için zorunlu — design.md §11. */
   etiket: string;
+  varyant?: IkonVaryanti;
+};
+
+const ikonVaryantlari: Record<IkonVaryanti, string> = {
+  cerceveli: 'border border-border bg-surface-2 text-text-2 hover:text-text',
+  // Zemin ÜZERİNE GELİNCE beliriyor; boştayken şerit tek bir yüzey gibi
+  // okunuyor. `active:` dokunmatikte de geri bildirim veriyor — mobilde
+  // hover diye bir şey yok.
+  sade: 'text-text-2 hover:bg-surface-2 hover:text-text active:bg-surface-2',
 };
 
 /** İkon butonu: 38px görsel, 44px dokunma hedefi (design.md §4). */
 export const IconButton = forwardRef<HTMLButtonElement, IkonProps>(function IconButton(
-  { etiket, className, children, ...kalan },
+  { etiket, varyant = 'cerceveli', className, children, ...kalan },
   ref,
 ) {
   return (
@@ -64,8 +90,8 @@ export const IconButton = forwardRef<HTMLButtonElement, IkonProps>(function Icon
       aria-label={etiket}
       title={etiket}
       className={cn(
-        'relative grid h-[38px] w-[38px] place-items-center rounded-control',
-        'border border-border bg-surface-2 text-text-2 transition-colors hover:text-text',
+        'relative grid h-[38px] w-[38px] place-items-center rounded-control transition-colors',
+        ikonVaryantlari[varyant],
         // Görsel 38px kalır, dokunma alanı 44px'e genişler.
         'after:absolute after:inset-[-3px] after:content-[""]',
         className,
