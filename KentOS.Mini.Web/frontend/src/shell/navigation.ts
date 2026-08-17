@@ -1,6 +1,6 @@
 import {
   Bell, Bug, Building2, CalendarDays, ChartColumn, ClipboardCheck, ClipboardList,
-  FolderKanban, Flower2, Inbox, Landmark, ListChecks, Map, Radio,
+  FolderKanban, Flower2, Gauge, Inbox, Landmark, ListChecks, Map, Radio,
   FileUser, LayoutDashboard, MailCheck, Paperclip, Settings, SlidersHorizontal, UserPlus, Users,
   type LucideIcon,
 } from 'lucide-react';
@@ -137,6 +137,14 @@ export const NAVIGATION: NavigationGroup[] = [
       {
         yol: '/vatandas-bildirimleri', etiket: 'Vatandaş Bildirimleri', ikon: Inbox,
         izin: PERMISSION.bildirimKarsila,
+      },
+      {
+        yol: '/gelen-kutusu', etiket: 'Gelen Kutusu', ikon: Inbox,
+        izin: PERMISSION.gelenKutusuGoruntule,
+      },
+      {
+        yol: '/is-panosu', etiket: 'Gecikme Panosu', ikon: Gauge,
+        izin: PERMISSION.isIstatistik,
       },
       {
         yol: '/harita', etiket: 'Harita', ikon: Map,

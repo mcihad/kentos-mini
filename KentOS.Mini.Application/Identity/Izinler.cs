@@ -156,6 +156,10 @@ public static class Izinler
     public const string BildirimYonlendir = "bildirim.yonlendir";
     public const string SahaTespit = "saha.tespit";
 
+    public const string GelenKutusuGoruntule = "gelenkutusu.goruntule";
+    public const string GelenKutusuKarar = "gelenkutusu.karar";
+    public const string IsIstatistik = "isistatistik.goruntule";
+
     // ─────────────────────────────────────────────────────────── sistem
     public const string SistemHata = "sistem.hata";
     public const string SistemKurum = "sistem.kurum";
@@ -335,6 +339,15 @@ public static class Izinler
             "Yönlendirme, kullanıcının göremediği bir birime de iş yazabilir — akışın gereği budur."),
         new(SahaTespit, "İş Takip", "Saha tespiti",
             "Sahada görülen sorunu konum ve fotoğrafla doğrudan kendi biriminin görevi olarak açar."),
+
+        new(GelenKutusuGoruntule, "İş Takip", "Gelen kutusunu görüntüle",
+            "Başka birimlerden gelen iş taleplerini ve bilgilendirmeleri görür."),
+        new(GelenKutusuKarar, "İş Takip", "Gelen kutusu kararı",
+            "Gelen iş talebini KABUL ederek birimine görev açar ya da gerekçeyle REDDEDER. " +
+            "Ret, kaynak birime bildirilir. Bu izne sahip olanlara yeni kayıt bildirimi gider."),
+        new(IsIstatistik, "İş Takip", "Gecikme panosu",
+            "Birim karnesini, süre aşımlarını ve iş yükü dağılımını görür. " +
+            "Rakamlar BÜTÜN alt birimleri kapsar; kişi bazlı başarım ölçümü değildir."),
 
         new(SistemHata, "Sistem", "Hata kayıtları",
             "Sunucu hatalarını görüntüler. Kayıtlar istek gövdeleri, IP adresleri ve yığın izleri içerir."),

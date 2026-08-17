@@ -340,6 +340,13 @@ builder.Services.AddScoped<IGorevServisi, GorevServisi>();
 builder.Services.AddScoped<IProjeServisi, ProjeServisi>();
 builder.Services.AddScoped<IVatandasBildirimServisi, VatandasBildirimServisi>();
 builder.Services.AddScoped<ISahaServisi, SahaServisi>();
+builder.Services.AddScoped<IGelenKutusuServisi, GelenKutusuServisi>();
+builder.Services.AddScoped<IIsIstatistikServisi, IsIstatistikServisi>();
+
+// SLA İŞÇİSİ — saatlik. Çok örnekli dağıtımda çift tetiklemeye karşı
+// Postgres danışma kilidi kullanıyor; ayrıntı sınıfın belgesinde.
+builder.Services.AddScoped<ISlaTarayici, SlaTarayici>();
+builder.Services.AddHostedService<SlaWorker>();
 
 // VATANDAŞ PORTALI hız sınırı — yalnızca anonim uçlar için.
 builder.Services.AddVatandasHizSiniri();

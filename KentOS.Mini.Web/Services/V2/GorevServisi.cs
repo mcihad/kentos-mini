@@ -83,8 +83,20 @@ public class GorevServisi(
     IIsYorumServisi _yorumlar,
     IEkipServisi _ekipler,
     IMessageService _mesajlar,
+    IServiceProvider _saglayici,
     ILogger<GorevServisi> _kayit) : IGorevServisi
 {
+    /*
+      DEVİR SERVİSİ SAĞLAYICIDAN, KURUCUDAN DEĞİL.
+
+      `GelenKutusuServisi` görev açmak için `IGorevServisi`ye bağlı; onu
+      buraya kurucudan almak DAİRESEL BAĞIMLILIK olurdu ve DI kapsayıcısı
+      açılışta patlardı. Devir yalnızca görev tamamlandığında, yani nadiren
+      gerekiyor — o an çözmek doğru karşılığı.
+    */
+    private IGelenKutusuServisi GelenKutusu =>
+        _saglayici.GetRequiredService<IGelenKutusuServisi>();
+
     // ── liste ──────────────────────────────────────────────────────────
 
     public async Task<SayfaliSonuc<GorevOzetDto>> ListeAsync(
@@ -561,6 +573,14 @@ public class GorevServisi(
         ], iptal);
 
         await DurumBildirAsync(gorev, yeni, istek.Gerekce, iptal);
+
+        // GÖREV ONAYLANINCA DEVİR KURALLARI TETİKLENİR.
+        //
+        // Tamamlanma anında, iade edilebilir "onay bekliyor" anında değil:
+        // henüz kabul edilmemiş bir iş için başka birime kayıt düşürmek,
+        // iade hâlinde o birimi boşuna meşgul ederdi.
+        if (yeni == GorevDurumu.Tamamlandi)
+            await GelenKutusu.DevirleriUygulaAsync(gorev.Id, iptal);
 
         return await DetayaCevirAsync(gorev, iptal);
     }

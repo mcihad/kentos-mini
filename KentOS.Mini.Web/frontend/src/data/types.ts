@@ -218,6 +218,27 @@ export const REPORT_STATUS_LABELS: Record<number, string> = {
   2: 'İşleme alınmadı',
 };
 
+// ── gelen kutusu ve pano ──
+export type InboxItem = S['GelenKutusuDto'];
+export type InboxAccept = S['GelenKutusuKabulDto'];
+export type UnitScorecard = S['BirimKarnesiDto'];
+export type WorkStatistics = S['IsIstatistikDto'];
+
+/** Gelen kutusu durumları — `GelenKutusuDurumu`. */
+export const INBOX_STATUS = {
+  bekliyor: 0,
+  kabul: 1,
+  ret: 2,
+  okundu: 3,
+} as const;
+
+export const INBOX_STATUS_LABELS: Record<number, string> = {
+  0: 'Bekliyor',
+  1: 'Kabul edildi',
+  2: 'Reddedildi',
+  3: 'Okundu',
+};
+
 export type WorkEvent = S['IsOlayDto'];
 export type WorkEventChange = S['IsOlayDegisiklikDto'];
 export type WorkAttachment = S['IsEkDto'];

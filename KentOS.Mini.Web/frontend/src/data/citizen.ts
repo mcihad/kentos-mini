@@ -3,8 +3,8 @@ import { api, queryString, request, type PagedResult, type PageParams } from './
 import { taskKeys } from './tasks';
 import type {
   CitizenReport, CitizenReportRequest, CitizenReportResult, FieldReportRequest,
-  ReportRouteRequest, TaskDetail, TaskSummary, VerificationResult, WorkAttachment,
-  WorkMapPoint,
+  InboxAccept, InboxItem, ReportRouteRequest, TaskDetail, TaskSummary,
+  VerificationResult, WorkAttachment, WorkMapPoint, WorkStatistics,
 } from './types';
 
 /**
@@ -25,6 +25,12 @@ export const citizenKeys = {
   attachments: (id: number) => ['vatandas-bildirimi', 'ekler', id] as const,
   map: (filtre: string) => ['saha', 'harita', filtre] as const,
   myWork: () => ['saha', 'islerim'] as const,
+
+  inbox: (filtre: string) => ['gelen-kutusu', 'liste', filtre] as const,
+  inboxAll: () => ['gelen-kutusu'] as const,
+  inboxPending: () => ['gelen-kutusu', 'bekleyen'] as const,
+
+  stats: (filtre: string) => ['is-istatistik', filtre] as const,
 } as const;
 
 // ═══════════════════════════════════════════════════════ portal (anonim)
@@ -146,4 +152,69 @@ export function useFieldMutations() {
       },
     }),
   };
+}
+
+// ═══════════════════════════════════════════════════ gelen kutusu
+
+export function useInbox(filtre: PageParams & { durum?: number | null; altBirimlerDahil?: boolean }) {
+  return useQuery({
+    queryKey: citizenKeys.inbox(JSON.stringify(filtre)),
+    queryFn: () => api.get<PagedResult<InboxItem>>(`/gelen-kutusu${queryString(filtre)}`),
+  });
+}
+
+/**
+ * Bekleyen kayıt sayısı — menüdeki rozet.
+ *
+ * <p>
+ * Bir dakika taze sayılıyor: rozet için her ekran geçişinde sorgu atmak
+ * gereksiz, ama saatlerce bayat kalması da "kimse bakmıyor" hissi verirdi.
+ * </p>
+ */
+export function useInboxPending(etkin: boolean) {
+  return useQuery({
+    queryKey: citizenKeys.inboxPending(),
+    queryFn: () => api.get<number>('/gelen-kutusu/bekleyen'),
+    enabled: etkin,
+    staleTime: 60_000,
+  });
+}
+
+export function useInboxMutations(id?: number) {
+  const qc = useQueryClient();
+
+  // Karar GÖREV açıyor: görev önbelleği de tazelenmezse yeni iş listede
+  // görünmezdi.
+  const bitince = () => {
+    qc.invalidateQueries({ queryKey: citizenKeys.inboxAll() });
+    qc.invalidateQueries({ queryKey: taskKeys.all() });
+  };
+
+  return {
+    kabul: useMutation({
+      mutationFn: (govde: InboxAccept) =>
+        api.post<InboxItem>(`/gelen-kutusu/${id}/kabul`, govde),
+      onSuccess: bitince,
+    }),
+    reddet: useMutation({
+      mutationFn: (gerekce: string) =>
+        api.post<InboxItem>(`/gelen-kutusu/${id}/reddet`, { gerekce }),
+      onSuccess: bitince,
+    }),
+    okundu: useMutation({
+      mutationFn: () => api.post<InboxItem>(`/gelen-kutusu/${id}/okundu`),
+      onSuccess: bitince,
+    }),
+  };
+}
+
+// ═══════════════════════════════════════════════════ gecikme panosu
+
+export function useWorkStatistics(altBirimlerDahil: boolean) {
+  return useQuery({
+    queryKey: citizenKeys.stats(String(altBirimlerDahil)),
+    queryFn: () =>
+      api.get<WorkStatistics>(`/is-istatistik${queryString({ altBirimlerDahil })}`),
+    staleTime: 60_000,
+  });
 }

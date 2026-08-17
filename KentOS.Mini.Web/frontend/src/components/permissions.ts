@@ -101,6 +101,9 @@ export const PERMISSION = {
   bildirimKarsila: 'bildirim.karsila',
   bildirimYonlendir: 'bildirim.yonlendir',
   sahaTespit: 'saha.tespit',
+  gelenKutusuGoruntule: 'gelenkutusu.goruntule',
+  gelenKutusuKarar: 'gelenkutusu.karar',
+  isIstatistik: 'isistatistik.goruntule',
 
   sistemHata: 'sistem.hata',
   sistemKurum: 'sistem.kurum',

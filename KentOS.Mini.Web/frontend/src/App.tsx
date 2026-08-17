@@ -30,6 +30,8 @@ import Login from './screens/Login';
 import ReportPortal from './screens/citizen/ReportPortal';
 import CitizenReports from './screens/CitizenReports';
 import WorkMapScreen from './screens/WorkMapScreen';
+import Inbox from './screens/Inbox';
+import WorkDashboard from './screens/WorkDashboard';
 import FieldHome from './screens/field/FieldHome';
 import FieldReport from './screens/field/FieldReport';
 import FieldTask from './screens/field/FieldTask';
@@ -215,6 +217,14 @@ export default function App() {
         <Route
           path="vatandas-bildirimleri"
           element={<ProtectedRoute permission={PERMISSION.bildirimKarsila}><CitizenReports /></ProtectedRoute>}
+        />
+        <Route
+          path="gelen-kutusu"
+          element={<ProtectedRoute permission={PERMISSION.gelenKutusuGoruntule}><Inbox /></ProtectedRoute>}
+        />
+        <Route
+          path="is-panosu"
+          element={<ProtectedRoute permission={PERMISSION.isIstatistik}><WorkDashboard /></ProtectedRoute>}
         />
         <Route
           path="harita"

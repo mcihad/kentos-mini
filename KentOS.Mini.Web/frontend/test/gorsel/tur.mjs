@@ -45,6 +45,8 @@ const EKRANLAR = [
   // VATANDAŞ ve SAHA — kabuksuz yerleşim, harita içeriyor.
   { ad: 'vatandas-bildirimleri', yol: '/vatandas-bildirimleri', secici: 'main input[type="search"]' },
   { ad: 'harita', yol: '/harita', bekle: 'nokta' },
+  { ad: 'gelen-kutusu', yol: '/gelen-kutusu', bekle: 'Bekliyor' },
+  { ad: 'is-panosu', yol: '/is-panosu', bekle: 'Birim karnesi' },
   { ad: 'saha', yol: '/saha', bekle: 'Tespit gir' },
   // NOT: alan etiketleri CSS ile BÜYÜK HARFE çevriliyor ("NE GÖRDÜNÜZ?") ve
   // `innerText` dönüşmüş hâli veriyor; çıpa dönüşümden etkilenmeyen bir

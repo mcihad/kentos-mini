@@ -113,6 +113,7 @@ public class GorevAkisTests(SunucuTestOrtami ortam) : IClassFixture<SunucuTestOr
             new IsYorumServisi(baglam, kullanici),
             new EkipServisi(baglam, etkin),
             _mesajlar,
+            TestKapsayici.Bos,
             NullLogger<GorevServisi>.Instance);
 
         return (servis, baglam);

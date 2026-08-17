@@ -55,7 +55,8 @@ public class ProjeTests(SunucuTestOrtami ortam) : IClassFixture<SunucuTestOrtami
 
         var gorev = new GorevServisi(
             baglam, kullanici, etkin, olaylar, ekler, yorumlar,
-            new EkipServisi(baglam, etkin), _mesajlar, NullLogger<GorevServisi>.Instance);
+            new EkipServisi(baglam, etkin), _mesajlar, TestKapsayici.Bos,
+            NullLogger<GorevServisi>.Instance);
 
         var proje = new ProjeServisi(baglam, kullanici, etkin, olaylar, ekler, yorumlar, gorev);
 

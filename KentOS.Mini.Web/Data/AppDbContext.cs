@@ -75,6 +75,7 @@ namespace KentOS.Mini.Web.Data
         // Vatandaş katmanı — dışarıdan gelen ilk kayıt.
         public DbSet<CitizenReport> VatandasBildirimleri { get; set; }
         public DbSet<PhoneVerification> TelefonDogrulamalari { get; set; }
+        public DbSet<UnitInbox> BirimGelenKutusu { get; set; }
 
         // ── Halk Günü ──
         public DbSet<HalkGunu> HalkGunleri { get; set; }
@@ -397,6 +398,23 @@ namespace KentOS.Mini.Web.Data
 
                 // Doğrulama sorgusu: numaranın EN YENİ kodu.
                 entity.HasIndex(e => new { e.TelefonSade, e.OlusturmaTarihi });
+            });
+
+            builder.Entity<UnitInbox>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.HasOne(e => e.HedefBirim).WithMany()
+                      .HasForeignKey(e => e.HedefBirimId).OnDelete(DeleteBehavior.Cascade);
+
+                // Gelen kutusu sorgusunun tam şekli: birim + durum, en yeni önce.
+                entity.HasIndex(e => new { e.HedefBirimId, e.Durum, e.OlusturmaTarihi });
+
+                // AYNI GÖREVDEN AYNI BİRİME İKİ KEZ DÜŞMESİN.
+                //
+                // Devir kuralı görev tamamlanınca tetikleniyor; görev iade
+                // edilip yeniden tamamlanırsa ikinci bir kayıt doğardı ve
+                // hedef birim aynı işi iki kez karara bağlardı.
+                entity.HasIndex(e => new { e.KaynakGorevId, e.HedefBirimId }).IsUnique();
             });
 
             // ══════════════════════════════════════════════ Halk Günü

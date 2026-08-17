@@ -12,6 +12,8 @@ import projeDetay from './texts/proje-detay.md?raw';
 import vatandasBildirimleri from './texts/vatandas-bildirimleri.md?raw';
 import haritaMetni from './texts/harita.md?raw';
 import saha from './texts/saha.md?raw';
+import gelenKutusu from './texts/gelen-kutusu.md?raw';
+import isPanosu from './texts/is-panosu.md?raw';
 import talepDetay from './texts/talep-detay.md?raw';
 import halkGunu from './texts/halk-gunu.md?raw';
 import halkGunuBasvurular from './texts/halk-gunu-basvurular.md?raw';
@@ -201,6 +203,24 @@ const KATALOG: { kalip: string; kayit: HelpEntry }[] = [
       baslik: 'Saha',
       ozet: 'Tek elle kullanım, tespit girme ve aşama tamamlama',
       metin: saha,
+    },
+  },
+  {
+    kalip: '/gelen-kutusu',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Gelen Kutusu',
+      ozet: 'Birimden birime iş devri, kabul ve ret',
+      metin: gelenKutusu,
+    },
+  },
+  {
+    kalip: '/is-panosu',
+    kayit: {
+      grup: 'İş Takip',
+      baslik: 'Gecikme Panosu',
+      ozet: 'Birim karnesi, süre aşımları ve iş yükü',
+      metin: isPanosu,
     },
   },
   {

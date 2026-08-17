@@ -176,3 +176,26 @@ public enum GorevOlayTipi
     /// <summary>SLA aşımı bildirildi. Aynı eşik iki kez bildirilmesin diye.</summary>
     SlaUyarisi = 16,
 }
+
+/// <summary>
+/// BİRİM GELEN KUTUSU DURUMU.
+/// </summary>
+/// <remarks>
+/// Görev durumundan çok daha kısa ve bilinçli öyle: gelen kutusu kaydının
+/// hayatı yalnızca "düştü → kabul ya da ret" kadar. Kabul edildikten sonra
+/// işin takibi <b>görevde</b> sürüyor.
+/// </remarks>
+public enum GelenKutusuDurumu
+{
+    /// <summary>Karar bekliyor.</summary>
+    Bekliyor = 0,
+
+    /// <summary>Kabul edildi ve görev açıldı.</summary>
+    Kabul = 1,
+
+    /// <summary>Reddedildi; kaynağa gerekçeli bildirim gitti.</summary>
+    Ret = 2,
+
+    /// <summary>Bilgilendirme kaydı okundu ve kapatıldı.</summary>
+    Okundu = 3,
+}

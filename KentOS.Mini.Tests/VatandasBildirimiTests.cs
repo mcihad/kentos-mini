@@ -63,7 +63,8 @@ public class VatandasBildirimiTests(SunucuTestOrtami ortam) : IClassFixture<Sunu
 
         var gorevler = new GorevServisi(
             baglam, kullanici, etkin, olaylar, ekler, yorumlar,
-            new EkipServisi(baglam, etkin), _mesajlar, NullLogger<GorevServisi>.Instance);
+            new EkipServisi(baglam, etkin), _mesajlar, TestKapsayici.Bos,
+            NullLogger<GorevServisi>.Instance);
 
         var servis = new VatandasBildirimServisi(
             baglam, kullanici, ekler, olaylar, gorevler, _mesajlar,

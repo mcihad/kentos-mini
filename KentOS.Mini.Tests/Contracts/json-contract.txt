@@ -546,6 +546,14 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.BildirimYonlendirmeDto
   gorevTipiId
   not
   oncelik
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.BirimKarnesiDto
+  acik
+  birimAd
+  birimId
+  geciken
+  ortalamaSaat
+  tamamlanan
+  zamanindaOran
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.DogrulamaIstegiDto
   telefon
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.DogrulamaOnayDto
@@ -588,6 +596,35 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.GanttSatiriDto
   kilometreTasiId
   renk
   tur
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.GelenKutusuDto
+  aciklama
+  adres
+  boylam
+  durum
+  durumAd
+  durumRenk
+  enlem
+  gerekce
+  gorevId
+  gorevTakipNo
+  hedefBirimAd
+  hedefBirimId
+  hedefGorevTipiId
+  id
+  isTalebi
+  islemTarihi
+  isleyen
+  kaynakBirimAd
+  kaynakBirimId
+  kaynakGorevId
+  kaynakTakipNo
+  konu
+  olusturmaTarihi
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.GelenKutusuKabulDto
+  gorevTipiId
+  oncelik
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.GelenKutusuRetDto
+  gerekce
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.GorevAsamaDto
   aciklamaZorunlu
   ad
@@ -792,6 +829,17 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.IsHaritaNoktasiDto
   renk
   takipNo
   tur
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.IsIstatistikDto
+  acik
+  atanmamis
+  bekleyenBildirim
+  bekleyenDevir
+  birimler
+  bugunTamamlanan
+  durumDagilimi
+  geciken
+  gecikenler
+  onayBekleyen
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.IsOlayDegisiklikDto
   alan
   eski

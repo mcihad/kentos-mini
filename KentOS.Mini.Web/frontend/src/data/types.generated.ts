@@ -3954,6 +3954,231 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/gelen-kutusu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    Sayfa?: number;
+                    Boyut?: number;
+                    Ara?: string;
+                    Sirala?: string;
+                    Azalan?: boolean;
+                    Atla?: number;
+                    TemizArama?: string;
+                    durum?: components["schemas"]["GelenKutusuDurumu"];
+                    altBirimlerDahil?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GelenKutusuDtoSayfaliSonuc"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gelen-kutusu/bekleyen": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Bekleyen kayıt sayısı — menüdeki rozet. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": number;
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gelen-kutusu/{id}/kabul": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Kaydı kabul eder ve HEDEF BİRİMDE görev açar. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GelenKutusuKabulDto"];
+                    "text/json": components["schemas"]["GelenKutusuKabulDto"];
+                    "application/*+json": components["schemas"]["GelenKutusuKabulDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GelenKutusuDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gelen-kutusu/{id}/reddet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Kaydı reddeder — kaynak birime gerekçeli bildirim gider. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["GelenKutusuRetDto"];
+                    "text/json": components["schemas"]["GelenKutusuRetDto"];
+                    "application/*+json": components["schemas"]["GelenKutusuRetDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GelenKutusuDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/gelen-kutusu/{id}/okundu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Bilgilendirme kaydını okundu işaretler — karar gerektirmez. */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["GelenKutusuDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/gonderim": {
         parameters: {
             query?: never;
@@ -6577,6 +6802,43 @@ export interface paths {
                 };
             };
         };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/is-istatistik": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get: {
+            parameters: {
+                query?: {
+                    altBirimlerDahil?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["IsIstatistikDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
         post?: never;
         delete?: never;
         options?: never;
@@ -11832,6 +12094,21 @@ export interface components {
             /** Format: int64 */
             ustBirimId?: number | null;
         };
+        BirimKarnesiDto: {
+            /** Format: int64 */
+            birimId?: number;
+            birimAd?: string | null;
+            /** Format: int32 */
+            acik?: number;
+            /** Format: int32 */
+            tamamlanan?: number;
+            /** Format: int32 */
+            geciken?: number;
+            /** Format: int32 */
+            zamanindaOran?: number | null;
+            /** Format: double */
+            ortalamaSaat?: number | null;
+        };
         CicekDto: {
             /** Format: int64 */
             id?: number;
@@ -12186,6 +12463,67 @@ export interface components {
             baslik?: string | null;
             durumAd?: string | null;
             not?: string | null;
+        };
+        GelenKutusuDto: {
+            /** Format: int64 */
+            id?: number;
+            /** Format: int64 */
+            hedefBirimId?: number;
+            hedefBirimAd?: string | null;
+            /** Format: int64 */
+            kaynakGorevId?: number;
+            kaynakTakipNo?: string | null;
+            /** Format: int64 */
+            kaynakBirimId?: number;
+            kaynakBirimAd?: string | null;
+            /** Format: int64 */
+            hedefGorevTipiId?: number | null;
+            konu?: string | null;
+            aciklama?: string | null;
+            isTalebi?: boolean;
+            durum?: components["schemas"]["GelenKutusuDurumu"];
+            durumAd?: string | null;
+            durumRenk?: string | null;
+            /** Format: int64 */
+            gorevId?: number | null;
+            gorevTakipNo?: string | null;
+            gerekce?: string | null;
+            isleyen?: string | null;
+            /** Format: date-time */
+            islemTarihi?: string | null;
+            /** Format: double */
+            enlem?: number | null;
+            /** Format: double */
+            boylam?: number | null;
+            adres?: string | null;
+            /** Format: date-time */
+            olusturmaTarihi?: string;
+        };
+        GelenKutusuDtoSayfaliSonuc: {
+            veriler?: components["schemas"]["GelenKutusuDto"][] | null;
+            /** Format: int32 */
+            sayfa?: number;
+            /** Format: int32 */
+            boyut?: number;
+            /** Format: int64 */
+            toplam?: number;
+            /** Format: int32 */
+            readonly toplamSayfa?: number;
+            readonly oncekiVar?: boolean;
+            readonly sonrakiVar?: boolean;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        GelenKutusuDurumu: 0 | 1 | 2 | 3;
+        GelenKutusuKabulDto: {
+            /** Format: int64 */
+            gorevTipiId?: number | null;
+            oncelik?: components["schemas"]["GorevOnceligi"];
+        };
+        GelenKutusuRetDto: {
+            gerekce: string;
         };
         GirisIstegi: {
             kullaniciAdi?: string | null;
@@ -12941,6 +13279,25 @@ export interface components {
             durumAd?: string | null;
             gecikti?: boolean;
             adres?: string | null;
+        };
+        IsIstatistikDto: {
+            /** Format: int32 */
+            acik?: number;
+            /** Format: int32 */
+            geciken?: number;
+            /** Format: int32 */
+            onayBekleyen?: number;
+            /** Format: int32 */
+            atanmamis?: number;
+            /** Format: int32 */
+            bugunTamamlanan?: number;
+            /** Format: int32 */
+            bekleyenBildirim?: number;
+            /** Format: int32 */
+            bekleyenDevir?: number;
+            birimler?: components["schemas"]["BirimKarnesiDto"][] | null;
+            durumDagilimi?: components["schemas"]["IstatistikDilimDto"][] | null;
+            gecikenler?: components["schemas"]["GorevOzetDto"][] | null;
         };
         IsOlayDegisiklikDto: {
             alan?: string | null;

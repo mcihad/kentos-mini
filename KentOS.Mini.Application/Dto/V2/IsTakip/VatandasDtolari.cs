@@ -1,5 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 using System.Text.Json.Serialization;
+using KentOS.Mini.Application.Dto.Analiz;
 using KentOS.Mini.Application.Enums;
 
 namespace KentOS.Mini.Application.Dto.V2.IsTakip;
@@ -219,4 +220,103 @@ public class IsHaritaNoktasiDto
     [JsonPropertyName("durumAd")] public string DurumAd { get; set; } = string.Empty;
     [JsonPropertyName("gecikti")] public bool Gecikti { get; set; }
     [JsonPropertyName("adres")] public string? Adres { get; set; }
+}
+
+/// <summary>Gelen kutusu kaydı — birimden birime devir.</summary>
+public class GelenKutusuDto
+{
+    [JsonPropertyName("id")] public long Id { get; set; }
+    [JsonPropertyName("hedefBirimId")] public long HedefBirimId { get; set; }
+    [JsonPropertyName("hedefBirimAd")] public string? HedefBirimAd { get; set; }
+
+    [JsonPropertyName("kaynakGorevId")] public long KaynakGorevId { get; set; }
+    [JsonPropertyName("kaynakTakipNo")] public string? KaynakTakipNo { get; set; }
+    [JsonPropertyName("kaynakBirimId")] public long KaynakBirimId { get; set; }
+    [JsonPropertyName("kaynakBirimAd")] public string? KaynakBirimAd { get; set; }
+    [JsonPropertyName("hedefGorevTipiId")] public long? HedefGorevTipiId { get; set; }
+
+    [JsonPropertyName("konu")] public string Konu { get; set; } = string.Empty;
+    [JsonPropertyName("aciklama")] public string? Aciklama { get; set; }
+
+    /// <summary>İş talebi mi (kabul/ret gerekir) yoksa yalnızca bilgi mi?</summary>
+    [JsonPropertyName("isTalebi")] public bool IsTalebi { get; set; }
+
+    [JsonPropertyName("durum")] public GelenKutusuDurumu Durum { get; set; }
+    [JsonPropertyName("durumAd")] public string DurumAd { get; set; } = string.Empty;
+    [JsonPropertyName("durumRenk")] public string DurumRenk { get; set; } = string.Empty;
+
+    [JsonPropertyName("gorevId")] public long? GorevId { get; set; }
+    [JsonPropertyName("gorevTakipNo")] public string? GorevTakipNo { get; set; }
+    [JsonPropertyName("gerekce")] public string? Gerekce { get; set; }
+    [JsonPropertyName("isleyen")] public string? Isleyen { get; set; }
+    [JsonPropertyName("islemTarihi")] public DateTime? IslemTarihi { get; set; }
+
+    [JsonPropertyName("enlem")] public double? Enlem { get; set; }
+    [JsonPropertyName("boylam")] public double? Boylam { get; set; }
+    [JsonPropertyName("adres")] public string? Adres { get; set; }
+    [JsonPropertyName("olusturmaTarihi")] public DateTime OlusturmaTarihi { get; set; }
+}
+
+/// <summary>Gelen kutusu kaydını kabul etme isteği.</summary>
+public class GelenKutusuKabulDto
+{
+    /// <summary>Açılacak görevin tipi. Boşsa devir kuralındaki tip kullanılır.</summary>
+    [JsonPropertyName("gorevTipiId")] public long? GorevTipiId { get; set; }
+
+    [JsonPropertyName("oncelik")] public GorevOnceligi? Oncelik { get; set; }
+}
+
+/// <summary>Gelen kutusu kaydını reddetme isteği — gerekçe ZORUNLU.</summary>
+public class GelenKutusuRetDto
+{
+    [Required(ErrorMessage = "Ret gerekçesi zorunlu.")]
+    [MaxLength(1000)]
+    [JsonPropertyName("gerekce")] public string Gerekce { get; set; } = string.Empty;
+}
+
+/// <summary>
+/// BİRİM KARNESİ — gecikme panosunun satırı.
+/// </summary>
+/// <remarks>
+/// Mevcut <c>TalepIstatistikDto</c> genişletilmedi: tek DTO'ya sıkıştırmak,
+/// iki ekranın da ötekinin alanlarını taşıması demekti.
+/// </remarks>
+public class BirimKarnesiDto
+{
+    [JsonPropertyName("birimId")] public long BirimId { get; set; }
+    [JsonPropertyName("birimAd")] public string BirimAd { get; set; } = string.Empty;
+
+    [JsonPropertyName("acik")] public int Acik { get; set; }
+    [JsonPropertyName("tamamlanan")] public int Tamamlanan { get; set; }
+    [JsonPropertyName("geciken")] public int Geciken { get; set; }
+
+    /// <summary>Süresinde tamamlananların oranı (0-100). Ölçülemiyorsa <c>null</c>.</summary>
+    [JsonPropertyName("zamanindaOran")] public int? ZamanindaOran { get; set; }
+
+    /// <summary>Tamamlanan işlerin ortalama süresi (saat). Ölçülemiyorsa <c>null</c>.</summary>
+    [JsonPropertyName("ortalamaSaat")] public double? OrtalamaSaat { get; set; }
+}
+
+/// <summary>Gecikme panosu.</summary>
+public class IsIstatistikDto
+{
+    [JsonPropertyName("acik")] public int Acik { get; set; }
+    [JsonPropertyName("geciken")] public int Geciken { get; set; }
+    [JsonPropertyName("onayBekleyen")] public int OnayBekleyen { get; set; }
+    [JsonPropertyName("atanmamis")] public int Atanmamis { get; set; }
+    [JsonPropertyName("bugunTamamlanan")] public int BugunTamamlanan { get; set; }
+
+    /// <summary>Bekleyen vatandaş bildirimi — karşılama kuyruğu.</summary>
+    [JsonPropertyName("bekleyenBildirim")] public int BekleyenBildirim { get; set; }
+
+    /// <summary>Bekleyen gelen kutusu kaydı.</summary>
+    [JsonPropertyName("bekleyenDevir")] public int BekleyenDevir { get; set; }
+
+    [JsonPropertyName("birimler")] public List<BirimKarnesiDto> Birimler { get; set; } = [];
+
+    /// <summary>Durum dağılımı — mevcut dilim tipi YENİDEN KULLANILIYOR.</summary>
+    [JsonPropertyName("durumDagilimi")] public List<IstatistikDilimDto> DurumDagilimi { get; set; } = [];
+
+    /// <summary>En çok geciken görevler — panonun eyleme dönük kısmı.</summary>
+    [JsonPropertyName("gecikenler")] public List<GorevOzetDto> Gecikenler { get; set; } = [];
 }

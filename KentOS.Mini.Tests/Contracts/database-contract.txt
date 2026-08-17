@@ -149,6 +149,25 @@ TABLE ajandalar
   status
   tekrar_eden
   tum_gun
+TABLE birim_gelen_kutusu
+  aciklama
+  adres
+  boylam
+  durum
+  enlem
+  gerekce
+  gorev_id
+  gorev_tipi_devir_id
+  hedef_birim_id
+  hedef_gorev_tipi_id
+  id
+  is_talebi
+  islem_tarihi
+  isleyen
+  kaynak_birim_id
+  kaynak_gorev_id
+  konu
+  olusturma_tarihi
 TABLE birimler
   aciklama
   ad
