@@ -36,7 +36,9 @@ export function SegmentedSelect<T extends string>({
           dayatmıyor, rayı `items-stretch` ile dolduruyor: iç boşluk her
           kenarda 3 piksel.
         */
-        'inline-flex h-9 items-stretch gap-0.5 rounded-control border border-border bg-sunken p-0.5',
+        // Şartname §6.11: bölümlü seçim mobilde 44px (dokunma hedefi),
+        // masaüstünde 36 — orada fare hassas, araç çubuğu yoğun.
+        'inline-flex h-11 items-stretch gap-0.5 rounded-control border border-border bg-sunken p-0.5 md:h-9',
         className,
       )}
     >
@@ -86,7 +88,8 @@ export function FilterChip({
       onClick={tikla}
       aria-pressed={secili}
       className={cn(
-        'inline-flex h-8 shrink-0 items-center gap-1.5 rounded-full border px-3 text-sm font-medium transition-colors',
+        // Şartname §6.11: süzgeç çipi 36px, tam yuvarlak; seçili = marka dolgusu.
+        'bas-yay inline-flex h-9 shrink-0 items-center gap-1.5 rounded-full border px-3.5 text-sm font-semibold transition-colors',
         secili
           ? 'border-brand bg-brand text-on-brand'
           : 'border-border bg-surface text-text-2 hover:bg-surface-2 hover:text-text',

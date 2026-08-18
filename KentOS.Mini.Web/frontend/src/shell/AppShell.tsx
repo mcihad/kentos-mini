@@ -281,7 +281,7 @@ function AppShellIc() {
             onClick={() => setDaraltilmis((d) => !d)}
             aria-label={daraltilmis ? 'Menüyü genişlet' : 'Menüyü daralt'}
             title={daraltilmis ? 'Menüyü genişlet' : 'Menüyü daralt'}
-            className="hidden h-[34px] w-[34px] place-items-center rounded-sm text-text-2 hover:bg-surface-2 hover:text-text md:grid"
+            className="hidden size-10 place-items-center rounded-control text-text-2 hover:bg-surface-2 hover:text-text md:grid"
           >
             {daraltilmis ? <PanelLeftOpen size={17} /> : <PanelLeftClose size={17} />}
           </button>
@@ -317,7 +317,14 @@ function AppShellIc() {
               Kaldırılınca başlığa iki punto yer açıldı ve şerit native
               uygulamalardaki gibi tek satırlık, okunur bir başlığa döndü.
             */}
-            <h1 className="truncate font-display text-lg font-bold tracking-[var(--track-d)] md:text-xl">
+            {/*
+              Şartname §6.1: AppBar başlığı `title2` (19/700), tek satır.
+              MOBİLDE BİR KADEME ALTINDA (16/700): şartnamenin AppBar'ı en
+              fazla 2 eylem taşıyor, bizimki 6 — 390px'te 19px başlık
+              "Ana S…" diye kırpılıyordu (ölçüldü). Başlık kırpmak, puntoyu
+              korumaktan daha çok bilgi kaybettirir.
+            */}
+            <h1 className="truncate font-display text-lg font-bold md:text-xl">
               {sayfaBasligi}
             </h1>
             {me && (
@@ -399,7 +406,7 @@ function AppShellIc() {
           kalırsa son kart sabit çubuğun altında kalıyor ve liste "kesilmiş"
           görünüyor.
         */}
-        <main className="flex-1 p-4 pb-[calc(var(--h-tab)+env(safe-area-inset-bottom,0px)+var(--sp-8))] md:p-[26px] md:pb-[26px]">
+        <main className="flex-1 p-4 pb-[calc(var(--h-tabbar)+env(safe-area-inset-bottom,0px)+var(--sp-6))] md:p-[26px] md:pb-[26px]">
           {/*
             Giriş sonrası bildirim izni — tarayıcının izin kutusunu doğrudan
             açmaz, önce ne için istendiğini anlatır (bkz. bileşen notu).
@@ -460,7 +467,13 @@ function AppShellIc() {
                 key={oge.yol}
                 to={oge.yol}
                 aria-current={aktif ? 'page' : undefined}
-                className="group flex flex-1 flex-col items-center justify-center gap-1.5 transition-opacity active:opacity-60 katman"
+                className={cn(
+                  'group flex flex-1 flex-col items-center justify-center gap-1.5 transition-colors active:opacity-60 katman',
+                  // Şartname §6.3: aktif sekme yalnızca çizgiyle değil,
+                  // `surfaceAlt` zeminiyle de işaretlenir — güneş altında
+                  // ince altın çizgi tek başına kayboluyor.
+                  aktif && 'bg-sunken/60',
+                )}
               >
                 {/*
                   İkon YAYLA büyür (`--ease-spring`), etiket yalnızca ağırlık

@@ -63,19 +63,50 @@
   --color-nav-active: var(--nav-active);
   --color-nav-activeFg: var(--nav-ink-strong);
 
-  --font-display: var(--font-d), Montserrat, system-ui, sans-serif;
-  --font-sans: var(--font-t), 'IBM Plex Sans', system-ui, sans-serif;
+  --font-display: var(--font-d), 'Plus Jakarta Sans', system-ui, sans-serif;
+  --font-sans: var(--font-t), 'Plus Jakarta Sans', system-ui, sans-serif;
+  /*
+    SAYISAL VERİ AİLESİ — şartname §3.1: tutar, tarih, kod, sicil JetBrains
+    Mono 500 ile dizilir ve sağa hizalanır. `font-mono` artık bu tokena
+    bağlı; tabular-nums gövdede zaten açık.
+  */
+  --font-mono: var(--font-m), 'JetBrains Mono', ui-monospace, SFMono-Regular, monospace;
 
+  /*
+    TİP KADEMELERİ SATIR YÜKSEKLİĞİ VE HARF ARALIĞIYLA BİRLİKTE GELİR.
+
+    Şartname §3.1 her kademeyi boyut/satır çifti olarak veriyor (15/22,
+    13/19, 12/16, 11/15…) ve küçük kademelere pozitif aralık yazıyor
+    (`label` +0.01em, `caption` +0.04em). Tailwind 4'te `--text-*--line-height`
+    eşleri bunu utility'nin KENDİSİNE gömer: `text-sm` yazan her yer 13/19
+    alır, ekran ekran satır yüksekliği ayarlamak gerekmez.
+  */
   --text-3xs: var(--fs-3xs);
+  --text-3xs--line-height: var(--lh-3xs);
   --text-2xs: var(--fs-2xs);
+  --text-2xs--line-height: var(--lh-2xs);
+  --text-2xs--letter-spacing: var(--track-caption);
   --text-xs: var(--fs-xs);
+  --text-xs--line-height: var(--lh-xs);
+  --text-xs--letter-spacing: var(--track-label);
   --text-sm: var(--fs-sm);
+  --text-sm--line-height: var(--lh-sm);
   --text-base: var(--fs-md);
+  --text-base--line-height: var(--lh-md);
   --text-lg: var(--fs-lg);
+  --text-lg--line-height: var(--lh-lg);
   --text-xl: var(--fs-xl);
+  --text-xl--line-height: var(--lh-xl);
+  --text-xl--letter-spacing: var(--track-d-sm);
   --text-2xl: var(--fs-2xl);
+  --text-2xl--line-height: var(--lh-2xl);
+  --text-2xl--letter-spacing: var(--track-d);
   --text-3xl: var(--fs-3xl);
+  --text-3xl--line-height: var(--lh-3xl);
+  --text-3xl--letter-spacing: calc(var(--track) - 0.02em);
   --text-4xl: var(--fs-4xl);
+  --text-4xl--line-height: var(--lh-4xl);
+  --text-4xl--letter-spacing: calc(var(--track) - 0.02em);
 
   --spacing-1: var(--sp-1);
   --spacing-2: var(--sp-2);
@@ -112,10 +143,13 @@
     "büyük bir kart" gibi durur, ekranın kendisi olduğu okunmazdı.
 
     `clamp` üst sınır koyuyor: knob 18'de köşe 50px'e çıkıyor ve tabaka
-    baloncuğa dönüşüyordu. 30px, telefon ekranının kendi köşe yarıçapına yakın
+    baloncuğa dönüşüyordu. 28px, telefon ekranının kendi köşe yarıçapına yakın
     duran en yumuşak değer.
+
+    v3: taban `--r-lg`den `--r`ye döndü — şartname §4 tabaka köşesini 24
+    (radius/sheet = md × 2) veriyor; varsayılan knob (12) ile birebir 24.
   */
-  --radius-tabaka: clamp(6px, calc(var(--r-lg) * 2), 30px);
+  --radius-tabaka: clamp(6px, calc(var(--r) * 2), 28px);
   --radius-pill: var(--r-pill);
 
   --default-border-width: var(--bw);
@@ -140,6 +174,7 @@
   --height-ctrl: var(--h-ctrl);
   --height-ctrl-lg: var(--h-ctrl-lg);
   --height-ctrl-xl: var(--h-ctrl-xl);
+  --height-field: var(--h-field);
   --height-appbar: var(--h-appbar);
   --height-bar-m: var(--h-bar-m);
   --height-row: var(--h-row);
@@ -268,11 +303,13 @@
 
 @utility anim-alt {
   /* Alt sayfa (mobil) */
+  /* Şartname §4: tabaka açılışı 280ms `cubic-bezier(.22,1,.36,1)`,
+     kapanışı 200ms `cubic-bezier(.4,0,1,1)`. */
   &[data-state='open'] {
-    animation: alttanAcil 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    animation: alttanAcil 280ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   &[data-state='closed'] {
-    animation: alttanKapan 220ms cubic-bezier(0.4, 0, 1, 1);
+    animation: alttanKapan 200ms cubic-bezier(0.4, 0, 1, 1);
   }
   &[data-state] {
     will-change: transform, opacity;
@@ -315,10 +352,10 @@
    * yokken sayfa sola/yukarı zıplıyordu.
    */
   &[data-state='open'] {
-    animation: alttanAcil 300ms cubic-bezier(0.16, 1, 0.3, 1);
+    animation: alttanAcil 280ms cubic-bezier(0.22, 1, 0.36, 1);
   }
   &[data-state='closed'] {
-    animation: alttanKapan 220ms cubic-bezier(0.4, 0, 1, 1);
+    animation: alttanKapan 200ms cubic-bezier(0.4, 0, 1, 1);
   }
 
   @media (min-width: 768px) {
@@ -362,6 +399,13 @@
 @layer base {
   body {
     @apply bg-bg text-text font-sans;
+    /*
+      GÖVDE AĞIRLIĞI 500 — şartname §3.1: `body` ve `bodySm` kademeleri
+      Medium dizilir (Gotham "Book" karşılığı). Plus Jakarta Sans'ın 400'ü
+      bu boyutlarda soluk kalıyor; 500, tasarım sayfalarındaki dokunun
+      kendisi. Başlıklar kendi ağırlığını (700/800) ayrıca ilan eder.
+    */
+    font-weight: 500;
     font-variant-numeric: tabular-nums;
     -webkit-font-smoothing: antialiased;
   }
@@ -729,10 +773,12 @@
    animasyon bitene kadar bekliyor. Tek yönlü `animation: … both` yazmak
    bu yüzden yalnızca açılışı canlandırıyor, kapanış "pat" diye oluyordu. */
 .anim-sheet[data-state='open'] {
-  animation: sheetUp calc(var(--dur) * 1.4) var(--ease);
+  /* 240ms knob × 1.17 ≈ şartnamenin 280ms tabaka açılışı. */
+  animation: sheetUp calc(var(--dur) * 1.17) var(--ease);
 }
 .anim-sheet[data-state='closed'] {
-  animation: sheetDown calc(var(--dur) * 0.9) cubic-bezier(0.4, 0, 1, 1);
+  /* 240ms knob × 0.83 ≈ şartnamenin 200ms kapanışı. */
+  animation: sheetDown calc(var(--dur) * 0.83) cubic-bezier(0.4, 0, 1, 1);
 }
 .anim-sheet[data-state] {
   will-change: transform;
@@ -744,11 +790,16 @@
 .anim-perde[data-state='open'] { animation: fadeIn var(--dur) var(--ease) }
 .anim-perde[data-state='closed'] { animation: fadeOut calc(var(--dur) * 0.9) var(--ease) }
 .anim-perde:not([data-state]) { animation: fadeIn var(--dur) var(--ease) both }
-.anim-nabiz { animation: nabiz 1.4s ease-in-out infinite }
+.anim-nabiz { animation: nabiz 1.2s ease-in-out infinite } /* şartname: iskelet 1200ms */
 
-/* Dokunmatik geri bildirimi: mobilde basma YAYLA geri gelir (§6). */
-.bas-yay { transition: transform var(--dur) var(--ease-spring) }
-.bas-yay:active { transform: scale(0.94) }
+/*
+  Dokunmatik geri bildirimi — şartname §4 hareket tablosu: basış 90ms,
+  `scale(.97)`, ease-out. Eski değer (.94, tam süre yay) dokunuşu
+  "yaylanan buton" gibi gösteriyordu; şartnameninki kısa ve sert — basılan
+  şeyin ağırlığı var ama oyuncaklaşmıyor. Bırakış yaya döner (`--ease-spring`).
+*/
+.bas-yay { transition: transform 90ms var(--ease-spring) }
+.bas-yay:active { transform: scale(0.97); transition-timing-function: ease-out }
 
 /* Sekme şeridi: taşınca kaydırılabilir ama çubuk görünmez — şerit ince ve
    çubuk onun yarısı kadar yer kaplıyordu. Kaydırma yine parmakla, fareyle

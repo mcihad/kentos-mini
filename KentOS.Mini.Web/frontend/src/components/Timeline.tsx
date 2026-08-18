@@ -23,15 +23,16 @@ export function Timeline({ ogeler }: { ogeler: TimelineItem[] }) {
       {ogeler.map((o, i) => (
         <li key={o.id} className="relative flex gap-3 pb-4 last:pb-0">
           {/* Bağlantı çizgisi */}
+          {/* Şartname §6.16: 2px bağlantı çizgisi, 24–26px durum dairesi. */}
           {i < ogeler.length - 1 && (
             <span
               aria-hidden
-              className="absolute left-[11px] top-6 h-[calc(100%-16px)] w-px bg-border"
+              className="absolute left-[11.5px] top-7 h-[calc(100%-20px)] w-[2px] rounded-pill bg-border"
             />
           )}
 
           <span
-            className="relative z-10 mt-1 grid h-[23px] w-[23px] shrink-0 place-items-center rounded-full border-2 border-surface bg-sunken text-text-3"
+            className="relative z-10 mt-1 grid h-[25px] w-[25px] shrink-0 place-items-center rounded-full border-2 border-surface bg-sunken text-text-3"
             style={o.renk ? { color: `var(${o.renk})` } : undefined}
             aria-hidden
           >

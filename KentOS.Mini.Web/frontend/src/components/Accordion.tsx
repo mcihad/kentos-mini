@@ -64,7 +64,8 @@ export function AccordionSection({
       <div className="flex items-center gap-1 pr-2">
         <RadixAccordion.Header className="min-w-0 flex-1">
           <RadixAccordion.Trigger
-            className="group flex w-full items-center gap-2.5 px-3.5 py-3 text-left
+            // Şartname §6.16: başlık satırı 50px — dokunma hedefi ve ritim.
+            className="group flex min-h-[50px] w-full items-center gap-2.5 px-3.5 py-2.5 text-left
               transition-colors hover:bg-surface-2
               focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-inset focus-visible:ring-(--focus-ring)"
           >

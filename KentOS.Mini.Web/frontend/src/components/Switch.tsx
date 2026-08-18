@@ -43,7 +43,9 @@ export function Switch({
       onCheckedChange={degistir}
       disabled={pasif}
       className={cn(
-        'relative h-[24px] w-[42px] shrink-0 rounded-full border border-border bg-sunken',
+        // Şartname §6.11: anahtar 46×28. Eski 42×24 dokunma hedefinin de
+        // görünürlüğün de altındaydı; baş parmak boyu şartnameden geliyor.
+        'relative h-[28px] w-[46px] shrink-0 rounded-full border border-border bg-sunken',
         'transition-colors duration-200 motion-reduce:transition-none',
         'focus-visible:outline-hidden focus-visible:ring-2 focus-visible:ring-(--focus-ring)',
         'disabled:cursor-not-allowed disabled:opacity-45',
@@ -54,10 +56,10 @@ export function Switch({
     >
       <RadixSwitch.Thumb
         className={cn(
-          'block h-[18px] w-[18px] rounded-full bg-surface shadow-1',
+          'block h-[22px] w-[22px] rounded-full bg-surface shadow-1',
           'transition-transform duration-200 ease-[cubic-bezier(.22,1,.36,1)]',
           'motion-reduce:transition-none',
-          'translate-x-[3px] data-[state=checked]:translate-x-[21px]',
+          'translate-x-[2px] data-[state=checked]:translate-x-[20px]',
         )}
       />
     </RadixSwitch.Root>

@@ -45,7 +45,7 @@ export function InsetGroup({
 }
 
 /**
- * LİSTE SATIRI — 60px, sol durum çipi, iki satır başlık, sağda chevron.
+ * LİSTE SATIRI — `rowMin` 64px (şartname §4), sol durum çipi, iki satır başlık, sağda chevron.
  *
  * `sira` verilirse satırlar kademeli girer (`rowIn`, index × 28ms). Kademe
  * listeye "geldi" hissi veriyor; hepsi aynı anda belirince ekran bir anda
@@ -95,7 +95,7 @@ export function ListRow({
 
       <span className="min-w-0 flex-1">
         {ust && (
-          <span className="mb-1 flex items-center gap-1.5 text-3xs text-ink-3">{ust}</span>
+          <span className="mb-1 flex items-center gap-1.5 text-2xs text-ink-3">{ust}</span>
         )}
         <span className="line-clamp-2 block text-sm leading-[1.45] text-ink">{baslik}</span>
         {alt && (
@@ -113,7 +113,7 @@ export function ListRow({
   );
 
   const sinif = cn(
-    'anim-satir flex w-full items-start gap-2.5 px-3.5 py-3 text-left transition-colors',
+    'anim-satir flex min-h-row-m w-full items-start gap-2.5 px-3.5 py-3 text-left transition-colors',
     'active:bg-sunken md:hover:bg-surface-2',
     !sonuncu && 'shadow-[inset_0_calc(var(--bw)*-1)_0_var(--line)]',
   );

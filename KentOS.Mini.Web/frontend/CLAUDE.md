@@ -66,9 +66,23 @@ erişilebilirlik sözleşmesi aynen duruyor.
 
 ## Tasarım sistemi — bağlayıcı
 
-Tek kaynak: **`design/design.md`** (depo kökünde, sürüm 2.0 — token tabanlı,
-çok kiracılı). Renk, tipografi, ölçü, bileşen sınıfları ve ekran düzenleri
-orada birebir yazılı. Uydurma yok.
+Tek kaynak: **`design/design.md`** (depo kökünde, sürüm 3.0 — token tabanlı,
+çok kiracılı, **mobil tasarım dili**). Renk, tipografi, ölçü, bileşen
+sınıfları ve ekran düzenleri orada birebir yazılı. Uydurma yok.
+
+> **v3 GEÇİŞİ (2026-08):** kurumsal mobil arayüz tasarım sistemi
+> (telefon-öncelikli tasarım sayfaları) web'e uyarlandı. Ölçülen değişimler:
+> yazı tabanı 14 → **15** ve merdiven şartname tablosunun kendisi
+> (11/12/13/15/16/19/24/30 + satır yükseklikleri utility'ye gömülü); gövde
+> ağırlığı 400 → **500**; yarıçap tabanı 10 → **12** (8/12/16/20/24
+> merdiveni); girdi 44 → **50** (mobil); buton 36 → **40** (masaüstü);
+> ikon butonu 38 → **40 görsel / 48 dokunma**; liste satırı 60 → **64**;
+> mobil appbar 52 → **56**; durum çipi hap → `--r-sm` köşe; gölgeler marka
+> mürekkebiyle .10/.12/.20 ve **gecede tamamen kapalı** (`--sh-scale`,
+> knob'u ezmeden); toast iki temada da koyu şerit (3s/5s); basış
+> `scale(.97)`/90ms; zemin soğuk kâğıt `#F4F8FC`. Eski mobil punto medya
+> düzeltmesi KALKTI — merdivenin kendisi artık mobil şartnameden geliyor.
+> Görsel tur: 218 görüntü, taşma 0, JS hatası 0; 209 birim testi yeşil.
 
 > Bu dosya bir dönem depo DIŞINDA, mutlak bir yolla işaret ediliyordu
 > (`/Users/cihad/Projects/workcollab/design/design.md`) — ve o yoldaki dosya
@@ -100,7 +114,11 @@ orada birebir yazılı. Uydurma yok.
 - Kurumsal renkler: lacivert `#002E6D`, altın `#A78952`, %85 gri `#4D4D4F`.
 - **Altın yalnızca vurgudur**: aktif göstergeler, "bugün" halkası, sekme altı çizgisi, kart üst şeridi. Geniş dolgu olarak asla.
 - Koyu temada `--brand` `#1E5FBF`'e açılır (lacivert koyu zeminde buton olarak okunmuyor). Gerçek kurumsal lacivert koyu temada yalnızca `--login-panel` ve kenar çubuğunda yaşar.
-- Yazı tipleri: **Montserrat** (500/600/700) başlık/marka/metrik/saat · **IBM Plex Sans** (400/500/600) gövde/tablo/form. `font-variant-numeric: tabular-nums`.
+- Yazı tipleri: **Plus Jakarta Sans** (400–800) — TEK aile, hiyerarşi
+  ağırlıktan (800 başlık · 700 alt başlık · 600 etiket · 500 gövde) ·
+  **JetBrains Mono** (500) sayısal veri: tutar, saat, kod, metrik
+  (`font-mono`). `font-variant-numeric: tabular-nums`. Gövde varsayılanı
+  500 — Jakarta'nın 400'ü bu boyutlarda soluk kalıyor.
 
 > `design/*.dc.html` dosyaları Claude tasarım tuvali önizlemeleridir. Inline stil kullanırlar, içlerinde Tailwind/Radix **yoktur**. Görsel referanstır — kaynak kod olarak kopyalanmaz.
 
@@ -134,9 +152,10 @@ yazarken bu dört katmanın dışına çıkma — çıkıyorsan önce buraya bir
 ### 1. Kabuk — `kabuk/AppShell.tsx`
 
 Tek bileşen, iki görünüm. Appbar'daki eylem düğmeleri **hepsi `IkonButon`**
-(38×38, kenarlıklı, `rounded-control`): kurulum · yardım · bildirim · tema
-tasarımcısı · gece-gündüz · çıkış. Kendi ölçüsünü uyduran bir düğme şeridi
-hizasız gösteriyor — yardım düğmesi bir dönem 34px ve kenarlıksızdı.
+(40×40 görsel / 48 dokunma hedefi, `rounded-control`): kurulum · yardım ·
+bildirim · tema tasarımcısı · gece-gündüz · çıkış. Kendi ölçüsünü uyduran
+bir düğme şeridi hizasız gösteriyor — yardım düğmesi bir dönem 34px ve
+kenarlıksızdı. (v3'te 38 → 40: şartnamenin 48px dokunma eşiği.)
 
 Sıra da kural: **geçici düğmeler grubun BAŞINDA**. Kurulum simgesi kurulunca
 kaybolacak; sona konsaydı kaybolduğunda çıkış/tema/bildirim bir düğme boyu
@@ -944,11 +963,13 @@ tek satırlık, okunur bir başlığa dönüştü.
 161px — kırpılma ve taşma yok. Kurulum düğmesi zaten **geçici**: uygulama
 kurulunca kaybolur ve şerit beşe döner.
 
-> **Hepsi `IkonButon`** — 38×38, kenarlıklı, `rounded-control`. Yardım düğmesi
-> bir dönem kendi ölçüsünü uyduruyordu (34px, kenarlıksız, `lg` üstünde
-> yanında "Yardım" yazısı): şerit tek bir düğme yüzünden hizasız görünüyor ve
-> yazı masaüstünde 46px yiyordu. Ekranın adı zaten `title`/`aria-label`da.
-> Ölçüm: bütün şerit düğmeleri artık 38×38.
+> **Hepsi `IkonButon`** — 40×40 görsel, 48 dokunma hedefi, `rounded-control`.
+> Yardım düğmesi bir dönem kendi ölçüsünü uyduruyordu (34px, kenarlıksız,
+> `lg` üstünde yanında "Yardım" yazısı): şerit tek bir düğme yüzünden
+> hizasız görünüyor ve yazı masaüstünde 46px yiyordu. Ekranın adı zaten
+> `title`/`aria-label`da. Ölçüm: bütün şerit düğmeleri aynı boyda; mobil
+> başlık `title3` (16/700) — 19'luk `title2` altı düğmeyle "Ana S…" diye
+> kırpılıyordu, masaüstünde 19.
 
 > Bir ara denendi ve GERİ ALINDI: tema araçlarını ve çıkışı tamamen Menü
 > tabakasına indirmek. Şerit sadeleşiyor ama günde birkaç kez yapılan

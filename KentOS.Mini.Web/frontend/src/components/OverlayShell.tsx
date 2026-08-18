@@ -100,7 +100,8 @@ export function OverlayShell({
       )}
       <div className="min-w-0 flex-1">
         <Baslik asChild>
-          <h2 className="font-display text-base font-bold tracking-[var(--track-d)]">{baslik}</h2>
+          {/* Şartname §6.5: tabaka başlığı `title2` (19/700). */}
+          <h2 className="font-display text-xl font-bold">{baslik}</h2>
         </Baslik>
         {aciklama && aciklamaGoster && (
           <p className="mt-0.5 text-2xs leading-[1.45] text-ink-3">{aciklama}</p>

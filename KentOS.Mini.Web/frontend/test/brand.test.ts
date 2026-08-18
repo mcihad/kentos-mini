@@ -11,7 +11,8 @@ import { markaPaletiniUygula, NEUTRAL_COLORS, BRAND_COLORS, ACCENT_COLORS } from
  * geçerli bir hex geçerli bir CSS değeri.
  */
 describe('kurum marka paleti', () => {
-  const FABRIKA_ZEMIN = '#F5F4F0';
+  // v3 tasarım dili: fabrika zemini soğuk kâğıt (şartname açık tema `bg`).
+  const FABRIKA_ZEMIN = '#F4F8FC';
 
   beforeEach(() => {
     markaPaletiniUygula({});
@@ -50,6 +51,6 @@ describe('kurum marka paleti', () => {
   it('koyu tema karşılığı verilmezse fabrika değeri korunur', () => {
     markaPaletiniUygula({ birincil: '#7A1F2B' });
     expect(BRAND_COLORS[0].acik).toBe('#7A1F2B');
-    expect(BRAND_COLORS[0].koyu).toBe('#5B93E8');   // fabrika
+    expect(BRAND_COLORS[0].koyu).toBe('#4E85C4');   // fabrika — şartname koyu tema `primary`
   });
 });

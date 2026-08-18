@@ -93,8 +93,10 @@ export function Fab({
     asimetrik duruyordu. İki boşluk eşitlenince düğme köşeye oturuyor ve
     ekranın kendi kenar boşluğuyla aynı ritmi tutuyor.
   */
+  // Şartname §6.6: FAB, ALT ÇUBUĞUN (64px) 16px üstünde durur. Eskiden
+  // sekme ÖĞESİNİN boyu (`--h-tab`, 56) okunuyordu ve pay 8px'e düşüyordu.
   const tabanBosluk =
-    `calc(var(--h-tab) + var(--sp-4) + env(safe-area-inset-bottom, 0px)`
+    `calc(var(--h-tabbar) + var(--sp-4) + env(safe-area-inset-bottom, 0px)`
     + (ustPay ? ` + ${ustPay})` : ')');
 
   const stil = { bottom: tabanBosluk };
@@ -129,7 +131,7 @@ export function Fab({
           style={{
             // FAB'ın üstünden başlar: aynı taban + düğme boyu + bir nefes.
             bottom:
-              `calc(var(--h-tab) + var(--sp-4) + 56px + var(--sp-3) + env(safe-area-inset-bottom, 0px)`
+              `calc(var(--h-tabbar) + var(--sp-4) + 56px + var(--sp-3) + env(safe-area-inset-bottom, 0px)`
               + (ustPay ? ` + ${ustPay})` : ')'),
           }}
         >
@@ -169,7 +171,9 @@ export function Fab({
           style={stil}
         >
           <span
-            className="transition-transform duration-200"
+            // Şartname §6.6: yığın açıkken ikon çarpıya döner ve VURGU
+            // rengine geçer — perde + renk değişimi "moddasın" diyor.
+            className={cn('transition-transform duration-200', acik && 'text-(--accent-dk)')}
             style={{
               transform: acik ? 'rotate(90deg)' : 'none',
               transitionTimingFunction: 'var(--ease-spring)',

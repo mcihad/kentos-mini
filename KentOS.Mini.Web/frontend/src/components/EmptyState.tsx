@@ -25,7 +25,8 @@ export function EmptyState({
       <div className="grid h-11 w-11 place-items-center rounded-lg bg-sunken md:h-[52px] md:w-[52px]">
         <Ikon size={19} strokeWidth={1.8} className="text-text-3 md:size-[21px]" />
       </div>
-      <p className="mt-3 font-display text-sm font-bold">{baslik}</p>
+      {/* Başlık şartname `title3` kademesinde (16/700) — boş durum bir bölüm başlığıdır. */}
+      <p className="mt-3 font-display text-base font-bold md:text-lg">{baslik}</p>
       {aciklama && (
         <p className="mt-1 max-w-[340px] text-sm text-text-2 metin-guzel">{aciklama}</p>
       )}

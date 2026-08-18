@@ -28,13 +28,21 @@ export type PresetKey =
   | 'kurumsal-acik' | 'kurumsal-koyu' | 'zumrut' | 'bordo'
   | 'petrol' | 'antrasit' | 'kontrast' | 'ozel';
 
+/*
+  v3 GEÇİŞİ: Kurumsal çiftin knob'ları mobil tasarım şartnamesine çekildi —
+  fs 15 (`body`), r 12 (`radius/md`), sha 10 (`elev/1` alfası), dur 240
+  (sayfa geçişi). Gece gölgesi artık preset'ten değil temadan kapanıyor
+  (`tokens.css` → `--sh-scale: 0`), sha bu yüzden iki modda da aynı.
+*/
 export const PRESETS: Record<Exclude<PresetKey, 'ozel'>, { ad: string } & ThemeKnobs> = {
-  'kurumsal-acik': { ad: 'Kurumsal Gündüz', mod: 'acik', marka: 0, vurgu: 0, notr: 0, r: 10, sp: 4, fs: 14, fsd: 1, track: 0, bw: 1, sha: 7, dur: 220, font: 0 },
-  'kurumsal-koyu': { ad: 'Kurumsal Gece', mod: 'koyu', marka: 0, vurgu: 0, notr: 0, r: 10, sp: 4, fs: 14, fsd: 1, track: 0, bw: 1, sha: 42, dur: 220, font: 0 },
+  'kurumsal-acik': { ad: 'Kurumsal Gündüz', mod: 'acik', marka: 0, vurgu: 0, notr: 0, r: 12, sp: 4, fs: 15, fsd: 1, track: 0, bw: 1, sha: 10, dur: 240, font: 0 },
+  'kurumsal-koyu': { ad: 'Kurumsal Gece', mod: 'koyu', marka: 0, vurgu: 0, notr: 0, r: 12, sp: 4, fs: 15, fsd: 1, track: 0, bw: 1, sha: 10, dur: 240, font: 0 },
   zumrut: { ad: 'Zümrüt Belediye', mod: 'acik', marka: 1, vurgu: 0, notr: 0, r: 15, sp: 4.5, fs: 14, fsd: 1.05, track: 0, bw: 1, sha: 6, dur: 240, font: 1 },
   bordo: { ad: 'Bordo Belediye', mod: 'acik', marka: 2, vurgu: 1, notr: 0, r: 5, sp: 4, fs: 14, fsd: 1, track: 0, bw: 1.5, sha: 5, dur: 180, font: 2 },
-  petrol: { ad: 'Petrol Mavisi', mod: 'acik', marka: 3, vurgu: 2, notr: 2, r: 17, sp: 4.5, fs: 15, fsd: 1, track: 0, bw: 1, sha: 8, dur: 260, font: 1 },
-  antrasit: { ad: 'Antrasit Gece', mod: 'koyu', marka: 5, vurgu: 5, notr: 1, r: 8, sp: 4, fs: 14, fsd: 1, track: 0, bw: 1, sha: 40, dur: 200, font: 1 },
+  // `notr: 0` — zemin listesi v3'te yeniden sıralandı (soğuk kâğıt fabrika
+  // varsayılanı oldu); Petrol'ün istediği soğuk ton artık 0. sırada.
+  petrol: { ad: 'Petrol Mavisi', mod: 'acik', marka: 3, vurgu: 2, notr: 0, r: 17, sp: 4.5, fs: 15, fsd: 1, track: 0, bw: 1, sha: 8, dur: 260, font: 1 },
+  antrasit: { ad: 'Antrasit Gece', mod: 'koyu', marka: 5, vurgu: 5, notr: 1, r: 8, sp: 4, fs: 14, fsd: 1, track: 0, bw: 1, sha: 10, dur: 200, font: 1 },
   kontrast: { ad: 'Yüksek Kontrast', mod: 'acik', marka: 4, vurgu: 3, notr: 1, r: 3, sp: 4, fs: 15, fsd: 1.05, track: 0.005, bw: 2, sha: 0, dur: 120, font: 2 },
 };
 
