@@ -3,6 +3,7 @@ import { useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button } from '../../components/Button';
 import { Card, CardHeader } from '../../components/Card';
+import { PhotoGrid } from '../../components/PhotoGrid';
 import { Textarea } from '../../components/Field';
 import { useToast } from '../../components/Toast';
 import { PERMISSION } from '../../components/permissions';
@@ -60,6 +61,16 @@ function AsamaSatiri({ gorevId, asama }: { gorevId: number; asama: TaskStage }) 
 
   const bekliyor = asama.durum === TASK_STAGE_STATUS.bekliyor;
   const acik = !!asama.sirada && hasPermission(PERMISSION.gorevAsama);
+
+  const ekler = asama.ekler ?? [];
+  const fotograflar = ekler
+    .filter((e) => e.resimMi)
+    .map((e) => ({
+      yol: `/api/v2/gorev/ek/${e.id}`,
+      baslik: e.ad,
+      altBilgi: e.yukleyen ? `${e.yukleyen} · ${dateTime(e.tarih)}` : dateTime(e.tarih),
+    }));
+  const belgeler = ekler.filter((e) => !e.resimMi);
 
   const ekSayisi = asama.ekSayisi ?? 0;
   const fotografEksik = !!asama.fotografZorunlu && ekSayisi === 0;
@@ -141,10 +152,26 @@ function AsamaSatiri({ gorevId, asama }: { gorevId: number; asama: TaskStage }) 
             <p className="mt-1 whitespace-pre-wrap text-xs text-text-2">{asama.not}</p>
           )}
 
-          {ekSayisi > 0 && (
+          {/*
+            AŞAMANIN FOTOĞRAFLARI BURADA.
+
+            Önceden yalnızca "2 dosya" yazan gri bir satır vardı: fotoğrafın
+            ZORUNLU tutulduğu bir modülde, çekilen kanıtı görmenin hiçbir
+            yolu yoktu — indirip işletim sisteminin görüntüleyicisinde açmak
+            gerekiyordu. Kanıt, kanıtın adı değil kendisidir.
+          */}
+          {fotograflar.length > 0 && (
+            <PhotoGrid
+              fotograflar={fotograflar}
+              boyut="kucuk"
+              className="mt-2"
+            />
+          )}
+
+          {belgeler.length > 0 && (
             <p className="mt-1 inline-flex items-center gap-1 text-3xs text-ink-3">
               <Camera size={11} />
-              {ekSayisi} dosya
+              {belgeler.length} belge
             </p>
           )}
 

@@ -158,6 +158,18 @@ public class GorevAsamaDto
     /// <summary>Bu aşamaya yüklenmiş fotoğraf/dosya sayısı.</summary>
     [JsonPropertyName("ekSayisi")] public int EkSayisi { get; set; }
 
+    /// <summary>
+    /// Aşamaya yüklenen dosyalar — <b>fotoğraf kanıtı burada</b>.
+    /// </summary>
+    /// <remarks>
+    /// Yalnızca <see cref="EkSayisi"/> gönderiliyordu ve arayüz "2 dosya"
+    /// yazan gri bir satır çiziyordu: aşama fotoğrafı ZORUNLU tutulan bir
+    /// modülde, çekilen fotoğrafı görmenin hiçbir yolu yoktu. Sayı kaldı
+    /// (rozet ve "fotoğraf var mı" denetimi onu okuyor), yanına dosyaların
+    /// kendisi eklendi.
+    /// </remarks>
+    [JsonPropertyName("ekler")] public List<IsEkDto> Ekler { get; set; } = [];
+
     /// <summary>Sıradaki aşama mı? Yalnızca bu tamamlanabilir.</summary>
     [JsonPropertyName("sirada")] public bool Sirada { get; set; }
 }

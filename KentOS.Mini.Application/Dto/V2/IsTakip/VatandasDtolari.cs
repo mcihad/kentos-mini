@@ -129,6 +129,17 @@ public class VatandasBildirimiDto
     [JsonPropertyName("ekSayisi")] public int EkSayisi { get; set; }
 
     /// <summary>
+    /// Vatandaşın gönderdiği dosyalar — <b>şikayetin fotoğrafı burada</b>.
+    /// </summary>
+    /// <remarks>
+    /// Yalnızca sayı gönderiliyordu; karşılama personeli "2 ek" yazısını
+    /// görüyor ama çukurun fotoğrafını göremiyordu. Oysa bildirimi
+    /// değerlendirmenin — hangi birime gideceğine, acil olup olmadığına karar
+    /// vermenin — en hızlı yolu resme bakmak.
+    /// </remarks>
+    [JsonPropertyName("ekler")] public List<IsEkDto> Ekler { get; set; } = [];
+
+    /// <summary>
     /// Aynı numaradan gelen ÖNCEKİ bildirim sayısı.
     /// </summary>
     /// <remarks>
@@ -220,6 +231,25 @@ public class IsHaritaNoktasiDto
     [JsonPropertyName("durumAd")] public string DurumAd { get; set; } = string.Empty;
     [JsonPropertyName("gecikti")] public bool Gecikti { get; set; }
     [JsonPropertyName("adres")] public string? Adres { get; set; }
+
+    /// <summary>
+    /// Kaydın temsilî fotoğrafının API adresi — yoksa <c>null</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Haritada bir noktaya dokunan kişinin ilk sorusu "burada ne var?"
+    /// Adres ve durum bunu ancak kısmen anlatıyor; çukurun ya da kırık
+    /// direğin fotoğrafı tek karede anlatıyor.
+    /// </para>
+    /// <para>
+    /// <b>Adresi sunucu kuruyor.</b> İndirme ucu kayıt türüne göre değişiyor:
+    /// görev ekleri <c>gorev.goruntule</c>, vatandaş bildirimi ekleri
+    /// <c>bildirim.karsila</c> istiyor. İstemcinin bu eşlemeyi bilmesi
+    /// gerekmiyor ve bilmesi, izin kurallarının ikinci bir kopyasını orada
+    /// tutmak olurdu.
+    /// </para>
+    /// </remarks>
+    [JsonPropertyName("fotograf")] public string? Fotograf { get; set; }
 }
 
 /// <summary>Gelen kutusu kaydı — birimden birime devir.</summary>

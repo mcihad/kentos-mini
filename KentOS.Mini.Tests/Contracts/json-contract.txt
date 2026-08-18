@@ -631,6 +631,7 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.GorevAsamaDto
   durum
   durumAd
   ekSayisi
+  ekler
   fotografZorunlu
   id
   not
@@ -821,12 +822,22 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.GorevTipiKayitDto
   renk
   slaSaat
   varsayilanOncelik
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.IsEkDto
+  aciklama
+  ad
+  boyut
+  icerikTuru
+  id
+  resimMi
+  tarih
+  yukleyen
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.IsHaritaNoktasiDto
   adres
   baslik
   boylam
   durumAd
   enlem
+  fotograf
   gecikti
   id
   renk
@@ -1000,6 +1011,7 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.VatandasBildirimiDto
   durumAd
   durumRenk
   ekSayisi
+  ekler
   enlem
   gorevId
   gorevTakipNo

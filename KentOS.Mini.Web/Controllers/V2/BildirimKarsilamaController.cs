@@ -65,6 +65,38 @@ public class BildirimKarsilamaController(
         return await _ekler.ListeAsync(IsVarligi.VatandasBildirimi, id, iptal);
     }
 
+    /// <summary>Vatandaşın yüklediği bir dosyanın içeriği.</summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Neden ayrı bir uç:</b> ek indirme yalnızca
+    /// <c>api/v2/gorev/ek/{ekId}</c> üzerinden yapılabiliyordu ve o uç
+    /// <c>gorev.goruntule</c> istiyor. Karşılama personelinin görev izni
+    /// olmak zorunda değil — sonuç: fotoğrafları LİSTELEYEBİLİYOR ama
+    /// açamıyordu. Şikayeti değerlendirmenin en hızlı yolu resme bakmak
+    /// olduğu için bu, ekranın asıl işini yapamaması demekti.
+    /// </para>
+    /// <para>
+    /// <b>Ek, bildirime ait mi diye DENETLENİYOR.</b> Kimlik doğrudan
+    /// içeriğe çevrilseydi, herhangi bir ek kimliğini deneyen bir kullanıcı
+    /// görev ve özgeçmiş eklerini de bu uçtan okurdu — sıra numarası tahmin
+    /// etmek zor bir şey değil.
+    /// </para>
+    /// </remarks>
+    [HttpGet("{id:long}/ek/{ekId:long}")]
+    [Izin(Izinler.BildirimKarsila)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> EkIcerikAsync(long id, long ekId, CancellationToken iptal)
+    {
+        await _servis.GetirAsync(id, iptal);
+
+        var bildirimEkleri = await _ekler.ListeAsync(IsVarligi.VatandasBildirimi, id, iptal);
+        if (bildirimEkleri.All(e => e.Id != ekId)) return NotFound();
+
+        var (icerik, ad, tur) = await _ekler.IcerikAsync(ekId, iptal);
+        return File(icerik, tur, ad);
+    }
+
     /// <summary>
     /// Bildirimi bir birime yönlendirir ve GÖREV AÇAR.
     /// </summary>

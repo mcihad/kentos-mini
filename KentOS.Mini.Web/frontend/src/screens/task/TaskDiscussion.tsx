@@ -1,8 +1,11 @@
-import { Download, MessageSquare, Paperclip, Reply, Trash2, Upload } from 'lucide-react';
+import {
+  Download, Image as ImageIcon, MessageSquare, Paperclip, Reply, Trash2, Upload,
+} from 'lucide-react';
 import { useRef, useState } from 'react';
 import { useQueryClient } from '@tanstack/react-query';
 import { Button, IconButton } from '../../components/Button';
 import { Card, CardHeader } from '../../components/Card';
+import { PhotoGrid } from '../../components/PhotoGrid';
 import { EmptyState } from '../../components/EmptyState';
 import { NoteComposer } from '../../components/NoteComposer';
 import { useToast } from '../../components/Toast';
@@ -64,6 +67,14 @@ function Ekler({ gorevId, kapali }: { gorevId: number; kapali: boolean }) {
     }
   }
 
+  const fotograflar = (ekler ?? [])
+    .filter((e) => e.resimMi)
+    .map((e) => ({
+      yol: `/api/v2/gorev/ek/${e.id}`,
+      baslik: e.ad,
+      altBilgi: e.yukleyen ? `${e.yukleyen} · ${dateTime(e.tarih)}` : dateTime(e.tarih),
+    }));
+
   return (
     <Card serit>
       <CardHeader
@@ -95,10 +106,32 @@ function Ekler({ gorevId, kapali }: { gorevId: number; kapali: boolean }) {
           <EmptyState ikon={Paperclip} baslik="Dosya yok" />
         </div>
       ) : (
+        <>
+          {/*
+            RESİMLER IZGARADA, BELGELER LİSTEDE.
+
+            Hepsi tek bir ataş listesindeydi: sahadan yüklenen fotoğraf,
+            adından ibaret bir satır olarak görünüyordu ve görmek için
+            indirmek gerekiyordu. Resim ile belge farklı şeyler; belgeyi
+            küçük görselle göstermek de mümkün değil, resmi adıyla göstermek
+            de anlamsız.
+          */}
+          {fotograflar.length > 0 && (
+            <div className="px-3.5 py-3">
+              <PhotoGrid fotograflar={fotograflar} />
+            </div>
+          )}
+
         <ul className="divide-y divide-line">
           {ekler.map((e) => (
             <li key={e.id} className="flex items-center gap-2.5 px-3.5 py-2.5">
-              <Paperclip size={15} className="flex-none text-ink-3" />
+              {/* Resim satırı ızgarada zaten var; burada yalnızca indirme ve
+                  silme için duruyor, ataş yerine kamera simgesiyle. */}
+              {e.resimMi ? (
+                <ImageIcon size={15} className="flex-none text-ink-3" />
+              ) : (
+                <Paperclip size={15} className="flex-none text-ink-3" />
+              )}
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm text-ink">{e.ad}</span>
                 <span className="text-2xs text-ink-3">
@@ -129,6 +162,7 @@ function Ekler({ gorevId, kapali }: { gorevId: number; kapali: boolean }) {
             </li>
           ))}
         </ul>
+        </>
       )}
     </Card>
   );

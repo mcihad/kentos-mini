@@ -1075,6 +1075,67 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/vatandas-bildirimi/{id}/ek/{ekId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Vatandaşın yüklediği bir dosyanın içeriği.
+         * @description <b>Neden ayrı bir uç:</b> ek indirme yalnızca
+         *                 `api/v2/gorev/ek/{ekId}` üzerinden yapılabiliyordu ve o uç
+         *                 `gorev.goruntule` istiyor. Karşılama personelinin görev izni
+         *                 olmak zorunda değil — sonuç: fotoğrafları LİSTELEYEBİLİYOR ama
+         *                 açamıyordu. Şikayeti değerlendirmenin en hızlı yolu resme bakmak
+         *                 olduğu için bu, ekranın asıl işini yapamaması demekti.
+         *
+         *
+         *
+         *       <b>Ek, bildirime ait mi diye DENETLENİYOR.</b> Kimlik doğrudan
+         *                 içeriğe çevrilseydi, herhangi bir ek kimliğini deneyen bir kullanıcı
+         *                 görev ve özgeçmiş eklerini de bu uçtan okurdu — sıra numarası tahmin
+         *                 etmek zor bir şey değil.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    ekId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/vatandas-bildirimi/{id}/yonlendir": {
         parameters: {
             query?: never;
@@ -12686,6 +12747,7 @@ export interface components {
             tamamlayan?: string | null;
             /** Format: int32 */
             ekSayisi?: number;
+            ekler?: components["schemas"]["IsEkDto"][] | null;
             sirada?: boolean;
         };
         /**
@@ -13309,7 +13371,6 @@ export interface components {
             } | null;
             izKimligi?: string | null;
         };
-        /** @description Bir ek — listede ve detayda aynı biçim. */
         IsEkDto: {
             /** Format: int64 */
             id?: number;
@@ -13337,6 +13398,7 @@ export interface components {
             durumAd?: string | null;
             gecikti?: boolean;
             adres?: string | null;
+            fotograf?: string | null;
         };
         IsIstatistikDto: {
             /** Format: int32 */
@@ -14777,6 +14839,7 @@ export interface components {
             olusturmaTarihi?: string;
             /** Format: int32 */
             ekSayisi?: number;
+            ekler?: components["schemas"]["IsEkDto"][] | null;
             /** Format: int32 */
             ayniNumaradanOnceki?: number;
         };

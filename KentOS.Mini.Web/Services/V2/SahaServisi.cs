@@ -107,6 +107,49 @@ public class SahaServisi(
             })
             .ToListAsync(iptal);
 
+        /*
+          TEMSİLÎ FOTOĞRAF — görev başına EN YENİ resim.
+
+          Görevin kendi ekleri ve AŞAMA ekleri birlikte taranıyor: sahadan
+          çekilen fotoğrafların çoğu bir aşamaya yükleniyor (kanıt zorunlu),
+          yalnızca görev eklerine bakmak haritayı fotoğrafsız bırakırdı.
+
+          Tek sorgu; nokta başına sorgu atmak bin noktalık bir haritada bin
+          gidiş dönüş demekti.
+        */
+        var gorevIdler = gorevler.Select(g => g.Id).ToList();
+
+        var asamaSahipleri = await _context.GorevAsamalari
+            .AsNoTracking()
+            .Where(a => gorevIdler.Contains(a.GorevId))
+            .Select(a => new { a.Id, a.GorevId })
+            .ToListAsync(iptal);
+
+        var asamaIdler = asamaSahipleri.Select(a => a.Id).ToList();
+
+        var gorevResimleri = await _context.IsEkleri
+            .AsNoTracking()
+            .Where(e => e.ResimMi)
+            .Where(e =>
+                (e.VarlikTuru == IsVarligi.Gorev && gorevIdler.Contains(e.VarlikId))
+                || (e.VarlikTuru == IsVarligi.GorevAsama && asamaIdler.Contains(e.VarlikId)))
+            .OrderByDescending(e => e.OlusturmaTarihi)
+            .Select(e => new { e.Id, e.VarlikTuru, e.VarlikId })
+            .ToListAsync(iptal);
+
+        var asamaninGorevi = asamaSahipleri.ToDictionary(a => a.Id, a => a.GorevId);
+
+        var gorevKapaklari = new Dictionary<long, long>();
+        foreach (var e in gorevResimleri)
+        {
+            var gorevId = e.VarlikTuru == IsVarligi.Gorev
+                ? e.VarlikId
+                : asamaninGorevi.GetValueOrDefault(e.VarlikId);
+
+            if (gorevId == 0) continue;
+            gorevKapaklari.TryAdd(gorevId, e.Id);   // sıralama en yeniden başlıyor
+        }
+
         var noktalar = gorevler.Select(g => new IsHaritaNoktasiDto
         {
             Id = g.Id,
@@ -119,6 +162,9 @@ public class SahaServisi(
             DurumAd = GorevDurumAkisi.Ad(g.Durum),
             Gecikti = !GorevDurumAkisi.Kapali(g.Durum) && g.SlaBitis is { } s && s < simdi,
             Adres = g.Adres,
+            Fotograf = gorevKapaklari.TryGetValue(g.Id, out var ekId)
+                ? $"/api/v2/gorev/ek/{ekId}"
+                : null,
         }).ToList();
 
         /*
@@ -140,6 +186,19 @@ public class SahaServisi(
                 .Select(b => new { b.Id, b.TakipNo, b.Konu, b.Enlem, b.Boylam, b.Adres })
                 .ToListAsync(iptal);
 
+            var bildirimIdler = bildirimler.Select(b => b.Id).ToList();
+
+            var bildirimKapaklari = (await _context.IsEkleri
+                    .AsNoTracking()
+                    .Where(e => e.ResimMi)
+                    .Where(e => e.VarlikTuru == IsVarligi.VatandasBildirimi
+                                && bildirimIdler.Contains(e.VarlikId))
+                    .OrderByDescending(e => e.OlusturmaTarihi)
+                    .Select(e => new { e.Id, e.VarlikId })
+                    .ToListAsync(iptal))
+                .GroupBy(e => e.VarlikId)
+                .ToDictionary(g => g.Key, g => g.First().Id);
+
             noktalar.AddRange(bildirimler.Select(b => new IsHaritaNoktasiDto
             {
                 Id = b.Id,
@@ -151,6 +210,9 @@ public class SahaServisi(
                 Renk = VatandasBildirimServisi.DurumRengi(VatandasBildirimDurumu.Yeni),
                 DurumAd = "Bekliyor",
                 Adres = b.Adres,
+                Fotograf = bildirimKapaklari.TryGetValue(b.Id, out var bEkId)
+                    ? $"/api/v2/vatandas-bildirimi/{b.Id}/ek/{bEkId}"
+                    : null,
             }));
         }
 

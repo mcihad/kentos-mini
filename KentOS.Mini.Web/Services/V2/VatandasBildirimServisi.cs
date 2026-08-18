@@ -463,12 +463,40 @@ public class VatandasBildirimServisi(
             })
             .ToListAsync(iptal);
 
-        var ekSayilari = await _context.IsEkleri
+        /*
+          EKLER TAM LİSTE OLARAK — yalnızca sayı değil.
+
+          Karşılama personeli "2 ek" yazısını görüyor ama çukurun fotoğrafını
+          göremiyordu. Oysa bildirimi değerlendirmenin — hangi birime
+          gideceğine, acil olup olmadığına, mükerrer olup olmadığına karar
+          vermenin — en hızlı yolu resme bakmak. Liste sorgusu zaten tek
+          seferde çalışıyor; sayı yerine satırları getirmek ek maliyet
+          getirmiyor.
+        */
+        var ekKayitlari = await _context.IsEkleri
             .AsNoTracking()
             .Where(e => e.VarlikTuru == IsVarligi.VatandasBildirimi && idler.Contains(e.VarlikId))
-            .GroupBy(e => e.VarlikId)
-            .Select(g => new { BildirimId = g.Key, Sayi = g.Count() })
-            .ToDictionaryAsync(x => x.BildirimId, x => x.Sayi, iptal);
+            .OrderBy(e => e.OlusturmaTarihi)
+            .Select(e => new
+            {
+                e.VarlikId,
+                Ek = new IsEkDto
+                {
+                    Id = e.Id,
+                    Ad = e.Ad,
+                    IcerikTuru = e.IcerikTuru,
+                    Boyut = e.Boyut,
+                    ResimMi = e.ResimMi,
+                    Aciklama = e.Aciklama,
+                    Yukleyen = e.Yukleyen,
+                    Tarih = e.OlusturmaTarihi,
+                },
+            })
+            .ToListAsync(iptal);
+
+        var ekler = ekKayitlari
+            .GroupBy(x => x.VarlikId)
+            .ToDictionary(g => g.Key, g => g.Select(x => x.Ek).ToList());
 
         // MÜKERRER SAYACI: aynı numaradan gelmiş ÖNCEKİ kayıtlar. Karşılama
         // ekranının en sık işi mükerrer ayıklamak; sayı görünmeseydi personel
@@ -508,7 +536,8 @@ public class VatandasBildirimServisi(
                 Isleyen = k.Isleyen,
                 IslemTarihi = k.IslemTarihi,
                 OlusturmaTarihi = k.OlusturmaTarihi,
-                EkSayisi = ekSayilari.GetValueOrDefault(k.Id),
+                Ekler = ekler.GetValueOrDefault(k.Id, []),
+                EkSayisi = ekler.GetValueOrDefault(k.Id, []).Count,
                 AyniNumaradanOnceki = Math.Max(0, numaraSayilari.GetValueOrDefault(k.TelefonSade) - 1),
             })];
     }

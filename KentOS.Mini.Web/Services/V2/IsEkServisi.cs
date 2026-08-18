@@ -1,5 +1,5 @@
-using System.Text.Json.Serialization;
 using Microsoft.EntityFrameworkCore;
+using KentOS.Mini.Application.Dto.V2.IsTakip;
 using KentOS.Mini.Application.Enums;
 using KentOS.Mini.Application.Models;
 using KentOS.Mini.Application.Services;
@@ -11,18 +11,8 @@ namespace KentOS.Mini.Web.Services.V2;
 
 // ══════════════════════════════════════════════════════════════════ DTO'lar
 
-/// <summary>Bir ek — listede ve detayda aynı biçim.</summary>
-public class IsEkDto
-{
-    [JsonPropertyName("id")] public long Id { get; set; }
-    [JsonPropertyName("ad")] public string Ad { get; set; } = string.Empty;
-    [JsonPropertyName("icerikTuru")] public string? IcerikTuru { get; set; }
-    [JsonPropertyName("boyut")] public long Boyut { get; set; }
-    [JsonPropertyName("resimMi")] public bool ResimMi { get; set; }
-    [JsonPropertyName("aciklama")] public string? Aciklama { get; set; }
-    [JsonPropertyName("yukleyen")] public string? Yukleyen { get; set; }
-    [JsonPropertyName("tarih")] public DateTime Tarih { get; set; }
-}
+// `IsEkDto` KentOS.Mini.Application/Dto/V2/IsTakip içine taşındı: aşama ve
+// vatandaş bildirimi DTO'ları ek listesi taşıyor ve o proje Web'i göremiyor.
 
 /// <summary>Yüklenen dosyanın ham hâli — controller'dan servise.</summary>
 public record IsYuklenenDosya(string Ad, string? IcerikTuru, byte[] Icerik);

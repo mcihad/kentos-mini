@@ -1210,12 +1210,39 @@ public class GorevServisi(
 
         var asamaIdler = asamalar.Select(a => a.Id).ToList();
 
-        var ekSayilari = await _context.IsEkleri
+        /*
+          AŞAMA EKLERİ TEK SORGUDA VE TAM LİSTE OLARAK.
+
+          Önceden yalnızca SAYI çekiliyordu ve arayüz "2 dosya" yazan gri bir
+          satır çiziyordu: fotoğrafın ZORUNLU tutulduğu bir modülde, çekilen
+          fotoğrafı görmenin hiçbir yolu yoktu. Aşama başına ayrı bir istek
+          atmak da doğru değil — beş aşamalı bir görev detayı beş ek istek
+          demekti.
+        */
+        var asamaEkleri = await _context.IsEkleri
             .AsNoTracking()
             .Where(e => e.VarlikTuru == IsVarligi.GorevAsama && asamaIdler.Contains(e.VarlikId))
-            .GroupBy(e => e.VarlikId)
-            .Select(g => new { AsamaId = g.Key, Sayi = g.Count() })
-            .ToDictionaryAsync(x => x.AsamaId, x => x.Sayi, iptal);
+            .OrderBy(e => e.OlusturmaTarihi)
+            .Select(e => new
+            {
+                e.VarlikId,
+                Ek = new IsEkDto
+                {
+                    Id = e.Id,
+                    Ad = e.Ad,
+                    IcerikTuru = e.IcerikTuru,
+                    Boyut = e.Boyut,
+                    ResimMi = e.ResimMi,
+                    Aciklama = e.Aciklama,
+                    Yukleyen = e.Yukleyen,
+                    Tarih = e.OlusturmaTarihi,
+                },
+            })
+            .ToListAsync(iptal);
+
+        var eklerHaritasi = asamaEkleri
+            .GroupBy(x => x.VarlikId)
+            .ToDictionary(g => g.Key, g => g.Select(x => x.Ek).ToList());
 
         var siradaki = asamalar.FirstOrDefault(a => a.Durum == GorevAsamaDurumu.Bekliyor);
 
@@ -1232,7 +1259,8 @@ public class GorevServisi(
             Not = a.Not,
             TamamlanmaTarihi = a.TamamlanmaTarihi,
             Tamamlayan = a.Tamamlayan,
-            EkSayisi = ekSayilari.TryGetValue(a.Id, out var sayi) ? sayi : 0,
+            Ekler = eklerHaritasi.TryGetValue(a.Id, out var ekListesi) ? ekListesi : [],
+            EkSayisi = eklerHaritasi.TryGetValue(a.Id, out var sayimI) ? sayimI.Count : 0,
             Sirada = siradaki is not null && siradaki.Id == a.Id,
         })];
 

@@ -1,8 +1,13 @@
 import * as maplibregl from 'maplibre-gl';
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
+import { createPortal } from 'react-dom';
+import { Link } from 'react-router-dom';
+import { AlertTriangle, ArrowRight, MapPin } from 'lucide-react';
+import { useKorumaliAdres } from '../../data/korumaliMedya';
 import 'maplibre-gl/dist/maplibre-gl.css';
 import {
-  HARITA_TEMASI, TURKIYE_MERKEZ, TURKIYE_YAKINLIK, iğneGoruntusu, kumeGoruntusu, webgl2Var,
+  HARITA_TEMASI, PIN_YUKSEKLIK, TURKIYE_MERKEZ, TURKIYE_YAKINLIK, iğneGoruntusu,
+  kumeGoruntusu, webgl2Var,
 } from './harita';
 import type { WorkMapPoint } from '../../data/types';
 
@@ -40,6 +45,50 @@ export function WorkMap({
 
   const geriCagri = useRef(tiklandi);
   geriCagri.current = tiklandi;
+
+  const [secili, setSecili] = useState<{ nokta: WorkMapPoint; konum: [number, number] } | null>(
+    null,
+  );
+
+  /*
+    BALONUN KABI BİR KEZ ÜRETİLİYOR.
+
+    Her seçimde yeni bir düğüm üretmek, React'in portalı her seferinde
+    yeniden bağlaması ve resmin baştan indirilmesi demekti.
+  */
+  const balonKabi = useRef<HTMLDivElement | null>(null);
+  if (balonKabi.current === null && typeof document !== 'undefined') {
+    balonKabi.current = document.createElement('div');
+  }
+  const balon = useRef<maplibregl.Popup | null>(null);
+
+  useEffect(() => {
+    const h = harita.current;
+    const kap = balonKabi.current;
+    if (!h || !kap) return;
+
+    if (!secili) {
+      balon.current?.remove();
+      return;
+    }
+
+    if (!balon.current) {
+      balon.current = new maplibregl.Popup({
+        offset: [0, -PIN_YUKSEKLIK + 6],
+        closeButton: false,
+        closeOnClick: true,
+        maxWidth: '280px',
+        className: 'harita-balonu',
+      });
+
+      // Kullanıcı boşluğa dokunup kapattığında React durumu da temizlenmeli;
+      // yoksa aynı noktaya ikinci dokunuş hiçbir şey açmıyordu.
+      balon.current.on('close', () => setSecili(null));
+      balon.current.setDOMContent(kap);
+    }
+
+    balon.current.setLngLat(secili.konum).addTo(h);
+  }, [secili]);
 
   // MapLibre WebGL2 zorunlu tutuyor ve desteklenmediğinde kurulum anında
   // patlayarak EKRANIN TAMAMINI düşürüyor. Yedek: aynı noktalar liste
@@ -154,10 +203,23 @@ export function WorkMap({
         const p = o.features?.[0]?.properties;
         if (!p) return;
 
-        new maplibregl.Popup({ offset: 12, closeButton: false })
-          .setLngLat((o.features![0].geometry as GeoJSON.Point).coordinates as [number, number])
-          .setHTML(balonIcerigi(p as Record<string, unknown>))
-          .addTo(h);
+        /*
+          BALON ARTIK REACT — HTML DİZESİ DEĞİL.
+
+          Eski hâli `setHTML` ile satır içi stil basıyordu: `#8A8A8C`,
+          `#4D4D4F`, `#1E5FBF`. Yani balon kurumsal kimlik temasını da gece
+          modunu da hiç bilmiyordu — koyu temada açık gri zeminde açık gri
+          yazı çıkıyordu. Ayrıntı bağlantısı da düz bir `<a href>`ti ve
+          uygulamayı BAŞTAN yüklüyordu: harita, yakınlaştırma ve süzgeçler
+          gidiyordu.
+
+          Konumlandırmayı (çapa, ok, kenara sığdırma) yine MapLibre yapıyor;
+          içerik bir portalla React'e bırakılıyor.
+        */
+        setSecili({
+          nokta: p as unknown as WorkMapPoint,
+          konum: (o.features![0].geometry as GeoJSON.Point).coordinates as [number, number],
+        });
 
         geriCagri.current?.(p as unknown as WorkMapPoint);
       });
@@ -207,6 +269,10 @@ export function WorkMap({
   if (!haritaVar) return <NoktaListesi noktalar={noktalar} />;
 
   return (
+    <>
+      {balonKabi.current && secili
+        && createPortal(<HaritaBalonu nokta={secili.nokta} />, balonKabi.current)}
+
     <div
       ref={kap}
       style={{ height: yukseklik }}
@@ -218,6 +284,90 @@ export function WorkMap({
       role="application"
       aria-label={`İş haritası — ${noktalar.length} nokta`}
     />
+    </>
+  );
+}
+
+/**
+ * HARİTA BALONU — bir noktaya dokunulduğunda açılan kart.
+ *
+ * <p>
+ * Eski hâli <code>setHTML</code> ile üretilen bir dize ve satır içi
+ * <code>#8A8A8C</code> gibi sabit renklerdi: kurumsal kimlik temasını da gece
+ * modunu da bilmiyordu ve "Ayrıntı" bağlantısı uygulamayı baştan
+ * yüklüyordu — harita, yakınlaştırma ve süzgeçler gidiyordu.
+ * </p>
+ *
+ * <p>
+ * <b>Fotoğraf en üstte.</b> Haritada bir noktaya dokunan kişinin sorusu
+ * "burada ne var?"; adres ve durum bunu kısmen anlatıyor, çukurun fotoğrafı
+ * tek karede anlatıyor. Görselin adresi sunucudan geliyor — hangi indirme
+ * ucundan okunacağı kayıt türüne göre değişiyor ve bu bilgi istemcide
+ * tekrarlanmamalı.
+ * </p>
+ */
+function HaritaBalonu({ nokta }: { nokta: WorkMapPoint }) {
+  const bildirim = nokta.tur === 'bildirim';
+  const yol = bildirim ? '/vatandas-bildirimleri' : `/gorevler/${nokta.id}`;
+  const { adres: fotograf } = useKorumaliAdres(nokta.fotograf);
+
+  return (
+    <div className="w-[248px] overflow-hidden rounded-lg bg-surface text-ink shadow-2">
+      {fotograf && (
+        <img
+          src={fotograf}
+          alt=""
+          className="h-28 w-full border-b border-line object-cover"
+        />
+      )}
+
+      <div className="p-3">
+        <div className="flex items-center gap-1.5">
+          {/* Durum rengi noktanın kendi renginden: haritadaki iğneyle
+              balondaki rozet aynı şeyi söylemeli. */}
+          <span
+            className="h-2 w-2 flex-none rounded-full"
+            style={{ background: nokta.renk || 'var(--brand-ui)' }}
+            aria-hidden
+          />
+          <span className="min-w-0 flex-1 truncate text-2xs font-medium text-text-2">
+            {nokta.durumAd}
+          </span>
+          {nokta.gecikti && (
+            <span className="inline-flex shrink-0 items-center gap-1 text-2xs font-semibold text-(--st-no)">
+              <AlertTriangle size={11} strokeWidth={2.4} />
+              gecikti
+            </span>
+          )}
+        </div>
+
+        <p className="mt-1.5 line-clamp-2 font-display text-sm font-bold leading-snug">
+          {nokta.baslik}
+        </p>
+
+        <p className="mt-0.5 font-mono text-3xs tabular-nums text-ink-3">{nokta.takipNo}</p>
+
+        {nokta.adres && (
+          <p className="mt-1.5 flex items-start gap-1 text-2xs text-text-2">
+            <MapPin size={11} className="mt-px shrink-0 text-text-3" />
+            <span className="line-clamp-2">{nokta.adres}</span>
+          </p>
+        )}
+
+        {/*
+          `Link` — düz `<a href>` DEĞİL. Balon MapLibre'nin düğümünde ama
+          portal sayesinde React ağacının içinde, dolayısıyla yönlendirici
+          çalışıyor ve uygulama yeniden yüklenmiyor.
+        */}
+        <Link
+          to={yol}
+          className="mt-2.5 flex h-9 items-center justify-center gap-1 rounded-control bg-brand text-2xs font-semibold text-on-brand"
+        >
+          {bildirim ? 'Bildirimi incele' : 'Görevi aç'}
+          <ArrowRight size={13} />
+        </Link>
+      </div>
+    </div>
   );
 }
 
@@ -364,25 +514,4 @@ function veriyiYaz(h: maplibregl.Map, noktalar: WorkMapPoint[]) {
   h.fitBounds(sinir, { padding: 48, maxZoom: 16, duration: 0 });
 }
 
-/** Balon içeriği HTML; başlıktaki `<` metni kırmasın diye kaçırılıyor. */
-function balonIcerigi(p: Record<string, unknown>): string {
-  const kacir = (m: string) =>
-    m.replace(/[&<>"]/g, (k) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[k] ?? k);
 
-  const yol = p.tur === 'bildirim' ? '/vatandas-bildirimleri' : `/gorevler/${p.id}`;
-
-  return `
-    <div style="font-family:IBM Plex Sans,sans-serif;min-width:180px">
-      <div style="font-size:10px;color:#8A8A8C;font-variant-numeric:tabular-nums">
-        ${kacir(String(p.takipNo ?? ''))}
-      </div>
-      <div style="font-size:13px;font-weight:600;margin:2px 0 4px">
-        ${kacir(String(p.baslik ?? ''))}
-      </div>
-      <div style="font-size:11px;color:#4D4D4F">${kacir(String(p.durumAd ?? ''))}</div>
-      ${p.adres ? `<div style="font-size:11px;color:#8A8A8C">${kacir(String(p.adres))}</div>` : ''}
-      <a href="${yol}" style="display:inline-block;margin-top:6px;font-size:11px;color:#1E5FBF">
-        Ayrıntı →
-      </a>
-    </div>`;
-}

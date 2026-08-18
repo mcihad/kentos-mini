@@ -808,3 +808,43 @@
 [data-tema='koyu'] .maplibregl-canvas {
   filter: brightness(0.62) saturate(0.8) contrast(1.1);
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   HARİTA BALONU — MapLibre'nin kendi kabuğu devre dışı
+   ══════════════════════════════════════════════════════════════════════════
+
+   MapLibre balonu kendi beyaz zeminini, dolgusunu ve gölgesini basıyor.
+   İçeriği React'e devrettiğimiz için o kabuk artık kartın DIŞINDA ikinci bir
+   kutu oluşturuyordu: beyaz üstüne beyaz bir çerçeve ve koyu temada
+   uygulamanın geri kalanıyla hiç uyuşmayan parlak bir dikdörtgen.
+
+   Ok (tip) ise KALIYOR — balonu işaretçiye bağlayan tek görsel ipucu o;
+   yalnızca rengi token'dan okuyor. */
+.harita-balonu .maplibregl-popup-content {
+  padding: 0;
+  background: transparent;
+  box-shadow: none;
+  border-radius: 0;
+}
+
+/*
+  OK DÖRT YÖNDE DE BOYANIYOR.
+
+  MapLibre balonu ekranın kenarına göre farklı bir çapa seçiyor
+  (`-anchor-top`, `-bottom`, `-left`, `-right`) ve oku o yöne bakan kenarlıkla
+  çiziyor. Yalnızca üst/alt boyandığında yan çapada varsayılan BEYAZ üçgen
+  kalıyordu: koyu temada kartın kenarında duran küçük beyaz bir çentik.
+*/
+.harita-balonu .maplibregl-popup-tip {
+  border-top-color: var(--surface);
+  border-bottom-color: var(--surface);
+  border-left-color: var(--surface);
+  border-right-color: var(--surface);
+}
+
+/* Balon zaten kendi kartını çiziyor; MapLibre'nin varsayılan yazı rengi
+   koyu temada okunmaz kalıyordu. */
+.harita-balonu {
+  color: var(--ink);
+}

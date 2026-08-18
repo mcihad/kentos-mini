@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { Card } from '../components/Card';
+import { PhotoGrid } from '../components/PhotoGrid';
 import { ColoredBadge } from '../components/Color';
 import { EmptyState } from '../components/EmptyState';
 import { FieldWrapper, SearchInput, Secim, Textarea } from '../components/Field';
@@ -141,6 +142,26 @@ export default function CitizenReports() {
   );
 }
 
+/**
+ * Bildirimin RESİM olan eklerini görüntüleyici biçimine çevirir.
+ *
+ * Adres bildirime özel uçtan geçiyor (`vatandas-bildirimi/{id}/ek/{ekId}`),
+ * görev ek ucundan değil: karşılama personelinin görev izni olmak zorunda
+ * değil ve o uç `gorev.goruntule` istiyor.
+ */
+function bildirimFotograflari(
+  bildirimId: number,
+  ekler: NonNullable<CitizenReport['ekler']>,
+) {
+  return ekler
+    .filter((e) => e.resimMi)
+    .map((e) => ({
+      yol: `/api/v2/vatandas-bildirimi/${bildirimId}/ek/${e.id}`,
+      baslik: e.ad,
+      altBilgi: dateTime(e.tarih),
+    }));
+}
+
 function BildirimKarti({ bildirim: b, ac }: { bildirim: CitizenReport; ac: () => void }) {
   return (
     <Card className="p-3.5">
@@ -182,6 +203,21 @@ function BildirimKarti({ bildirim: b, ac }: { bildirim: CitizenReport; ac: () =>
             )}
             <span>{dateTime(b.olusturmaTarihi)}</span>
           </div>
+
+          {/*
+            LİSTEDE DE ÖNİZLEME.
+
+            Karşılama ekranının işi sırayla karar vermek; her kayıt için
+            ayrıntıyı açıp kapatmak, otuz kayıtlık bir kuyrukta altmış
+            dokunuş demek. İki küçük görsel çoğu kararı listede verdiriyor.
+          */}
+          {(b.ekler ?? []).some((e) => e.resimMi) && (
+            <PhotoGrid
+              fotograflar={bildirimFotograflari(b.id!, b.ekler!).slice(0, 3)}
+              boyut="kucuk"
+              className="mt-2"
+            />
+          )}
 
           {b.gorevTakipNo && (
             <p className="mt-2 text-2xs text-(--st-ok)">
@@ -322,22 +358,21 @@ function BildirimDetayi({
 
       {(ekler ?? []).length > 0 && (
         <div>
-          <p className="mb-1.5 text-xs font-medium text-ink-2">
+          <p className="mb-2 text-xs font-medium text-ink-2">
             Vatandaşın fotoğrafları ({ekler!.length})
           </p>
-          <ul className="space-y-1">
-            {ekler!.map((e) => (
-              <li key={e.id} className="flex items-center gap-2 text-xs text-text-2">
-                <Camera size={13} className="text-text-3" />
-                <span className="truncate">{e.ad}</span>
-              </li>
-            ))}
-          </ul>
+
           {/*
-            Fotoğraflar ÖZEL alanda; önizleme için kimlik denetimli bir
-            indirme akışı gerekiyor. Şimdilik yalnızca varlıkları listeleniyor
-            — kayda bakan personel dosyanın olduğunu bilmeli.
+            FOTOĞRAFIN KENDİSİ.
+
+            Burada uzun süre yalnızca dosya ADLARI listeleniyordu ve kodda
+            gerekçesi de yazılıydı: "fotoğraflar özel alanda, önizleme için
+            kimlik denetimli bir indirme akışı gerekiyor". O akış artık var
+            (`korumaliMedya`) ve şikayeti değerlendirmenin en hızlı yolu resme
+            bakmak: hangi birime gideceği, aciliyeti ve mükerrer olup olmadığı
+            çoğu zaman tek karede görülüyor.
           */}
+          <PhotoGrid fotograflar={bildirimFotograflari(b.id!, ekler!)} />
         </div>
       )}
 
