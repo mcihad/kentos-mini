@@ -517,7 +517,7 @@ function OzgecmisSatiri({
             duruyor ve liste "titrek" görünüyordu. Rozet zaten bir üstveri,
             yeri tarihin yanı.
           */}
-          <span className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-3xs tabular-nums text-ink-3">
+          <span className="mt-1 flex flex-wrap items-center gap-x-1.5 gap-y-1 text-2xs tabular-nums text-ink-3">
             {meta.join(' · ')}
             {talepten && <SourceBadge kayit={kayit} />}
           </span>

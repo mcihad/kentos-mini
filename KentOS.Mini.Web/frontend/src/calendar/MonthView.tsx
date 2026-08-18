@@ -58,7 +58,7 @@ export function MonthView({
           <div
             key={g}
             className={cn(
-              'p-2 text-center text-3xs font-semibold uppercase tracking-[0.09em] text-text-3',
+              'p-2 text-center text-2xs font-semibold uppercase tracking-[0.09em] text-text-3',
               i >= 5 && 'text-brand-2',
             )}
           >
@@ -143,17 +143,17 @@ export function MonthView({
                       style={{ background: renkler.cipZemini, borderLeftColor: renkler.kenar }}
                       className="mb-0.5 block cursor-pointer rounded-sm border-l-2 px-1.5 py-[3px]"
                     >
-                      <span className="flex items-center gap-1 font-display text-3xs font-semibold tabular-nums text-text-2">
+                      <span className="flex items-center gap-1 font-display text-2xs font-semibold tabular-nums text-text-2">
                         {String(bas.getHours()).padStart(2, '0')}:{String(bas.getMinutes()).padStart(2, '0')}
                         {e.gizli && <Lock size={8} strokeWidth={2.4} />}
                         {e.seriId && <Repeat size={8} strokeWidth={2.4} />}
                       </span>
-                      <span className="line-clamp-2 text-3xs leading-[1.2]">{e.baslik}</span>
+                      <span className="line-clamp-2 text-2xs leading-[1.2]">{e.baslik}</span>
                     </span>
                   );
                 })}
                 {kalan > 0 && (
-                  <span className="block text-3xs font-medium text-brand-2">+{kalan} daha</span>
+                  <span className="block text-2xs font-medium text-brand-2">+{kalan} daha</span>
                 )}
               </span>
             </button>

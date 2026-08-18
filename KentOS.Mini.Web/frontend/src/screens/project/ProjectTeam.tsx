@@ -209,7 +209,7 @@ function EkipFormu({ proje, kapat }: { proje: ProjectDetail; kapat: () => void }
                     )
                   }
                   aria-label={`${adBul(u.kullaniciId!)} rolü`}
-                  className="h-8 shrink-0 rounded-control border border-line bg-surface px-1.5 text-2xs text-ink outline-hidden"
+                  className="h-9 shrink-0 rounded-control border border-line bg-surface-2 px-1.5 text-sm text-ink outline-hidden focus:border-brand focus:ring-[3px] focus:ring-(--focus-ring)"
                 >
                   {Object.entries(PROJECT_MEMBER_ROLE_LABELS).map(([d, e]) => (
                     <option key={d} value={d}>

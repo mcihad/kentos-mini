@@ -63,7 +63,7 @@ export function YearView({
               {['P', 'S', 'Ç', 'P', 'C', 'C', 'P'].map((g, i) => (
                 <span
                   key={i}
-                  className="pb-0.5 text-center text-3xs font-semibold uppercase tracking-[0.06em] text-ink-3"
+                  className="pb-0.5 text-center text-2xs font-semibold uppercase tracking-[0.06em] text-ink-3"
                 >
                   {g}
                 </span>

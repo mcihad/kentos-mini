@@ -300,8 +300,8 @@ function YorumSatiri({
       <div className="px-3.5 py-2.5" style={{ paddingLeft: 14 + girinti }}>
         <div className="flex items-baseline gap-2">
           <span className="text-xs font-medium text-ink">{yorum.yazan || 'Kullanıcı'}</span>
-          <span className="text-3xs text-ink-3">{dateTime(yorum.tarih)}</span>
-          {yorum.silindi && <span className="text-3xs text-ink-3">· silindi</span>}
+          <span className="text-2xs text-ink-3">{dateTime(yorum.tarih)}</span>
+          {yorum.silindi && <span className="text-2xs text-ink-3">· silindi</span>}
         </div>
 
         <p className="mt-1 whitespace-pre-wrap text-sm text-text-2">
@@ -312,7 +312,7 @@ function YorumSatiri({
           <div className="mt-1.5 flex items-center gap-3">
             <button
               type="button"
-              className="inline-flex items-center gap-1 text-3xs text-ink-3 hover:text-ink-2"
+              className="inline-flex items-center gap-1 text-2xs text-ink-3 hover:text-ink-2"
               onClick={() => yanitla(yorum.id!)}
             >
               <Reply size={11} />
@@ -321,7 +321,7 @@ function YorumSatiri({
             {yorum.benimMi && (
               <button
                 type="button"
-                className="inline-flex items-center gap-1 text-3xs text-ink-3 hover:text-(--st-no)"
+                className="inline-flex items-center gap-1 text-2xs text-ink-3 hover:text-(--st-no)"
                 onClick={() => sil(yorum.id!)}
               >
                 <Trash2 size={11} />

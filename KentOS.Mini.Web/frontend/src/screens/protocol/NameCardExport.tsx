@@ -181,11 +181,11 @@ export function NameCardExport({
                     <span className={cn('text-2xs font-semibold', secili && 'text-brand')}>
                       {o.ad}
                     </span>
-                    <span className="shrink-0 text-3xs tabular-nums text-ink-3">
+                    <span className="shrink-0 text-2xs tabular-nums text-ink-3">
                       {o.sutun}×{o.satir}
                     </span>
                   </span>
-                  <span className="mt-0.5 block text-3xs text-ink-3">{o.not}</span>
+                  <span className="mt-0.5 block text-2xs text-ink-3">{o.not}</span>
 
                   {/* Küçük ızgara önizlemesi: sayı okumaktan daha hızlı anlaşılıyor. */}
                   <span

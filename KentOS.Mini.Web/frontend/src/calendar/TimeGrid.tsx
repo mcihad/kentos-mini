@@ -191,7 +191,7 @@ export function TimeGrid({
                     >
                       <span
                         className={cn(
-                          'block text-3xs font-semibold uppercase tracking-[0.08em]',
+                          'block text-2xs font-semibold uppercase tracking-[0.08em]',
                           haftaSonu ? 'text-brand-2' : 'text-text-3',
                         )}
                       >
@@ -214,7 +214,7 @@ export function TimeGrid({
             {/* ── Satır 2: tüm gün şeridi ── */}
             {tumGunler.length > 0 && (
               <div className="flex">
-                <div className={cn(saatSutunu, 'grid place-items-center border-b border-r border-border text-3xs uppercase tracking-[0.06em] text-text-3')}>
+                <div className={cn(saatSutunu, 'grid place-items-center border-b border-r border-border text-2xs uppercase tracking-[0.06em] text-text-3')}>
                   Tüm gün
                 </div>
                 {gunler.map((g) => (
@@ -251,7 +251,7 @@ export function TimeGrid({
             >
               {Array.from({ length: 24 }).map((_, s) => (
                 <div key={s} style={{ height: HOUR_HEIGHT }} className="relative">
-                  <span className="absolute top-[-7px] right-2 text-3xs tabular-nums text-text-3">
+                  <span className="absolute top-[-7px] right-2 text-2xs tabular-nums text-text-3">
                     {s === 0 ? '' : `${String(s).padStart(2, '0')}:00`}
                   </span>
                 </div>
@@ -396,7 +396,7 @@ function BosDilim({
       >
         <Plus size={10} strokeWidth={3} />
       </span>
-      <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-3xs tabular-nums text-text-3 opacity-0 transition-opacity group-hover:opacity-100">
+      <span className="pointer-events-none absolute right-1.5 top-1/2 -translate-y-1/2 text-2xs tabular-nums text-text-3 opacity-0 transition-opacity group-hover:opacity-100">
         {etiket}
       </span>
     </button>
@@ -542,8 +542,8 @@ function EtkinlikBlogu({
         )}
       >
         {kisa ? (
-          <span className="flex items-center gap-1 overflow-hidden text-3xs leading-[1.2]">
-            <span className="shrink-0 font-display text-3xs font-semibold tabular-nums text-text-2">
+          <span className="flex items-center gap-1 overflow-hidden text-2xs leading-[1.2]">
+            <span className="shrink-0 font-display text-2xs font-semibold tabular-nums text-text-2">
               {saat(bas)}
             </span>
             {etkinlik.gizli && <Lock size={9} strokeWidth={2.2} className="shrink-0" />}
@@ -552,12 +552,12 @@ function EtkinlikBlogu({
           </span>
         ) : (
           <>
-            <span className="flex items-center gap-1 font-display text-3xs font-semibold tabular-nums text-text-2">
+            <span className="flex items-center gap-1 font-display text-2xs font-semibold tabular-nums text-text-2">
               {saat(bas)}–{saat(bit)}
               {etkinlik.gizli && <Lock size={9} strokeWidth={2.2} />}
               {etkinlik.seriId && <Repeat size={9} strokeWidth={2.2} />}
             </span>
-            <span className="line-clamp-2 text-3xs leading-tight">{etkinlik.baslik}</span>
+            <span className="line-clamp-2 text-2xs leading-tight">{etkinlik.baslik}</span>
           </>
         )}
       </button>
@@ -690,7 +690,7 @@ function SuAnCizgisi({ gun }: { gun: Date }) {
     >
       <div className="relative h-[1.5px] bg-(--simdi)">
         <span className="absolute left-[-4px] top-[-4px] h-[9px] w-[9px] rounded-full bg-(--simdi) ring-2 ring-(--surface)" />
-        <span className="absolute top-[-8px] right-1 rounded-xs bg-(--simdi) px-1 py-px font-display text-3xs font-bold tabular-nums text-white">
+        <span className="absolute top-[-8px] right-1 rounded-xs bg-(--simdi) px-1 py-px font-display text-2xs font-bold tabular-nums text-white">
           {etiket}
         </span>
       </div>

@@ -359,7 +359,7 @@ export default function Agenda() {
           duruyor (yazıcı sağ uçta, öteki denetimlerle birlikte).
         */}
         {!masaustu && (
-        <div className="flex h-ctrl-lg min-w-0 flex-1 items-stretch overflow-hidden rounded-control border border-line bg-surface">
+        <div className="flex h-ctrl-lg min-w-0 flex-1 items-stretch overflow-hidden rounded-md border border-line bg-surface">
           <span className="grid w-9 flex-none place-items-center text-ink-3">
             <Search size={15} />
           </span>
@@ -369,7 +369,7 @@ export default function Agenda() {
             onChange={(e) => setAramaGirdisi(e.target.value)}
             placeholder="Ara"
             aria-label="Etkinliklerde ara"
-            className="min-w-0 flex-1 bg-transparent pr-2 text-sm text-ink outline-hidden placeholder:text-ink-3"
+            className="min-w-0 flex-1 bg-transparent pr-2 text-base text-ink outline-hidden placeholder:text-ink-3"
           />
           <ProgramMenu
             tarih={basM.slice(0, 10)}

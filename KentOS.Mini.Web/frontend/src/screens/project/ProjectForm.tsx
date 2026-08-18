@@ -315,7 +315,7 @@ export default function ProjectForm() {
                 {/* Kaldırma UYARISI: bağlı görevler silinmiyor ama bağları
                     boşalıyor ve bu geri alınamaz bir düzenleme. */}
                 {(t.gorevToplam ?? 0) > 0 && (
-                  <p className="mt-1.5 pl-7 text-3xs text-ink-3">
+                  <p className="mt-1.5 pl-7 text-2xs text-ink-3">
                     {t.gorevToplam} görev bu hedefe bağlı — kaldırırsanız bağları boşalır.
                   </p>
                 )}

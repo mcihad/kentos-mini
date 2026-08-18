@@ -145,7 +145,7 @@ export default function ComponentLibrary() {
             </span>
             <input
               defaultValue="Ayşe Demir"
-              className="h-ctrl-lg w-full rounded-sm border border-line bg-surface-2 px-3.5 text-sm text-ink outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
+              className="h-field w-full rounded-md border border-line bg-surface-2 px-3.5 text-base text-ink outline-none focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-brand"
             />
           </label>
           <label className="block">
@@ -155,7 +155,7 @@ export default function ComponentLibrary() {
             <div className="relative">
               <input
                 defaultValue="053"
-                className="h-ctrl-lg w-full rounded-sm border border-danger bg-danger-soft px-3.5 pr-9 text-sm text-danger outline-none"
+                className="h-field w-full rounded-md border border-danger bg-danger-soft px-3.5 pr-9 text-base text-danger outline-none"
               />
               <CircleAlert
                 size={16}
@@ -291,7 +291,7 @@ function Cip({
 }) {
   return (
     <span
-      className="inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-3xs font-semibold"
+      className="inline-flex h-6 items-center gap-1.5 rounded-sm px-2 text-2xs font-semibold"
       style={{ background: `var(--${renk}-soft)`, color: `var(--${renk})` }}
     >
       <span className="h-[5px] w-[5px] rounded-full bg-current" />

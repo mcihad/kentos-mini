@@ -168,7 +168,7 @@ export default function Home() {
                           aria-hidden
                         />
                         <span className="grid w-11 shrink-0 place-items-center rounded-sm bg-sunken py-1">
-                          <span className="text-3xs font-semibold text-text-3">
+                          <span className="text-2xs font-semibold text-text-3">
                             {monthShort(e.baslangic)}
                           </span>
                           <span className="font-display text-lg font-bold leading-none tabular-nums">
