@@ -111,7 +111,7 @@ export function ColumnSeries({
         {liste.map((n, i) => (
           <span
             key={i}
-            className="flex-1 overflow-hidden text-center text-3xs text-text-3"
+            className="flex-1 overflow-hidden text-center text-2xs text-text-3"
           >
             {i % atla === 0 ? n.etiket : ''}
           </span>

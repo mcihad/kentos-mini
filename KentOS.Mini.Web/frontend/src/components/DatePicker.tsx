@@ -200,7 +200,7 @@ function AyIzgarasi({
         {GUN_BASLIKLARI.map((g) => (
           <span
             key={g}
-            className="grid h-7 place-items-center text-3xs font-semibold uppercase text-text-3"
+            className="grid h-7 place-items-center text-2xs font-semibold uppercase text-text-3"
           >
             {g}
           </span>

@@ -286,10 +286,10 @@ function KartGovdesi({
           </Link>
 
           <div className="mt-1.5 flex flex-wrap items-center gap-x-2 gap-y-1">
-            <span className="font-mono text-3xs tabular-nums text-ink-3">{kart.takipNo}</span>
+            <span className="font-mono text-2xs tabular-nums text-ink-3">{kart.takipNo}</span>
             {kart.oncelik !== 1 && kart.oncelikAd && (
               <span
-                className={`text-3xs ${
+                className={`text-2xs ${
                   (kart.oncelik ?? 1) > 1 ? 'font-medium text-(--st-wait)' : 'text-ink-3'
                 }`}
               >
@@ -302,7 +302,7 @@ function KartGovdesi({
           <div className="mt-1.5 flex items-center gap-2">
             <StageProgress biten={kart.asamaBiten ?? 0} toplam={kart.asamaToplam ?? 0} ilerleme={kart.ilerleme} />
             {(kart.sorumlular ?? []).length > 0 && (
-              <span className="truncate text-3xs text-ink-3">{(kart.sorumlular ?? [])[0]}</span>
+              <span className="truncate text-2xs text-ink-3">{(kart.sorumlular ?? [])[0]}</span>
             )}
           </div>
         </div>

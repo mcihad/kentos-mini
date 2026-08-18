@@ -420,7 +420,7 @@ export default function InvitationDetail() {
                             yama: { durum: Number(e.target.value) },
                           })
                         }
-                        className="h-8 rounded-control border border-border bg-surface px-2 text-sm"
+                        className="h-9 rounded-control border border-border bg-surface-2 px-2 text-sm outline-hidden focus:border-brand focus:ring-[3px] focus:ring-(--focus-ring)"
                       >
                         {DURUM_SECENEKLERI.map((s) => (
                           <option key={s.d} value={s.d}>

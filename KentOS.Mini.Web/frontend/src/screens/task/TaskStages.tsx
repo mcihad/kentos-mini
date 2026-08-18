@@ -132,15 +132,15 @@ function AsamaSatiri({ gorevId, asama }: { gorevId: number; asama: TaskStage }) 
         <div className="min-w-0 flex-1">
           <div className="flex flex-wrap items-baseline gap-x-2 gap-y-1">
             <span className={`text-sm ${bekliyor ? 'text-ink' : 'text-text-2'}`}>{asama.ad}</span>
-            {!asama.zorunlu && <span className="text-3xs text-ink-3">isteğe bağlı</span>}
+            {!asama.zorunlu && <span className="text-2xs text-ink-3">isteğe bağlı</span>}
             {bekliyor && asama.fotografZorunlu && (
-              <span className="text-3xs text-(--st-wait)">fotoğraf zorunlu</span>
+              <span className="text-2xs text-(--st-wait)">fotoğraf zorunlu</span>
             )}
             {bekliyor && asama.aciklamaZorunlu && (
-              <span className="text-3xs text-(--st-wait)">açıklama zorunlu</span>
+              <span className="text-2xs text-(--st-wait)">açıklama zorunlu</span>
             )}
             {!bekliyor && (
-              <span className="text-3xs text-ink-3">
+              <span className="text-2xs text-ink-3">
                 {asama.durumAd}
                 {asama.tamamlayan && ` · ${asama.tamamlayan}`}
                 {asama.tamamlanmaTarihi && ` · ${dateTime(asama.tamamlanmaTarihi)}`}
@@ -169,7 +169,7 @@ function AsamaSatiri({ gorevId, asama }: { gorevId: number; asama: TaskStage }) 
           )}
 
           {belgeler.length > 0 && (
-            <p className="mt-1 inline-flex items-center gap-1 text-3xs text-ink-3">
+            <p className="mt-1 inline-flex items-center gap-1 text-2xs text-ink-3">
               <Camera size={11} />
               {belgeler.length} belge
             </p>
@@ -236,7 +236,7 @@ function AsamaSatiri({ gorevId, asama }: { gorevId: number; asama: TaskStage }) 
           )}
 
           {bekliyor && !asama.sirada && (
-            <p className="mt-1 inline-flex items-center gap-1 text-3xs text-ink-3">
+            <p className="mt-1 inline-flex items-center gap-1 text-2xs text-ink-3">
               <CircleDashed size={11} />
               Önceki aşamalar tamamlanınca açılır
             </p>

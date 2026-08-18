@@ -195,7 +195,11 @@ export function SheetRow({
       className={cn(
         // İpucu varsa satır iki satırlık içerik taşıyor; sabit yükseklik
         // yerine alt sınır.
-        'flex min-h-[56px] w-full items-center gap-3.5 rounded-md px-2 py-2 text-left text-lg font-medium',
+        //
+        // Metin `body` (15) — şartname §3.1: menü satırı gövde kademesidir.
+        // Bir dönem `text-lg` idi; v3'te o kademe `title3`e (16/700 bağlamı)
+        // yükselince menü "bağırıyordu" — kullanıcı geri bildirimi.
+        'flex min-h-[56px] w-full items-center gap-3.5 rounded-md px-2 py-2 text-left text-base font-medium',
         'transition-colors',
         tehlike ? 'text-danger active:bg-danger-soft' : 'text-ink active:bg-sunken',
         kapali && 'cursor-not-allowed opacity-45',

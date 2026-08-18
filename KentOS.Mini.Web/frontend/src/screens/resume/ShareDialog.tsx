@@ -122,7 +122,7 @@ export function ShareDialog({
                 />
                 <span
                   aria-hidden
-                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-surface-2 font-display text-3xs font-bold text-text-2"
+                  className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-surface-2 font-display text-2xs font-bold text-text-2"
                 >
                   {initials(...(k.tamAd ?? '').split(' '))}
                 </span>

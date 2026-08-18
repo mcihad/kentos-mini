@@ -187,7 +187,7 @@ export function PersonPicker({
                       liderDegistir(liderId === k.id ? null : k.id!);
                     }}
                     className={cn(
-                      'shrink-0 rounded-full px-2 py-0.5 text-3xs',
+                      'shrink-0 rounded-full px-2 py-0.5 text-2xs',
                       liderId === k.id
                         ? 'bg-brand text-white'
                         : 'bg-sunken text-ink-3 hover:text-ink-2',

@@ -115,7 +115,7 @@ export function ProgramView({
                   bugunMu ? 'border-gold bg-gold-tint' : 'border-border bg-surface',
                 )}
               >
-                <p className="pt-2 text-3xs font-semibold uppercase tracking-[0.08em] text-text-3">
+                <p className="pt-2 text-2xs font-semibold uppercase tracking-[0.08em] text-text-3">
                   {monthShort(ilk)}
                 </p>
                 <p
@@ -128,7 +128,7 @@ export function ProgramView({
                 </p>
                 <p
                   className={cn(
-                    'px-1 pb-2 pt-1 text-3xs font-medium',
+                    'px-1 pb-2 pt-1 text-2xs font-medium',
                     bugunMu ? 'text-(--gold-2)' : 'text-text-3',
                   )}
                 >

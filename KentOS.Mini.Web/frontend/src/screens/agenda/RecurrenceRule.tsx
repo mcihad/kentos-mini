@@ -307,7 +307,7 @@ export function RecurrenceRule({
                           ayinGunu: Math.min(31, Math.max(1, Number(e.target.value) || 1)),
                         })
                       }
-                      className="h-8 w-16 rounded-control border border-border bg-surface px-2 text-sm tabular-nums"
+                      className="h-9 w-16 rounded-control border border-border bg-surface-2 px-2 text-sm tabular-nums outline-hidden focus:border-brand focus:ring-[3px] focus:ring-(--focus-ring)"
                     />
                   )}
 
@@ -317,7 +317,7 @@ export function RecurrenceRule({
                         aria-label="Kaçıncı hafta"
                         value={deger.haftaSirasi}
                         onChange={(e) => guncelle({ haftaSirasi: Number(e.target.value) })}
-                        className="h-8 rounded-control border border-border bg-surface px-1.5 text-sm"
+                        className="h-9 rounded-control border border-border bg-surface-2 px-1.5 text-sm outline-hidden focus:border-brand focus:ring-[3px] focus:ring-(--focus-ring)"
                       >
                         {[1, 2, 3, 4].map((n) => (
                           <option key={n} value={n}>
@@ -329,7 +329,7 @@ export function RecurrenceRule({
                         aria-label="Haftanın günü"
                         value={deger.haftaGunu}
                         onChange={(e) => guncelle({ haftaGunu: e.target.value })}
-                        className="h-8 rounded-control border border-border bg-surface px-1.5 text-sm"
+                        className="h-9 rounded-control border border-border bg-surface-2 px-1.5 text-sm outline-hidden focus:border-brand focus:ring-[3px] focus:ring-(--focus-ring)"
                       >
                         {GUNLER.map((g) => (
                           <option key={g.kod} value={g.kod}>

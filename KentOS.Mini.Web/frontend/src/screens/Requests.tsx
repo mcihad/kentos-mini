@@ -188,7 +188,7 @@ export default function Requests() {
           gibi okunuyorlardı.
         */}
         {!masaustu && (
-        <div className="flex h-ctrl-lg min-w-0 flex-1 items-stretch overflow-hidden rounded-control border border-line bg-surface">
+        <div className="flex h-ctrl-lg min-w-0 flex-1 items-stretch overflow-hidden rounded-md border border-line bg-surface">
           <span className="grid w-9 flex-none place-items-center text-ink-3">
             <Search size={15} />
           </span>
@@ -198,7 +198,7 @@ export default function Requests() {
             onChange={(e) => setAramaGirdisi(e.target.value)}
             placeholder="Ara"
             aria-label="Taleplerde ara"
-            className="min-w-0 flex-1 bg-transparent pr-2 text-sm text-ink outline-hidden placeholder:text-ink-3"
+            className="min-w-0 flex-1 bg-transparent pr-2 text-base text-ink outline-hidden placeholder:text-ink-3"
           />
           <ExportButtons
             excel={() => download('/disa-aktar/talep/excel', { ara: arama, durumId })}

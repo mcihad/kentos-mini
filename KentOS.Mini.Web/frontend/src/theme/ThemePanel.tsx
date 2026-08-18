@@ -144,12 +144,12 @@ export function ThemePanel({ acik, kapat }: { acik: boolean; kapat: () => void }
 
             <Bolum baslik="Token çıktısı" not="globals.css'e yapıştırılabilir">
               <div className="relative">
-                <pre className="max-h-56 overflow-auto rounded-sm border border-line bg-sunken p-3 text-3xs leading-[1.7] text-ink-2">
+                <pre className="max-h-56 overflow-auto rounded-sm border border-line bg-sunken p-3 text-2xs leading-[1.7] text-ink-2">
                   {t.tokenCiktisi()}
                 </pre>
                 <button
                   onClick={kopyala}
-                  className="absolute right-2 top-2 flex items-center gap-1.5 rounded-sm border border-line bg-surface px-2 py-1 text-3xs font-semibold text-ink-2 transition-colors hover:bg-surface-2"
+                  className="absolute right-2 top-2 flex items-center gap-1.5 rounded-sm border border-line bg-surface px-2 py-1 text-2xs font-semibold text-ink-2 transition-colors hover:bg-surface-2"
                 >
                   {kopyalandi ? <Check size={12} className="text-ok" /> : <Copy size={12} />}
                   {kopyalandi ? 'Kopyalandı' : 'Kopyala'}
@@ -170,7 +170,7 @@ function Bolum({ baslik, not, children }: { baslik: string; not?: string; childr
     <section className="space-y-2">
       <div className="flex items-baseline justify-between">
         <h3 className="text-2xs font-semibold uppercase tracking-[0.08em] text-ink-3">{baslik}</h3>
-        {not && <span className="text-3xs text-ink-3">{not}</span>}
+        {not && <span className="text-2xs text-ink-3">{not}</span>}
       </div>
       {children}
     </section>
@@ -225,7 +225,7 @@ function PresetKarti({
       </span>
       <span className="min-w-0">
         <span className="block truncate text-2xs font-semibold text-ink">{p.ad}</span>
-        <span className="block text-3xs text-ink-3">{gece ? 'Gece' : 'Gündüz'}</span>
+        <span className="block text-2xs text-ink-3">{gece ? 'Gece' : 'Gündüz'}</span>
       </span>
     </button>
   );
@@ -339,11 +339,11 @@ function Onizleme() {
       </p>
       <p className="mt-1 text-sm text-ink-2">Belediye Meclis Salonu · 14:00</p>
       <div className="mt-3 flex items-center gap-2">
-        <span className="inline-flex h-6 items-center gap-1.5 rounded-full bg-ok-soft px-2.5 text-3xs font-semibold text-ok">
+        <span className="inline-flex h-6 items-center gap-1.5 rounded-full bg-ok-soft px-2.5 text-2xs font-semibold text-ok">
           <span className="h-[5px] w-[5px] rounded-full bg-current" />
           Onaylandı
         </span>
-        <span className="inline-flex h-6 items-center gap-1.5 rounded-full bg-warn-soft px-2.5 text-3xs font-semibold text-warn">
+        <span className="inline-flex h-6 items-center gap-1.5 rounded-full bg-warn-soft px-2.5 text-2xs font-semibold text-warn">
           <span className="h-[5px] w-[5px] rounded-full bg-current" />
           Beklemede
         </span>

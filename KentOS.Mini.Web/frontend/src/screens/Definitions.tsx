@@ -674,7 +674,7 @@ function TopluEkleme({
           value={metin}
           onChange={(e) => setMetin(e.target.value)}
           placeholder={`Akdeğirmen\nAkkonak\nAlibaba…`}
-          className="min-h-[140px] w-full rounded-control border border-border bg-surface px-3 py-2.5 text-sm leading-[1.6] outline-hidden focus:border-brand focus:ring-2 focus:ring-(--focus-ring)"
+          className="min-h-[140px] w-full rounded-md border border-border bg-surface-2 px-3.5 py-2.5 text-base outline-hidden focus:border-brand focus:ring-[3px] focus:ring-(--focus-ring)"
           aria-label="Eklenecek adlar"
         />
 

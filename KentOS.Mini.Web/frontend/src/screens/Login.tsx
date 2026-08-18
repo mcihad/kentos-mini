@@ -195,7 +195,8 @@ export default function Login() {
  * zaman uygulanmıyordu ve odaklanan alan sadece halkayla belli oluyordu.
  */
 const alanSinifi =
-  'h-[50px] w-full rounded-control border border-border bg-surface-2 px-3.5 text-base text-text ' +
+  // Girdi ölçüsü Field standardıyla aynı: 50px (`--h-field`), `r-md` köşe.
+  'h-field w-full rounded-md border border-border bg-surface-2 px-3.5 text-base text-text ' +
   'outline-hidden transition-[border-color,box-shadow] duration-150 ' +
   'hover:border-border-2 ' +
   'focus:border-brand-2 focus:ring-[3px] focus:ring-(--focus-ring) md:h-12';

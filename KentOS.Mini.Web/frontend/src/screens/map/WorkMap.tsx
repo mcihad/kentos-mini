@@ -345,7 +345,7 @@ function HaritaBalonu({ nokta }: { nokta: WorkMapPoint }) {
           {nokta.baslik}
         </p>
 
-        <p className="mt-0.5 font-mono text-3xs tabular-nums text-ink-3">{nokta.takipNo}</p>
+        <p className="mt-0.5 font-mono text-2xs tabular-nums text-ink-3">{nokta.takipNo}</p>
 
         {nokta.adres && (
           <p className="mt-1.5 flex items-start gap-1 text-2xs text-text-2">

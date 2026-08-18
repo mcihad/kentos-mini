@@ -111,7 +111,7 @@ export default function TaskTypes() {
               )}
 
               {(t.gorevSayisi ?? 0) > 0 && (
-                <p className="mt-2 text-3xs text-ink-3">
+                <p className="mt-2 text-2xs text-ink-3">
                   {t.gorevSayisi} görev bu tiple açılmış
                 </p>
               )}

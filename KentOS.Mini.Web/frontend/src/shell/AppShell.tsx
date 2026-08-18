@@ -158,7 +158,7 @@ function AppShellIc() {
           {gorunurGruplar.map((grup) => (
             <div key={grup.baslik} className="mb-4">
               {!daraltilmis && (
-                <p className="mb-1.5 px-2.5 text-3xs font-semibold uppercase tracking-[0.14em] text-nav-label">
+                <p className="mb-1.5 px-2.5 text-2xs font-semibold uppercase tracking-[0.14em] text-nav-label">
                   {grup.baslik}
                 </p>
               )}

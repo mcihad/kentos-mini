@@ -83,6 +83,16 @@ sınıfları ve ekran düzenleri orada birebir yazılı. Uydurma yok.
 > `scale(.97)`/90ms; zemin soğuk kâğıt `#F4F8FC`. Eski mobil punto medya
 > düzeltmesi KALKTI — merdivenin kendisi artık mobil şartnameden geliyor.
 > Görsel tur: 218 görüntü, taşma 0, JS hatası 0; 209 birim testi yeşil.
+>
+> **İkinci geçiş — ekran süpürmesi:** menü tabakası satırları `title3`ten
+> gövdeye indi (16 → 15; "menü bağırıyordu"); ekranlardaki **33 adet 10px**
+> (`text-3xs`) kullanımı caption'a (11) çıkarıldı — görev/proje ekranları,
+> takvim (gün/saat etiketleri, olay çipleri), tema paneli, protokol ve
+> grafik eksenleri. 10px yalnızca GERÇEK rozetlerde kaldı: bildirim/küme
+> sayacı, 24px avatar baş harfi, kart minyatürü. Dokuz ekrandaki ham
+> girdi/select/textarea Field ölçülerine bağlandı (50px/`r-md`/15px gövde +
+> `surface-2` zemin + 3px odak halkası); satır içi kompakt select'ler
+> 32 → 36px. Bekçi: aynı doğrulama zinciri yeniden yeşil.
 
 > Bu dosya bir dönem depo DIŞINDA, mutlak bir yolla işaret ediliyordu
 > (`/Users/cihad/Projects/workcollab/design/design.md`) — ve o yoldaki dosya
