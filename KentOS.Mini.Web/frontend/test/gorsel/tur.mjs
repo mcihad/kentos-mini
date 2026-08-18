@@ -35,7 +35,9 @@ const EKRANLAR = [
   { ad: 'gorev-detay-dosya', yol: '/gorevler/5?sekme=tartisma', bekle: 'Yorumlar' },
   { ad: 'gorev-form', yol: '/gorevler/yeni', bekle: 'Vazgeç' },
   { ad: 'gorev-tipleri', yol: '/gorevler/tipler', bekle: 'Tip ekle' },
-  { ad: 'ekipler', yol: '/ekipler', bekle: 'Ekip kur' },
+  // "Ekip kur" telefonda artık FAB'ın tabakasında — üst şeritte yalnızca
+  // arama var (bkz. `Teams.tsx`). Çapa iki görünümde de duran arama alanı.
+  { ad: 'ekipler', yol: '/ekipler', secici: 'main input[type="search"]' },
   // PROJE. Liste kart düzeninde; çıpa iki görünümde de duran arama alanı.
   { ad: 'projeler', yol: '/projeler', secici: 'main input[type="search"]' },
   { ad: 'proje-detay', yol: '/projeler/2', bekle: 'Kilometre taşları' },

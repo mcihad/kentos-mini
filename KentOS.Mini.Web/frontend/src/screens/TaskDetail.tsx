@@ -287,6 +287,18 @@ export default function TaskDetail() {
   const eylemVar = !kapali && (birincil || onayDugmeleri || durumSecenekleri.length > 0);
 
   /*
+    ÇUBUĞA NE ÇIKAR?
+
+    Yalnızca ŞU AN basılabilen birincil eylem. Onay kapısı (Onayla / İade et)
+    yöneticinin o an vereceği karar; "Onaya gönder" ise ancak zorunlu
+    aşamalar bittiğinde anlamlı. İkisi de yoksa alt çubuk hiç çizilmiyor —
+    geçişler, düzenleme ve silme zaten başlıktaki "⋯" tabakasında.
+  */
+  const cubukEylemi = kapali
+    ? null
+    : onayDugmeleri ?? (birincil && !engel ? birincil : null);
+
+  /*
     "⋯" TABAKASININ İÇERİĞİ.
 
     Çubukta yer bulamayan her şey: birincil eylem varken bütün durum
@@ -399,6 +411,19 @@ export default function TaskDetail() {
             </IconButton>
           )}
         </div>
+
+        {/*
+          Telefonda TEK düğme: geçişler, düzenleme ve silme aynı tabakada.
+          Alt çubuk artık kalıcı olmadığı için bu düğmenin başlıkta durması
+          şart — aksi hâlde engellenmiş bir görevde silme yolu kalmıyordu.
+        */}
+        {tabakaEylemleri.length > 0 && (
+          <div className="lg:hidden">
+            <IconButton etiket="Diğer işlemler" onClick={() => setTabakaAcik(true)}>
+              <MoreHorizontal size={18} />
+            </IconButton>
+          </div>
+        )}
       </div>
 
       <IlerlemeSeridi gorev={gorev} />
@@ -516,50 +541,30 @@ export default function TaskDetail() {
         </div>
       </div>
 
-      {/* ── Mobil yapışkan eylem çubuğu (design.md §5.2) ── */}
-      {(eylemVar || tabakaEylemleri.length > 0) && (
+      {/*
+        ── Mobil yapışkan eylem çubuğu (design.md §5.2) ──
+
+        ÇUBUK YALNIZCA BASILABİLİR BİR EYLEM VARKEN ÇİZİLİYOR.
+
+        Önceki hâli her zaman duruyordu ve ölçüldüğünde şu çıktı: 89px'lik
+        çubuk + 65px'lik alt gezinme = <b>154px</b>, yani 844px'lik ekranın
+        %18'i kalıcı olarak iki üst üste çubuğa gidiyordu. Üstelik içindeki
+        düğme çoğu zaman devre dışıydı (zorunlu aşama bitmeden görev onaya
+        gönderilemiyor) ve yanındaki uyarı — "Önce tamamlanmalı: Uygulama" —
+        ilerleme şeridinin üç satır yukarıda zaten yazdığı şeydi:
+        "Sırada: Uygulama · fotoğraf zorunlu".
+
+        Yani ekranın altıda biri, basılamayan bir düğmeyle ekranda zaten
+        yazan bir cümleyi tekrar etmeye ayrılmıştı. Şimdi: engelliyse çubuk
+        yok, sebep ilerleme şeridinde; açıldığında tek satır, tek eylem.
+      */}
+      {cubukEylemi && (
         <div
-          className="sticky z-10 -mx-4 mt-1 border-t border-border bg-surface/95 px-4 py-2.5 backdrop-blur-sm lg:hidden
+          className="sticky z-10 -mx-4 mt-1 border-t border-border bg-surface/95 px-4 py-2 backdrop-blur-sm lg:hidden
             bottom-[calc(var(--h-tabbar)+env(safe-area-inset-bottom,0px))]
             shadow-[0_-2px_12px_rgba(16,26,45,.06)] dark:shadow-none"
         >
-          {/*
-            ENGELİN SEBEBİ YAZILI DURUYOR.
-
-            Sebep yalnızca `title` içindeydi; dokunmatik ekranda ipucu diye
-            bir şey yok. Sonuç: telefonda tam genişlikte, soluk ve basılmayan
-            bir "Tamamla" düğmesi — neden çalışmadığını söylemeyen bir çıkmaz.
-          */}
-          {birincil && engel && <p className="mb-1.5 text-2xs text-(--st-wait)">{engel}</p>}
-
-          {/*
-            ÇUBUKTA TEK BİR BİRİNCİL EYLEM VE BİR "⋯".
-
-            Önceki hâlde çubuk bütün geçişleri taşıyordu ve sığmayanlar için
-            ALTINA ikinci bir düğme sırası açılıyordu: 390px'te sarmalanan,
-            hepsi aynı ağırlıkta bir düğme yığını. Kullanıcı "şimdi ne
-            yapmalıyım" sorusunu okuyamıyordu.
-
-            Şimdi çubuk yalnızca yapılacak işi gösteriyor; durum değişimleri,
-            düzenleme ve silme "⋯" tabakasında — 56px'lik satırlar, adı ve
-            gerekçesiyle. Uygulamanın öteki detay ekranlarında zaten böyle.
-          */}
-          <div className="flex items-center gap-2">
-            {birincil}
-            {onayDugmeleri}
-            {!birincil && !onayDugmeleri && durumSecenekleri[0]}
-
-            {tabakaEylemleri.length > 0 && (
-              <button
-                type="button"
-                onClick={() => setTabakaAcik(true)}
-                aria-label="Diğer işlemler"
-                className="grid h-ctrl-lg w-11 flex-none place-items-center rounded-control border border-line bg-surface text-ink-2 active:scale-[0.97]"
-              >
-                <MoreHorizontal size={18} />
-              </button>
-            )}
-          </div>
+          <div className="flex items-center gap-2">{cubukEylemi}</div>
         </div>
       )}
 

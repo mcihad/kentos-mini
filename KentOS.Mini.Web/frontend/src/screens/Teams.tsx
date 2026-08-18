@@ -1,4 +1,6 @@
-import { Crown, Pencil, Plus, Search, Trash2, UserPlus, Users } from 'lucide-react';
+import {
+  Crown, Pencil, Plus, Search, SlidersHorizontal, Trash2, UserPlus, Users,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Button, IconButton } from '../components/Button';
 import { Card } from '../components/Card';
@@ -8,6 +10,8 @@ import { FormModal } from '../components/FormModal';
 import { FieldWrapper, Input, SearchInput, Textarea } from '../components/Field';
 import { Pagination } from '../components/Pagination';
 import { SegmentedSelect } from '../components/Filters';
+import { Segment, FilterSection, FilterSheet } from '../components/FilterSheet';
+import { Fab } from '../shell/mobile/Fab';
 import { SkeletonRows } from '../components/Skeleton';
 import { Switch } from '../components/Switch';
 import { useToast } from '../components/Toast';
@@ -38,6 +42,7 @@ export default function Teams() {
   const [arama, setArama] = useState('');
   const [kapsam, setKapsam] = useState<Kapsam>('kendi');
   const [sayfa, setSayfa] = useState(1);
+  const [suzgecAcik, setSuzgecAcik] = useState(false);
 
   const [duzenlenen, setDuzenlenen] = useState<Team | 'yeni' | null>(null);
   const [silinecek, setSilinecek] = useState<Team | null>(null);
@@ -62,7 +67,9 @@ export default function Teams() {
 
   return (
     <div className="space-y-3.5">
-      <div className="flex flex-wrap items-center gap-2">
+      {/* Telefonda üst şeritte YALNIZCA arama; gerisi FAB'ın tabakasında.
+          Gerekçesi ve ölçümü `Projects.tsx` içinde. */}
+      <div className="flex items-center gap-2">
         <SearchInput
           value={aramaGirdisi}
           onChange={(e) => setAramaGirdisi(e.target.value)}
@@ -72,29 +79,75 @@ export default function Teams() {
           className="min-w-0 flex-1 md:max-w-[300px]"
         />
 
-        <UnitScopePicker />
+        <div className="hidden min-w-0 flex-wrap items-center gap-2 md:ml-auto md:flex md:flex-nowrap">
+          <UnitScopePicker />
 
-        <SegmentedSelect<Kapsam>
-          deger={kapsam}
-          degistir={(d) => {
-            setKapsam(d);
-            setSayfa(1);
-          }}
-          etiket="Kapsam"
-          secenekler={[
-            { deger: 'kendi', etiket: 'Birimim' },
-            { deger: 'alt', etiket: 'Alt birimler' },
-          ]}
-          className="md:ml-auto"
-        />
+          <SegmentedSelect<Kapsam>
+            deger={kapsam}
+            degistir={(d) => {
+              setKapsam(d);
+              setSayfa(1);
+            }}
+            etiket="Kapsam"
+            secenekler={[
+              { deger: 'kendi', etiket: 'Birimim' },
+              { deger: 'alt', etiket: 'Alt birimler' },
+            ]}
+          />
 
-        {yetkili && (
-          <Button onClick={() => setDuzenlenen('yeni')}>
-            <Plus size={14} />
-            Ekip kur
-          </Button>
-        )}
+          {yetkili && (
+            <Button onClick={() => setDuzenlenen('yeni')}>
+              <Plus size={14} />
+              Ekip kur
+            </Button>
+          )}
+        </div>
       </div>
+
+      {/* ── Mobil: FAB ve süzgeç tabakası ── */}
+      <Fab
+        etiket="Ekip eylemleri"
+        eylemler={[
+          ...(yetkili
+            ? [{
+                etiket: 'Ekip kur',
+                ikon: <Plus size={21} strokeWidth={2.2} />,
+                onClick: () => setDuzenlenen('yeni'),
+              }]
+            : []),
+          {
+            etiket: 'Ara ve süz',
+            ikon: <SlidersHorizontal size={19} strokeWidth={2} />,
+            onClick: () => setSuzgecAcik(true),
+          },
+        ]}
+      />
+
+      <FilterSheet
+        acik={suzgecAcik}
+        kapat={() => setSuzgecAcik(false)}
+        etkinSayisi={(arama ? 1 : 0) + (kapsam !== 'kendi' ? 1 : 0)}
+        temizle={() => {
+          setAramaGirdisi('');
+          setKapsam('kendi');
+          setSayfa(1);
+        }}
+      >
+        <FilterSection baslik="Birim">
+          <UnitScopePicker className="w-full" />
+          <Segment<Kapsam>
+            deger={kapsam}
+            degistir={(d) => {
+              setKapsam(d);
+              setSayfa(1);
+            }}
+            secenekler={[
+              { deger: 'kendi', etiket: 'Birimim' },
+              { deger: 'alt', etiket: 'Alt birimler' },
+            ]}
+          />
+        </FilterSection>
+      </FilterSheet>
 
       {isLoading ? (
         <SkeletonRows adet={4} />

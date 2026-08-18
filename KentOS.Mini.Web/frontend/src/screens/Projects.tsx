@@ -1,4 +1,6 @@
-import { AlertTriangle, Calendar, FolderKanban, Plus, Search, Users } from 'lucide-react';
+import {
+  AlertTriangle, Calendar, FolderKanban, Plus, Search, SlidersHorizontal, Users,
+} from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
@@ -7,6 +9,9 @@ import { ColoredBadge } from '../components/Color';
 import { EmptyState } from '../components/EmptyState';
 import { SearchInput } from '../components/Field';
 import { ChipStrip, FilterChip, SegmentedSelect } from '../components/Filters';
+import { Segment, FilterSection, FilterSheet } from '../components/FilterSheet';
+import { useIsDesktop } from '../components/screenSize';
+import { Fab } from '../shell/mobile/Fab';
 import { Pagination } from '../components/Pagination';
 import { SkeletonRows } from '../components/Skeleton';
 import { PERMISSION } from '../components/permissions';
@@ -59,42 +64,58 @@ export default function Projects() {
   });
 
   const projeler = data?.veriler ?? [];
+  const masaustu = useIsDesktop();
+  const [suzgecAcik, setSuzgecAcik] = useState(false);
   const suzuluyor = arama !== '' || durum !== null;
 
   return (
     <div className="space-y-3.5">
-      <div className="flex flex-wrap items-center gap-2">
+      {/*
+        ── Araç çubuğu ──
+
+        Dört denetim TEK satırda sarmalanıyordu ve arama kutusu `flex-1` ile
+        artakalanı alıyordu: 390px'lik bir ekranda birim seçici 231px, kapsam
+        segmenti 179px, "Proje aç" 107px yer kaplayınca aramaya <b>119px</b>
+        kalıyordu — ölçüldü. İçine iki kelime sığmayan bir arama kutusu.
+
+        Çözüm ekranın kendi gramerinde zaten vardı: <code>Tasks.tsx</code>
+        telefonda üst şeritte YALNIZCA aramayı bırakıyor, gerisini FAB'dan
+        açılan süzgeç tabakasına alıyor. Projeler ve ekipler o düzenlemeyi
+        hiç almamış.
+      */}
+      <div className="flex items-center gap-2">
         <SearchInput
           value={aramaGirdisi}
           onChange={(e) => setAramaGirdisi(e.target.value)}
-          placeholder="Proje adı veya kodu ara"
+          placeholder={masaustu ? 'Proje adı veya kodu ara' : 'Ara'}
           aria-label="Projelerde ara"
           ikon={<Search size={15} />}
           className="min-w-0 flex-1 md:max-w-[320px]"
         />
 
-        <UnitScopePicker />
+        <div className="hidden min-w-0 flex-wrap items-center gap-2 md:ml-auto md:flex md:flex-nowrap">
+          <UnitScopePicker />
 
-        <SegmentedSelect<Kapsam>
-          deger={kapsam}
-          degistir={(d) => {
-            setKapsam(d);
-            setSayfa(1);
-          }}
-          etiket="Kapsam"
-          secenekler={[
-            { deger: 'kendi', etiket: 'Birimim' },
-            { deger: 'alt', etiket: 'Alt birimler' },
-          ]}
-          className="md:ml-auto"
-        />
+          <SegmentedSelect<Kapsam>
+            deger={kapsam}
+            degistir={(d) => {
+              setKapsam(d);
+              setSayfa(1);
+            }}
+            etiket="Kapsam"
+            secenekler={[
+              { deger: 'kendi', etiket: 'Birimim' },
+              { deger: 'alt', etiket: 'Alt birimler' },
+            ]}
+          />
 
-        {hasPermission(PERMISSION.projeYonet) && (
-          <Button onClick={() => gezin('/projeler/yeni')}>
-            <Plus size={14} />
-            Proje aç
-          </Button>
-        )}
+          {hasPermission(PERMISSION.projeYonet) && (
+            <Button onClick={() => gezin('/projeler/yeni')}>
+              <Plus size={14} />
+              Proje aç
+            </Button>
+          )}
+        </div>
       </div>
 
       <ChipStrip>
@@ -120,6 +141,52 @@ export default function Projects() {
           </FilterChip>
         ))}
       </ChipStrip>
+
+      {/* ── Mobil: FAB ve süzgeç tabakası ── */}
+      <Fab
+        etiket="Proje eylemleri"
+        eylemler={[
+          ...(hasPermission(PERMISSION.projeYonet)
+            ? [{
+                etiket: 'Proje aç',
+                ikon: <Plus size={21} strokeWidth={2.2} />,
+                onClick: () => gezin('/projeler/yeni'),
+              }]
+            : []),
+          {
+            etiket: 'Ara ve süz',
+            ikon: <SlidersHorizontal size={19} strokeWidth={2} />,
+            onClick: () => setSuzgecAcik(true),
+          },
+        ]}
+      />
+
+      <FilterSheet
+        acik={suzgecAcik}
+        kapat={() => setSuzgecAcik(false)}
+        etkinSayisi={(arama ? 1 : 0) + (durum !== null ? 1 : 0) + (kapsam !== 'kendi' ? 1 : 0)}
+        temizle={() => {
+          setAramaGirdisi('');
+          setDurum(null);
+          setKapsam('kendi');
+          setSayfa(1);
+        }}
+      >
+        <FilterSection baslik="Birim">
+          <UnitScopePicker className="w-full" />
+          <Segment<Kapsam>
+            deger={kapsam}
+            degistir={(d) => {
+              setKapsam(d);
+              setSayfa(1);
+            }}
+            secenekler={[
+              { deger: 'kendi', etiket: 'Birimim' },
+              { deger: 'alt', etiket: 'Alt birimler' },
+            ]}
+          />
+        </FilterSection>
+      </FilterSheet>
 
       {isLoading ? (
         <SkeletonRows adet={4} />
