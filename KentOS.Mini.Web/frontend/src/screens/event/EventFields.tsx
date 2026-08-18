@@ -58,16 +58,29 @@ export function varsayilanZaman(): BaslangicOnerisi {
   const simdi = new Date();
   simdi.setSeconds(0, 0);
   simdi.setMinutes(simdi.getMinutes() < 30 ? 30 : 60);
-  const bit = new Date(simdi.getTime() + 30 * 60_000);
   const b = localToServer(simdi);
-  return { gun: b.slice(0, 10), bas: b.slice(11, 16), bit: localToServer(bit).slice(11, 16) };
+  return { gun: b.slice(0, 10), bas: b.slice(11, 16), bit: guneSigdir(simdi, 30) };
 }
 
 /** Takvim dilimini forma verilecek öneriye çevirir. */
 export function dilimdenOneri(t: Date, sureDk = 30): BaslangicOnerisi {
-  const bit = new Date(t.getTime() + sureDk * 60_000);
   const b = localToServer(t);
-  return { gun: b.slice(0, 10), bas: b.slice(11, 16), bit: localToServer(bit).slice(11, 16) };
+  return { gun: b.slice(0, 10), bas: b.slice(11, 16), bit: guneSigdir(t, sureDk) };
+}
+
+/**
+ * Bitiş saatini başlangıcın GÜNÜNE sığdırır.
+ *
+ * Etkinlik gövdesi bitişi her zaman başlangıcın gününe yazar
+ * (`bitisTarihi: gun + bitSaat`). 23:30'dan sonra +30 dakika gece yarısını
+ * aşıyor ve yalnızca saat dilimi alındığı için "23:30 – 00:00" üretiyordu:
+ * bitişi başlangıcından ÖNCE, takvimde çizilemeyen bir kayıt. Gün taşarsa
+ * bitiş 23:59'a kelepçelenir.
+ */
+function guneSigdir(baslangic: Date, sureDk: number): string {
+  const bit = new Date(baslangic.getTime() + sureDk * 60_000);
+  if (bit.getDate() !== baslangic.getDate()) return '23:59';
+  return localToServer(bit).slice(11, 16);
 }
 
 /**
@@ -314,8 +327,18 @@ export function EventFields({
   // Gizli etkinlik için görebilecek kişi ZORUNLU DEĞİL: kimseyi seçmemek
   // "yalnızca ben göreceğim" demek ve bu geçerli bir kullanım. Önceden
   // katılımcı zorunluydu ama o liste artık davet listesi, görünürlük değil.
+  /*
+   * BİTİŞ, BAŞLANGIÇTAN ÖNCE OLAMAZ. Gövde bitişi başlangıcın gününe
+   * yazdığı için 00:00'a sarmış bir bitiş "dünden önce biten" kayıt üretir;
+   * sunucu bunu kabul ediyor (200) ve kayıt takvimde çizilemiyordu.
+   * Elle seçilen ters aralık da aynı kapıdan döner.
+   */
+  const saatTers =
+    !tumGun &&
+    bitSaat.length > 0 &&
+    (clockToMinutes(bitSaat) ?? 0) <= (clockToMinutes(basSaat) ?? 0);
   const gecerli =
-    baslik.trim().length > 0 && gun.length > 0 && basSaat.length > 0;
+    baslik.trim().length > 0 && gun.length > 0 && basSaat.length > 0 && !saatTers;
 
   if (duzenleme && mevcut.isLoading) {
     return (
@@ -378,7 +401,11 @@ export function EventFields({
               <DatePicker id="e-gun" deger={gun} degistir={setGun} />
             </FieldWrapper>
 
-            <FieldWrapper etiket="Saat aralığı" id="e-saat">
+            <FieldWrapper
+              etiket="Saat aralığı"
+              id="e-saat"
+              hata={saatTers ? 'Bitiş, başlangıçtan sonra olmalı (etkinlik aynı gün içinde biter).' : undefined}
+            >
               <TimeRangePicker
                 id="e-saat"
                 baslangic={basSaat}
@@ -611,7 +638,7 @@ export function EventFields({
           {gizli && (
             <>
               <p className="rounded-sm bg-(--st-wait-bg) px-3 py-2 text-xs leading-normal text-(--st-wait)">
-                Gizli etkinlik havale edilemez, çiçek talimatı üretmez, birim SMS 191 
+                Gizli etkinlik havale edilemez, çiçek talimatı üretmez, birim SMS'i
                 göndermez ve medya listesine girmez. Bildirim yalnızca aşağıdaki
                 kişilere gider — <b>katılımcı birimlere gitmez</b>.
               </p>
