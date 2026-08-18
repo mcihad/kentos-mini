@@ -680,6 +680,7 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.GorevDetayDto
   gorevTipiAd
   gorevTipiId
   id
+  ilerleme
   kalanSaat
   kaynak
   kaynakAd
@@ -708,6 +709,7 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.GorevDurumIstegiDto
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.GorevDurumSecenegiDto
   ad
   durum
+  eylem
   renk
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.GorevKayitDto
   aciklama
@@ -743,6 +745,7 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.GorevOzetDto
   gorevTipiAd
   gorevTipiId
   id
+  ilerleme
   kalanSaat
   kaynak
   kaynakAd
@@ -863,6 +866,7 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.KilometreTasiDto
   gorevToplam
   hedefTarih
   id
+  ilerleme
   siraNo
   tamamlandi
   tamamlanmaTarihi
@@ -880,6 +884,14 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.PanoSutunuDto
   id
   renk
   siraNo
+DTO KentOS.Mini.Application.Dto.V2.IsTakip.PersonelSecimDto
+  ad
+  altBirimden
+  birimAd
+  birimId
+  id
+  kendisi
+  unvan
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.ProjeDetayDto
   aciklama
   ad
@@ -899,6 +911,7 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.ProjeDetayDto
   gorevGeciken
   gorevToplam
   id
+  ilerleme
   kilometreTasiBiten
   kilometreTasiToplam
   kilometreTaslari
@@ -946,6 +959,7 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.ProjeOzetDto
   gorevGeciken
   gorevToplam
   id
+  ilerleme
   kilometreTasiBiten
   kilometreTasiToplam
   kod

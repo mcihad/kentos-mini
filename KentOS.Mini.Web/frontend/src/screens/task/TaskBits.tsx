@@ -71,28 +71,65 @@ function sureMetni(saat: number): string {
 }
 
 /**
- * AŞAMA İLERLEMESİ — "kaç adım bitti?"
+ * İLERLEME ÇUBUĞU — "işin ne kadarı bitti?"
  *
- * Aşaması olmayan görevde hiç çizilmez; "0/0" bir bilgi değil, bir gürültü.
+ * <p>
+ * Yüzde SUNUCUDAN geliyor (<code>ilerleme</code>) ve aşama sayısıyla
+ * hesaplanmıyor: kural <code>GorevDurumAkisi.Ilerleme</code> içinde tek
+ * yerde yazılı. Aşaması olmayan görevlerde bile bir sayı veriyor —
+ * modüldeki görevlerin çoğunun aşaması yok ve onlar eskiden çubuk hiç
+ * görmüyordu.
+ * </p>
+ *
+ * <p>
+ * <b>%100 yalnızca ONAYLANMIŞ görevde.</b> Bütün aşamaları biten ama onay
+ * bekleyen iş %95'te durur; çubuğun dolması, kabul edilmemiş bir işi bitmiş
+ * göstermek olurdu.
+ * </p>
+ *
+ * <p>
+ * Aşama sayısı (<code>3/4</code>) varsa yanında duruyor: yüzde "ne kadarı",
+ * kesir "hangi adımda" sorusunu cevaplıyor ve ikisi farklı şeyler.
+ * </p>
  */
-export function StageProgress({ biten, toplam }: { biten: number; toplam: number }) {
-  if (toplam === 0) return null;
+export function StageProgress({
+  biten,
+  toplam,
+  ilerleme,
+  genis,
+}: {
+  biten: number;
+  toplam: number;
+  ilerleme?: number | null;
+  /** Tam genişlik çubuk — kart içinde tek başına durduğunda. */
+  genis?: boolean;
+}) {
+  // Aşaması olmayan ve hiç başlamamış görevde çizilmez: %0'lık boş bir çubuk
+  // bir bilgi değil, her satırda tekrar eden bir gürültü.
+  const oran = ilerleme ?? (toplam === 0 ? 0 : Math.round((biten / toplam) * 100));
+  if (toplam === 0 && !oran) return null;
 
-  const oran = Math.round((biten / toplam) * 100);
+  const baslik =
+    toplam > 0
+      ? `${toplam} aşamanın ${biten} tanesi kapandı — %${oran}`
+      : `İşin %${oran}'i tamamlandı`;
 
   return (
     <span
-      className="inline-flex items-center gap-1.5 whitespace-nowrap"
-      title={`${toplam} aşamanın ${biten} tanesi tamamlandı`}
+      className={genis ? 'flex items-center gap-2' : 'inline-flex items-center gap-1.5 whitespace-nowrap'}
+      title={baslik}
     >
-      <span className="h-1 w-10 overflow-hidden rounded-full bg-sunken" aria-hidden>
+      <span
+        className={`h-1 overflow-hidden rounded-full bg-sunken ${genis ? 'min-w-0 flex-1' : 'w-10'}`}
+        aria-hidden
+      >
         <span
-          className="block h-full rounded-full bg-brand-ui transition-[width]"
+          className="block h-full rounded-full bg-brand transition-[width]"
           style={{ width: `${oran}%` }}
         />
       </span>
-      <span className="text-2xs tabular-nums text-ink-3">
-        {biten}/{toplam}
+      <span className="shrink-0 text-2xs tabular-nums text-ink-3">
+        {toplam > 0 ? `${biten}/${toplam}` : `%${oran}`}
       </span>
     </span>
   );

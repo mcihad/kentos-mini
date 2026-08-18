@@ -167,11 +167,20 @@ export default function Projects() {
 function ProjeKarti({ proje: p }: { proje: ProjectSummary }) {
   const toplam = p.gorevToplam ?? 0;
   const biten = p.gorevBiten ?? 0;
-  const oran = toplam === 0 ? 0 : Math.round((biten / toplam) * 100);
+
+  /*
+    YÜZDE SUNUCUDAN, "biten/toplam" ORANINDAN DEĞİL.
+
+    Eskiden `biten / toplam` çiziliyordu: bir görev ONAYLANANA kadar sıfır
+    sayılıyordu ve beş aşamalı işin dördünü bitiren ekip çubukta hiçbir
+    hareket görmüyordu. Sunucu artık bağlı görevlerin ilerleme ortalamasını
+    veriyor; kural `GorevDurumAkisi.Ilerleme` içinde tek yerde.
+  */
+  const oran = p.ilerleme ?? 0;
 
   return (
     <Link to={`/projeler/${p.id}`} className="block">
-      <Card className="h-full p-3.5 transition-colors hover:border-brand-ui">
+      <Card className="h-full p-3.5 transition-colors hover:border-brand">
         <div className="flex items-start gap-2">
           <span
             className="mt-1 h-2.5 w-2.5 flex-none rounded-full"
@@ -192,13 +201,13 @@ function ProjeKarti({ proje: p }: { proje: ProjectSummary }) {
         <div className="mt-3">
           <div className="flex items-baseline justify-between text-2xs text-ink-3">
             <span>
-              {toplam === 0 ? 'Görev yok' : `${biten}/${toplam} görev`}
+              {toplam === 0 ? 'Görev yok' : `${biten}/${toplam} görev kapandı`}
             </span>
             {toplam > 0 && <span className="tabular-nums">%{oran}</span>}
           </div>
           <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-sunken" aria-hidden>
             <span
-              className="block h-full rounded-full bg-brand-ui transition-[width]"
+              className="block h-full rounded-full bg-brand transition-[width]"
               style={{ width: `${oran}%` }}
             />
           </span>

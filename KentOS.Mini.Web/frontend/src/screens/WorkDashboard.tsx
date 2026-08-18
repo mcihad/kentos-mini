@@ -96,7 +96,7 @@ export default function WorkDashboard() {
         <div className="flex flex-wrap gap-2.5">
           {(pano.bekleyenBildirim ?? 0) > 0 && (
             <Link to="/vatandas-bildirimleri" className="flex-1">
-              <Card className="flex items-center gap-2.5 p-3 hover:border-brand-ui">
+              <Card className="flex items-center gap-2.5 p-3 hover:border-brand">
                 <Inbox size={18} className="text-(--st-wait)" />
                 <span className="text-sm text-ink">
                   <b>{pano.bekleyenBildirim}</b> vatandaş bildirimi bekliyor
@@ -106,7 +106,7 @@ export default function WorkDashboard() {
           )}
           {(pano.bekleyenDevir ?? 0) > 0 && (
             <Link to="/gelen-kutusu" className="flex-1">
-              <Card className="flex items-center gap-2.5 p-3 hover:border-brand-ui">
+              <Card className="flex items-center gap-2.5 p-3 hover:border-brand">
                 <Inbox size={18} className="text-(--st-wait)" />
                 <span className="text-sm text-ink">
                   <b>{pano.bekleyenDevir}</b> gelen kutusu kaydı bekliyor
@@ -237,7 +237,7 @@ export default function WorkDashboard() {
                     <span className="flex items-center gap-2 text-2xs text-ink-3">
                       <span className="font-mono tabular-nums">{g.takipNo}</span>
                       {g.birimAd && <span className="truncate">· {g.birimAd}</span>}
-                      <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} />
+                      <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} ilerleme={g.ilerleme} />
                     </span>
                   </span>
                   <SlaBadge gecikti={!!g.gecikti} kalanSaat={g.kalanSaat} kisa />

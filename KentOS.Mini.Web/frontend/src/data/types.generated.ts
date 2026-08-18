@@ -7822,6 +7822,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/personel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Etkin birimin ve altındaki birimlerin personeli.
+         * @description Sayfalama YOK ve bilinçli — bu liste bir seçim kutusu dolduruyor.
+         *     Sayfalanmış bir açılır liste, kullanıcıyı aradığı kişiyi sayfa sayfa
+         *     aramaya zorlardı; bunun yerine ara var. Üst sınır
+         *     yine de konuyor: bir kurumda binlerce personel olabilir ve tamamını
+         *     tek yanıtta göndermek tarayıcıyı kilitlerdi.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    /** @description Ad, soyad ya da unvanda geçen metin. */
+                    ara?: string;
+                    /**
+                     * @description Alt birimler de taransın mı? Varsayılan `true`: bir müdürlük
+                     *     şefliklerine iş verebilmeli ve o şefliklerin personelini
+                     *     görebilmelidir.
+                     */
+                    altBirimlerDahil?: boolean;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["PersonelSecimDto"][];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/proje": {
         parameters: {
             query?: never;
@@ -12714,6 +12766,8 @@ export interface components {
             asamaToplam?: number;
             /** Format: int32 */
             asamaBiten?: number;
+            /** Format: int32 */
+            ilerleme?: number;
             sorumlular?: string[] | null;
             aciklama?: string | null;
             gerekce?: string | null;
@@ -12747,6 +12801,7 @@ export interface components {
         GorevDurumSecenegiDto: {
             durum?: components["schemas"]["GorevDurumu"];
             ad?: string | null;
+            eylem?: string | null;
             renk?: string | null;
         };
         /**
@@ -12839,6 +12894,8 @@ export interface components {
             asamaToplam?: number;
             /** Format: int32 */
             asamaBiten?: number;
+            /** Format: int32 */
+            ilerleme?: number;
             sorumlular?: string[] | null;
         };
         GorevOzetDtoSayfaliSonuc: {
@@ -13468,6 +13525,8 @@ export interface components {
             gorevToplam?: number;
             /** Format: int32 */
             gorevBiten?: number;
+            /** Format: int32 */
+            ilerleme?: number;
             gecikti?: boolean;
         };
         /** @description VATANDAŞ DOSYASI — tek kişinin kurumla bütün geçmişi. */
@@ -13932,6 +13991,17 @@ export interface components {
             /** Format: int32 */
             adet?: number;
         };
+        PersonelSecimDto: {
+            /** Format: int64 */
+            id?: number;
+            ad?: string | null;
+            unvan?: string | null;
+            /** Format: int64 */
+            birimId?: number | null;
+            birimAd?: string | null;
+            kendisi?: boolean;
+            altBirimden?: boolean;
+        };
         ProblemDetails: {
             type?: string | null;
             title?: string | null;
@@ -13982,6 +14052,8 @@ export interface components {
             gorevToplam?: number;
             /** Format: int32 */
             gorevBiten?: number;
+            /** Format: int32 */
+            ilerleme?: number;
             /** Format: int32 */
             gorevGeciken?: number;
             /** Format: int32 */
@@ -14065,6 +14137,8 @@ export interface components {
             gorevToplam?: number;
             /** Format: int32 */
             gorevBiten?: number;
+            /** Format: int32 */
+            ilerleme?: number;
             /** Format: int32 */
             gorevGeciken?: number;
             /** Format: int32 */

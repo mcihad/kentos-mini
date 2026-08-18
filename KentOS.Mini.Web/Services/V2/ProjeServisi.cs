@@ -404,7 +404,13 @@ public class ProjeServisi(
         var tasGorevleri = await _context.Gorevler
             .AsNoTracking()
             .Where(g => g.ProjeId == proje.Id && g.KilometreTasiId != null)
-            .Select(g => new { TasId = g.KilometreTasiId!.Value, g.Durum })
+            .Select(g => new
+            {
+                TasId = g.KilometreTasiId!.Value,
+                g.Durum,
+                AsamaToplam = g.Asamalar.Count,
+                AsamaBiten = g.Asamalar.Count(a => a.Durum != GorevAsamaDurumu.Bekliyor),
+            })
             .ToListAsync(iptal);
 
         foreach (var t in taslar)
@@ -412,7 +418,10 @@ public class ProjeServisi(
             if (t.HedefTarih is null) continue;
 
             var bagli = tasGorevleri.Where(g => g.TasId == t.Id).ToList();
-            var biten = bagli.Count(g => g.Durum == GorevDurumu.Tamamlandi);
+            var oranlar = bagli
+                .Where(g => GorevDurumAkisi.IlerlemeyeGirer(g.Durum))
+                .Select(g => GorevDurumAkisi.Ilerleme(g.Durum, g.AsamaToplam, g.AsamaBiten))
+                .ToList();
 
             satirlar.Add(new GanttSatiriDto
             {
@@ -425,7 +434,9 @@ public class ProjeServisi(
                 Baslangic = t.HedefTarih,
                 Bitis = t.HedefTarih,
                 Renk = t.Tamamlandi ? "#4A7A2B" : "#A78952",
-                Ilerleme = bagli.Count == 0 ? (t.Tamamlandi ? 100 : 0) : biten * 100 / bagli.Count,
+                Ilerleme = oranlar.Count == 0
+                    ? (t.Tamamlandi ? 100 : 0)
+                    : (int)Math.Round(oranlar.Average()),
                 Gecikti = !t.Tamamlandi && t.HedefTarih < simdi,
                 DurumAd = t.Tamamlandi ? "Tamamlandı" : "Bekliyor",
             });
@@ -466,9 +477,10 @@ public class ProjeServisi(
                 Baslangic = bas,
                 Bitis = bit,
                 Renk = GorevDurumAkisi.Renk(g.Durum),
-                Ilerleme = g.Toplam == 0
-                    ? (g.Durum == GorevDurumu.Tamamlandi ? 100 : 0)
-                    : g.Biten * 100 / g.Toplam,
+                // Gantt çubuğunun doluluğu, listedeki ilerleme çubuğuyla AYNI
+                // sayı: iki ekranın aynı işe farklı yüzde vermesi, hangisinin
+                // doğru olduğunu sormaya değecek bir çelişki olurdu.
+                Ilerleme = GorevDurumAkisi.Ilerleme(g.Durum, g.Toplam, g.Biten),
                 Gecikti = !kapali && bit < simdi,
                 DurumAd = GorevDurumAkisi.Ad(g.Durum),
                 KilometreTasiId = g.KilometreTasiId,
@@ -810,20 +822,51 @@ public class ProjeServisi(
             })
             .ToListAsync(iptal);
 
-        var gorevSayilari = await _context.Gorevler
+        /*
+          İLERLEME ORTALAMASI İÇİN GÖREVLER SATIR SATIR ÇEKİLİYOR.
+
+          Yüzde artık "kaç görev kapandı" değil, "her görevin ne kadarı
+          yapıldı"nın ortalaması — kural `GorevDurumAkisi.Ilerleme` içinde ve
+          aşama sayısına bakıyor. Bunu tek bir GroupBy ile SQL'de hesaplamak,
+          aynı kuralı ikinci kez (bu kez LINQ-to-SQL diliyle) yazmak olurdu:
+          iki tanım er ya da geç ayrışır ve proje ekranı görev ekranıyla
+          çelişirdi. Bir projenin görev sayısı yüz mertebesinde; satırlar
+          yalnızca dört alan taşıyor.
+        */
+        var gorevSatirlari = await _context.Gorevler
             .AsNoTracking()
             .Where(g => g.ProjeId != null && idler.Contains(g.ProjeId.Value))
-            .GroupBy(g => g.ProjeId!.Value)
             .Select(g => new
             {
-                ProjeId = g.Key,
-                Toplam = g.Count(),
-                Biten = g.Count(x => x.Durum == GorevDurumu.Tamamlandi),
-                Geciken = g.Count(x =>
-                    x.SlaBitis != null && x.SlaBitis < simdi &&
-                    x.Durum != GorevDurumu.Tamamlandi && x.Durum != GorevDurumu.Iptal),
+                ProjeId = g.ProjeId!.Value,
+                g.Durum,
+                g.SlaBitis,
+                AsamaToplam = g.Asamalar.Count,
+                AsamaBiten = g.Asamalar.Count(a => a.Durum != GorevAsamaDurumu.Bekliyor),
             })
-            .ToDictionaryAsync(x => x.ProjeId, iptal);
+            .ToListAsync(iptal);
+
+        var gorevSayilari = gorevSatirlari
+            .GroupBy(g => g.ProjeId)
+            .ToDictionary(g => g.Key, g =>
+            {
+                var sayilanlar = g
+                    .Where(x => GorevDurumAkisi.IlerlemeyeGirer(x.Durum))
+                    .Select(x => GorevDurumAkisi.Ilerleme(x.Durum, x.AsamaToplam, x.AsamaBiten))
+                    .ToList();
+
+                return new
+                {
+                    Toplam = g.Count(),
+                    Biten = g.Count(x => x.Durum == GorevDurumu.Tamamlandi),
+                    Geciken = g.Count(x =>
+                        x.SlaBitis != null && x.SlaBitis < simdi &&
+                        x.Durum != GorevDurumu.Tamamlandi && x.Durum != GorevDurumu.Iptal),
+                    Ilerleme = sayilanlar.Count == 0
+                        ? 0
+                        : (int)Math.Round(sayilanlar.Average()),
+                };
+            });
 
         var tasSayilari = await _context.KilometreTaslari
             .AsNoTracking()
@@ -864,6 +907,7 @@ public class ProjeServisi(
                     GorevToplam = g?.Toplam ?? 0,
                     GorevBiten = g?.Biten ?? 0,
                     GorevGeciken = g?.Geciken ?? 0,
+                    Ilerleme = g?.Ilerleme ?? 0,
                     KilometreTasiToplam = t?.Toplam ?? 0,
                     KilometreTasiBiten = t?.Biten ?? 0,
 
@@ -889,7 +933,7 @@ public class ProjeServisi(
             Enlem = ozet.Enlem, Boylam = ozet.Boylam, Adres = ozet.Adres,
             UyeSayisi = ozet.UyeSayisi,
             GorevToplam = ozet.GorevToplam, GorevBiten = ozet.GorevBiten,
-            GorevGeciken = ozet.GorevGeciken,
+            GorevGeciken = ozet.GorevGeciken, Ilerleme = ozet.Ilerleme,
             KilometreTasiToplam = ozet.KilometreTasiToplam,
             KilometreTasiBiten = ozet.KilometreTasiBiten,
             Gecikti = ozet.Gecikti,
@@ -935,26 +979,41 @@ public class ProjeServisi(
         return detay;
     }
 
-    private async Task<Dictionary<long, (int Toplam, int Biten)>> TasSayilariAsync(
+    private async Task<Dictionary<long, (int Toplam, int Biten, int Ilerleme)>> TasSayilariAsync(
         long projeId, CancellationToken iptal)
     {
+        // Proje özetiyle aynı gerekçe: ilerleme kuralı tek yerde
+        // (`GorevDurumAkisi.Ilerleme`) ve SQL'de ikinci kez yazılmıyor.
         var ham = await _context.Gorevler
             .AsNoTracking()
             .Where(g => g.ProjeId == projeId && g.KilometreTasiId != null)
-            .GroupBy(g => g.KilometreTasiId!.Value)
             .Select(g => new
             {
-                TasId = g.Key,
-                Toplam = g.Count(),
-                Biten = g.Count(x => x.Durum == GorevDurumu.Tamamlandi),
+                TasId = g.KilometreTasiId!.Value,
+                g.Durum,
+                AsamaToplam = g.Asamalar.Count,
+                AsamaBiten = g.Asamalar.Count(a => a.Durum != GorevAsamaDurumu.Bekliyor),
             })
             .ToListAsync(iptal);
 
-        return ham.ToDictionary(x => x.TasId, x => (x.Toplam, x.Biten));
+        return ham
+            .GroupBy(x => x.TasId)
+            .ToDictionary(g => g.Key, g =>
+            {
+                var sayilanlar = g
+                    .Where(x => GorevDurumAkisi.IlerlemeyeGirer(x.Durum))
+                    .Select(x => GorevDurumAkisi.Ilerleme(x.Durum, x.AsamaToplam, x.AsamaBiten))
+                    .ToList();
+
+                return (
+                    Toplam: g.Count(),
+                    Biten: g.Count(x => x.Durum == GorevDurumu.Tamamlandi),
+                    Ilerleme: sayilanlar.Count == 0 ? 0 : (int)Math.Round(sayilanlar.Average()));
+            });
     }
 
     private static KilometreTasiDto TasaCevir(
-        Milestone k, Dictionary<long, (int Toplam, int Biten)> sayilar, DateTime simdi)
+        Milestone k, Dictionary<long, (int Toplam, int Biten, int Ilerleme)> sayilar, DateTime simdi)
     {
         var s = sayilar.GetValueOrDefault(k.Id);
 
@@ -969,6 +1028,10 @@ public class ProjeServisi(
             TamamlanmaTarihi = k.TamamlanmaTarihi,
             GorevToplam = s.Toplam,
             GorevBiten = s.Biten,
+
+            // Hiç görev bağlanmamış taşta ölçülecek iş yok: elle işaretlenen
+            // "tamamlandı" bayrağı tek gerçektir.
+            Ilerleme = s.Toplam == 0 ? (k.Tamamlandi ? 100 : 0) : s.Ilerleme,
             Gecikti = !k.Tamamlandi && k.HedefTarih is { } h && h < simdi,
         };
     }

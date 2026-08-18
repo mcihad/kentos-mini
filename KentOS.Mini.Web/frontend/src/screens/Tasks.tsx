@@ -138,7 +138,7 @@ export default function Tasks() {
       anahtar: 'asama',
       baslik: 'Aşama',
       genislik: 'w-28',
-      hucre: (g) => <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} />,
+      hucre: (g) => <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} ilerleme={g.ilerleme} />,
       mobil: false,
     },
     {
@@ -428,7 +428,7 @@ export default function Tasks() {
                   baslik={g.baslik}
                   alt={
                     <>
-                      <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} />
+                      <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} ilerleme={g.ilerleme} />
                       {(g.sorumlular ?? []).length > 0 && (
                         <span className="truncate">· {(g.sorumlular ?? [])[0]}</span>
                       )}

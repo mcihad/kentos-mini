@@ -1,15 +1,16 @@
-import { Pencil, User, Users } from 'lucide-react';
+import { Crown, Pencil, UserPlus, Users } from 'lucide-react';
 import { useState } from 'react';
 import { Button } from '../../components/Button';
 import { Card, CardHeader } from '../../components/Card';
 import { EmptyState } from '../../components/EmptyState';
 import { FieldWrapper } from '../../components/Field';
 import { FormModal } from '../../components/FormModal';
+import { Avatar, PersonPicker } from '../../components/PersonPicker';
 import { useToast } from '../../components/Toast';
 import { PERMISSION } from '../../components/permissions';
 import { useSession } from '../../auth/SessionProvider';
-import { useUnitUsers } from '../../data/hooks';
 import { useProjectMutations } from '../../data/projects';
+import { usePeople } from '../../data/tasks';
 import {
   PROJECT_MEMBER_ROLE_LABELS, type ProjectDetail, type ProjectMemberRequest,
 } from '../../data/types';
@@ -27,7 +28,10 @@ import {
  * <p>
  * <b>Proje yöneticisi ekibin üyesi olmalı</b> — projeyi yürüten kişinin
  * ekipte görünmemesi, "bu iş kimde?" sorusunu üye listesinden cevaplanamaz
- * kılardı. Sunucu da bunu reddediyor.
+ * kılardı. Sunucu da bunu reddediyor. Bu kural bir süre <b>uygulanamaz</b>
+ * durumdaydı: seçim listesi oturum sahibini dışarıda bırakıyordu, yani kişi
+ * yönettiği projeye kendini ekleyemiyordu. Kaynağı ve ölçümü
+ * <code>usePeople</code> üzerinde yazılı.
  * </p>
  */
 export function ProjectTeam({ proje }: { proje: ProjectDetail }) {
@@ -44,7 +48,7 @@ export function ProjectTeam({ proje }: { proje: ProjectDetail }) {
         baslik="Proje ekibi"
         aciklama={uyeler.length ? `${uyeler.length} kişi` : undefined}
         eylem={
-          yetkili ? (
+          yetkili && uyeler.length > 0 ? (
             <Button varyant="sade" onClick={() => setAcik(true)}>
               <Pencil size={14} />
               Düzenle
@@ -55,20 +59,36 @@ export function ProjectTeam({ proje }: { proje: ProjectDetail }) {
 
       {uyeler.length === 0 ? (
         <div className="px-3.5 pb-4">
-          <EmptyState ikon={Users} baslik="Ekip kurulmamış" />
+          {/*
+            BOŞ DURUM KENDİSİNİ DOLDURAN EYLEMİ TAŞIR. Önceki hâli yalnızca
+            "Ekip kurulmamış" yazıyordu ve üye eklemenin tek yolu, boş durumda
+            hiç çizilmeyen başlık düğmesiydi: ekranda ekip kurmaya davet eden
+            hiçbir şey yoktu.
+          */}
+          <EmptyState
+            ikon={Users}
+            baslik="Ekip kurulmamış"
+            aciklama="Projeyi kimlerin yürüteceğini seçin; yönetici de ekibin üyesi olmalı."
+            eylem={
+              yetkili ? (
+                <Button onClick={() => setAcik(true)}>
+                  <UserPlus size={14} />
+                  Ekip kur
+                </Button>
+              ) : undefined
+            }
+          />
         </div>
       ) : (
         <ul className="divide-y divide-line">
           {uyeler.map((u) => (
             <li key={u.kullaniciId} className="flex items-center gap-2.5 px-3.5 py-2.5">
-              <span className="grid h-7 w-7 flex-none place-items-center rounded-sm bg-sunken text-ink-3">
-                <User size={14} />
-              </span>
+              <Avatar ad={u.ad ?? ''} boyut="kucuk" />
               <span className="min-w-0 flex-1 truncate text-sm text-ink">{u.ad}</span>
-              <span className="shrink-0 text-2xs text-ink-3">
-                {u.rolAd}
-                {u.yoneticiMi && ' · proje yöneticisi'}
-              </span>
+              {u.yoneticiMi && (
+                <Crown size={13} className="shrink-0 text-brand" strokeWidth={2.4} />
+              )}
+              <span className="shrink-0 text-2xs text-ink-3">{u.rolAd}</span>
             </li>
           ))}
         </ul>
@@ -82,27 +102,37 @@ export function ProjectTeam({ proje }: { proje: ProjectDetail }) {
 function EkipFormu({ proje, kapat }: { proje: ProjectDetail; kapat: () => void }) {
   const { bildir } = useToast();
   const m = useProjectMutations(proje.id!);
-  const kullanicilar = useUnitUsers();
 
   const [uyeler, setUyeler] = useState<ProjectMemberRequest[]>(
     (proje.uyeler ?? []).map((u) => ({ kullaniciId: u.kullaniciId!, rol: u.rol })),
   );
   const [yoneticiId, setYoneticiId] = useState<number | null>(proje.yoneticiId ?? null);
 
-  const secili = new Map(uyeler.map((u) => [u.kullaniciId, u]));
-  const yoneticiUye = !yoneticiId || secili.has(yoneticiId);
-  const gecerli = yoneticiUye;
+  /*
+    ROL SATIRLARI İÇİN AD LAZIM ve seçici arama yaptıkça listesi daralıyor.
+    Aynı sorgu React Query'de önbellekli, ikinci bir istek atmıyor; buradaki
+    boş arama, seçicinin ilk yüklemesiyle aynı anahtarı paylaşıyor.
+  */
+  const { liste: personel } = usePeople('');
+  const adBul = (id: number) =>
+    personel.find((k) => k.id === id)?.ad
+    ?? (proje.uyeler ?? []).find((u) => u.kullaniciId === id)?.ad
+    ?? `#${id}`;
 
-  function degistir(id: number, isaretli: boolean) {
-    const yeni = isaretli
-      ? [...uyeler, { kullaniciId: id, rol: 1 as never }]
-      : uyeler.filter((u) => u.kullaniciId !== id);
+  const secili = uyeler.map((u) => u.kullaniciId!).filter((x): x is number => x != null);
+  const yoneticiUye = !yoneticiId || secili.includes(yoneticiId);
 
-    setUyeler(yeni);
+  function uyeleriYaz(idler: number[]) {
+    // Var olan roller KORUNUYOR: seçiciden geçen bir kişi "İzleyici" ise
+    // listeyi yeniden kurmak onu sessizce "Üye"ye çevirirdi.
+    setUyeler(
+      idler.map(
+        (id) =>
+          uyeler.find((u) => u.kullaniciId === id) ?? { kullaniciId: id, rol: 1 as never },
+      ),
+    );
 
-    // Üyelikten çıkarılan kişi yönetici kalamaz: sunucu bu kaydı reddederdi
-    // ve kullanıcı neden reddedildiğini formda göremezdi.
-    if (!isaretli && yoneticiId === id) setYoneticiId(null);
+    if (yoneticiId && !idler.includes(yoneticiId)) setYoneticiId(null);
   }
 
   return (
@@ -111,13 +141,16 @@ function EkipFormu({ proje, kapat }: { proje: ProjectDetail; kapat: () => void }
       kapat={kapat}
       baslik="Proje ekibi"
       aciklama="Proje yöneticisi ekibin üyesi olmalı."
+      altBilgi={
+        !yoneticiUye ? 'Yönetici, üyeler arasında olmalı.' : `${secili.length} kişi`
+      }
       eylemler={
         <>
           <Button varyant="ikincil" onClick={kapat}>
             Vazgeç
           </Button>
           <Button
-            disabled={!gecerli || m.ekip.isPending}
+            disabled={!yoneticiUye || m.ekip.isPending}
             onClick={async () => {
               try {
                 await m.ekip.mutateAsync({ yoneticiId, uyeler });
@@ -133,74 +166,62 @@ function EkipFormu({ proje, kapat }: { proje: ProjectDetail; kapat: () => void }
         </>
       }
     >
-      <FieldWrapper
-        etiket="Üyeler"
-        id="proje-uyeler"
-        ipucu="Listede olmayan kişi ekipten çıkarılır."
-      >
-        <div
+      <FieldWrapper etiket="Üyeler" id="proje-uyeler">
+        <PersonPicker
           id="proje-uyeler"
-          className="max-h-72 divide-y divide-line overflow-y-auto rounded-control border border-line"
-        >
-          {kullanicilar.liste.map((k) => {
-            const u = secili.get(k.id!);
-            return (
-              <div
-                key={k.id}
-                className="flex min-h-11 items-center gap-2.5 px-3 py-2 hover:bg-sunken"
-              >
-                <input
-                  type="checkbox"
-                  id={`uye-${k.id}`}
-                  checked={!!u}
-                  onChange={(e) => degistir(k.id!, e.target.checked)}
-                  className="h-4 w-4 accent-[var(--brand-ui)]"
-                />
-                <label htmlFor={`uye-${k.id}`} className="min-w-0 flex-1 cursor-pointer truncate text-sm text-ink">
-                  {k.ad}
-                </label>
-
-                {u && (
-                  <>
-                    <select
-                      value={u.rol ?? 1}
-                      onChange={(e) =>
-                        setUyeler(
-                          uyeler.map((x) =>
-                            x.kullaniciId === k.id
-                              ? { ...x, rol: Number(e.target.value) as never }
-                              : x,
-                          ),
-                        )
-                      }
-                      aria-label={`${k.ad} rolü`}
-                      className="h-8 rounded-control border border-line bg-surface px-1.5 text-2xs text-ink outline-hidden"
-                    >
-                      {Object.entries(PROJECT_MEMBER_ROLE_LABELS).map(([d, e]) => (
-                        <option key={d} value={d}>
-                          {e}
-                        </option>
-                      ))}
-                    </select>
-
-                    <button
-                      type="button"
-                      onClick={() => setYoneticiId(yoneticiId === k.id ? null : k.id!)}
-                      className={`shrink-0 rounded-full px-2 py-0.5 text-3xs ${
-                        yoneticiId === k.id
-                          ? 'bg-brand-ui text-white'
-                          : 'bg-sunken text-ink-3 hover:text-ink-2'
-                      }`}
-                    >
-                      {yoneticiId === k.id ? 'Yönetici' : 'Yönetici yap'}
-                    </button>
-                  </>
-                )}
-              </div>
-            );
-          })}
-        </div>
+          secili={secili}
+          degistir={uyeleriYaz}
+          liderId={yoneticiId}
+          liderDegistir={setYoneticiId}
+          liderEtiketi="Yönetici"
+        />
       </FieldWrapper>
+
+      {/*
+        ROLLER AYRI BİR BÖLÜMDE, SEÇİCİNİN İÇİNDE DEĞİL.
+
+        Rol açılır kutusunu satır içine koymak, aramayla daralan bir listede
+        rolü görünmez yapıyordu: kullanıcı "Ahmet" yazınca Ayşe'nin rolünü
+        artık göremiyordu. Roller yalnızca SEÇİLİ kişiler için sorulur ve
+        seçim ne olursa olsun burada durur.
+      */}
+      {secili.length > 0 && (
+        <FieldWrapper etiket="Roller" id="proje-roller">
+          <ul id="proje-roller" className="divide-y divide-line rounded-control border border-line">
+            {uyeler.map((u) => (
+              <li key={u.kullaniciId} className="flex min-h-11 items-center gap-2.5 px-3 py-2">
+                <Avatar ad={adBul(u.kullaniciId!)} boyut="kucuk" />
+                <span className="min-w-0 flex-1 truncate text-sm text-ink">
+                  {adBul(u.kullaniciId!)}
+                </span>
+                {yoneticiId === u.kullaniciId && (
+                  <Crown size={13} className="shrink-0 text-brand" strokeWidth={2.4} />
+                )}
+                <select
+                  value={u.rol ?? 1}
+                  onChange={(e) =>
+                    setUyeler(
+                      uyeler.map((x) =>
+                        x.kullaniciId === u.kullaniciId
+                          ? { ...x, rol: Number(e.target.value) as never }
+                          : x,
+                      ),
+                    )
+                  }
+                  aria-label={`${adBul(u.kullaniciId!)} rolü`}
+                  className="h-8 shrink-0 rounded-control border border-line bg-surface px-1.5 text-2xs text-ink outline-hidden"
+                >
+                  {Object.entries(PROJECT_MEMBER_ROLE_LABELS).map(([d, e]) => (
+                    <option key={d} value={d}>
+                      {e}
+                    </option>
+                  ))}
+                </select>
+              </li>
+            ))}
+          </ul>
+        </FieldWrapper>
+      )}
     </FormModal>
   );
 }

@@ -101,7 +101,10 @@ export default function ProjectDetail() {
 
   const toplam = proje.gorevToplam ?? 0;
   const biten = proje.gorevBiten ?? 0;
-  const oran = toplam === 0 ? 0 : Math.round((biten / toplam) * 100);
+
+  // Yüzde SUNUCUDAN: bağlı görevlerin ilerleme ortalaması. Gerekçesi
+  // `Projects.tsx` içinde ve `GorevDurumAkisi.Ilerleme` üzerinde yazılı.
+  const oran = proje.ilerleme ?? 0;
 
   return (
     <div className="space-y-3.5">
@@ -171,12 +174,14 @@ export default function ProjectDetail() {
         {/* İlerleme GÖREVLERDEN; projede saklanan bir yüzde yok. */}
         <div className="mt-3">
           <div className="flex items-baseline justify-between text-2xs text-ink-3">
-            <span>{toplam === 0 ? 'Henüz görev bağlanmamış' : `${biten}/${toplam} görev`}</span>
+            <span>
+              {toplam === 0 ? 'Henüz görev bağlanmamış' : `${biten}/${toplam} görev kapandı`}
+            </span>
             {toplam > 0 && <span className="tabular-nums">%{oran}</span>}
           </div>
           <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-sunken" aria-hidden>
             <span
-              className="block h-full rounded-full bg-brand-ui transition-[width]"
+              className="block h-full rounded-full bg-brand transition-[width]"
               style={{ width: `${oran}%` }}
             />
           </span>
@@ -215,10 +220,24 @@ export default function ProjectDetail() {
 
             {(proje.kilometreTaslari ?? []).length === 0 ? (
               <div className="px-3.5 pb-4">
+                {/* Boş durum kendisini dolduran eylemi taşır: "projeyi
+                    düzenleyerek tanımlayabilirsiniz" deyip düzenlemeye
+                    götürmemek, kullanıcıyı sayfanın tepesindeki kalem
+                    ikonunu aramaya bırakır. */}
                 <EmptyState
                   ikon={Circle}
                   baslik="Kilometre taşı yok"
-                  aciklama="Projeyi düzenleyerek ara hedefler tanımlayabilirsiniz."
+                  aciklama="Ara hedefler, gantt çizelgesinde ve ilerleme oranında görünür."
+                  eylem={
+                    hasPermission(PERMISSION.projeYonet) ? (
+                      <Link to={`/projeler/${projeId}/duzenle`}>
+                        <Button>
+                          <Plus size={14} />
+                          Hedef ekle
+                        </Button>
+                      </Link>
+                    ) : undefined
+                  }
                 />
               </div>
             ) : (
@@ -264,7 +283,8 @@ export default function ProjectDetail() {
                       </span>
                       <span className="text-2xs text-ink-3">
                         {k.hedefTarih ? shortDate(k.hedefTarih) : 'Tarihsiz'}
-                        {(k.gorevToplam ?? 0) > 0 && ` · ${k.gorevBiten}/${k.gorevToplam} görev`}
+                        {(k.gorevToplam ?? 0) > 0 &&
+                          ` · ${k.gorevBiten}/${k.gorevToplam} görev · %${k.ilerleme ?? 0}`}
                       </span>
                     </span>
 
@@ -353,7 +373,7 @@ export default function ProjectDetail() {
                       <span className="block truncate text-sm text-ink">{g.baslik}</span>
                       <span className="flex items-center gap-2 text-2xs text-ink-3">
                         <span className="font-mono tabular-nums">{g.takipNo}</span>
-                        <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} />
+                        <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} ilerleme={g.ilerleme} />
                       </span>
                     </span>
                     <SlaBadge gecikti={!!g.gecikti} kalanSaat={g.kalanSaat} kisa />

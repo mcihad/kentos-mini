@@ -80,6 +80,17 @@
   --h-row: calc(var(--sp) * 13);      /* 52px  · tablo satırı */
   --h-row-m: calc(var(--sp) * 15);    /* 60px  · mobil liste satırı */
   --h-tab: calc(var(--sp) * 14);      /* 56px  · tabbar öğesi */
+
+  /*
+    MOBİL ALT ÇUBUĞUN GERÇEK YÜKSEKLİĞİ (güvenli alan HARİÇ).
+
+    `--h-tab` sekme ÖĞESİNİN boyu; çubuğun kendisi ikon + etiket taşıdığı
+    için daha yüksek ve `AppShell` içinde `h-[64px]` olarak sabit yazılıydı.
+    İkinci bir yapışkan çubuk (görev detayındaki eylem şeridi) onun üstünde
+    duracağı için iki yerin AYNI sayıyı okuması şart: sayı iki dosyada ayrı
+    yazıldığında biri değişince öteki sessizce üst üste biner.
+  */
+  --h-tabbar: calc(var(--sp) * 16); /* 64px · mobil alt gezinme çubuğu */
   --w-side: calc(var(--sp) * 64);     /* 256px · sidebar */
   --w-side-sm: calc(var(--sp) * 19);  /* 76px  · daraltılmış sidebar */
 

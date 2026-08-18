@@ -104,7 +104,7 @@ function AsamaSatiri({ gorevId, asama }: { gorevId: number; asama: TaskStage }) 
               : asama.durum === TASK_STAGE_STATUS.atlandi
                 ? 'bg-sunken text-ink-3'
                 : asama.sirada
-                  ? 'bg-brand-ui text-white'
+                  ? 'bg-brand text-white'
                   : 'bg-sunken text-ink-3'
           }`}
           aria-hidden

@@ -62,6 +62,23 @@ public class GorevOzetDto
     [JsonPropertyName("asamaToplam")] public int AsamaToplam { get; set; }
     [JsonPropertyName("asamaBiten")] public int AsamaBiten { get; set; }
 
+    /// <summary>
+    /// Görevin ilerlemesi (0–100) — SUNUCUDA hesaplanır.
+    /// </summary>
+    /// <remarks>
+    /// Aşaması olan görevde aşamalardan, olmayanda durumdan okunuyor; kuralın
+    /// tamamı ve gerekçesi <c>GorevDurumAkisi.Ilerleme</c> içinde. Proje
+    /// yüzdesi, gantt çubuğunun doluluğu ve kilometre taşı oranı hep bu tek
+    /// sayıdan besleniyor — iki ekranın aynı işe farklı yüzde vermesi bu
+    /// sayede imkânsız.
+    ///
+    /// <para>
+    /// <b>%100 yalnızca onaylanmış görevde.</b> Aşamaları biten ama onay
+    /// bekleyen iş %95'te durur.
+    /// </para>
+    /// </remarks>
+    [JsonPropertyName("ilerleme")] public int Ilerleme { get; set; }
+
     /// <summary>Atanan kişi ve ekip adları — listede "kimde?" sorusunun cevabı.</summary>
     [JsonPropertyName("sorumlular")] public List<string> Sorumlular { get; set; } = [];
 }
@@ -105,7 +122,21 @@ public class GorevDetayDto : GorevOzetDto
 public class GorevDurumSecenegiDto
 {
     [JsonPropertyName("durum")] public GorevDurumu Durum { get; set; }
+
+    /// <summary>Durumun ADI — "İptal edildi", "Beklemede".</summary>
     [JsonPropertyName("ad")] public string Ad { get; set; } = string.Empty;
+
+    /// <summary>
+    /// DÜĞME ETİKETİ — "İptal et", "Beklemeye al".
+    /// </summary>
+    /// <remarks>
+    /// Düğmeler <see cref="Ad"/> ile yazılıyordu ve ekranda geçmiş zamanlı
+    /// birer beyan çıkıyordu: üzerinde "İptal edildi" yazan bir düğme,
+    /// basılmadan önce işin zaten iptal olduğunu söylüyor. Alan EK: eski
+    /// istemciler <c>ad</c>'ı okumaya devam ediyor.
+    /// </remarks>
+    [JsonPropertyName("eylem")] public string Eylem { get; set; } = string.Empty;
+
     [JsonPropertyName("renk")] public string Renk { get; set; } = string.Empty;
 }
 

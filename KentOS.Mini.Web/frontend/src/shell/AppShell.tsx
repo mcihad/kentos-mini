@@ -430,7 +430,7 @@ function AppShellIc() {
           yazmak yoğunluk knob'unu (`--sp`) es geçiyordu: kullanıcı arayüzü
           sıkılaştırınca alt çubuk tek başına eski boyunda kalıyordu.
         */}
-        <div className="relative flex h-[64px] items-stretch">
+        <div className="relative flex h-tabbar items-stretch">
           {/* Kayan gösterge */}
           {aktifSekmeIndeksi >= 0 && (
             <span

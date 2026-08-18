@@ -248,6 +248,15 @@ export type WorkComment = S['IsYorumDto'];
 export type ScopeUnit = S['KapsamBirimiDto'];
 
 /**
+ * Göreve atanabilecek / ekibe eklenebilecek kişi.
+ *
+ * Etkin birimin ALT AĞACINI kapsar ve kullanıcının KENDİSİNİ içerir — ikisi
+ * de eski `/ayar/birim-kullanicilari` ucunda yoktu, gerekçesi
+ * `usePeople` üzerinde yazılı.
+ */
+export type Person = S['PersonelSecimDto'];
+
+/**
  * GÖREV DURUMLARI — sunucudaki `GorevDurumu` ile BİREBİR.
  *
  * Ad ve renk sunucudan geliyor (`durumAd`, `durumRenk`); buradaki sayılar

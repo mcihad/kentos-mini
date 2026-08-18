@@ -8,7 +8,7 @@ import { FieldWrapper, Secim } from '../../components/Field';
 import { useToast } from '../../components/Toast';
 import { PERMISSION } from '../../components/permissions';
 import { useSession } from '../../auth/SessionProvider';
-import { useUnitUsers } from '../../data/hooks';
+import { Avatar, PersonPicker } from '../../components/PersonPicker';
 import { useAssignableTeams, useTaskMutations } from '../../data/tasks';
 import {
   TASK_ASSIGNMENT_ROLE, type TaskAssignRequest, type TaskDetail,
@@ -45,7 +45,6 @@ export function TaskAssignments({ gorev }: { gorev: TaskDetail }) {
   const [hedefId, setHedefId] = useState<number | null>(null);
   const [rol, setRol] = useState<number>(TASK_ASSIGNMENT_ROLE.sorumlu);
 
-  const kullanicilar = useUnitUsers();
   const ekipler = useAssignableTeams();
 
   const atamalar = gorev.atamalar ?? [];
@@ -86,19 +85,33 @@ export function TaskAssignments({ gorev }: { gorev: TaskDetail }) {
 
       {atamalar.length === 0 ? (
         <div className="px-3.5 pb-4">
+          {/* Boş durum kendisini dolduran eylemi taşır — "atanmadı" deyip
+              atama yolunu göstermemek, kullanıcıyı başlığa geri gönderir. */}
           <EmptyState
             ikon={User}
             baslik="Atanmadı"
             aciklama="Görev başlatılabilmesi için önce bir sorumlu atanmalı."
+            eylem={
+              yetkili && !kapali ? (
+                <Button onClick={() => setEkleAcik(true)}>
+                  <Plus size={14} />
+                  Sorumlu ata
+                </Button>
+              ) : undefined
+            }
           />
         </div>
       ) : (
         <ul className="divide-y divide-line">
           {atamalar.map((a) => (
             <li key={a.id} className="flex items-center gap-2.5 px-3.5 py-2.5">
-              <span className="grid h-7 w-7 flex-none place-items-center rounded-sm bg-sunken text-ink-3">
-                {a.ekipId ? <Users size={14} /> : <User size={14} />}
-              </span>
+              {a.ekipId ? (
+                <span className="grid h-7 w-7 flex-none place-items-center rounded-sm bg-sunken text-ink-3">
+                  <Users size={14} />
+                </span>
+              ) : (
+                <Avatar ad={a.kullaniciAd ?? ''} boyut="kucuk" />
+              )}
               <span className="min-w-0 flex-1">
                 <span className="block truncate text-sm text-ink">
                   {a.kullaniciAd || a.ekipAd || '—'}
@@ -173,25 +186,36 @@ export function TaskAssignments({ gorev }: { gorev: TaskDetail }) {
         </FieldWrapper>
 
         <FieldWrapper etiket={tur === 'kisi' ? 'Personel' : 'Ekip'} id="atama-hedef" zorunlu>
-          <Secim
-            id="atama-hedef"
-            value={hedefId ?? ''}
-            onChange={(e) => setHedefId(e.target.value ? Number(e.target.value) : null)}
-          >
-            <option value="">Seçin</option>
-            {tur === 'kisi'
-              ? kullanicilar.liste.map((k) => (
-                  <option key={k.id} value={k.id!}>
-                    {k.ad}
-                  </option>
-                ))
-              : ekipler.liste.map((e) => (
-                  <option key={e.id} value={e.id!}>
-                    {e.ad}
-                    {e.liderAd ? ` (lider: ${e.liderAd})` : ''}
-                  </option>
-                ))}
-          </Secim>
+          {/*
+            KİŞİ SEÇİMİ ARANABİLİR, EKİP SEÇİMİ AÇILIR KUTU.
+
+            Personel sayısı yüzlerce olabilir ve <select> içinde aranamaz;
+            üstelik eski liste oturum sahibini ve alt birimleri hiç
+            içermiyordu — kişi görevi kendine bile atayamıyordu. Ekip sayısı
+            ise bir birimde birkaç tane: orada açılır kutu doğru araç.
+          */}
+          {tur === 'kisi' ? (
+            <PersonPicker
+              id="atama-hedef"
+              tekli
+              secili={hedefId ? [hedefId] : []}
+              degistir={(idler) => setHedefId(idler[0] ?? null)}
+            />
+          ) : (
+            <Secim
+              id="atama-hedef"
+              value={hedefId ?? ''}
+              onChange={(e) => setHedefId(e.target.value ? Number(e.target.value) : null)}
+            >
+              <option value="">Seçin</option>
+              {ekipler.liste.map((e) => (
+                <option key={e.id} value={e.id!}>
+                  {e.ad}
+                  {e.liderAd ? ` (lider: ${e.liderAd})` : ''}
+                </option>
+              ))}
+            </Secim>
+          )}
         </FieldWrapper>
 
         <FieldWrapper

@@ -54,7 +54,7 @@ export function UnitScopePicker({ className }: { className?: string }) {
           qc.clear();
         }}
         aria-label="Etkin birim"
-        className="h-ctrl min-w-0 max-w-[210px] rounded-control border border-line bg-surface px-2 text-sm text-ink outline-hidden focus-visible:border-brand-ui"
+        className="h-ctrl min-w-0 max-w-[210px] rounded-control border border-line bg-surface px-2 text-sm text-ink outline-hidden focus-visible:border-brand"
       >
         {liste.map((b) => (
           <option key={b.id} value={b.id}>

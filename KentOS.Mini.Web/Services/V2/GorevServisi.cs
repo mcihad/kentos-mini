@@ -1056,6 +1056,8 @@ public class GorevServisi(
             {
                 var kendiAsamalari = asamalar.Where(a => a.GorevId == g!.Id).ToList();
                 var kapali = GorevDurumAkisi.Kapali(g!.Durum);
+                var asamaToplam = kendiAsamalari.Count;
+                var asamaBiten = kendiAsamalari.Count(a => a.Durum != GorevAsamaDurumu.Bekliyor);
 
                 return new GorevOzetDto
                 {
@@ -1090,8 +1092,9 @@ public class GorevServisi(
                         ? null
                         : Math.Round((g.SlaBitis.Value - simdi).TotalHours, 1),
 
-                    AsamaToplam = kendiAsamalari.Count,
-                    AsamaBiten = kendiAsamalari.Count(a => a.Durum != GorevAsamaDurumu.Bekliyor),
+                    AsamaToplam = asamaToplam,
+                    AsamaBiten = asamaBiten,
+                    Ilerleme = GorevDurumAkisi.Ilerleme(g.Durum, asamaToplam, asamaBiten),
                     Sorumlular = atamalar.TryGetValue(g.Id, out var s2) ? s2 : [],
                 };
             })];
@@ -1163,6 +1166,7 @@ public class GorevServisi(
             KalanSaat = ozet.KalanSaat,
             AsamaToplam = ozet.AsamaToplam,
             AsamaBiten = ozet.AsamaBiten,
+            Ilerleme = ozet.Ilerleme,
             Sorumlular = ozet.Sorumlular,
 
             Aciklama = gorev.Aciklama,
@@ -1183,6 +1187,7 @@ public class GorevServisi(
                 {
                     Durum = d,
                     Ad = GorevDurumAkisi.Ad(d),
+                    Eylem = GorevDurumAkisi.EylemAdi(d),
                     Renk = GorevDurumAkisi.Renk(d),
                 })],
         };

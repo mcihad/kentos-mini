@@ -145,6 +145,7 @@
   --height-row: var(--h-row);
   --height-row-m: var(--h-row-m);
   --height-tab: var(--h-tab);
+  --height-tabbar: var(--h-tabbar);
 
   --min-height-ctrl: var(--h-ctrl);
   --min-height-ctrl-lg: var(--h-ctrl-lg);

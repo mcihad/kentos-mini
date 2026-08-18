@@ -178,7 +178,7 @@ export function SahaLayout() {
                     className={({ isActive }) =>
                       cn(
                         'flex h-[62px] flex-col items-center justify-center gap-1',
-                        isActive ? 'text-brand-ui' : 'text-ink-3',
+                        isActive ? 'text-brand' : 'text-ink-3',
                       )
                     }
                   >

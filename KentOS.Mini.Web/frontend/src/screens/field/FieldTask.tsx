@@ -87,6 +87,25 @@ export default function FieldTask() {
           {gorev.baslik}
         </h1>
 
+        {/*
+          İLERLEME SAHADA EN ÇOK SORULAN ŞEY: "daha ne kadar var?"
+          Bu ekranda hiç yazmıyordu; personel aşama listesini sayarak
+          hesaplamak zorundaydı. Yüzde sunucudan geliyor.
+        */}
+        {(gorev.ilerleme ?? 0) > 0 && (
+          <div className="mt-2.5 flex items-center gap-2">
+            <span className="h-1.5 min-w-0 flex-1 overflow-hidden rounded-full bg-sunken" aria-hidden>
+              <span
+                className="block h-full rounded-full bg-brand transition-[width]"
+                style={{ width: `${gorev.ilerleme}%` }}
+              />
+            </span>
+            <span className="shrink-0 text-2xs tabular-nums text-ink-3">
+              %{gorev.ilerleme}
+            </span>
+          </div>
+        )}
+
         {gorev.aciklama && (
           <p className="mt-2 whitespace-pre-wrap text-sm text-text-2">{gorev.aciklama}</p>
         )}
@@ -162,7 +181,7 @@ export default function FieldTask() {
                       : a.durum === TASK_STAGE_STATUS.atlandi
                         ? 'bg-sunken text-ink-3'
                         : a.sirada
-                          ? 'bg-brand-ui text-white'
+                          ? 'bg-brand text-white'
                           : 'bg-sunken text-ink-3'
                   }`}
                   aria-hidden
@@ -245,7 +264,7 @@ function SiradakiAsama({ gorevId, asama }: { gorevId: number; asama: TaskStage }
   const aciklamaEksik = !!asama.aciklamaZorunlu && not.trim().length === 0;
 
   return (
-    <Card className="border-brand-ui p-4">
+    <Card className="border-brand p-4">
       <p className="text-2xs uppercase tracking-wide text-ink-3">Sıradaki aşama</p>
       <h2 className="mt-0.5 font-display text-base font-bold text-ink">{asama.ad}</h2>
 

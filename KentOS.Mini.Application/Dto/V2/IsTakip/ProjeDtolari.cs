@@ -44,6 +44,24 @@ public class ProjeOzetDto
     [JsonPropertyName("gorevToplam")] public int GorevToplam { get; set; }
     [JsonPropertyName("gorevBiten")] public int GorevBiten { get; set; }
 
+    /// <summary>
+    /// Projenin ilerlemesi (0–100) — bağlı görevlerin ilerleme ORTALAMASI.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Eskiden yüzde <c>gorevBiten / gorevToplam</c> ile çiziliyordu, yani bir
+    /// görev onaylanana kadar sıfır sayılıyordu. Beş aşamalı işin dördünü
+    /// bitiren ekip, proje çubuğunda hiçbir hareket görmüyordu — ölçülüp
+    /// düzeltildi.
+    /// </para>
+    /// <para>
+    /// <c>gorevBiten</c> alanı KALDI ve kaldırılmayacak: "%62" ile
+    /// "8/13 görev kapandı" iki farklı soruya cevap veriyor. İlki işin ne
+    /// kadarının yapıldığını, ikincisi kaç kalemin kapandığını söyler.
+    /// </para>
+    /// </remarks>
+    [JsonPropertyName("ilerleme")] public int Ilerleme { get; set; }
+
     /// <summary>Süresi aşılmış AÇIK görev sayısı — projenin risk göstergesi.</summary>
     [JsonPropertyName("gorevGeciken")] public int GorevGeciken { get; set; }
 
@@ -103,6 +121,9 @@ public class KilometreTasiDto
     /// <summary>Bu taşa bağlı görev sayıları — gantt çubuğunun doluluğu.</summary>
     [JsonPropertyName("gorevToplam")] public int GorevToplam { get; set; }
     [JsonPropertyName("gorevBiten")] public int GorevBiten { get; set; }
+
+    /// <summary>Bağlı görevlerin ilerleme ortalaması (0–100).</summary>
+    [JsonPropertyName("ilerleme")] public int Ilerleme { get; set; }
 
     /// <summary>Hedef tarihi geçmiş ve hâlâ tamamlanmamış mı?</summary>
     [JsonPropertyName("gecikti")] public bool Gecikti { get; set; }

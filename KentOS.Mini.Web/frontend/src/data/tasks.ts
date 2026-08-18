@@ -1,7 +1,7 @@
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { api, queryString, request, type PagedResult, type PageParams } from './client';
 import type {
-  ScopeUnit, TaskAssignRequest, TaskDetail, TaskSave, TaskStageRequest,
+  Person, ScopeUnit, TaskAssignRequest, TaskDetail, TaskSave, TaskStageRequest,
   TaskStatusRequest, TaskSummary, TaskType, TaskTypeSave, Team, TeamSave,
   WorkAttachment, WorkComment, WorkEvent,
 } from './types';
@@ -44,6 +44,8 @@ export const taskKeys = {
   teamDetail: (id: number) => ['ekip', 'detay', id] as const,
 
   scope: () => ['birim-kapsam'] as const,
+  people: (filtre: string) => ['personel', filtre] as const,
+  peopleAll: () => ['personel'] as const,
 } as const;
 
 /** Açılır liste boyutu — sunucudaki üst sınır 200. */
@@ -118,6 +120,20 @@ export function useTaskComments(id: number | undefined) {
  */
 function tazele(qc: ReturnType<typeof useQueryClient>, id?: number) {
   qc.invalidateQueries({ queryKey: taskKeys.all() });
+
+  /*
+    PROJE VE PANO DA DÜŞÜYOR.
+
+    Projenin yüzdesi artık bağlı görevlerin ilerleme ORTALAMASI; bir aşama
+    kapandığında proje kartındaki çubuk, kilometre taşı oranı ve gantt
+    doluluğu da değişiyor. Yalnızca `['gorev']` düşürüldüğünde açık duran
+    proje ekranı eski yüzdede kalıyordu — kullanıcının "aşamaları
+    tamamlasak bile progress ilerlemiyor" demesinin ikinci sebebi tam olarak
+    buydu: sunucu doğru sayıyı verse bile ekran onu istemiyordu.
+  */
+  qc.invalidateQueries({ queryKey: ['proje'] });
+  qc.invalidateQueries({ queryKey: ['is-istatistik'] });
+
   if (id) {
     qc.invalidateQueries({ queryKey: taskKeys.events(id) });
     qc.invalidateQueries({ queryKey: taskKeys.attachments(id) });
@@ -316,6 +332,42 @@ export function useTeamMutations() {
       onSuccess: bitince,
     }),
   };
+}
+
+// ═══════════════════════════════════════════════════════════════ personel
+
+/**
+ * SEÇİLEBİLİR PERSONEL — görev ataması, ekip üyeliği, proje ekibi.
+ *
+ * <p>
+ * Üç ekran da <code>useUnitUsers()</code> kullanıyordu. O uç
+ * (<code>/ayar/birim-kullanicilari</code>) gizli etkinlik davetlisi seçmek
+ * için yazılmış ve iki kuralı var: <b>oturum sahibini listeden çıkarır</b> ve
+ * yalnızca <b>tam olarak kendi</b> birimini tarar. Sonuç ölçüldü: 13
+ * kullanıcılı veritabanında yönetici hesabının ekip üyesi kutusunda TEK kişi
+ * çıkıyordu — kişi kendini ne göreve atayabiliyor, ne kurduğu ekibe
+ * ekleyebiliyor, ne de yönettiği projeye üye olabiliyordu. Üstelik sunucu
+ * proje yöneticisinin üye olmasını ŞART koşuyor.
+ * </p>
+ *
+ * <p>
+ * Bu uç etkin birimin ALT AĞACINI tarıyor ve kişinin kendisini içeriyor.
+ * </p>
+ */
+export function usePeople(ara: string, altBirimlerDahil = true) {
+  const filtre = JSON.stringify({ ara, altBirimlerDahil });
+
+  const s = useQuery({
+    queryKey: taskKeys.people(filtre),
+    queryFn: () => api.get<Person[]>(`/personel${queryString({ ara, altBirimlerDahil })}`),
+    placeholderData: keepPreviousData,
+
+    // Personel listesi gün içinde değişmiyor; her tuş vuruşunda ağa çıkmak
+    // yerine arama sonucu önbellekte tutuluyor.
+    staleTime: 5 * 60_000,
+  });
+
+  return { ...s, liste: s.data ?? [] };
 }
 
 // ═══════════════════════════════════════════════════════════ birim kapsamı

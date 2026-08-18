@@ -215,7 +215,7 @@ function IsKarti({ is: g, gecikti }: { is: TaskSummary; gecikti?: boolean }) {
         */}
         {asamali && (
           <div className="mt-3 border-t border-line pt-3">
-            <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} />
+            <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} ilerleme={g.ilerleme} />
           </div>
         )}
       </Link>

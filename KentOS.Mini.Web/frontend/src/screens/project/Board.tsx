@@ -2,9 +2,10 @@ import {
   DndContext, DragOverlay, PointerSensor, useDraggable, useDroppable,
   useSensor, useSensors, type DragEndEvent, type DragStartEvent,
 } from '@dnd-kit/core';
-import { AlertTriangle, GripVertical, Inbox } from 'lucide-react';
+import { AlertTriangle, GripVertical, Inbox, Plus } from 'lucide-react';
 import { useState } from 'react';
 import { Link } from 'react-router-dom';
+import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { EmptyState } from '../../components/EmptyState';
 import { Skeleton } from '../../components/Skeleton';
@@ -74,7 +75,23 @@ export function Board({ projeId, etkin }: { projeId: number; etkin: boolean }) {
   const dagitilmayanlar = pano?.dagitilmayanlar ?? [];
 
   if (!pano || sutunlar.length === 0) {
-    return <EmptyState ikon={Inbox} baslik="Pano kurulmamış" aciklama="Projeye sütun tanımlayın." />;
+    return (
+      // Sütunlar proje formunda tanımlanıyor; boş panodan oraya bir yol
+      // yoktu ve kullanıcı "sütun tanımlayın" cümlesiyle baş başa kalıyordu.
+      <EmptyState
+        ikon={Inbox}
+        baslik="Pano kurulmamış"
+        aciklama="Her sütun bir görev durumuna karşılık gelir; kartlar sürüklenince durum değişir."
+        eylem={
+          <Link to={`/projeler/${projeId}/duzenle`}>
+            <Button>
+              <Plus size={14} />
+              Sütunları tanımla
+            </Button>
+          </Link>
+        }
+      />
+    );
   }
 
   function baslangic(o: DragStartEvent) {
@@ -198,7 +215,7 @@ function Sutun({
     <section
       ref={setNodeRef}
       className={`flex w-72 flex-none flex-col rounded-lg border bg-sunken/40 transition-colors ${
-        isOver ? 'border-brand-ui bg-sunken' : 'border-line'
+        isOver ? 'border-brand bg-sunken' : 'border-line'
       }`}
       aria-label={baslik}
     >
@@ -283,7 +300,7 @@ function KartGovdesi({
           </div>
 
           <div className="mt-1.5 flex items-center gap-2">
-            <StageProgress biten={kart.asamaBiten ?? 0} toplam={kart.asamaToplam ?? 0} />
+            <StageProgress biten={kart.asamaBiten ?? 0} toplam={kart.asamaToplam ?? 0} ilerleme={kart.ilerleme} />
             {(kart.sorumlular ?? []).length > 0 && (
               <span className="truncate text-3xs text-ink-3">{(kart.sorumlular ?? [])[0]}</span>
             )}
