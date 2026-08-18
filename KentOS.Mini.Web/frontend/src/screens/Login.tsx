@@ -214,7 +214,7 @@ function Alan({
   const hataliMi = (hatalar?.length ?? 0) > 0;
   return (
     <label className="mb-4 block">
-      <span className="mb-1.5 block text-2xs font-semibold uppercase tracking-[0.09em] text-text-3">
+      <span className="mb-1.5 block text-xs font-semibold text-text-2">
         {etiket}
       </span>
       <input
@@ -245,7 +245,7 @@ function ParolaAlani({ hatalar }: { hatalar?: string[] }) {
 
   return (
     <div className="mb-4">
-      <label htmlFor="parola" className="mb-1.5 block text-2xs font-semibold uppercase tracking-[0.09em] text-text-3">
+      <label htmlFor="parola" className="mb-1.5 block text-xs font-semibold text-text-2">
         Şifre
       </label>
       <div className="relative">

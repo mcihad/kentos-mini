@@ -54,7 +54,7 @@ export function SelectMenu({
         <Button
           varyant="ikincil"
           className={cn(
-            'h-9 min-w-0 shrink-0 px-2.5',
+            'h-ctrl min-w-0 shrink-0 px-2.5',
             secili && 'border-brand text-brand-2',
             className,
           )}

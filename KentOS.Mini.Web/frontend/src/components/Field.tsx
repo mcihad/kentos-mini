@@ -26,20 +26,43 @@ export function FieldWrapper({
   children: React.ReactNode;
 }) {
   return (
-    <div className={cn('min-w-0', className)}>
+    /*
+      `group/alan`: etiket, İÇİNDEKİ alan odaklanınca markaya döner —
+      şartname §6.8 "etiket `primary` rengine geçer". Renk tek başına
+      taşımıyor; kenarlık ve halka da aynı anda dönüyor.
+    */
+    <div className={cn('group/alan min-w-0', className)}>
+      {/*
+        Etiket şartname `label` kademesi: 12px/600, CÜMLE düzeni. Eski hâl
+        11px BÜYÜK HARF + 0.08em idi — Türkçe metinde büyük harf dönüşümü
+        diakritik hatalarına açık ve şartname etiketi büyük harfe çevirmeyi
+        yasaklıyor (§6.7 "metni büyük harfe çevirme" ailesinden).
+      */}
       <label
         htmlFor={id}
-        className="mb-1.5 block text-2xs font-semibold uppercase tracking-[0.08em] text-ink-3"
+        className="mb-2 block text-xs font-semibold text-ink-2 transition-colors group-focus-within/alan:text-brand"
       >
         {etiket}
-        {zorunlu && <span className="ml-1 text-danger">*</span>}
+        {zorunlu && (
+          <span className="ml-1 text-danger" aria-hidden>
+            *
+          </span>
+        )}
       </label>
       {children}
-      {hata ? (
-        <p className="mt-1 text-2xs text-danger">{hata}</p>
-      ) : ipucu ? (
-        <p className="mt-1 text-2xs text-ink-3">{ipucu}</p>
-      ) : null}
+      {/*
+        YARDIM SATIRI SABİT — şartname §6.8: "hata metni satır kaydırmaz;
+        alan altında sabit yer ayrılır." Kap hep çizilir (min-h), hata
+        belirdiğinde altındaki alanlar zıplamaz.
+      */}
+      <p
+        className={cn(
+          'mt-1 min-h-4 text-2xs',
+          hata ? 'text-danger' : 'text-ink-3',
+        )}
+      >
+        {hata ?? ipucu ?? ''}
+      </p>
     </div>
   );
 }
@@ -55,10 +78,15 @@ export function FieldWrapper({
  * ve halka bir anda "patlıyordu".
  */
 const girdiSinifi =
-  // Zemin `--surface-2`: şartname (§7.2) alanları yüzeyden BİR TON çukur
-  // istiyor. Kart da beyaz, alan da beyazken form "çizgilerden ibaret"
-  // görünüyor ve nereye yazılacağı ancak kenarlıktan anlaşılıyordu.
-  'w-full rounded-sm border border-line bg-surface-2 px-3.5 text-sm text-ink ' +
+  // Zemin `--surface-2`: alanlar yüzeyden BİR TON çukur. Kart da beyaz,
+  // alan da beyazken form "çizgilerden ibaret" görünüyor ve nereye
+  // yazılacağı ancak kenarlıktan anlaşılıyordu.
+  //
+  // Yarıçap `--r-md` (12), metin `body` (15) — şartname §6.8. Odak: kenarlık
+  // markaya döner + 3px yumuşak halka (`--focus-ring`, %12 marka). Halka
+  // `box-shadow` olduğu için yer kaplamaz; kenarlığı kalınlaştırmak alanı
+  // 1px oynatıp yanındaki alanları da kaydırıyordu.
+  'w-full rounded-md border border-line bg-surface-2 px-3.5 text-base text-ink ' +
   'placeholder:text-ink-3 outline-hidden ' +
   'transition-[color,background-color,border-color,box-shadow] duration-150 ' +
   'hover:border-line-2 ' +
@@ -85,7 +113,7 @@ export const Input = forwardRef<HTMLInputElement, React.InputHTMLAttributes<HTML
       <input
         ref={ref}
         autoFocus={masaustu ? autoFocus : undefined}
-        className={cn(girdiSinifi, 'h-ctrl-lg md:h-10', hatali && 'border-danger', className)}
+        className={cn(girdiSinifi, 'h-field md:h-ctrl', hatali && 'border-danger', className)}
         {...kalan}
       />
     );
@@ -113,7 +141,7 @@ export const Secim = forwardRef<HTMLSelectElement, React.SelectHTMLAttributes<HT
     return (
       <select
         ref={ref}
-        className={cn(girdiSinifi, 'h-10 appearance-none bg-position-[right_0.7rem_center] bg-no-repeat pr-8', className)}
+        className={cn(girdiSinifi, 'h-field md:h-ctrl appearance-none bg-position-[right_0.7rem_center] bg-no-repeat pr-8', className)}
         style={{
           // Ok işareti: metin rengini izlesin diye currentColor ile SVG.
           backgroundImage:
@@ -145,7 +173,7 @@ export function SearchInput({
       )}
       <input
         type="search"
-        className={cn(girdiSinifi, 'h-ctrl-lg md:h-10', ikon && 'pl-9')}
+        className={cn(girdiSinifi, 'h-field md:h-ctrl', ikon && 'pl-9')}
         {...kalan}
       />
     </div>

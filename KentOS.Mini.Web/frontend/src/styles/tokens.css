@@ -1,5 +1,5 @@
 /**
- * TOKEN MOTORU — design_new/design.md §2'den birebir.
+ * TOKEN MOTORU — design/design.md §2'den birebir (v3: mobil tasarım dili).
  *
  * Üç katman, tek yön: ÇEKİRDEK → TÜRETİLMİŞ → ANLAMSAL. Her katman yalnızca
  * kendinden öncekini okur; bileşen hiçbir zaman çekirdeğe dokunmaz
@@ -11,6 +11,12 @@
  * geri kalan her şey `calc()` ve `color-mix()` ile ondan türüyor. Tema
  * Tasarımcısı yalnızca bu 14 değeri yazar, tek karede bütün arayüz döner —
  * hiçbir React bileşeni yeniden render olmaz.
+ *
+ * v3 GEÇİŞİ (mobil tasarım dili): tip ölçeği, yarıçap oranları, gölge
+ * formülü ve durum renkleri kurumsal mobil tasarım sisteminin (design.md
+ * sürüm 3) değerlerine çekildi. Ölçüldü — varsayılan knob'larla üretilen
+ * merdiven şartnamenin tablosuyla birebir: 11 / 12 / 13 / 15 / 16 / 19 /
+ * 24 / 30 px ve 8 / 12 / 16 / 20 / 24 px yarıçap.
  *
  * DÖRDÜNCÜ BİR KATMAN VAR: en altta "v1 uyum katmanı". Uygulamada 40'tan fazla
  * ekran eski token adlarıyla (`--text`, `--border`, `--st-ok`…) yazılmış
@@ -24,20 +30,29 @@
    ══════════════════════════════════════════════════════════════════════════ */
 :root {
   --brand: #002e6d;          /* marka rengi (gündüz UI'ında doğrudan) */
-  --brand-dk: #5b93e8;       /* markanın gece karşılığı — elle dengeli */
+  --brand-dk: #4e85c4;       /* markanın gece karşılığı — şartname koyu tema `primary` */
   --accent: #a78952;         /* vurgu */
-  --accent-dk: #d8bb80;      /* vurgunun gece karşılığı */
-  --neutral: #f5f4f0;        /* nötr taban (sıcaklık) */
-  --sp: 4px;                 /* boşluk birimi — yoğunluk */
-  --r: 10px;                 /* köşe ovalliği */
-  --fs: 14px;                /* temel yazı boyutu */
+  --accent-dk: #c9a96a;      /* vurgunun gece karşılığı — şartname koyu tema `accent` */
+  --neutral: #f4f8fc;        /* nötr taban — şartname açık tema `bg` (soğuk kâğıt) */
+  --sp: 4px;                 /* boşluk birimi — şartname §4: "boşluk 4'ün katıdır" */
+  --r: 12px;                 /* köşe ovalliği — şartname `radius/md` */
+  --fs: 15px;                /* temel yazı boyutu — şartname `body` 15 */
   --fs-d: 1;                 /* başlık ölçeği çarpanı */
   --track: 0em;              /* harf aralığı */
   --bw: 1px;                 /* kenarlık kalınlığı */
-  --sh-a: 0.07;              /* gölge yoğunluğu (alfa) */
-  --dur: 220ms;              /* hareket süresi */
-  --font-d: 'Montserrat';    /* başlık ailesi (Gotham TR ikamesi) */
-  --font-t: 'IBM Plex Sans'; /* gövde ailesi */
+  --sh-a: 0.10;              /* gölge yoğunluğu — şartname `elev/1` alfası */
+  --dur: 240ms;              /* hareket süresi — şartname sayfa geçişi 240ms */
+  --font-d: 'Plus Jakarta Sans';  /* başlık ailesi (Gotham TR ikamesi, şartname §3) */
+  --font-t: 'Plus Jakarta Sans';  /* gövde ailesi — şartname tek aile, ağırlıkla ayrışır */
+
+  /*
+    SAYISAL VERİ FONTU — knob DEĞİL, sabit.
+
+    Şartname §3.1: tutar, tarih, kod ve sicil JetBrains Mono 500 ile dizilir.
+    Tema Tasarımcısı'na bağlanmadı: mono ailenin işi hizadır, kimlik değil —
+    kurum fontu değişince rakam sütunlarının kayması istenmiyor.
+  */
+  --font-m: 'JetBrains Mono';
 }
 
 /* Marka için NEDEN İKİ HEX: tek hex'ten hem gündüz hem gece için kontrastı
@@ -57,96 +72,135 @@
   --sp-8: calc(var(--sp) * 8);     --sp-10: calc(var(--sp) * 10);  --sp-12: calc(var(--sp) * 12);
   --sp-16: calc(var(--sp) * 16);
 
-  /* yarıçap — oranlar sabit, temel knob değişken */
-  --r-xs: calc(var(--r) * 0.35);  --r-sm: calc(var(--r) * 0.62);  --r-md: var(--r);
-  --r-lg: calc(var(--r) * 1.4);   --r-xl: calc(var(--r) * 2);     --r-2xl: calc(var(--r) * 3.2);
+  /*
+    YARIÇAP — oranlar şartname §4'ün merdivenine sabitlendi.
+
+    Varsayılan knob (12) ile üretilen değerler tasarım tablosunun kendisi:
+    sm 8 · md 12 · lg 16 · xl 20 · 2xl (sheet) 24. Eski oranlarla (0.62 /
+    1.4 / 2 / 3.2) hiçbir knob değeri bu merdiveni tutturamıyordu — knob 10'da
+    6.2/14/20/32, knob 12'de 7.4/16.8/24/38.4 çıkıyordu.
+  */
+  --r-xs: calc(var(--r) * 0.5);    /* 6  — mini rozet, onay kutusu */
+  --r-sm: calc(var(--r) * 0.667);  /* 8  — durum çipi, küçük buton */
+  --r-md: var(--r);                /* 12 — girdi, buton, çip kutusu */
+  --r-lg: calc(var(--r) * 1.333);  /* 16 — kart */
+  --r-xl: calc(var(--r) * 1.667);  /* 20 — diyalog */
+  --r-2xl: calc(var(--r) * 2);     /* 24 — alt tabaka üst köşesi */
   --r-pill: 999px;
 
-  /* tipografi — çarpanlar sabit; başlıklar --fs-d ile ayrıca ölçeklenir */
   /*
-    KÜÇÜK KADEMELERİN TABANI YÜKSELTİLDİ.
+    TİPOGRAFİ — şartname §3.1 tablosu, 15 tabanına oranlanmış hâli.
 
-    Eski çarpanlarla 14px tabanda `--fs-3xs` 9.52px, `--fs-2xs` 10.5px
-    ediyordu. 9.5px hiçbir mobil kılavuzun kabul ettiği bir boy değil (iOS ve
-    Android tabanı 11px) ve `--fs-2xs` uygulamanın en çok kullanılan küçük
-    kademesi: kartların meta satırı, rozet, sayaç, alt bilgi — 240 yerde.
-    Kullanıcı "fontlar çok ufak" derken bunları okuyordu.
+    | kademe | çarpan | 15px tabanda | şartname adı |
+    |--------|--------|--------------|--------------|
+    | 3xs    | 0.667  | 10           | rozet sayısı (şartname 9–10) |
+    | 2xs    | 0.733  | 11           | `caption` |
+    | xs     | 0.8    | 12           | `label` |
+    | sm     | 0.867  | 13           | `bodySm` |
+    | md     | 1      | 15           | `body` |
+    | lg     | 1.067  | 16           | `title3` |
+    | xl     | 1.267  | 19           | `title2` |
+    | 2xl    | 1.6    | 24           | `title1` |
+    | 3xl    | 2      | 30           | `display` |
+    | 4xl    | 2.4    | 36           | büyük metrik (web eki) |
 
-    Merdiven KORUNUYOR, yalnızca alt uç sıkıştırılıyor: 10.4 · 11.3 · 12.2 ·
-    13.2 · 14. Adımlar %6–9 arasında, yani hâlâ ayırt edilebilir ama hiçbiri
-    okunamayacak kadar küçük değil. Başlık kademelerine (xl ve üstü)
-    dokunulmadı — orada sorun yoktu.
+    ÖNCEKİ MOBİL MEDYA BLOĞU KALDIRILDI. Eski ölçek (14 taban, 0.74–1.08
+    çarpanlar) masaüstü yoğunluğuna göreydi ve telefonda küçük kademeleri
+    ayrıca büyütmek gerekmişti. Yeni merdiven zaten MOBİL şartnameden geliyor
+    — 11'in altında kademe yok (eski en küçük 10.4'tü), gövde 15. Aynı ölçek
+    iki bağlamda da geçerli; masaüstü yoğunluğu satır yüksekliği ve bileşen
+    boyundan geliyor, puntoyu küçültmekten değil.
   */
-  --fs-3xs: calc(var(--fs) * 0.74); --fs-2xs: calc(var(--fs) * 0.81); --fs-xs: calc(var(--fs) * 0.87);
-  --fs-sm: calc(var(--fs) * 0.94);  --fs-md: var(--fs);              --fs-lg: calc(var(--fs) * 1.08);
-  --fs-xl: calc(var(--fs) * 1.26 * var(--fs-d));
-  --fs-2xl: calc(var(--fs) * 1.55 * var(--fs-d));
+  --fs-3xs: calc(var(--fs) * 0.667); --fs-2xs: calc(var(--fs) * 0.733); --fs-xs: calc(var(--fs) * 0.8);
+  --fs-sm: calc(var(--fs) * 0.867);  --fs-md: var(--fs);               --fs-lg: calc(var(--fs) * 1.067);
+  --fs-xl: calc(var(--fs) * 1.267 * var(--fs-d));
+  --fs-2xl: calc(var(--fs) * 1.6 * var(--fs-d));
   --fs-3xl: calc(var(--fs) * 2 * var(--fs-d));
-  --fs-4xl: calc(var(--fs) * 2.55 * var(--fs-d));
-  --track-d: calc(var(--track) - 0.014em);  /* başlıklar gövdeden daha sıkı */
+  --fs-4xl: calc(var(--fs) * 2.4 * var(--fs-d));
 
   /*
-    TELEFONDA KÜÇÜK KADEMELER AYRICA YÜKSELİYOR.
-
-    Ölçüldü: görev detayı 390px'te 53 metin öğesi taşıyor ve bunların 51'i
-    temel boyutun (14px) ALTINDA — baskın boy `text-sm` (13.2px), ardından
-    12.2, 11.3 ve 10.4. Yani ekranın neredeyse tamamı "küçük yazı"ydı.
-    Kullanıcının "mobilde çok ufak" demesi bunu tarif ediyor.
-
-    Sebep tasarım değil, BAĞLAM: bu ölçek yoğun masaüstü tablolarında doğru
-    çalışıyor — fare hassas, ekran geniş, satır çok. Telefon ise kol
-    mesafesinde tutuluyor ve aynı ekranda üçte bir kadar bilgi var. Aynı
-    çarpanları iki bağlamda da kullanmak, birini yanlış yapmak demekti.
-
-    `--fs` DEĞİŞTİRİLMİYOR: o kullanıcının kendi yoğunluk düğmesi ve tema
-    sağlayıcısı tarafından satır içi yazılıyor — buradaki bir kural onu
-    ezemezdi zaten. Bunun yerine TÜRETİLMİŞ kademeler tabana yaklaştırılıyor;
-    merdiven duruyor, yalnızca aralıklar daralıyor.
-
-    Başlık kademelerine (xl ve üstü) dokunulmuyor: onlar zaten yeterince
-    büyük ve büyütmek içeriği katlamanın altına iterdi.
+    SATIR YÜKSEKLİKLERİ — şartname her kademeye satırını da yazıyor
+    (15/22, 13/19, 12/16, 11/15, 16/22, 19/25, 24/30, 30/34). Oranlar
+    buradan türedi; `globals.css` bunları Tailwind'in `--text-*--line-height`
+    eşlerine bağlar, yani `text-sm` yazan her yer 13/19 alır.
   */
-  @media (width < 48rem) {
-    --fs-3xs: calc(var(--fs) * 0.80);
-    --fs-2xs: calc(var(--fs) * 0.86);
-    --fs-xs: calc(var(--fs) * 0.93);
-    --fs-sm: calc(var(--fs) * 1);
-    --fs-md: calc(var(--fs) * 1.07);
-    --fs-lg: calc(var(--fs) * 1.15);
-  }
+  --lh-3xs: 1.4;   --lh-2xs: 1.364; --lh-xs: 1.333; --lh-sm: 1.462;
+  --lh-md: 1.467;  --lh-lg: 1.375;  --lh-xl: 1.316; --lh-2xl: 1.25;
+  --lh-3xl: 1.133; --lh-4xl: 1.1;
 
-  /* bileşen ölçüleri — hepsi --sp katı */
-  --h-ctrl: calc(var(--sp) * 9);      /* 36px  · buton, input, çip */
-  --h-ctrl-lg: calc(var(--sp) * 11);  /* 44px  · sidebar öğesi, sekme */
-  --h-ctrl-xl: calc(var(--sp) * 12);  /* 48px  · form input, birincil buton */
+  /*
+    HARF ARALIĞI — şartname §3.1: başlıklar sıkışır, küçük etiketler açılır.
+    `display` −0.02 · `title1` −0.015 · `title2` −0.01 · `label` +0.01 ·
+    `caption` +0.04. Hepsi kullanıcının `--track` knob'una eklenir.
+  */
+  --track-d: calc(var(--track) - 0.015em);        /* title1/display */
+  --track-d-sm: calc(var(--track) - 0.01em);      /* title2 */
+  --track-label: calc(var(--track) + 0.01em);     /* label (12px) */
+  --track-caption: calc(var(--track) + 0.04em);   /* caption (11px) */
+
+  /*
+    BİLEŞEN ÖLÇÜLERİ — şartname §4 `touch`/`layout` tablosundan.
+
+    | token | değer | şartname karşılığı |
+    |-------|-------|--------------------|
+    | h-ctrl | 40 | buton `sm` — masaüstü yoğunluğu |
+    | h-ctrl-lg | 48 | buton `md` / `touch.min` — mobil kontrol |
+    | h-ctrl-xl | 56 | buton `lg` / `touch.field` |
+    | h-field | 50 | form girdisi (§6.8) |
+    | h-bar-m | 56 | `layout.appBar` |
+    | h-tabbar | 64 | `layout.tabBar` |
+    | h-row-m | 64 | `layout.rowMin` |
+
+    Masaüstü appbar (64) ve tablo satırı (52) web'in kendi yoğunluğu —
+    şartname telefon içindir, masaüstünde yer bol ama satır sayısı önemli.
+  */
+  --h-ctrl: calc(var(--sp) * 10);     /* 40px  · masaüstü buton, girdi, çip */
+  --h-ctrl-lg: calc(var(--sp) * 12);  /* 48px  · mobil kontrol, sidebar öğesi (touch.min) */
+  --h-ctrl-xl: calc(var(--sp) * 14);  /* 56px  · birincil büyük buton (touch.field) */
+  --h-field: calc(var(--sp) * 12.5);  /* 50px  · form girdisi — şartname §6.8 */
   --h-appbar: calc(var(--sp) * 16);   /* 64px  · masaüstü appbar */
-  --h-bar-m: calc(var(--sp) * 13);    /* 52px  · mobil appbar */
-  --h-row: calc(var(--sp) * 13);      /* 52px  · tablo satırı */
-  --h-row-m: calc(var(--sp) * 15);    /* 60px  · mobil liste satırı */
+  --h-bar-m: calc(var(--sp) * 14);    /* 56px  · mobil appbar — şartname `layout.appBar` */
+  --h-row: calc(var(--sp) * 13);      /* 52px  · masaüstü tablo satırı */
+  --h-row-m: calc(var(--sp) * 16);    /* 64px  · mobil liste satırı — şartname `layout.rowMin` */
   --h-tab: calc(var(--sp) * 14);      /* 56px  · tabbar öğesi */
 
   /*
-    MOBİL ALT ÇUBUĞUN GERÇEK YÜKSEKLİĞİ (güvenli alan HARİÇ).
-
-    `--h-tab` sekme ÖĞESİNİN boyu; çubuğun kendisi ikon + etiket taşıdığı
-    için daha yüksek ve `AppShell` içinde `h-[64px]` olarak sabit yazılıydı.
-    İkinci bir yapışkan çubuk (görev detayındaki eylem şeridi) onun üstünde
-    duracağı için iki yerin AYNI sayıyı okuması şart: sayı iki dosyada ayrı
-    yazıldığında biri değişince öteki sessizce üst üste biner.
+    MOBİL ALT ÇUBUĞUN GERÇEK YÜKSEKLİĞİ (güvenli alan HARİÇ) — şartname
+    `layout.tabBar` 64. `--h-tab` sekme ÖĞESİNİN boyu; çubuğun kendisi
+    ikon + etiket taşıdığı için daha yüksek. İkinci bir yapışkan çubuk
+    (görev detayındaki eylem şeridi) onun üstünde durduğu için iki yerin
+    AYNI sayıyı okuması şart.
   */
   --h-tabbar: calc(var(--sp) * 16); /* 64px · mobil alt gezinme çubuğu */
   --w-side: calc(var(--sp) * 64);     /* 256px · sidebar */
   --w-side-sm: calc(var(--sp) * 19);  /* 76px  · daraltılmış sidebar */
 
-  /* gölge — tek alfa knob'undan üç kademe */
-  --sh-1: 0 1px 2px rgba(var(--sh-rgb), calc(var(--sh-a) * 0.75));
-  --sh-2: 0 var(--sp-1) calc(var(--sp) * 3.5) rgba(var(--sh-rgb), var(--sh-a)),
-          0 1px 2px rgba(var(--sh-rgb), calc(var(--sh-a) * 0.7));
-  --sh-3: 0 var(--sp-6) var(--sp-16) rgba(var(--sh-rgb), calc(var(--sh-a) * 2.2)),
-          0 2px 6px rgba(var(--sh-rgb), var(--sh-a));
+  /*
+    GÖLGE — şartname §4 yükseklik tablosu, MARKAYLA boyanmış.
 
-  /* hareket */
-  --ease: cubic-bezier(0.32, 0.72, 0, 1);          /* giriş/çıkış — iOS benzeri */
+    Şartnamedeki üç kademe lacivert gölge kullanıyor: `0 1 3 rgba(0,46,109,.10)`,
+    `0 4 12 rgba(0,46,109,.12)`, `0 12 32 rgba(0,26,61,.20)`. Sabit lacivert
+    yazamayız — marka kurum kaydından geliyor. `--sh-ink` gündüz markanın
+    kendisi, gece saf siyah; alfa tek knob'dan katsayıyla türüyor:
+    elev/1 = α, elev/2 = 1.2α, elev/3 = 2α → varsayılan 0.10 ile birebir
+    şartname değerleri (.10 / .12 / .20).
+  */
+  /*
+    `--sh-scale` MOD ANAHTARI: gündüz 1, gece 0. Alfa knob'u (`--sh-a`)
+    Tema Tasarımcısı tarafından SATIR İÇİ yazıldığı için gece bloğunda
+    `--sh-a: 0` demek işe yaramazdı — satır içi değer kazanır. Bu çarpan
+    yalnızca temadan gelir ve knob'a dokunmadan geceyi gölgesiz bırakır.
+  */
+  --sh-scale: 1;
+  --sh-1: 0 1px 3px color-mix(in srgb, var(--sh-ink) calc(var(--sh-a) * var(--sh-scale) * 100%), transparent);
+  --sh-2: 0 4px 12px color-mix(in srgb, var(--sh-ink) calc(var(--sh-a) * var(--sh-scale) * 120%), transparent),
+          0 1px 2px color-mix(in srgb, var(--sh-ink) calc(var(--sh-a) * var(--sh-scale) * 60%), transparent);
+  --sh-3: 0 12px 32px color-mix(in srgb, var(--sh-ink) calc(var(--sh-a) * var(--sh-scale) * 200%), transparent),
+          0 2px 6px color-mix(in srgb, var(--sh-ink) calc(var(--sh-a) * var(--sh-scale) * 100%), transparent);
+
+  /* hareket — şartname §4: tabaka açılışı bu eğriyle (280ms), basış 90ms */
+  --ease: cubic-bezier(0.22, 1, 0.36, 1);          /* giriş — şartname tabaka eğrisi */
+  --ease-out: cubic-bezier(0.4, 0, 1, 1);          /* çıkış — şartname kapanış eğrisi */
   --ease-spring: cubic-bezier(0.34, 1.4, 0.64, 1); /* basma geri sıçraması */
 }
 
@@ -154,7 +208,9 @@
    KATMAN 3 — ANLAMSAL · GÜNDÜZ
    Nötrler markayla HAFİFÇE boyanır: hangi marka seçilirse seçilsin bütün
    arayüz o renkle akraba olur. Beyaz etiket kurulumunun "yapıştırılmış logo"
-   gibi durmasını engelleyen şey bu.
+   gibi durmasını engelleyen şey bu. Varsayılan knob'larla hedef, şartname
+   §2.4 açık tema sütunu: bg #F4F8FC · surface #FFFFFF · border ~#D6DBE2 ·
+   text ~#14181F.
    ══════════════════════════════════════════════════════════════════════════ */
 :root,
 :root[data-mod='acik'],
@@ -172,16 +228,21 @@
   */
   color-scheme: light;
 
-  --canvas: color-mix(in oklab, var(--brand) 6%, var(--neutral));
-  --bg: color-mix(in oklab, var(--brand) 3%, var(--neutral));
+  --canvas: color-mix(in oklab, var(--brand) 5%, var(--neutral));
+  --bg: color-mix(in oklab, var(--brand) 2%, var(--neutral));
   --surface: color-mix(in oklab, var(--brand) 1%, #fff);
   --surface-2: color-mix(in oklab, var(--brand) 4%, #fff);
-  --sunken: color-mix(in oklab, var(--brand) 9%, var(--neutral));
-  --line: color-mix(in oklab, var(--brand) 11%, #e4e2dc);
-  --line-2: color-mix(in oklab, var(--brand) 20%, #ccc9c1);
-  --ink: color-mix(in oklab, var(--brand) 14%, #0f141d);
-  --ink-2: color-mix(in oklab, var(--brand) 12%, #5a6274);
-  --ink-3: color-mix(in oklab, var(--brand) 10%, #8c93a1);
+  --sunken: color-mix(in oklab, var(--brand) 8%, var(--neutral));
+  /*
+    Kenarlık tabanı SOĞUK — şartname `border` #D6DBE2. Eski taban (#e4e2dc)
+    sıcak kâğıda göreydi; zemin soğuk kâğıda dönünce kenarlıklar sararmış
+    görünüyordu. Ölçüldü: varsayılan markayla --line ≈ #D5DBE4.
+  */
+  --line: color-mix(in oklab, var(--brand) 7%, #e0e4ea);
+  --line-2: color-mix(in oklab, var(--brand) 16%, #c9cfd8);
+  --ink: color-mix(in oklab, var(--brand) 10%, #12161d);
+  --ink-2: color-mix(in oklab, var(--brand) 8%, #4f5560);
+  --ink-3: color-mix(in oklab, var(--brand) 8%, #828a97);
 
   --brand-ui: var(--brand);
   --brand-hover: color-mix(in oklab, var(--brand) 86%, #000);
@@ -202,7 +263,11 @@
   --nav-active: color-mix(in oklab, #fff 15%, var(--brand));
 
   --chrome: color-mix(in oklab, var(--brand) 2%, #fff);
-  --sh-rgb: 14, 22, 38;
+
+  /* Gölge mürekkebi: gündüz MARKA — şartnamedeki lacivert gölgelerin
+     çok kiracılı karşılığı. (bkz. Katman 2 gölge formülü) */
+  --sh-ink: var(--brand);
+  --sh-rgb: 14, 22, 38; /* yalnızca eski okumalar için; yeni formül --sh-ink kullanır */
 
   /*
     APPBAR GÖLGESİ — şeridi içerikten AYIRAN şey.
@@ -215,28 +280,30 @@
     kâğıt üstüne yapıştırılmış bir bant gibi görünürdü.
   */
   --appbar-shadow:
-    0 1px 0 rgba(var(--sh-rgb), 0.06),
-    0 2px 6px rgba(var(--sh-rgb), 0.045);
+    0 1px 0 color-mix(in srgb, var(--sh-ink) 6%, transparent),
+    0 2px 6px color-mix(in srgb, var(--sh-ink) 4.5%, transparent);
 
   /*
     PERDE — açılan katmanın altındaki karartma.
 
-    Uzun süre `bg-perde` sınıfı vardı ama `--perde` HİÇ TANIMLI DEĞİLDİ:
-    `@theme` içindeki `--color-perde: var(--perde)` çözümsüz kalıyor ve
-    perde tamamen SAYDAM boyanıyordu. Diyalog açıkken arkadaki ekran tam
-    parlaklıkta duruyor, katman "üstte" okunmuyordu.
-
-    Renk siyah değil marka mürekkebi: nötr siyah perde kurumsal kimliği
-    kesiyor, hafif lacivert bir karartma aynı işi görüp temayla akraba
-    kalıyor. `-hafif` menü/açılır liste gibi küçük katmanlar için — tam
-    perde onların altında abartılı duruyor.
+    Şartname §2.4 `overlay`: rgba(0,26,61,.45) — nötr siyah değil marka
+    mürekkebi. Nötr siyah perde kurumsal kimliği kesiyor; hafif lacivert
+    bir karartma aynı işi görüp temayla akraba kalıyor. `-hafif` menü/açılır
+    liste gibi küçük katmanlar için — tam perde onların altında abartılı
+    duruyor.
   */
   --perde-rgb: 8, 14, 26;
-  --perde: rgba(var(--perde-rgb), 0.46);
+  --perde: rgba(var(--perde-rgb), 0.45);
   --perde-hafif: rgba(var(--perde-rgb), 0.2);
 
-  --warn: #8a6209;  --ok: #1a6a45;    --info: #1d5ca3;
-  --danger: #a33127; --mute: #6b675f;  --slate: #3b4c6e;
+  /*
+    DURUM RENKLERİ — şartname §2.3 birebir: success #1F7A4D · warning
+    #9C6B12 · danger #A32E24 · info #1B5AA8. Dolgular (`*-soft`) aşağıda
+    tek formülden türüyor; %13 karışım şartnamenin bg sütununu (~#E4F1EA,
+    ~#FBF0DC, ~#F9E8E6, ~#E8F0F9) bir-iki birim sapmayla veriyor.
+  */
+  --warn: #9c6b12;  --ok: #1f7a4d;    --info: #1b5aa8;
+  --danger: #a32e24; --mute: #6b675f;  --slate: #3b4c6e;
   --st-mix: 13%;
   --on-ok: color-mix(in oklab, var(--ok) 22%, #fff);
 }
@@ -245,62 +312,71 @@
    KATMAN 3 — ANLAMSAL · GECE
    Aynı isimler, farklı formüller. Bileşende `if (dark)` YOKTUR.
    `data-tema` da kabul ediliyor: uygulamanın var olan tema anahtarı o.
+   Varsayılan knob'larla hedef, şartname §2.4 koyu sütunu: bg #0B1524 ·
+   surface #101F33 · surfaceAlt #16283F · border #23364F · text #E8EDF4.
    ══════════════════════════════════════════════════════════════════════════ */
 :root[data-mod='koyu'],
 :root[data-tema='koyu'] {
   /* Açık temadaki gerekçenin aynısı — tarayıcının kendi çizdiği yüzeyler. */
   color-scheme: dark;
 
-  --canvas: color-mix(in oklab, var(--brand) 7%, #05080d);
-  --bg: color-mix(in oklab, var(--brand) 9%, #080c13);
-  --surface: color-mix(in oklab, var(--brand) 12%, #0e141e);
-  --surface-2: color-mix(in oklab, var(--brand) 15%, #131a26);
-  --sunken: color-mix(in oklab, var(--brand) 8%, #0a0e16);
-  --line: color-mix(in oklab, var(--brand) 18%, #1b2432);
-  --line-2: color-mix(in oklab, var(--brand) 26%, #293344);
-  --ink: color-mix(in oklab, var(--brand) 4%, #e8edf5);
-  --ink-2: color-mix(in oklab, var(--brand) 8%, #9aa6b9);
-  --ink-3: color-mix(in oklab, var(--brand) 10%, #6b788d);
+  --canvas: color-mix(in oklab, var(--brand) 14%, #060a11);
+  --bg: color-mix(in oklab, var(--brand) 17%, #070d16);
+  --surface: color-mix(in oklab, var(--brand) 24%, #0b1420);
+  --surface-2: color-mix(in oklab, var(--brand) 28%, #101a28);
+  --sunken: color-mix(in oklab, var(--brand) 12%, #0a0f18);
+  --line: color-mix(in oklab, var(--brand) 32%, #1c2634);
+  --line-2: color-mix(in oklab, var(--brand) 40%, #2b3646);
+  --ink: color-mix(in oklab, var(--brand) 4%, #e8edf4);
+  --ink-2: color-mix(in oklab, var(--brand) 8%, #9aa8bd);
+  --ink-3: color-mix(in oklab, var(--brand) 10%, #6d7a8f);
 
   --brand-ui: var(--brand-dk);
   --brand-hover: color-mix(in oklab, var(--brand-dk) 80%, #fff);
   --brand-soft: color-mix(in oklab, var(--brand-dk) 14%, var(--surface));
   --brand-line: color-mix(in oklab, var(--brand-dk) 28%, var(--surface));
-  --on-brand: color-mix(in oklab, var(--brand-dk) 20%, #03060b);
+  --on-brand: color-mix(in oklab, var(--brand-dk) 12%, #03060b);
 
   --accent-ui: var(--accent-dk);
   --accent-ink: var(--accent-dk);
   --accent-soft: color-mix(in oklab, var(--accent-dk) 13%, var(--surface));
 
-  --nav-bg: color-mix(in oklab, var(--brand) 10%, #080d15);
+  --nav-bg: color-mix(in oklab, var(--brand) 16%, #080d15);
   --nav-panel: color-mix(in oklab, var(--brand) 55%, #040810);
   --nav-ink: color-mix(in oklab, #fff 62%, var(--nav-bg));
-  --nav-ink-strong: color-mix(in oklab, var(--brand) 4%, #e8edf5);
+  --nav-ink-strong: color-mix(in oklab, var(--brand) 4%, #e8edf4);
   --nav-line: color-mix(in oklab, #fff 11%, var(--nav-bg));
   --nav-hover: color-mix(in oklab, #fff 5%, var(--nav-bg));
   --nav-active: color-mix(in oklab, var(--brand-dk) 14%, var(--nav-bg));
 
-  --chrome: color-mix(in oklab, var(--brand) 10%, #0b1017);
-  --sh-rgb: 0, 0, 0;
-  --sh-a: 0.42;
+  --chrome: color-mix(in oklab, var(--brand) 18%, #0b1017);
 
   /*
-    GECEDE GÖLGE GÖRÜNMEZ — zemin zaten koyu.
+    GECEDE GÖLGE YOKTUR — şartname §2.4: "koyu temada gölge yoktur; ayrım
+    `border` ile kurulur." Alfa sıfırlanıyor; katmanları ayıran şey kenarlık
+    (`--line` gecede daha belirgin) ve perde. Eskiden 0.42 alfayla koyu
+    zeminde zaten görünmeyen, yalnızca boyama maliyeti olan gölgeler
+    çiziliyordu.
 
-    Aynı gölgeyi kullansaydık şerit ile içerik arasında hiçbir ayrım
-    kalmazdı. Ayrımı taşıyan şey burada gölge değil, üstteki ince AÇIK
-    çizgi: karanlıkta yükseklik ışıkla anlatılıyor. Altında yine de bir
-    parça karartma var, yoksa geçiş sert bir çizgiye dönüşüyor.
+    Kapatma `--sh-scale` ile: gölge kaydırıcısı (`--sh-a`) satır içi
+    yazıldığı için burada alfa sıfırlamak işe yaramazdı — çarpan temanın
+    kendi malı ve knob onu ezemiyor.
+  */
+  --sh-ink: #000;
+  --sh-scale: 0;
+  --sh-rgb: 0, 0, 0;
+
+  /*
+    Gecede appbar ayrımını GÖLGE DEĞİL IŞIK anlatır: üstteki ince açık
+    çizgi. Şartnamenin "ayrım kenarlıkla" kuralının appbar karşılığı.
   */
   --appbar-shadow:
     inset 0 1px 0 rgba(255, 255, 255, 0.045),
-    0 1px 0 rgba(0, 0, 0, 0.5),
-    0 4px 12px rgba(0, 0, 0, 0.32);
+    0 1px 0 rgba(0, 0, 0, 0.5);
 
-  /* Gecede zemin zaten koyu: aynı yoğunluktaki perde hiçbir şey yapmıyor,
-     bu yüzden hem saf siyaha yaklaşıyor hem daha opak. */
-  --perde-rgb: 0, 0, 0;
-  --perde: rgba(var(--perde-rgb), 0.64);
+  /* Şartname §2.4 koyu `overlay`: rgba(2,8,16,.66). */
+  --perde-rgb: 2, 8, 16;
+  --perde: rgba(var(--perde-rgb), 0.66);
   --perde-hafif: rgba(var(--perde-rgb), 0.4);
 
   --warn: #e0b457;  --ok: #5fbe90;    --info: #78adf0;
@@ -320,15 +396,32 @@
   --slate-soft: color-mix(in oklab, var(--slate) var(--st-mix), var(--surface));
 
   /* "ŞU AN" ÇİZGİSİ AYRI BİR TOKEN.
-     Şartname §7.6 bunu `--accent-ui` ile çiziyor; bu depoda ise kullanıcı
-     geri bildirimiyle alınmış bir karar var: altın "bugün" halkasının rengi
-     ve aynı rengi "şu an" için de kullanmak ikisini karıştırıyordu. Renk
-     tehlike renginden türetiliyor, yani tema değiştiğinde o da dönüyor —
-     sabit bir kırmızı değil. */
+     Şartname takvimdeki "şu an" işaretini vurguya bağlamıyor; bu depoda
+     kullanıcı geri bildirimiyle alınmış bir karar var: altın "bugün"
+     halkasının rengi ve aynı rengi "şu an" için de kullanmak ikisini
+     karıştırıyordu. Renk tehlike renginden türetiliyor, yani tema
+     değiştiğinde o da dönüyor — sabit bir kırmızı değil. */
   --simdi: color-mix(in oklab, var(--danger) 88%, #ff2a1a);
 
-  /* Odak halkası — markanın yumuşatılmışı. */
-  --focus-ring: color-mix(in oklab, var(--brand) 26%, transparent);
+  /*
+    Odak halkası — şartname §6.8: odakta 3px `rgba(marka, .12)` halka.
+    Eski %26 halkası kenarlıktan kalın okunuyordu; şartname değeri hem
+    yumuşak hem yeterli (kenarlık zaten markaya dönüyor).
+  */
+  --focus-ring: color-mix(in oklab, var(--brand-ui) 12%, transparent);
+
+  /*
+    BİLDİRİM ŞERİDİ (toast) — şartname §6.19: zemin `ink/900`, İKİ TEMADA DA
+    koyu. Şerit geçici ve zeminden bağımsız bir katman; açık temada beyaz
+    kart olarak çizildiğinde sayfadaki kartlardan ayrışmıyordu. Marka
+    mürekkebiyle boyanır ki nötr siyah, kurumsal kimliği kesmesin. Kenar
+    çizgisi sabit beyaz-üstü-şeffaf: koyu zeminde her iki temada da aynı
+    işi görüyor.
+  */
+  --toast-bg: color-mix(in oklab, var(--brand) 14%, #14181f);
+  --toast-ink: #f2f5f9;
+  --toast-ink-2: color-mix(in oklab, #f2f5f9 66%, var(--toast-bg));
+  --toast-line: rgba(255, 255, 255, 0.09);
 }
 
 /* ══════════════════════════════════════════════════════════════════════════

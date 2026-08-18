@@ -221,7 +221,7 @@ function AyIzgarasi({
               onClick={() => sec(t)}
               aria-current={bugunMu ? 'date' : undefined}
               className={cn(
-                'grid h-9 place-items-center rounded-sm text-sm tabular-nums transition-colors',
+                'grid h-11 place-items-center rounded-sm text-sm tabular-nums transition-colors',
                 ayIcinde ? 'text-text' : 'text-text-3',
                 !seciliMi && !kapali && 'hover:bg-surface-2',
                 seciliMi && 'bg-brand font-semibold text-on-brand',

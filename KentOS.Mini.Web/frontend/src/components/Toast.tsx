@@ -41,8 +41,11 @@ const gorunum: Record<Tur, { ikon: typeof Info; renk: string; zemin: string }> =
  * gelmiyordu, yani bildirim animasyonsuz belirip animasyonsuz kayboluyordu.
  */
 const KABUK =
-  'bildirim relative flex items-start gap-2.5 rounded-card border border-border ' +
-  'bg-surface p-3 shadow-2';
+  // Şartname §6.19: koyu zemin (`--toast-bg`, iki temada da), `radius/lg`
+  // köşe, 13/19 metin, eylem vurgu renginde. Gölge yerine ince açık kenar —
+  // koyu şerit açık zeminde zaten yeterince ayrışıyor, gecede ise gölge yok.
+  'bildirim relative flex items-start gap-2.5 rounded-lg border ' +
+  'border-(--toast-line) bg-(--toast-bg) p-3 text-(--toast-ink)';
 
 const Baglam = createContext<{
   bildir: (
@@ -99,7 +102,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
 
   return (
     <Baglam.Provider value={deger}>
-      <ToastRadix.Provider swipeDirection={yon} duration={4500} swipeThreshold={56}>
+      <ToastRadix.Provider swipeDirection={yon} duration={3000} swipeThreshold={56}>
         {children}
 
         {liste.map((b) => {
@@ -111,6 +114,9 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
           return (
             <ToastRadix.Root
               key={b.id}
+              // Şartname §6.19: süre 3s; eyleme açılan şeritte 5s — kullanıcı
+              // "GERİ AL / AÇ" düğmesini okuyup basabilsin.
+              duration={tiklanir ? 5000 : 3000}
               onOpenChange={(a) => !a && setListe((l) => l.filter((x) => x.id !== b.id))}
               className={KABUK}
             >
@@ -122,11 +128,11 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
               </span>
               <span className="min-w-0 flex-1">
                 <ToastRadix.Title asChild>
-                  <span className="block text-sm font-semibold">{b.baslik}</span>
+                  <span className="block text-sm font-bold">{b.baslik}</span>
                 </ToastRadix.Title>
                 {b.aciklama && (
                   <ToastRadix.Description asChild>
-                    <span className="mt-0.5 block text-sm text-text-2">{b.aciklama}</span>
+                    <span className="mt-0.5 block text-sm text-(--toast-ink-2)">{b.aciklama}</span>
                   </ToastRadix.Description>
                 )}
               </span>
@@ -137,7 +143,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                   <ChevronRight
                     aria-hidden
                     size={16}
-                    className="mt-0.5 shrink-0 self-center text-text-3"
+                    className="mt-0.5 shrink-0 self-center text-(--toast-ink-2)"
                   />
 
                   {/*
@@ -155,7 +161,7 @@ export function ToastProvider({ children }: { children: React.ReactNode }) {
                       type="button"
                       aria-label={`${b.baslik} — ${etiket}`}
                       title={etiket}
-                      className="absolute inset-0 rounded-card focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-2"
+                      className="absolute inset-0 rounded-lg focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-(--accent-dk)"
                       onPointerDown={(e) => {
                         basim.current = { x: e.clientX, y: e.clientY };
                       }}

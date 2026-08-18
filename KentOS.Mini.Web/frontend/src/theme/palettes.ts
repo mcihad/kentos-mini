@@ -17,7 +17,9 @@ export type NeutralOption = { ad: string; deger: string };
 export type FontPair = { ad: string; baslik: string; govde: string };
 
 export const BRAND_COLORS: ColorOption[] = [
-  { ad: 'Lacivert', acik: '#002E6D', koyu: '#5B93E8' },
+  // Koyu karşılık şartname §2.4'ün koyu tema `primary` değeri (#4E85C4):
+  // eski #5B93E8 doygunluğuyla gece zemininden kopuyordu.
+  { ad: 'Lacivert', acik: '#002E6D', koyu: '#4E85C4' },
   { ad: 'Zümrüt', acik: '#0B5D45', koyu: '#4FBE94' },
   { ad: 'Bordo', acik: '#7A1F2B', koyu: '#E58189' },
   { ad: 'Petrol', acik: '#0E4C5C', koyu: '#4FB6C8' },
@@ -26,7 +28,8 @@ export const BRAND_COLORS: ColorOption[] = [
 ];
 
 export const ACCENT_COLORS: ColorOption[] = [
-  { ad: 'Altın', acik: '#A78952', koyu: '#D8BB80' },
+  // Koyu karşılık şartname §2.4 koyu tema `accent` değeri (#C9A96A).
+  { ad: 'Altın', acik: '#A78952', koyu: '#C9A96A' },
   { ad: 'Bakır', acik: '#A65A2E', koyu: '#E29A6B' },
   { ad: 'Turkuaz', acik: '#157F7F', koyu: '#5CC9C4' },
   { ad: 'Kiraz', acik: '#A8324A', koyu: '#EE8397' },
@@ -35,9 +38,11 @@ export const ACCENT_COLORS: ColorOption[] = [
 ];
 
 export const NEUTRAL_COLORS: NeutralOption[] = [
-  { ad: 'Sıcak kâğıt', deger: '#F5F4F0' },
+  // İlk sıra fabrika zemini — şartname §2.4 açık tema `bg` (#F4F8FC):
+  // markayla akraba, soğuk bir kâğıt. Sıcak kâğıt seçenek olarak duruyor.
+  { ad: 'Soğuk kâğıt', deger: '#F4F8FC' },
   { ad: 'Nötr gri', deger: '#F4F4F5' },
-  { ad: 'Soğuk mavi', deger: '#F1F4F9' },
+  { ad: 'Sıcak kâğıt', deger: '#F5F4F0' },
 ];
 
 /**
@@ -144,9 +149,15 @@ export function markaPaletiniUygula(marka: {
 /**
  * Üç çiftin tamamı Türkçe diakritiklerini (İ ı Ğ ğ Ş ş Ö ö Ç ç Ü ü) tam
  * destekler. Gövdede `tabular-nums` zorunlu — tablo ve saat hizası için.
+ *
+ * v3: Kurumsal çift TEK aileye indi — şartname §3 başlık ve gövdeyi aynı
+ * geometrik sans'la (Plus Jakarta Sans, Gotham TR ikamesi) diziyor; hiyerarşi
+ * aileden değil AĞIRLIKTAN geliyor (800 başlık · 700 alt başlık · 500 gövde).
+ * Sayısal veri ayrıca JetBrains Mono ile dizilir; o bir knob değil
+ * (`tokens.css` → `--font-m`).
  */
 export const FONTS: FontPair[] = [
-  { ad: 'Kurumsal', baslik: 'Montserrat', govde: 'IBM Plex Sans' },
+  { ad: 'Kurumsal', baslik: 'Plus Jakarta Sans', govde: 'Plus Jakarta Sans' },
   { ad: 'Modern', baslik: 'Figtree', govde: 'Source Sans 3' },
   { ad: 'Editoryal', baslik: 'Archivo', govde: 'Karla' },
 ];

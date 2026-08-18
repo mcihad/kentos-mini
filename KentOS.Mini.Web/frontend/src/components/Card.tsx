@@ -81,10 +81,11 @@ export function CardHeader({
       )}
     >
       <div className="min-w-0">
-        <h2 className="truncate font-display text-sm font-bold tracking-[-0.01em]">
+        {/* Şartname `title3` (16/700) — kart başlığının kademesi. */}
+        <h2 className="truncate font-display text-lg font-bold">
           {baslik}
         </h2>
-        {aciklama && <p className="mt-0.5 truncate text-xs text-text-3">{aciklama}</p>}
+        {aciklama && <p className="mt-0.5 truncate text-xs font-medium text-text-3">{aciklama}</p>}
       </div>
       {eylem && <div className="shrink-0">{eylem}</div>}
     </div>
@@ -124,8 +125,13 @@ export function StatTile({
           </span>
         )}
       </div>
+      {/*
+        Şartname §6.15 StatCard: sayı `title1` boyunda ve TEK ARALIKLI —
+        yan yana karolarda rakamlar hizalanır, "1" ile "8" aynı yeri kaplar.
+        JetBrains Mono 500 (`font-mono`), sayısal verinin ailesi.
+      */}
       <p
-        className="mt-1.5 font-display text-2xl font-bold leading-none tabular-nums tracking-[-0.02em]"
+        className="mt-1.5 font-mono text-2xl font-medium leading-none tracking-[-0.02em]"
         style={vurgu ? { color: `var(${vurgu})` } : undefined}
       >
         {deger}

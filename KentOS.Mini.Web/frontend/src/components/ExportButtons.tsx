@@ -71,7 +71,7 @@ export function ExportButtons({
       role="group"
       aria-label="Dışa aktar"
       className={cn(
-        'inline-flex h-9 shrink-0 items-stretch overflow-hidden rounded-control border border-border bg-surface shadow-1',
+        'inline-flex h-ctrl shrink-0 items-stretch overflow-hidden rounded-control border border-border bg-surface shadow-1',
         className,
       )}
     >

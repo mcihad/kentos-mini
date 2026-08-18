@@ -21,9 +21,16 @@ export function StatusBadge({
 }) {
   const d = DURUMLAR[durum];
   return (
+    /*
+      Şartname §6.11 durum etiketi: `radius/sm` köşe + `caption` (11/600,
+      +0.04em — `text-2xs` bunları kendisi taşıyor) + fg/bg ikilisi. Nokta,
+      "renk tek başına bilgi taşımaz" (§8.6) kuralının payı — renk körü
+      kullanıcı çipin dolu/boş hâlini noktadan ayırt ediyor. Tam yuvarlak
+      hap değil: hap biçimi süzgeç çiplerinin dili, durum etiketi köşeli.
+    */
     <span
       className={cn(
-        'inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-2xs font-semibold',
+        'inline-flex h-6 items-center gap-1.5 rounded-sm px-2 text-2xs font-semibold',
         className,
       )}
       style={{ color: `var(${d.renk})`, background: `var(${d.zemin})` }}
