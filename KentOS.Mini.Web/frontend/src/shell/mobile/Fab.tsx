@@ -37,6 +37,8 @@ export function Fab({
   onClick,
   ikon,
   eylemler,
+  ton = 'birincil',
+  ustPay,
 }: {
   etiket: string;
   yol?: string;
@@ -44,6 +46,26 @@ export function Fab({
   ikon?: ReactNode;
   /** Verilirse FAB açılan bir menüye dönüşür. */
   eylemler?: FabAction[];
+  /**
+   * Yıkıcı eylem tonu — silme gibi geri alınamaz işler için.
+   *
+   * <p>
+   * <b>Dolu kırmızı DEĞİL.</b> Bu dosyanın komşusu <c>Button</c> kuralı açıkça
+   * yazıyor: "yıkıcı eylem yumuşak; dolu kırmızı buton yanlışlıkla tıklamayı
+   * davet eder". FAB, başparmağın en doğal yerinde duran 56px'lik bir hedef —
+   * dolu kırmızı yapmak o uyarının tam olarak anlattığı hatayı, üstelik en
+   * riskli noktada işlemek olurdu. Ton, uygulamanın kendi silme dilini
+   * kullanıyor: yumuşak kırmızı zemin, kırmızı simge.
+   * </p>
+   */
+  ton?: 'birincil' | 'yikici';
+  /**
+   * Alttan ek boşluk (CSS uzunluğu).
+   *
+   * Ekranda yapışkan bir eylem çubuğu varken FAB onun üstüne çıkmalı; aksi
+   * hâlde ikisi üst üste biniyor ve çubuğun düğmesi kısmen örtülüyor.
+   */
+  ustPay?: string;
 }) {
   const [acik, setAcik] = useState(false);
 
@@ -58,7 +80,10 @@ export function Fab({
 
   const dugmeSinifi = cn(
     'bas-yay fixed right-4 z-40 grid h-[56px] w-[56px] place-items-center md:hidden',
-    'rounded-xl border-0 bg-brand text-on-brand shadow-3',
+    'rounded-xl shadow-3',
+    ton === 'yikici'
+      ? 'border border-(--st-no-bg) bg-(--st-no-bg) text-(--st-no)'
+      : 'border-0 bg-brand text-on-brand',
   );
   /*
     ALT BOŞLUK = SAĞ BOŞLUK.
@@ -68,9 +93,11 @@ export function Fab({
     asimetrik duruyordu. İki boşluk eşitlenince düğme köşeye oturuyor ve
     ekranın kendi kenar boşluğuyla aynı ritmi tutuyor.
   */
-  const stil = {
-    bottom: 'calc(var(--h-tab) + var(--sp-4) + env(safe-area-inset-bottom, 0px))',
-  };
+  const tabanBosluk =
+    `calc(var(--h-tab) + var(--sp-4) + env(safe-area-inset-bottom, 0px)`
+    + (ustPay ? ` + ${ustPay})` : ')');
+
+  const stil = { bottom: tabanBosluk };
 
   if (eylemler?.length) {
     return (
@@ -102,7 +129,8 @@ export function Fab({
           style={{
             // FAB'ın üstünden başlar: aynı taban + düğme boyu + bir nefes.
             bottom:
-              'calc(var(--h-tab) + var(--sp-4) + 56px + var(--sp-3) + env(safe-area-inset-bottom, 0px))',
+              `calc(var(--h-tab) + var(--sp-4) + 56px + var(--sp-3) + env(safe-area-inset-bottom, 0px)`
+              + (ustPay ? ` + ${ustPay})` : ')'),
           }}
         >
           {acik &&

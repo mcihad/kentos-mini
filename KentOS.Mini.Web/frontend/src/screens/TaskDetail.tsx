@@ -18,6 +18,7 @@ import { PERMISSION } from '../components/permissions';
 import { cn } from '../components/utils';
 import { useSession } from '../auth/SessionProvider';
 import { BottomSheet, SheetRow } from '../shell/mobile/BottomSheet';
+import { Fab } from '../shell/mobile/Fab';
 import { dateTime, shortDate } from '../data/format';
 import { useTask, useTaskEvents, useTaskMutations } from '../data/tasks';
 import { TASK_STAGE_STATUS, TASK_STATUS, type TaskDetail as Gorev } from '../data/types';
@@ -330,14 +331,14 @@ export default function TaskDetail() {
         }]
       : []),
 
-    ...(hasPermission(PERMISSION.gorevSil)
-      ? [{
-          etiket: 'Sil',
-          ikon: <Trash2 size={18} />,
-          ton: 'tehlike' as const,
-          calistir: () => setSilOnayi(true),
-        }]
-      : []),
+    /*
+      SİL BU LİSTEDE DEĞİL — kendi FAB'ında.
+
+      Tabakanın içinde, durum geçişlerinin arasında bir satırdı: geri
+      alınamaz tek eylem, geri alınabilir dört eylemle aynı görünürlükte ve
+      aynı dokunuş mesafesinde. Ayrı bir düğme hem onu ayırıyor hem de
+      aramadan bulunmasını sağlıyor.
+    */
   ];
 
   return (
@@ -568,7 +569,35 @@ export default function TaskDetail() {
         </div>
       )}
 
-      {/* ── "⋯" tabakası: geçişler, düzenleme, silme ── */}
+      {/*
+        ── Silme FAB'ı (mobil) ──
+
+        Silme telefonda "⋯" tabakasının içinde, durum geçişlerinin arasında
+        bir satırdı: geri alınamaz TEK eylem, geri alınabilir dördüyle aynı
+        görünürlükte. Kendi düğmesine alınınca hem ayrışıyor hem de
+        aranmadan bulunuyor.
+
+        RENK, UYGULAMANIN SİLME DİLİ: yumuşak kırmızı zemin + kırmızı simge.
+        Dolu kırmızı değil — `Button` içindeki kural bunu açıkça yasaklıyor
+        ("dolu kırmızı buton yanlışlıkla tıklamayı davet eder") ve FAB
+        başparmağın en doğal yerinde duran 56px'lik bir hedef; o uyarının
+        en çok geçerli olduğu nokta burası. Onay kutusu da yerinde duruyor:
+        tek dokunuşla hiçbir şey silinmiyor.
+
+        `ustPay`: yapışkan eylem çubuğu varken FAB onun üstüne çıkıyor,
+        yoksa çubuğun düğmesini örtüyordu.
+      */}
+      {hasPermission(PERMISSION.gorevSil) && (
+        <Fab
+          etiket="Görevi sil"
+          ton="yikici"
+          ikon={<Trash2 size={22} strokeWidth={2} />}
+          onClick={() => setSilOnayi(true)}
+          ustPay={cubukEylemi ? '60px' : undefined}
+        />
+      )}
+
+      {/* ── "⋯" tabakası: geçişler ve düzenleme ── */}
       <BottomSheet acik={tabakaAcik} kapat={() => setTabakaAcik(false)} baslik="İşlemler">
         {tabakaEylemleri.map((e) => (
           <SheetRow
