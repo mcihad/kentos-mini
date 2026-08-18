@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging.Abstractions;
 using KentOS.Mini.Application.Enums;
 using KentOS.Mini.Application.Models;
 using KentOS.Mini.Application.Services;
+using KentOS.Mini.Web.Services.V2;
 using KentOS.Mini.Web.Data;
 using KentOS.Mini.Web.Mapping;
 using KentOS.Mini.Web.Options;
@@ -260,6 +261,36 @@ public class SahteKullaniciServisi(long kullaniciId, string kullaniciAdi, long b
 
     public Task<string> GetFullNameAsync() => Task.FromResult(KullaniciAdi + " Test");
     public Task<string> GetFullNameAndUnvan() => Task.FromResult(KullaniciAdi + " Test - Uzman");
+}
+
+/// <summary>
+/// Kurum kaydını veren ve OKUNDUĞUNU KAYDEDEN sahte servis.
+/// </summary>
+/// <remarks>
+/// <para>
+/// Çıktı üreticileri kurum adını buradan almalı. Sayaç, testin "PDF üretildi"
+/// demekle yetinmemesini sağlıyor: adın koda yazıldığı hâlde de PDF
+/// üretiliyordu ve testler yeşildi — arıza tam olarak orada saklanmıştı.
+/// Artık kurum kaydına <b>başvurulduğu</b> ölçülebiliyor.
+/// </para>
+/// </remarks>
+public sealed class SahteKurumServisi(string ad = "Örnek Belediyesi") : IInstitutionService
+{
+    /// <summary>Kurum kaydı kaç kez okundu?</summary>
+    public int OkumaSayisi { get; private set; }
+
+    public Task<Institution> GetAsync(CancellationToken cancellationToken = default)
+    {
+        OkumaSayisi++;
+        return Task.FromResult(new Institution { Name = ad });
+    }
+
+    public Task<KurumBilgisiDto> GetPublicAsync(CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException();
+
+    public Task<KurumBilgisiDto> UpdateAsync(
+        KurumGuncellemeIstegi istek, CancellationToken cancellationToken = default) =>
+        throw new NotSupportedException();
 }
 
 /// <summary>Gönderilen bildirimleri KAYDEDEN sahte mesaj servisi.</summary>

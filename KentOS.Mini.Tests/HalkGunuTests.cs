@@ -618,7 +618,8 @@ public class HalkGunuTests : IClassFixture<SunucuTestOrtami>
         await TemizleAsync();
         using var b = _ortam.Baglam();
         var (gun, _, _) = TamServis(b);
-        var cikti = new HalkGunuCiktiServisi(gun, new SahteKullaniciServisi(1, "ekleyen", 1));
+        var kurum = new SahteKurumServisi("Örnek Belediyesi");
+        var cikti = new HalkGunuCiktiServisi(gun, new SahteKullaniciServisi(1, "ekleyen", 1), kurum);
 
         var g = await gun.OlusturAsync(GunIstegi());
         var detay = await gun.DilimEkleAsync(g.Id, new DilimIstegi
@@ -637,6 +638,10 @@ public class HalkGunuTests : IClassFixture<SunucuTestOrtami>
         Assert.Equal(0x4B, xlsx.Icerik[1]);
 
         var pdf = await cikti.PdfAsync(g.Id, null, tur, null);
+
+        // Kurum adı KURUM KAYDINDAN geliyor mu? Koda yazılıyken de PDF
+        // üretiliyor ve bu test yeşil geçiyordu.
+        Assert.True(kurum.OkumaSayisi > 0, "PDF kurum adını kurum kaydından okumadı.");
         Assert.EndsWith(".pdf", pdf.DosyaAdi);
         Assert.Equal("%PDF", System.Text.Encoding.ASCII.GetString(pdf.Icerik, 0, 4));
     }
@@ -655,7 +660,8 @@ public class HalkGunuTests : IClassFixture<SunucuTestOrtami>
         await TemizleAsync();
         using var b = _ortam.Baglam();
         var (gun, _, _) = TamServis(b);
-        var cikti = new HalkGunuCiktiServisi(gun, new SahteKullaniciServisi(1, "ekleyen", 1));
+        var kurum = new SahteKurumServisi("Örnek Belediyesi");
+        var cikti = new HalkGunuCiktiServisi(gun, new SahteKullaniciServisi(1, "ekleyen", 1), kurum);
 
         var g = await gun.OlusturAsync(GunIstegi());
         var detay = await gun.DilimEkleAsync(g.Id, new DilimIstegi

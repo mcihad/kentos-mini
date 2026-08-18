@@ -76,7 +76,9 @@ public interface ICicekciDetayServisi
 /// aynı olmayabiliyor ve birim süzgeci konsaydı fatura hiç tutmazdı.
 /// </para>
 /// </remarks>
-public class CicekciDetayServisi(AppDbContext _db) : ICicekciDetayServisi
+public class CicekciDetayServisi(
+    AppDbContext _db,
+    IInstitutionService _kurum) : ICicekciDetayServisi
 {
     private const string Lacivert = "#002E6D";
     private const string Altin = "#A78952";
@@ -229,6 +231,9 @@ public class CicekciDetayServisi(AppDbContext _db) : ICicekciDetayServisi
         var detay = await DetayAsync(cicekciId, baslangic, bitis);
         var aralik = AralikMetni(baslangic, bitis);
 
+        // Kurum adı KURUM AYARLARINDAN; gerekçe `CiktiKimligi` içinde.
+        var kurumAdi = (await _kurum.CiktiKimligiAsync()).Ad;
+
         var belge = Document.Create(kap =>
         {
             kap.Page(sayfa =>
@@ -239,7 +244,7 @@ public class CicekciDetayServisi(AppDbContext _db) : ICicekciDetayServisi
 
                 sayfa.Header().Column(k =>
                 {
-                    k.Item().Text("SİVAS BELEDİYESİ").FontSize(8).FontColor(Altin)
+                    k.Item().Text(kurumAdi).FontSize(8).FontColor(Altin)
                         .SemiBold().LetterSpacing(0.12f);
                     k.Item().PaddingTop(2).Text(detay.AdSoyad).FontSize(15).Bold()
                         .FontColor(Lacivert);

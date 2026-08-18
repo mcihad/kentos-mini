@@ -95,9 +95,10 @@ public interface IIsimKartiServisi
 /// </remarks>
 public class IsimKartiServisi(
     IDavetServisi _davet,
-    IWebHostEnvironment _ortam) : IIsimKartiServisi
+    IWebHostEnvironment _ortam,
+    IInstitutionService _kurum) : IIsimKartiServisi
 {
-    private const string KurumAdi = "SİVAS BELEDİYESİ";
+    // Kurum adı KURUM AYARLARINDAN; gerekçe `CiktiKimligi` içinde.
 
     static IsimKartiServisi()
     {
@@ -161,6 +162,7 @@ public class IsimKartiServisi(
         var (baslik, alt, kisiler) = await VeriAsync(davetId, durum);
         var tasarim = KartTasarimlari.KesmeBul(ayar.Tasarim);
         var amblem = ayar.LogoGoster || ayar.AntetGoster ? Amblem() : null;
+        var kurumAdi = (await _kurum.CiktiKimligiAsync()).Ad;
 
         // Sınırlar sunucuda: 5 kolon A4'te okunmaz bir şeride, 20 satır da
         // 1 cm'lik kartlara dönüyor. İstemci de kısıtlıyor ama tek doğru yer
@@ -200,7 +202,7 @@ public class IsimKartiServisi(
                         // asıl işi baskıyı alan kişinin hangi listeye baktığını
                         // görmesi.
                         sayfa.Header().Element(k =>
-                            KartTasarimlari.Antet(k, KurumAdi, alt, amblem));
+                            KartTasarimlari.Antet(k, kurumAdi, alt, amblem));
                     }
 
                     sayfa.Content().Table(tablo =>
@@ -267,6 +269,7 @@ public class IsimKartiServisi(
         var (baslik, alt, kisiler) = await VeriAsync(davetId, durum);
         var tasarim = KartTasarimlari.MasaBul(ayar.Tasarim);
         var amblem = ayar.LogoGoster || ayar.AntetGoster ? Amblem() : null;
+        var kurumAdi = (await _kurum.CiktiKimligiAsync()).Ad;
 
         var sayfaBasi = ayar.SayfaBasi >= 2 ? 2 : 1;
 
@@ -310,7 +313,7 @@ public class IsimKartiServisi(
             {
                 kutu.Column(ic =>
                 {
-                    ic.Item().Element(a => KartTasarimlari.Antet(a, KurumAdi, alt, amblem));
+                    ic.Item().Element(a => KartTasarimlari.Antet(a, kurumAdi, alt, amblem));
                     ic.Item().Extend().Element(g => KartTasarimlari.Ciz(
                         g, icerik, tasarim, adPunto, altPunto,
                         ayar.UnvanGoster, ayar.KurumGoster,

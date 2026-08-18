@@ -31,9 +31,10 @@ public interface IDavetCiktiServisi
 /// </remarks>
 public class DavetCiktiServisi(
     IDavetServisi _davet,
-    ICurrentUserService _kullanici) : IDavetCiktiServisi
+    ICurrentUserService _kullanici,
+    IInstitutionService _kurum) : IDavetCiktiServisi
 {
-    private const string Kurum = "SİVAS BELEDİYESİ";
+    // Kurum adı KURUM AYARLARINDAN; gerekçe `CiktiKimligi` içinde.
 
     /// <summary>
     /// Başlıktaki birim ÇIKTIYI ALANIN birimidir.
@@ -57,6 +58,7 @@ public class DavetCiktiServisi(
     {
         var davet = await _davet.DetayAsync(davetId);
         var birim = await _kullanici.GetCurrentBirimAdiAsync() ?? VarsayilanBirim;
+        var kimlik = await _kurum.CiktiKimligiAsync();
 
         var kisiler = davet.Kisiler;
         // Kategori süzgeci ADA göre değil KİMLİĞE göre olmalıydı ama DTO adı
@@ -77,9 +79,9 @@ public class DavetCiktiServisi(
                 p.Margin(1.4f, Unit.Centimetre);
                 p.DefaultTextStyle(t => t.FontSize(9.5f).FontFamily("Helvetica"));
 
-                p.Header().Element(e => Baslik(e, davet, tur, birim));
+                p.Header().Element(e => Baslik(e, davet, tur, birim, kimlik.Ad));
                 p.Content().Element(e => Govde(e, kisiler, tur));
-                p.Footer().Element(e => AltBilgi(e, birim));
+                p.Footer().Element(e => AltBilgi(e, birim, kimlik.Ad));
             });
         });
 
@@ -95,7 +97,7 @@ public class DavetCiktiServisi(
     }
 
     private static void Baslik(
-        IContainer kap, DavetDetayDto d, DavetCiktiTuru tur, string birim)
+        IContainer kap, DavetDetayDto d, DavetCiktiTuru tur, string birim, string kurumAdi)
     {
         kap.Column(s =>
         {
@@ -103,7 +105,7 @@ public class DavetCiktiServisi(
             {
                 r.RelativeItem().Column(c =>
                 {
-                    c.Item().Text(Kurum).FontSize(12).Bold();
+                    c.Item().Text(kurumAdi).FontSize(12).Bold();
                     c.Item().Text(birim).FontSize(9).FontColor(Colors.Grey.Darken1);
                 });
 
@@ -259,11 +261,11 @@ public class DavetCiktiServisi(
         if (kalin) y.SemiBold();
     }
 
-    private static void AltBilgi(IContainer kap, string birim) =>
+    private static void AltBilgi(IContainer kap, string birim, string kurumAdi) =>
         kap.PaddingTop(6).BorderTop(0.5f).BorderColor(Colors.Grey.Lighten1)
             .Row(r =>
             {
-                r.RelativeItem().Text($"{Kurum} · {birim}")
+                r.RelativeItem().Text($"{kurumAdi} · {birim}")
                     .FontSize(7.5f).FontColor(Colors.Grey.Darken1);
                 r.RelativeItem().AlignRight().Text(x =>
                 {

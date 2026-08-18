@@ -303,8 +303,13 @@ public class DavetTests : IClassFixture<SunucuTestOrtami>
         });
         await servis.KisiEkleAsync(davet.Id, new DavetKisiEkleIstegi { KategoriId = kategoriId });
 
+        var kurum = new SahteKurumServisi("Örnek Belediyesi");
         var (icerik, ad) = await new DavetCiktiServisi(
-            servis, new SahteKullaniciServisi(1, "ekleyen", 1)).PdfAsync(davet.Id, tur);
+            servis, new SahteKullaniciServisi(1, "ekleyen", 1), kurum).PdfAsync(davet.Id, tur);
+
+        // ÇIKTI KURUM KAYDINI OKUDU MU? Ad koda yazılıyken de PDF üretiliyor
+        // ve test yeşil geçiyordu; arıza tam olarak orada saklanmıştı.
+        Assert.True(kurum.OkumaSayisi > 0, "PDF kurum adını kurum kaydından okumadı.");
 
         Assert.NotEmpty(icerik);
         Assert.EndsWith(".pdf", ad);

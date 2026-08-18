@@ -62,9 +62,17 @@ public interface IHalkGunuCiktiServisi
 /// </remarks>
 public class HalkGunuCiktiServisi(
     IHalkGunuServisi _halkGunu,
-    ICurrentUserService _kullanici) : IHalkGunuCiktiServisi
+    ICurrentUserService _kullanici,
+    IInstitutionService _kurum) : IHalkGunuCiktiServisi
 {
-    private const string Kurum = "SİVAS BELEDİYESİ";
+    /*
+      KURUM ADI KURUM AYARLARINDAN.
+
+      Burada `const string Kurum = "SİVAS BELEDİYESİ"` yazıyordu. Uygulama
+      başka belediyelere de veriliyor; kurum ayarlarında adını değiştiren bir
+      müdürlüğün halk günü listesi hâlâ başka bir belediyenin adıyla
+      basılıyordu. Ortak kalıp `CiktiKimligi` içinde.
+    */
 
     /// <summary>
     /// Başlıktaki birim ÇIKTIYI ALANIN birimidir; sabit bir ad basmak, kâğıdın
@@ -259,6 +267,7 @@ public class HalkGunuCiktiServisi(
     {
         var (gun, gruplar) = await VeriAsync(halkGunuId, dilimId, durum);
         var birim = await _kullanici.GetCurrentBirimAdiAsync() ?? VarsayilanBirim;
+        var kimlik = await _kurum.CiktiKimligiAsync();
         var basliklar = Basliklar(tur);
         var sonSutun = basliklar.Length;
 
@@ -269,7 +278,7 @@ public class HalkGunuCiktiServisi(
 
         // ── kurum başlığı ──
         var kurumHucre = sayfa.Range(satir, 1, satir, sonSutun).Merge();
-        kurumHucre.Value = $"{Kurum} · {birim}";
+        kurumHucre.Value = $"{kimlik.Ad} · {birim}";
         kurumHucre.Style.Fill.BackgroundColor = XLColor.FromHtml(Lacivert);
         kurumHucre.Style.Font.FontColor = XLColor.White;
         kurumHucre.Style.Font.Bold = true;
@@ -378,6 +387,7 @@ public class HalkGunuCiktiServisi(
     {
         var (gun, gruplar) = await VeriAsync(halkGunuId, dilimId, durum);
         var birim = await _kullanici.GetCurrentBirimAdiAsync() ?? VarsayilanBirim;
+        var kimlik = await _kurum.CiktiKimligiAsync();
 
         var belge = Document.Create(b =>
         {
@@ -389,9 +399,9 @@ public class HalkGunuCiktiServisi(
                 p.Margin(1.4f, Unit.Centimetre);
                 p.DefaultTextStyle(t => t.FontSize(9.5f).FontFamily("Helvetica"));
 
-                p.Header().Element(e => Baslik(e, gun, tur, birim));
+                p.Header().Element(e => Baslik(e, gun, tur, birim, kimlik.Ad));
                 p.Content().Element(e => Govde(e, gruplar, tur));
-                p.Footer().Element(e => AltBilgi(e, birim));
+                p.Footer().Element(e => AltBilgi(e, birim, kimlik.Ad));
             });
         });
 
@@ -402,7 +412,7 @@ public class HalkGunuCiktiServisi(
     }
 
     private static void Baslik(
-        IContainer kap, HalkGunuDetayDto g, HalkGunuCiktiTuru tur, string birim)
+        IContainer kap, HalkGunuDetayDto g, HalkGunuCiktiTuru tur, string birim, string kurumAdi)
     {
         kap.Column(s =>
         {
@@ -410,7 +420,7 @@ public class HalkGunuCiktiServisi(
             {
                 r.RelativeItem().Column(c =>
                 {
-                    c.Item().Text(Kurum).FontSize(12).Bold().FontColor(Lacivert);
+                    c.Item().Text(kurumAdi).FontSize(12).Bold().FontColor(Lacivert);
                     c.Item().Text(birim).FontSize(9).FontColor(Colors.Grey.Darken1);
                 });
 
@@ -572,12 +582,12 @@ public class HalkGunuCiktiServisi(
         if (kalin) y.SemiBold();
     }
 
-    private static void AltBilgi(IContainer kap, string birim)
+    private static void AltBilgi(IContainer kap, string birim, string kurumAdi)
     {
         kap.PaddingTop(6).BorderTop(0.5f).BorderColor(Colors.Grey.Lighten1)
            .PaddingTop(4).Row(r =>
            {
-               r.RelativeItem().Text($"{Kurum} · {birim}")
+               r.RelativeItem().Text($"{kurumAdi} · {birim}")
                    .FontSize(7.5f).FontColor(Colors.Grey.Darken1);
                r.RelativeItem().AlignCenter()
                    .Text(DateTime.Now.ToString("dd.MM.yyyy HH:mm"))
