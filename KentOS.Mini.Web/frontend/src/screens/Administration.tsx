@@ -357,6 +357,21 @@ function KullaniciFormu({
     (mevcut !== null || parola.length >= 6) &&
     (!smsGonder || mevcut !== null || telefon.trim().length > 0);
 
+  /*
+   * KAYDET NEDEN KAPALI — kullanıcıya SÖYLENİR (şartname §6.13).
+   *
+   * Düğme sessizce sönük durunca "kaydet hiç aktifleşmiyor" diye geliyordu:
+   * rol seçiminin zorunlu olduğu, parolanın alt sınırı ve SMS açıkken
+   * telefonun gerektiği hiçbir yerde yazmıyordu. Liste yalnızca düğme
+   * kapalıyken görünür ve eksikler kapandıkça kendiliğinden kısalır.
+   */
+  const eksikler = [
+    kullaniciAdi.trim().length === 0 && 'kullanıcı adı',
+    secili.length === 0 && 'en az bir rol',
+    mevcut === null && parola.length < 6 && 'parola (en az 6 karakter)',
+    mevcut === null && smsGonder && telefon.trim().length === 0 && 'telefon (SMS için)',
+  ].filter((x): x is string => Boolean(x));
+
   return (
     <FormModal
       acik
@@ -531,6 +546,15 @@ function KullaniciFormu({
               etiket="Giriş bilgilerini SMS ile gönder"
               aciklama="Telefon numarası gerekir."
             />
+          )}
+
+          {eksikler.length > 0 && (
+            <p
+              role="status"
+              className="rounded-sm bg-(--st-wait-bg) px-3 py-2 text-2xs font-semibold text-(--st-wait)"
+            >
+              Kaydetmek için eksik: {eksikler.join(' · ')}
+            </p>
           )}
         </div>
       </form>
