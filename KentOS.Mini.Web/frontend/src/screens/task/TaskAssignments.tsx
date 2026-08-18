@@ -70,7 +70,7 @@ export function TaskAssignments({ gorev }: { gorev: TaskDetail }) {
   }));
 
   return (
-    <Card>
+    <Card serit>
       <CardHeader
         baslik="Atamalar"
         eylem={

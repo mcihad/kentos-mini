@@ -65,7 +65,7 @@ function Ekler({ gorevId, kapali }: { gorevId: number; kapali: boolean }) {
   }
 
   return (
-    <Card>
+    <Card serit>
       <CardHeader
         baslik="Dosyalar"
         aciklama={ekler?.length ? `${ekler.length} dosya` : undefined}
@@ -178,7 +178,7 @@ function Yorumlar({ gorevId }: { gorevId: number }) {
   }
 
   return (
-    <Card>
+    <Card serit>
       <CardHeader baslik="Yorumlar" aciklama={yorumlar?.length ? undefined : 'Henüz yorum yok'} />
 
       <div className="px-3.5 pb-3.5">

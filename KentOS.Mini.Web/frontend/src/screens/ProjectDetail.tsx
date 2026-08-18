@@ -20,6 +20,8 @@ import { useTasks } from '../data/tasks';
 import { Board } from './project/Board';
 import { Gantt } from './project/Gantt';
 import { ProjectTeam } from './project/ProjectTeam';
+import { Avatar } from '../components/PersonPicker';
+import type { ProjectDetail as Proje } from '../data/types';
 import { SlaBadge, StageProgress } from './task/TaskBits';
 
 const PROJE_SEKMELERI = ['ozet', 'pano', 'gantt', 'gorevler'] as const;
@@ -126,69 +128,69 @@ export default function ProjectDetail() {
               <span className="text-2xs font-medium text-(--st-no)">Süre aşıldı</span>
             )}
           </div>
-          <h1 className="mt-1 font-display text-lg font-bold leading-tight text-ink">
+          <h1 className="mt-1 font-display text-lg font-bold leading-tight text-ink metin-guzel">
             {proje.ad}
           </h1>
+
+          {/* "Bu proje kimde?" — görev detayındaki sorumlu satırının aynısı. */}
+          {proje.yoneticiAd && (
+            <div className="mt-1.5 flex items-center gap-1.5 text-xs text-text-2">
+              <Avatar ad={proje.yoneticiAd} boyut="kucuk" />
+              <span className="min-w-0 truncate">{proje.yoneticiAd}</span>
+            </div>
+          )}
         </div>
 
-        {hasPermission(PERMISSION.projeYonet) && (
-          <>
-            <Link to={`/projeler/${projeId}/duzenle`}>
-              <IconButton etiket="Düzenle">
-                <Pencil size={17} />
+        {/* Düzenle/Sil masaüstünde ikon; telefonda başlık satırı zaten kod,
+            durum ve gecikme rozetiyle dolu. Mobilde ikisi de Özet sekmesinin
+            altındaki yönetim satırında. */}
+        <div className="hidden items-center gap-2 lg:flex">
+          {hasPermission(PERMISSION.projeYonet) && (
+            <>
+              <Link to={`/projeler/${projeId}/duzenle`}>
+                <IconButton etiket="Düzenle">
+                  <Pencil size={17} />
+                </IconButton>
+              </Link>
+              <IconButton etiket="Sil" onClick={() => setSilOnayi(true)}>
+                <Trash2 size={17} />
               </IconButton>
-            </Link>
-            <IconButton etiket="Sil" onClick={() => setSilOnayi(true)}>
-              <Trash2 size={17} />
-            </IconButton>
-          </>
-        )}
+            </>
+          )}
+        </div>
       </div>
 
-      {/* ── Künye ── */}
-      <Card className="p-3.5">
-        {proje.aciklama && (
-          <p className="mb-3 whitespace-pre-wrap text-sm leading-relaxed text-text-2">
-            {proje.aciklama}
-          </p>
-        )}
+      {/*
+        ── İlerleme şeridi ──
 
-        <div className="flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs">
-          {proje.birimAd && <Kunye ikon={<Building2 size={14} />}>{proje.birimAd}</Kunye>}
-          {proje.yoneticiAd && <Kunye ikon={<User size={14} />}>{proje.yoneticiAd}</Kunye>}
-          {(proje.baslangic || proje.bitis) && (
-            <Kunye ikon={<Calendar size={14} />}>
-              {proje.baslangic ? shortDate(proje.baslangic) : '—'}
-              {' → '}
-              {proje.bitis ? shortDate(proje.bitis) : '—'}
-            </Kunye>
-          )}
-          {proje.butce != null && (
-            <Kunye ikon={<Wallet size={14} />}>
-              {proje.butce.toLocaleString('tr-TR')} ₺
-            </Kunye>
-          )}
-          {proje.adres && <Kunye ikon={<MapPin size={14} />}>{proje.adres}</Kunye>}
-        </div>
+        Önceki hâlde yüzde, tarih aralığı, bütçe, birim, yönetici, adres,
+        açıklama ve gecikme uyarısı TEK KARTIN içindeydi: dört ayrı soruya
+        cevap veren dört farklı bilgi türü, aynı kutuda ve aynı ağırlıkta.
+        Kullanıcının "kalabalık" dediği şeyin en somut örneği.
 
-        {/* İlerleme GÖREVLERDEN; projede saklanan bir yüzde yok. */}
-        <div className="mt-3">
-          <div className="flex items-baseline justify-between text-2xs text-ink-3">
-            <span>
-              {toplam === 0 ? 'Henüz görev bağlanmamış' : `${biten}/${toplam} görev kapandı`}
-            </span>
-            {toplam > 0 && <span className="tabular-nums">%{oran}</span>}
-          </div>
-          <span className="mt-1 block h-1.5 overflow-hidden rounded-full bg-sunken" aria-hidden>
-            <span
-              className="block h-full rounded-full bg-brand transition-[width]"
-              style={{ width: `${oran}%` }}
-            />
+        Yüzde işin durumu — ekranın en üstünde ve tek başına. Künye bilgileri
+        (birim, yönetici, bütçe, adres) referans; Özet sekmesine, etiketli bir
+        tanım listesine taşındı — görev detayındaki gramerin aynısı.
+      */}
+      <Card serit className="p-3.5">
+        <div className="flex items-baseline justify-between gap-3">
+          <span className="font-display text-2xl font-bold tabular-nums leading-none text-ink">
+            %{oran}
+          </span>
+          <span className="text-2xs text-ink-3">
+            {toplam === 0 ? 'Görev bağlanmamış' : `${biten}/${toplam} görev kapandı`}
           </span>
         </div>
 
+        <span className="mt-2 block h-1.5 overflow-hidden rounded-full bg-sunken" aria-hidden>
+          <span
+            className="block h-full rounded-full bg-brand transition-[width]"
+            style={{ width: `${oran}%` }}
+          />
+        </span>
+
         {(proje.gorevGeciken ?? 0) > 0 && (
-          <p className="mt-2 text-2xs font-medium text-(--st-no)">
+          <p className="mt-2 text-xs font-medium text-(--st-no)">
             {proje.gorevGeciken} görevde süre aşıldı.
           </p>
         )}
@@ -208,7 +210,27 @@ export default function ProjectDetail() {
 
       {sekme === 'ozet' && (
         <div className="space-y-3.5">
-          <Card>
+          <ProjeKunyesi proje={proje} />
+
+          {/* Yönetim eylemleri TELEFONDA burada: başlık satırında yer yok ve
+              silme gibi geri alınamaz bir işlem, kazara basılabilecek bir
+              köşede durmamalı. */}
+          {hasPermission(PERMISSION.projeYonet) && (
+            <div className="flex gap-2 lg:hidden">
+              <Link to={`/projeler/${projeId}/duzenle`} className="flex-1">
+                <Button varyant="ikincil" className="w-full">
+                  <Pencil size={15} />
+                  Düzenle
+                </Button>
+              </Link>
+              <Button varyant="yikici" onClick={() => setSilOnayi(true)}>
+                <Trash2 size={15} />
+                Sil
+              </Button>
+            </div>
+          )}
+
+          <Card serit>
             <CardHeader
               baslik="Kilometre taşları"
               aciklama={
@@ -318,13 +340,13 @@ export default function ProjectDetail() {
       {/* Pano ve gantt TEMBEL: yalnızca sekme açıkken veri çekiyor. */}
       {sekme === 'pano' && <Board projeId={projeId} etkin />}
       {sekme === 'gantt' && (
-        <Card className="p-2">
+        <Card serit className="p-2">
           <Gantt projeId={projeId} etkin />
         </Card>
       )}
 
       {sekme === 'gorevler' && (
-        <Card>
+        <Card serit>
           <CardHeader
             baslik="Projenin görevleri"
             aciklama={`${toplam} görev`}
@@ -409,11 +431,77 @@ export default function ProjectDetail() {
   );
 }
 
-function Kunye({ ikon, children }: { ikon: React.ReactNode; children: React.ReactNode }) {
+/**
+ * PROJENİN KÜNYESİ — etiketli tanım listesi.
+ *
+ * <p>
+ * Önceden başlığın altında, sarmalanan ikon+metin çiftleri hâlinde
+ * duruyordu: "Fen İşleri Müdürlüğü", "01.03.2026 → 30.09.2026",
+ * "4.500.000 ₺" ve "Kent Meydanı" yan yana, aynı ağırlıkta, hangisinin neyi
+ * anlattığı ancak ikondan tahmin edilebilir. Görev detayında düzeltilen
+ * kusurun aynısı; çözüm de aynı.
+ * </p>
+ */
+function ProjeKunyesi({ proje }: { proje: Proje }) {
+  const satirVar =
+    proje.aciklama || proje.birimAd || proje.baslangic || proje.bitis
+    || proje.butce != null || proje.adres;
+
+  if (!satirVar) return null;
+
   return (
-    <span className="inline-flex items-center gap-1.5 text-text-2">
-      <span className="text-text-3">{ikon}</span>
-      {children}
-    </span>
+    <Card serit>
+      <CardHeader baslik="Künye" />
+      <div className="space-y-3 p-3.5">
+        {proje.aciklama && (
+          <p className="whitespace-pre-wrap text-sm leading-relaxed text-text-2">
+            {proje.aciklama}
+          </p>
+        )}
+
+        <dl className="space-y-2 text-xs">
+          <Satir ikon={<Building2 size={13} />} etiket="Birim" deger={proje.birimAd} />
+          <Satir ikon={<User size={13} />} etiket="Yönetici" deger={proje.yoneticiAd} />
+          <Satir
+            ikon={<Calendar size={13} />}
+            etiket="Süre"
+            deger={
+              proje.baslangic || proje.bitis
+                ? `${proje.baslangic ? shortDate(proje.baslangic) : '—'} → ${
+                    proje.bitis ? shortDate(proje.bitis) : '—'
+                  }`
+                : null
+            }
+          />
+          <Satir
+            ikon={<Wallet size={13} />}
+            etiket="Bütçe"
+            deger={proje.butce != null ? `${proje.butce.toLocaleString('tr-TR')} ₺` : null}
+          />
+          <Satir ikon={<MapPin size={13} />} etiket="Konum" deger={proje.adres} />
+        </dl>
+      </div>
+    </Card>
+  );
+}
+
+/** Künye satırı — boş değer hiç çizilmez. */
+function Satir({
+  ikon,
+  etiket,
+  deger,
+}: {
+  ikon: React.ReactNode;
+  etiket: string;
+  deger?: string | null;
+}) {
+  if (!deger) return null;
+
+  return (
+    <div className="flex items-start gap-2">
+      <span className="mt-px text-text-3">{ikon}</span>
+      <dt className="w-16 shrink-0 text-ink-3">{etiket}</dt>
+      <dd className="min-w-0 flex-1 text-text-2">{deger}</dd>
+    </div>
   );
 }

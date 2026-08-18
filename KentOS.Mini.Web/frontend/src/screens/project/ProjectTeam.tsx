@@ -43,7 +43,7 @@ export function ProjectTeam({ proje }: { proje: ProjectDetail }) {
     hasPermission(PERMISSION.projeUyeYonet) || hasPermission(PERMISSION.projeYonet);
 
   return (
-    <Card>
+    <Card serit>
       <CardHeader
         baslik="Proje ekibi"
         aciklama={uyeler.length ? `${uyeler.length} kişi` : undefined}

@@ -85,6 +85,36 @@
   --fs-4xl: calc(var(--fs) * 2.55 * var(--fs-d));
   --track-d: calc(var(--track) - 0.014em);  /* başlıklar gövdeden daha sıkı */
 
+  /*
+    TELEFONDA KÜÇÜK KADEMELER AYRICA YÜKSELİYOR.
+
+    Ölçüldü: görev detayı 390px'te 53 metin öğesi taşıyor ve bunların 51'i
+    temel boyutun (14px) ALTINDA — baskın boy `text-sm` (13.2px), ardından
+    12.2, 11.3 ve 10.4. Yani ekranın neredeyse tamamı "küçük yazı"ydı.
+    Kullanıcının "mobilde çok ufak" demesi bunu tarif ediyor.
+
+    Sebep tasarım değil, BAĞLAM: bu ölçek yoğun masaüstü tablolarında doğru
+    çalışıyor — fare hassas, ekran geniş, satır çok. Telefon ise kol
+    mesafesinde tutuluyor ve aynı ekranda üçte bir kadar bilgi var. Aynı
+    çarpanları iki bağlamda da kullanmak, birini yanlış yapmak demekti.
+
+    `--fs` DEĞİŞTİRİLMİYOR: o kullanıcının kendi yoğunluk düğmesi ve tema
+    sağlayıcısı tarafından satır içi yazılıyor — buradaki bir kural onu
+    ezemezdi zaten. Bunun yerine TÜRETİLMİŞ kademeler tabana yaklaştırılıyor;
+    merdiven duruyor, yalnızca aralıklar daralıyor.
+
+    Başlık kademelerine (xl ve üstü) dokunulmuyor: onlar zaten yeterince
+    büyük ve büyütmek içeriği katlamanın altına iterdi.
+  */
+  @media (width < 48rem) {
+    --fs-3xs: calc(var(--fs) * 0.80);
+    --fs-2xs: calc(var(--fs) * 0.86);
+    --fs-xs: calc(var(--fs) * 0.93);
+    --fs-sm: calc(var(--fs) * 1);
+    --fs-md: calc(var(--fs) * 1.07);
+    --fs-lg: calc(var(--fs) * 1.15);
+  }
+
   /* bileşen ölçüleri — hepsi --sp katı */
   --h-ctrl: calc(var(--sp) * 9);      /* 36px  · buton, input, çip */
   --h-ctrl-lg: calc(var(--sp) * 11);  /* 44px  · sidebar öğesi, sekme */

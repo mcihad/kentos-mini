@@ -54,8 +54,21 @@ const EKRANLAR = [
   // `innerText` dönüşmüş hâli veriyor; çıpa dönüşümden etkilenmeyen bir
   // düğme metni.
   { ad: 'saha-tespit', yol: '/saha/tespit', bekle: 'Tespiti kaydet' },
-  { ad: 'ajanda-liste', yol: '/ajanda?sekme=liste', bekle: 'Yeni etkinlik' },
-  { ad: 'ajanda-silinmis', yol: '/ajanda?sekme=silinmis', bekle: 'Yeni etkinlik' },
+  /*
+    ÇAPA "Yeni etkinlik" DEĞİL — o metin ekranın kendisine ait değildi.
+
+    Bu iki satır uzun süre yeşil geçti ama YANLIŞ SEBEPLE: "Yeni etkinlik"
+    düğmesi mobilde FAB'ın içinde ve kapalıyken görünmüyor. Eşleşen şey,
+    her ekranın tepesinde çizilen bildirim izni kartının gövdesiydi —
+    "Yeni etkinlik, havale ve size gönderilen dosyalar…". Kart yalnızca ana
+    sayfaya alınınca çapa düştü ve testin aslında ajandayı hiç
+    doğrulamadığı ortaya çıktı.
+
+    Yerine iki görünümde de duran arama alanı konuyor; öteki liste
+    ekranlarındaki çapayla aynı.
+  */
+  { ad: 'ajanda-liste', yol: '/ajanda?sekme=liste', secici: 'main input[type="search"]' },
+  { ad: 'ajanda-silinmis', yol: '/ajanda?sekme=silinmis', secici: 'main input[type="search"]' },
   { ad: 'etkinlik-form', yol: '/ajanda/yeni', bekle: 'Yeni etkinlik' },
   { ad: 'takvim', yol: '/takvim', bekle: null },
   { ad: 'takvim-hafta', yol: '/takvim?gorunum=hafta', bekle: null },

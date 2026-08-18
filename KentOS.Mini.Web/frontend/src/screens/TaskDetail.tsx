@@ -1,6 +1,7 @@
 import {
   ArrowLeft, Building2, Calendar, CheckCircle2, ClipboardCheck, ClipboardList,
-  Flag, MapPin, MessageSquare, Paperclip, Pencil, Play, Trash2, User, Users,
+  Flag, MapPin, MessageSquare, MoreHorizontal, Paperclip, Pencil, Play, Trash2,
+  User, Users, XCircle,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
@@ -14,17 +15,20 @@ import { Tabs } from '../components/Tabs';
 import { Timeline, DegisiklikSatiri, type TimelineItem } from '../components/Timeline';
 import { useToast } from '../components/Toast';
 import { PERMISSION } from '../components/permissions';
+import { cn } from '../components/utils';
 import { useSession } from '../auth/SessionProvider';
+import { BottomSheet, SheetRow } from '../shell/mobile/BottomSheet';
 import { dateTime, shortDate } from '../data/format';
 import { useTask, useTaskEvents, useTaskMutations } from '../data/tasks';
 import { TASK_STAGE_STATUS, TASK_STATUS, type TaskDetail as Gorev } from '../data/types';
+import { Avatar } from '../components/PersonPicker';
 import { SlaBadge, StageProgress } from './task/TaskBits';
 import { TaskStages } from './task/TaskStages';
 import { TaskAssignments } from './task/TaskAssignments';
 import { TaskDiscussion } from './task/TaskDiscussion';
 import { StatusDialog } from './task/StatusDialog';
 
-const GOREV_SEKMELERI = ['akis', 'tartisma', 'gecmis'] as const;
+const GOREV_SEKMELERI = ['akis', 'detay', 'tartisma', 'gecmis'] as const;
 type Sekme = (typeof GOREV_SEKMELERI)[number];
 
 /**
@@ -88,6 +92,7 @@ export default function TaskDetail() {
     setSorgu(sorgu, { replace: true });
   };
   const [silOnayi, setSilOnayi] = useState(false);
+  const [tabakaAcik, setTabakaAcik] = useState(false);
   const [durumIstegi, setDurumIstegi] = useState<{ durum: number; ad: string } | null>(null);
 
   const { data: gorev, isLoading, isError, error } = useTask(gorevId);
@@ -214,7 +219,16 @@ export default function TaskDetail() {
       title={engel ?? 'Görevi onaya gönderir'}
     >
       <CheckCircle2 size={15} />
-      Tamamla
+      {/*
+        "ONAYA GÖNDER", "TAMAMLA" DEĞİL.
+
+        Aşama satırının kendi düğmesi de "Tamamla" yazıyordu: aynı ekranda,
+        aynı anda, iki farklı işi yapan iki aynı sözcük. Biri bir ADIMI
+        kapatıyor, öteki bütün GÖREVİ yönetici onayına yolluyor. İkincisi
+        adını yaptığı işten alıyor — modülün en önemli kuralı da zaten beyan
+        ile kabulün ayrı olması.
+      */}
+      Onaya gönder
     </Button>
   ) : null;
 
@@ -272,6 +286,48 @@ export default function TaskDetail() {
 
   const eylemVar = !kapali && (birincil || onayDugmeleri || durumSecenekleri.length > 0);
 
+  /*
+    "⋯" TABAKASININ İÇERİĞİ.
+
+    Çubukta yer bulamayan her şey: birincil eylem varken bütün durum
+    geçişleri, yokken ilki dışındakiler — artı düzenleme ve silme. Tek yerde
+    tanımlanıyor ki çubuk ile tabaka arasında bir eylem kaybolmasın.
+  */
+  const tabakaEylemleri: {
+    etiket: string;
+    ikon: React.ReactNode;
+    ton?: 'normal' | 'tehlike';
+    calistir: () => void;
+  }[] = [
+    ...(!kapali && hasPermission(PERMISSION.gorevDuzenle)
+      ? durumDugmeleri
+          .slice(birincil || onayDugmeleri ? 0 : 1)
+          .map((d) => ({
+            etiket: d.eylem || d.ad || '',
+            ikon: d.durum === TASK_STATUS.iptal ? <XCircle size={18} /> : <Play size={18} />,
+            ton: (d.durum === TASK_STATUS.iptal ? 'tehlike' : 'normal') as 'normal' | 'tehlike',
+            calistir: () => setDurumIstegi({ durum: d.durum!, ad: d.eylem || d.ad || '' }),
+          }))
+      : []),
+
+    ...(!kapali && hasPermission(PERMISSION.gorevDuzenle)
+      ? [{
+          etiket: 'Düzenle',
+          ikon: <Pencil size={18} />,
+          calistir: () => gezin(`/gorevler/${gorevId}/duzenle`),
+        }]
+      : []),
+
+    ...(hasPermission(PERMISSION.gorevSil)
+      ? [{
+          etiket: 'Sil',
+          ikon: <Trash2 size={18} />,
+          ton: 'tehlike' as const,
+          calistir: () => setSilOnayi(true),
+        }]
+      : []),
+  ];
+
   return (
     <div className="space-y-3.5">
       {/* ── Başlık ── */}
@@ -297,33 +353,73 @@ export default function TaskDetail() {
           <h1 className="mt-1 font-display text-lg font-bold leading-tight text-ink metin-guzel md:text-xl">
             {gorev.baslik}
           </h1>
+
+          {/*
+            "BU İŞ KİMDE?" BAŞLIĞIN HEMEN ALTINDA VE ONUNLA AYNI HİZADA.
+
+            Cevap yalnızca Atamalar kartındaydı ve o kart telefonda sayfanın
+            en altındaydı. Sahadaki personelin ve müdürün ilk sorusu bu; bir
+            kartın arkasında durmamalı. Tam yönetim (ekle/çıkar/rol) yine
+            "Detay" sekmesinde.
+          */}
+          {(gorev.sorumlular ?? []).length > 0 && (
+            <div className="mt-1.5 flex items-center gap-1.5 text-xs text-text-2">
+              <Avatar ad={gorev.sorumlular![0]} boyut="kucuk" />
+              <span className="min-w-0 truncate">
+                {gorev.sorumlular![0]}
+                {gorev.sorumlular!.length > 1 && (
+                  <span className="text-ink-3"> +{gorev.sorumlular!.length - 1}</span>
+                )}
+              </span>
+            </div>
+          )}
         </div>
 
-        {!kapali && hasPermission(PERMISSION.gorevDuzenle) && (
-          <Link to={`/gorevler/${gorevId}/duzenle`}>
-            <IconButton etiket="Düzenle">
-              <Pencil size={17} />
+        {/*
+          DÜZENLE/SİL MASAÜSTÜNDE İKON, TELEFONDA TABAKADA.
+
+          390px'lik başlık satırında geri düğmesi, takip numarası, durum
+          rozeti, öncelik, SLA ve iki ikon aynı anda duruyordu; ekranda
+          sayılan 25 düğme/bağlantının ilk altısı daha başlıkta bitiyordu.
+          Telefonda ikisi de alt çubuktaki "⋯" tabakasında — uygulamanın
+          öteki detay ekranlarında (talep, davet, çiçekçi) zaten kurulmuş
+          olan gramer.
+        */}
+        <div className="hidden items-center gap-2 lg:flex">
+          {!kapali && hasPermission(PERMISSION.gorevDuzenle) && (
+            <Link to={`/gorevler/${gorevId}/duzenle`}>
+              <IconButton etiket="Düzenle">
+                <Pencil size={17} />
+              </IconButton>
+            </Link>
+          )}
+          {hasPermission(PERMISSION.gorevSil) && (
+            <IconButton etiket="Sil" onClick={() => setSilOnayi(true)}>
+              <Trash2 size={17} />
             </IconButton>
-          </Link>
-        )}
-        {hasPermission(PERMISSION.gorevSil) && (
-          <IconButton etiket="Sil" onClick={() => setSilOnayi(true)}>
-            <Trash2 size={17} />
-          </IconButton>
-        )}
+          )}
+        </div>
       </div>
 
       <IlerlemeSeridi gorev={gorev} />
 
       <div className="grid gap-3.5 lg:grid-cols-[minmax(0,1fr)_320px]">
         {/* ── Sol sütun: işin kendisi ── */}
-        <div className="min-w-0 space-y-3.5">
+        <div
+          className={cn(
+            'min-w-0 space-y-3.5',
+            // "Detay" mobilde sağ sütunu gösteriyor; sol sütun o an sekme
+            // şeridinden ibaret kalmalı.
+            sekme === 'detay' ? 'lg:block' : '',
+          )}
+        >
           <Tabs<Sekme>
             deger={sekme}
             degistir={setSekme}
             sekmeler={[
               { deger: 'akis', etiket: 'Akış' },
-              { deger: 'tartisma', etiket: 'Dosya ve yorum' },
+              { deger: 'detay', etiket: 'Detay' },
+              { deger: 'tartisma', etiket: 'Dosya' },
               { deger: 'gecmis', etiket: 'Geçmiş', sayi: cizelge.length },
             ]}
           />
@@ -333,7 +429,7 @@ export default function TaskDetail() {
               <TaskStages gorev={gorev} />
 
               {(gorev.altGorevler ?? []).length > 0 && (
-                <Card>
+                <Card serit>
                   <CardHeader
                     baslik="Alt görevler"
                     aciklama={`${gorev.altGorevler!.length} parça`}
@@ -374,7 +470,7 @@ export default function TaskDetail() {
           {sekme === 'tartisma' && <TaskDiscussion gorevId={gorevId} kapali={kapali} />}
 
           {sekme === 'gecmis' && (
-            <Card className="p-3.5">
+            <Card serit className="p-3.5">
               {cizelge.length === 0 ? (
                 <EmptyState ikon={MessageSquare} baslik="Kayıt yok" />
               ) : (
@@ -384,8 +480,19 @@ export default function TaskDetail() {
           )}
         </div>
 
-        {/* ── Sağ sütun: kim, ne, nerede ── */}
-        <div className="min-w-0 space-y-3.5">
+        {/*
+          ── Sağ sütun: kim, ne, nerede ──
+
+          MASAÜSTÜNDE HER ZAMAN GÖRÜNÜR, TELEFONDA "Detay" SEKMESİNDE.
+
+          Telefonda bu blok akışın ALTINA yığılıyordu: kullanıcı aşamaları,
+          alt görevleri ve "alt görev aç" düğmesini geçtikten sonra künyeye
+          ulaşıyordu — ölçüldü, sayfa 2.1 ekran boyuydu ve altı ayrı kart
+          taşıyordu. Oysa künye bir REFERANS: işi yaparken değil, bir şeyi
+          doğrulamak isterken bakılıyor. Sekmeye alınması varsayılan görünümü
+          yarıya indiriyor.
+        */}
+        <div className={cn('min-w-0 space-y-3.5', sekme === 'detay' ? '' : 'hidden lg:block')}>
           {/*
             EYLEMLER MASAÜSTÜNDE BURADA, MOBİLDE YAPIŞKAN ALT ÇUBUKTA.
             İki yerde birden çizilseydi telefonda aynı düğme iki kez
@@ -410,7 +517,7 @@ export default function TaskDetail() {
       </div>
 
       {/* ── Mobil yapışkan eylem çubuğu (design.md §5.2) ── */}
-      {eylemVar && (
+      {(eylemVar || tabakaEylemleri.length > 0) && (
         <div
           className="sticky z-10 -mx-4 mt-1 border-t border-border bg-surface/95 px-4 py-2.5 backdrop-blur-sm lg:hidden
             bottom-[calc(var(--h-tabbar)+env(safe-area-inset-bottom,0px))]
@@ -423,31 +530,56 @@ export default function TaskDetail() {
             bir şey yok. Sonuç: telefonda tam genişlikte, soluk ve basılmayan
             bir "Tamamla" düğmesi — neden çalışmadığını söylemeyen bir çıkmaz.
           */}
-          {birincil && engel && (
-            <p className="mb-1.5 text-2xs text-(--st-wait)">{engel}</p>
-          )}
+          {birincil && engel && <p className="mb-1.5 text-2xs text-(--st-wait)">{engel}</p>}
 
-          <div className="flex items-center gap-2">
-          {birincil}
-          {onayDugmeleri}
           {/*
-            Alt çubukta YALNIZCA bir tane ikincil geçiş duruyor (genelde
-            "Başlat" ya da "Beklemeye al"). Gerisi künyenin altındaki tam
-            listede: dört düğmeyi 390px'e sığdırmak, hepsini okunamayacak
-            kadar küçültmek olurdu.
+            ÇUBUKTA TEK BİR BİRİNCİL EYLEM VE BİR "⋯".
+
+            Önceki hâlde çubuk bütün geçişleri taşıyordu ve sığmayanlar için
+            ALTINA ikinci bir düğme sırası açılıyordu: 390px'te sarmalanan,
+            hepsi aynı ağırlıkta bir düğme yığını. Kullanıcı "şimdi ne
+            yapmalıyım" sorusunu okuyamıyordu.
+
+            Şimdi çubuk yalnızca yapılacak işi gösteriyor; durum değişimleri,
+            düzenleme ve silme "⋯" tabakasında — 56px'lik satırlar, adı ve
+            gerekçesiyle. Uygulamanın öteki detay ekranlarında zaten böyle.
           */}
-          {!birincil && !onayDugmeleri && durumSecenekleri.slice(0, 2)}
+          <div className="flex items-center gap-2">
+            {birincil}
+            {onayDugmeleri}
+            {!birincil && !onayDugmeleri && durumSecenekleri[0]}
+
+            {tabakaEylemleri.length > 0 && (
+              <button
+                type="button"
+                onClick={() => setTabakaAcik(true)}
+                aria-label="Diğer işlemler"
+                className="grid h-ctrl-lg w-11 flex-none place-items-center rounded-control border border-line bg-surface text-ink-2 active:scale-[0.97]"
+              >
+                <MoreHorizontal size={18} />
+              </button>
+            )}
           </div>
         </div>
       )}
 
-      {/* Alt çubuğa sığmayan geçişler — mobilde tam liste. */}
-      {eylemVar && (birincil || onayDugmeleri) && durumSecenekleri.length > 0 && (
-        <div className="flex flex-wrap gap-2 lg:hidden">{durumSecenekleri}</div>
-      )}
-      {eylemVar && !birincil && !onayDugmeleri && durumSecenekleri.length > 2 && (
-        <div className="flex flex-wrap gap-2 lg:hidden">{durumSecenekleri.slice(2)}</div>
-      )}
+      {/* ── "⋯" tabakası: geçişler, düzenleme, silme ── */}
+      <BottomSheet acik={tabakaAcik} kapat={() => setTabakaAcik(false)} baslik="İşlemler">
+        {tabakaEylemleri.map((e) => (
+          <SheetRow
+            key={e.etiket}
+            ikon={e.ikon}
+            ton={e.ton}
+            okYok
+            onClick={() => {
+              setTabakaAcik(false);
+              e.calistir();
+            }}
+          >
+            {e.etiket}
+          </SheetRow>
+        ))}
+      </BottomSheet>
 
       {/* ── Kutular ── */}
       <StatusDialog
@@ -501,7 +633,7 @@ function IlerlemeSeridi({ gorev }: { gorev: Gorev }) {
   const bitti = gorev.durum === TASK_STATUS.tamamlandi;
 
   return (
-    <Card className="p-3.5">
+    <Card serit className="p-3.5">
       <div className="flex items-baseline justify-between gap-3">
         <span className="font-display text-2xl font-bold tabular-nums leading-none text-ink">
           %{oran}
@@ -546,7 +678,7 @@ function IlerlemeSeridi({ gorev }: { gorev: Gorev }) {
 /** Görevin künyesi — tanım listesi olarak. */
 function Kunye({ gorev }: { gorev: Gorev }) {
   return (
-    <Card>
+    <Card serit>
       <CardHeader baslik="Künye" />
       <div className="space-y-3 p-3.5">
         {gorev.aciklama && (

@@ -400,9 +400,17 @@ function AppShellIc() {
           görünüyor.
         */}
         <main className="flex-1 p-4 pb-[calc(var(--h-tab)+env(safe-area-inset-bottom,0px)+var(--sp-8))] md:p-[26px] md:pb-[26px]">
-          {/* Giriş sonrası bildirim izni — tarayıcının izin kutusunu doğrudan
-              açmaz, önce ne için istendiğini anlatır (bkz. bileşen notu). */}
-          <NotificationPermissionCard />
+          {/*
+            Giriş sonrası bildirim izni — tarayıcının izin kutusunu doğrudan
+            açmaz, önce ne için istendiğini anlatır (bkz. bileşen notu).
+
+            YALNIZCA ANA SAYFADA. Kart her ekranın tepesinde çiziliyordu ve
+            390px'lik bir telefonda görev detayının ilk %40'ını kaplıyordu:
+            kullanıcı işi açıyor, karşısına başka bir konu çıkıyor. Bir
+            davet, insanın o an yaptığı işin önüne geçmemeli — yeri, işe
+            başlamadan önce durduğu ekran.
+          */}
+          {konum.pathname === '/' && <NotificationPermissionCard />}
           <Outlet />
         </main>
       </div>

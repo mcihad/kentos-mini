@@ -19,13 +19,41 @@ import { cn } from './utils';
  * </p>
  */
 export function Card({
+  serit,
   className,
   children,
   ...kalan
-}: React.HTMLAttributes<HTMLDivElement>) {
+}: React.HTMLAttributes<HTMLDivElement> & {
+  /**
+   * Telefonda KENARDAN KENARA çizilir; masaüstünde normal kart.
+   *
+   * <p>
+   * Ölçüldü: 390px'lik bir ekranda detay sayfasının okunabilir içerik
+   * genişliği <b>330px</b> — aradaki 60px sayfa dolgusu (2×16) ile kart
+   * kenarlığı ve dolgusundan (2×14) gidiyor. Ekranın <b>%15'i</b> kutu
+   * içinde kutu çizmeye harcanıyordu ve iç içe iki çerçeve, kullanıcının
+   * "kalabalık" dediği görüntünün büyük kısmı.
+   * </p>
+   *
+   * <p>
+   * Şerit kipinde bölüm sayfanın iki kenarına dayanıyor: yan kenarlıklar ve
+   * köşe yuvarlaması kalkıyor, üst-alt kenarlık bölümü ayırmaya devam
+   * ediyor. Kazanç yaklaşık 32px içerik genişliği ve bir kat daha az
+   * çerçeve. <code>design.md §5.2</code> mobil liste gramerini zaten böyle
+   * tarif ediyor — kart GRUBU ekranı boydan boya kaplar.
+   * </p>
+   */
+  serit?: boolean;
+}) {
   return (
     <div
-      className={cn('min-w-0 rounded-card border border-border bg-surface shadow-1', className)}
+      className={cn(
+        'min-w-0 border border-border bg-surface shadow-1',
+        serit
+          ? '-mx-4 rounded-none border-x-0 md:mx-0 md:rounded-card md:border-x'
+          : 'rounded-card',
+        className,
+      )}
       {...kalan}
     >
       {children}

@@ -34,7 +34,7 @@ export function TaskStages({ gorev }: { gorev: TaskDetail }) {
   const biten = asamalar.filter((a) => a.durum !== TASK_STAGE_STATUS.bekliyor).length;
 
   return (
-    <Card>
+    <Card serit>
       <CardHeader
         baslik="Aşamalar"
         aciklama={`${asamalar.length} aşamanın ${biten} tanesi kapandı`}
@@ -191,7 +191,9 @@ function AsamaSatiri({ gorevId, asama }: { gorevId: number; asama: TaskStage }) 
                   }
                 >
                   <Check size={15} />
-                  Tamamla
+                  {/* Görev düğmesi "Onaya gönder"; bu YALNIZCA bu adımı
+                      kapatıyor ve adı bunu söylemeli. */}
+                  Aşamayı bitir
                 </Button>
 
                 {/* Atlama YALNIZCA zorunlu olmayan aşamada. Zorunluda düğmeyi
