@@ -63,8 +63,22 @@
   --r-pill: 999px;
 
   /* tipografi — çarpanlar sabit; başlıklar --fs-d ile ayrıca ölçeklenir */
-  --fs-3xs: calc(var(--fs) * 0.68); --fs-2xs: calc(var(--fs) * 0.75); --fs-xs: calc(var(--fs) * 0.83);
-  --fs-sm: calc(var(--fs) * 0.91);  --fs-md: var(--fs);              --fs-lg: calc(var(--fs) * 1.08);
+  /*
+    KÜÇÜK KADEMELERİN TABANI YÜKSELTİLDİ.
+
+    Eski çarpanlarla 14px tabanda `--fs-3xs` 9.52px, `--fs-2xs` 10.5px
+    ediyordu. 9.5px hiçbir mobil kılavuzun kabul ettiği bir boy değil (iOS ve
+    Android tabanı 11px) ve `--fs-2xs` uygulamanın en çok kullanılan küçük
+    kademesi: kartların meta satırı, rozet, sayaç, alt bilgi — 240 yerde.
+    Kullanıcı "fontlar çok ufak" derken bunları okuyordu.
+
+    Merdiven KORUNUYOR, yalnızca alt uç sıkıştırılıyor: 10.4 · 11.3 · 12.2 ·
+    13.2 · 14. Adımlar %6–9 arasında, yani hâlâ ayırt edilebilir ama hiçbiri
+    okunamayacak kadar küçük değil. Başlık kademelerine (xl ve üstü)
+    dokunulmadı — orada sorun yoktu.
+  */
+  --fs-3xs: calc(var(--fs) * 0.74); --fs-2xs: calc(var(--fs) * 0.81); --fs-xs: calc(var(--fs) * 0.87);
+  --fs-sm: calc(var(--fs) * 0.94);  --fs-md: var(--fs);              --fs-lg: calc(var(--fs) * 1.08);
   --fs-xl: calc(var(--fs) * 1.26 * var(--fs-d));
   --fs-2xl: calc(var(--fs) * 1.55 * var(--fs-d));
   --fs-3xl: calc(var(--fs) * 2 * var(--fs-d));

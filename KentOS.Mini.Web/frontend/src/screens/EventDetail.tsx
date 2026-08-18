@@ -2,6 +2,7 @@ import * as Dialog from '@radix-ui/react-dialog';
 import { useSession } from '../auth/SessionProvider';
 import { PERMISSION } from '../components/permissions';
 import * as Tabs from '@radix-ui/react-tabs';
+import { SekmeListesi, SekmeTetigi } from '../components/Tabs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
   AlertTriangle, ArrowLeft, Building2, CalendarDays, Camera, Check, Clock, FileText, Flower2, History, Info, Lock, MapPin, MessageSquarePlus, Newspaper, Pencil, Plus, Repeat, Trash2, Users, X,
@@ -279,10 +280,7 @@ export default function EventDetail() {
             kayan şerit, seçili sekme kendi kendine görünür alana geliyor);
             detay sayfası tek başına farklı duruyordu.
           */}
-          <Tabs.List
-            className="sekme-serit flex gap-1 overflow-x-auto rounded-sm border border-line bg-sunken p-1"
-            aria-label="Etkinlik bölümleri"
-          >
+          <SekmeListesi etiket="Etkinlik bölümleri">
             {[
               { d: 'ozet', e: 'Özet' },
               { d: 'notlar', e: 'Notlar' },
@@ -293,17 +291,11 @@ export default function EventDetail() {
               // okumaz (sunucu da boş liste döndürüyor).
               ...(baskaBirimin ? [] : [{ d: 'gecmis', e: 'Geçmiş' }]),
             ].map((s) => (
-              <Tabs.Trigger
-                key={s.d}
-                value={s.d}
-                className="flex min-w-max flex-1 basis-0 items-center justify-center gap-1.5 h-ctrl-lg rounded-xs px-3 text-xs font-semibold transition-colors
-                  text-ink-2 hover:bg-surface hover:text-ink
-                  data-[state=active]:bg-brand data-[state=active]:text-on-brand data-[state=active]:shadow-1"
-              >
+              <SekmeTetigi key={s.d} deger={s.d}>
                 {s.e}
-              </Tabs.Trigger>
+              </SekmeTetigi>
             ))}
-          </Tabs.List>
+          </SekmeListesi>
 
           <Tabs.Content value="ozet" className="pt-4">
             <Ozet etkinlik={e} />

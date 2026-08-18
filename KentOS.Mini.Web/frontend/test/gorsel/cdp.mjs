@@ -15,7 +15,7 @@ import { setTimeout as bekle } from 'node:timers/promises';
 const CHROME =
   process.env.CHROME ?? '/Applications/Google Chrome.app/Contents/MacOS/Google Chrome';
 
-export async function tarayiciAc({ port = 9333, profilDizini } = {}) {
+export async function tarayiciAc({ port = 9333, profilDizini, webgl = false } = {}) {
   const surec = spawn(
     CHROME,
     [
@@ -24,9 +24,26 @@ export async function tarayiciAc({ port = 9333, profilDizini } = {}) {
       `--user-data-dir=${profilDizini ?? `/tmp/workcollab-cdp-${port}`}`,
       '--no-first-run',
       '--no-default-browser-check',
-      '--disable-gpu',
       '--hide-scrollbars',
       '--force-device-scale-factor=2',
+
+      /*
+        WEBGL2 İSTEĞE BAĞLI VE VARSAYILAN OLARAK KAPALI.
+
+        Headless Chrome'da WebGL2 yok; MapLibre bu yüzden hiç kurulmuyor ve
+        harita ekranı liste yedeğine düşüyor. Görsel turun 218 karesi için
+        bu doğru davranış — yedeğin kendisi de doğrulanmalı ve yazılım
+        rasterleştirme her kareyi yavaşlatırdı.
+
+        Ama HARİTANIN KENDİSİNİ ölçmek gerektiğinde SwiftShader ile
+        açılabilmeli: işaretçilerin çizilip çizilmediği ancak gerçek bir
+        WebGL bağlamında görülüyor. Turun harita ekranını "temiz" göstermesi
+        de tam bu yüzden yanıltıcıydı — hiç harita çizilmiyordu.
+      */
+      ...(webgl
+        ? ['--use-gl=angle', '--use-angle=swiftshader', '--enable-unsafe-swiftshader']
+        : ['--disable-gpu']),
+
       'about:blank',
     ],
     { stdio: 'ignore', detached: false },

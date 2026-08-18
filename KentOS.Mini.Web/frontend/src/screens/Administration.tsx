@@ -1,4 +1,5 @@
 import * as Tabs from '@radix-ui/react-tabs';
+import { SekmeListesi, SekmeTetigi } from '../components/Tabs';
 import { PERMISSION } from '../components/permissions';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -47,28 +48,19 @@ export default function Administration() {
         setSorgu(d === 'kullanicilar' ? {} : { bolum: d });
       }}
     >
-      <Tabs.List
-        className="mb-4 sekme-serit flex gap-1 overflow-x-auto rounded-sm border border-line bg-sunken p-1"
-        aria-label="Yönetim bölümleri"
-      >
+      <SekmeListesi etiket="Yönetim bölümleri" className="mb-4">
         {[
           { d: 'kullanicilar', e: 'Kullanıcılar', i: <Users size={14} /> },
           { d: 'birimler', e: 'Birimler', i: <Building2 size={14} /> },
           { d: 'roller', e: 'Roller', i: <ShieldCheck size={14} /> },
           { d: 'oturumlar', e: 'Giriş kayıtları', i: <History size={14} /> },
         ].map((s) => (
-          <Tabs.Trigger
-            key={s.d}
-            value={s.d}
-            className="flex min-w-max flex-1 basis-0 items-center justify-center gap-1.5 h-ctrl-lg rounded-xs px-3 text-xs font-semibold transition-colors
-                  text-ink-2 hover:bg-surface hover:text-ink
-                  data-[state=active]:bg-brand data-[state=active]:text-on-brand data-[state=active]:shadow-1"
-          >
+          <SekmeTetigi key={s.d} deger={s.d}>
             {s.i}
             {s.e}
-          </Tabs.Trigger>
+          </SekmeTetigi>
         ))}
-      </Tabs.List>
+      </SekmeListesi>
 
       <Tabs.Content value="kullanicilar">
         <Kullanicilar />

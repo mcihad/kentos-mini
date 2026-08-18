@@ -787,3 +787,24 @@
 [data-vaul-drawer] .md\:rounded-card {
   border-radius: clamp(var(--r-xs), calc(var(--r-xl) - var(--sp-3)), var(--r-lg));
 }
+
+
+/* ══════════════════════════════════════════════════════════════════════════
+   HARİTA — koyu temada altlık kısılıyor
+   ══════════════════════════════════════════════════════════════════════════
+
+   OSM karoları her temada AYNI: açık renkli. Koyu temada bütün uygulama
+   koyuyken haritanın parlak beyaz bir dikdörtgen olarak durması, gece
+   çalışan bir kullanıcının gözünü alıyor ve ekranın geri kalanıyla aynı
+   uygulamaya ait görünmüyor.
+
+   Karoyu TERS ÇEVİRMEK (klasik "gece haritası" numarası) burada yanlış
+   olurdu: park yeşili morarır, su kahverengiye döner ve harita okuma
+   alışkanlıkları bozulur. Bunun yerine parlaklık kısılıp doygunluk hafifçe
+   düşürülüyor — renkler yerinde kalıyor, yalnızca sesi alçalıyor.
+
+   Süzgeç YALNIZCA tuvale uygulanıyor; yakınlaştırma düğmeleri, balonlar ve
+   üzerine binen denetim katmanı kendi tema renklerinde kalmalı. */
+[data-tema='koyu'] .maplibregl-canvas {
+  filter: brightness(0.62) saturate(0.8) contrast(1.1);
+}

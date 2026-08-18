@@ -1,4 +1,5 @@
 import * as Tabs from '@radix-ui/react-tabs';
+import { SekmeListesi, SekmeTetigi } from '../../components/Tabs';
 import {
   Briefcase,
   CalendarPlus,
@@ -118,27 +119,18 @@ export function RequestDashboard({ bas, bit }: { bas?: string; bit?: string }) {
 
       {/* ── Gruplar ── */}
       <Tabs.Root defaultValue="nereden">
-        <Tabs.List
-          className="mb-3.5 sekme-serit flex gap-1 overflow-x-auto rounded-sm border border-line bg-sunken p-1"
-          aria-label="Talep istatistik grupları"
-        >
+        <SekmeListesi etiket="Talep istatistik grupları" className="mb-3.5">
           {[
             { d: 'nereden', e: 'Nereden · Kimden' },
             { d: 'ne', e: 'Ne isteniyor' },
             { d: 'zaman', e: 'Ne zaman' },
             { d: 'akis', e: 'Akış' },
           ].map((s) => (
-            <Tabs.Trigger
-              key={s.d}
-              value={s.d}
-              className="flex min-w-max flex-1 basis-0 items-center justify-center gap-1.5 h-ctrl-lg rounded-xs px-3 text-xs font-semibold transition-colors
-                  text-ink-2 hover:bg-surface hover:text-ink
-                  data-[state=active]:bg-brand data-[state=active]:text-on-brand data-[state=active]:shadow-1"
-            >
+            <SekmeTetigi key={s.d} deger={s.d}>
               {s.e}
-            </Tabs.Trigger>
+            </SekmeTetigi>
           ))}
-        </Tabs.List>
+        </SekmeListesi>
 
         {/* Panonun asıl sebebi bu sekme. */}
         <Tabs.Content value="nereden" className="grid gap-4 lg:grid-cols-2">

@@ -1,4 +1,5 @@
 import * as Tabs from '@radix-ui/react-tabs';
+import { SekmeListesi, SekmeTetigi } from '../components/Tabs';
 import { useMutation, useQueryClient } from '@tanstack/react-query';
 import {
   CalendarDays, ClipboardList, MapPin, Plus, Search, Tag, Trash2, Upload, Users, Pencil,
@@ -37,10 +38,7 @@ import type { NameRecord, Definition, BulkImportResult } from '../data/types';
 export default function Definitions() {
   return (
     <Tabs.Root defaultValue="etkinlik-durumlari">
-      <Tabs.List
-        className="mb-4 sekme-serit flex gap-1 overflow-x-auto rounded-sm border border-line bg-sunken p-1"
-        aria-label="Tanım grupları"
-      >
+      <SekmeListesi etiket="Tanım grupları" className="mb-4">
         {[
           { d: 'etkinlik-durumlari', e: 'Etkinlik durumları', i: <CalendarDays size={14} /> },
           { d: 'etkinlik-tipleri', e: 'Tipler', i: <Tag size={14} /> },
@@ -48,18 +46,12 @@ export default function Definitions() {
           { d: 'mahalleler', e: 'Mahalleler', i: <MapPin size={14} /> },
           { d: 'meslekler', e: 'Meslekler', i: <Users size={14} /> },
         ].map((s) => (
-          <Tabs.Trigger
-            key={s.d}
-            value={s.d}
-            className="flex min-w-max flex-1 basis-0 items-center justify-center gap-1.5 h-ctrl-lg rounded-xs px-3 text-xs font-semibold transition-colors
-                  text-ink-2 hover:bg-surface hover:text-ink
-                  data-[state=active]:bg-brand data-[state=active]:text-on-brand data-[state=active]:shadow-1"
-          >
+          <SekmeTetigi key={s.d} deger={s.d}>
             {s.i}
             {s.e}
-          </Tabs.Trigger>
+          </SekmeTetigi>
         ))}
-      </Tabs.List>
+      </SekmeListesi>
 
       <Tabs.Content value="etkinlik-durumlari">
         <TanimBolumu

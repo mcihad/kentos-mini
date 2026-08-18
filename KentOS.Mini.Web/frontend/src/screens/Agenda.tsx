@@ -1,4 +1,5 @@
 import * as Tabs from '@radix-ui/react-tabs';
+import { SekmeListesi, SekmeTetigi } from '../components/Tabs';
 import { keepPreviousData, useQuery } from '@tanstack/react-query';
 import {
   CalendarDays, Camera, ChevronLeft, ChevronRight, LayoutList, ListTree, Lock,
@@ -324,27 +325,18 @@ export default function Agenda() {
           segment olarak duruyor: üst şeritte yalnızca arama ve yazıcı kaldı,
           böylece ilk ekranın tamamı listeye ait.
         */}
-        <Tabs.List
-          className="hidden sekme-serit flex gap-1 overflow-x-auto rounded-sm border border-line bg-sunken p-1 md:flex"
-          aria-label="Ajanda görünümleri"
-        >
+        <SekmeListesi etiket="Ajanda görünümleri" className="hidden md:flex">
           {[
             { d: 'program' as const, e: 'Program', i: <LayoutList size={14} /> },
             { d: 'liste' as const, e: 'Liste', i: <ListTree size={14} /> },
             { d: 'silinmis' as const, e: 'Silinmiş', i: <Trash2 size={14} /> },
           ].map((s) => (
-            <Tabs.Trigger
-              key={s.d}
-              value={s.d}
-              className="flex min-w-max flex-1 basis-0 items-center justify-center gap-1.5 h-ctrl-lg rounded-xs px-3 text-xs font-semibold transition-colors
-                  text-ink-2 hover:bg-surface hover:text-ink
-                  data-[state=active]:bg-brand data-[state=active]:text-on-brand data-[state=active]:shadow-1"
-            >
+            <SekmeTetigi key={s.d} deger={s.d}>
               {s.i}
               {s.e}
-            </Tabs.Trigger>
+            </SekmeTetigi>
           ))}
-        </Tabs.List>
+        </SekmeListesi>
       </Tabs.Root>
 
       {/*

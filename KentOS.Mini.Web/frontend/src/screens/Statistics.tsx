@@ -1,4 +1,5 @@
 import * as Tabs from '@radix-ui/react-tabs';
+import { SekmeListesi, SekmeTetigi } from '../components/Tabs';
 import { BarChart3, CalendarCheck, CalendarX, Camera, Clock, FileText, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
 import { EmptyState } from '../components/EmptyState';
@@ -214,10 +215,7 @@ export default function Statistics() {
         "ne yapıldı", "ne zaman yapıldı", "kim/nerede", "nasıl hazırlanıldı".
       */}
       <Tabs.Root defaultValue="ne">
-        <Tabs.List
-          className="mb-3.5 sekme-serit flex gap-1 overflow-x-auto rounded-sm border border-line bg-sunken p-1"
-          aria-label="İstatistik grupları"
-        >
+        <SekmeListesi etiket="İstatistik grupları" className="mb-3.5">
           {[
             { d: 'ne', e: 'Ne yapıldı' },
             { d: 'zaman', e: 'Ne zaman' },
@@ -225,17 +223,11 @@ export default function Statistics() {
             { d: 'hazirlik', e: 'Hazırlık' },
             { d: 'seyir', e: 'Seyir' },
           ].map((s) => (
-            <Tabs.Trigger
-              key={s.d}
-              value={s.d}
-              className="flex min-w-max flex-1 basis-0 items-center justify-center gap-1.5 h-ctrl-lg rounded-xs px-3 text-xs font-semibold transition-colors
-                  text-ink-2 hover:bg-surface hover:text-ink
-                  data-[state=active]:bg-brand data-[state=active]:text-on-brand data-[state=active]:shadow-1"
-            >
+            <SekmeTetigi key={s.d} deger={s.d}>
               {s.e}
-            </Tabs.Trigger>
+            </SekmeTetigi>
           ))}
-        </Tabs.List>
+        </SekmeListesi>
 
         <Tabs.Content value="ne" className="grid gap-4 lg:grid-cols-2">
           <Bolum baslik="Etkinlik tipine göre" dilimler={data.tipeGore} />

@@ -1,7 +1,9 @@
 import * as maplibregl from 'maplibre-gl';
 import { useEffect, useRef } from 'react';
 import 'maplibre-gl/dist/maplibre-gl.css';
-import { HARITA_TEMASI, TURKIYE_MERKEZ, TURKIYE_YAKINLIK, webgl2Var } from './harita';
+import {
+  HARITA_TEMASI, TURKIYE_MERKEZ, TURKIYE_YAKINLIK, iğneGoruntusu, kumeGoruntusu, webgl2Var,
+} from './harita';
 import type { WorkMapPoint } from '../../data/types';
 
 /**
@@ -22,10 +24,14 @@ import type { WorkMapPoint } from '../../data/types';
 export function WorkMap({
   noktalar,
   yukseklik = 460,
+  cerceve = true,
   tiklandi,
 }: {
   noktalar: WorkMapPoint[];
-  yukseklik?: number;
+  /** Piksel sayısı ya da CSS yüksekliği (`'100%'`, `'calc(100dvh - 260px)'`). */
+  yukseklik?: number | string;
+  /** Kenarlık ve köşe yuvarlaması — tam ekran kullanımda kapatılır. */
+  cerceve?: boolean;
   tiklandi?: (n: WorkMapPoint) => void;
 }) {
   const kap = useRef<HTMLDivElement>(null);
@@ -51,6 +57,17 @@ export function WorkMap({
       attributionControl: { compact: true },
     });
 
+    /*
+      HARİTA HATALARI ARTIK SESSİZ DEĞİL.
+
+      Bu ekran uzun süre boş bir harita gösterdi ve hiçbir yerde tek bir
+      hata yoktu; sebebi ancak tarayıcıda ölçerek bulundu. MapLibre kendi
+      hatalarını `error` olayıyla yayınlıyor — dinleyicisi yoksa hiçbir yere
+      gitmiyorlar. Stil, karo ya da katman hatası bir daha sessizce
+      kaybolmasın.
+    */
+    h.on('error', (o) => console.error('[harita]', o.error?.message ?? o));
+
     h.addControl(new maplibregl.NavigationControl({ showCompass: false }), 'top-right');
     h.addControl(
       new maplibregl.GeolocateControl({ trackUserLocation: false }),
@@ -68,46 +85,56 @@ export function WorkMap({
         clusterMaxZoom: 15,
       });
 
+      /*
+        KÜME ROZETİ TEK KATMAN.
+
+        Önceden daire (circle) + sayı (symbol/text) olarak İKİ katmandı ve
+        sayı hiçbir zaman çizilmiyordu: MapLibre'de metin katmanı `glyphs`
+        (yazı tipi sunucusu) istiyor, bu harita ise anahtarsız ve
+        sağlayıcısız kurulmuş — stilde `glyphs` yok. Rozet artık sayısıyla
+        birlikte tuvale çiziliyor; dışarıya yeni bağımlılık eklenmiyor.
+      */
       h.addLayer({
         id: 'kumeler',
-        type: 'circle',
-        source: 'isler',
-        filter: ['has', 'point_count'],
-        paint: {
-          'circle-color': '#002E6D',
-          'circle-opacity': 0.85,
-          // Daire yarıçapı sayıyla büyüyor; sabit yarıçap 3 ile 300'ü aynı
-          // gösterirdi.
-          'circle-radius': ['step', ['get', 'point_count'], 15, 10, 20, 50, 26],
-          'circle-stroke-width': 2,
-          'circle-stroke-color': '#FFFFFF',
-        },
-      });
-
-      h.addLayer({
-        id: 'kume-sayisi',
         type: 'symbol',
         source: 'isler',
         filter: ['has', 'point_count'],
         layout: {
-          'text-field': ['get', 'point_count_abbreviated'],
-          'text-size': 12,
+          'icon-image': ['concat', 'kume-', ['to-string', ['get', 'point_count']]],
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
         },
-        paint: { 'text-color': '#FFFFFF' },
       });
 
+      /*
+        İŞ İĞNESİ — damla biçimli, ucu konumun tam üstünde.
+
+        Daire yerine iğne: bir daire "buralarda bir yerde" der, iğnenin
+        SİVRİ UCU tam noktayı gösterir. Sahadaki personel adresi haritadan
+        okuyor; on metrelik belirsizlik yanlış sokak demek.
+
+        `icon-anchor: 'bottom'` bu yüzden şart — varsayılan `center` olsaydı
+        iğne gerçek konumun yarım boy yukarısında dururdu.
+
+        `icon-allow-overlap`: MapLibre varsayılan olarak çakışan simgeleri
+        GİZLİYOR. Yan yana iki iş varken birinin haritadan silinmesi, "işim
+        görünmüyor" demenin bir başka yolu olurdu.
+      */
       h.addLayer({
         id: 'noktalar',
-        type: 'circle',
+        type: 'symbol',
         source: 'isler',
         filter: ['!', ['has', 'point_count']],
-        paint: {
-          'circle-color': ['get', 'renk'],
-          'circle-radius': 8,
-          'circle-stroke-width': 2,
-          // GECİKEN İŞİN halkası KIRMIZI: durum rengi zaten farklı ama
-          // "gecikti" bilgisi durumdan bağımsız ve haritada en çok aranan şey.
-          'circle-stroke-color': ['case', ['get', 'gecikti'], '#B3261E', '#FFFFFF'],
+        layout: {
+          'icon-image': [
+            'concat',
+            'igne-',
+            ['get', 'renk'],
+            ['case', ['==', ['get', 'gecikti'], true], '-gecikti', ''],
+          ],
+          'icon-anchor': 'bottom',
+          'icon-allow-overlap': true,
+          'icon-ignore-placement': true,
         },
       });
 
@@ -133,6 +160,23 @@ export function WorkMap({
           .addTo(h);
 
         geriCagri.current?.(p as unknown as WorkMapPoint);
+      });
+
+      /*
+        EKSİK SİMGE ÇÖZÜCÜSÜ — küme rozetleri tam gerektiği anda üretiliyor.
+
+        `styleimagemissing` OLAYI DEĞİL: MapLibre v6'da o olay yalnızca
+        çözücü de başarısız olduktan SONRA yayınlanıyor ve olay içinde
+        eklenen görüntü o çizim turunda kullanılmıyor — rozetler hiç
+        görünmüyordu. Çözücü ise MapLibre tarafından BEKLENİYOR, dolayısıyla
+        görüntü aynı turda hazır oluyor.
+
+        Kümeler yakınlaştırmaya göre yeniden hesaplanıyor; hangi sayıların
+        ekranda belireceği önceden bilinemez. Kullanılmayacak yüzlerce rozeti
+        peşin çizmek yerine istendiğinde üretiliyor.
+      */
+      h.setMissingStyleImageResolver(async (kimlik: string) => {
+        eksikSimgeyiUret(h, kimlik);
       });
 
       for (const katman of ['kumeler', 'noktalar']) {
@@ -166,7 +210,11 @@ export function WorkMap({
     <div
       ref={kap}
       style={{ height: yukseklik }}
-      className="w-full overflow-hidden rounded-control border border-line"
+      className={
+        cerceve
+          ? 'w-full overflow-hidden rounded-control border border-line'
+          : 'h-full w-full overflow-hidden'
+      }
       role="application"
       aria-label={`İş haritası — ${noktalar.length} nokta`}
     />
@@ -190,7 +238,7 @@ function NoktaListesi({ noktalar }: { noktalar: WorkMapPoint[] }) {
         gösteriliyor.
       </p>
 
-      <ul className="max-h-[460px] divide-y divide-line overflow-y-auto">
+      <ul className="max-h-[60dvh] divide-y divide-line overflow-y-auto">
         {noktalar.map((n) => (
           <li key={`${n.tur}-${n.id}`}>
             <a
@@ -222,11 +270,71 @@ function NoktaListesi({ noktalar }: { noktalar: WorkMapPoint[] }) {
 }
 
 /**
+ * Bir iğne görüntüsünü haritaya kaydeder (yoksa).
+ *
+ * Görüntü kimliği doğrudan renkten türüyor, çünkü katmanın `icon-image`
+ * ifadesi de aynı adı üretiyor: `igne-#1E5FBF-gecikti`. Böylece durum renkleri
+ * sunucuda değişse bile istemcide eşlenecek bir tablo tutmak gerekmiyor.
+ */
+function igneyiKaydet(h: maplibregl.Map, renk: string, gecikti: boolean) {
+  const kimlik = `igne-${renk}${gecikti ? '-gecikti' : ''}`;
+  if (h.hasImage(kimlik)) return;
+
+  const gorsel = iğneGoruntusu(renk, gecikti);
+  if (gorsel) {
+    h.addImage(
+      kimlik,
+      { width: gorsel.width, height: gorsel.height, data: gorsel.data },
+      { pixelRatio: gorsel.pixelRatio },
+    );
+  }
+}
+
+/**
+ * Küme rozetlerini hazırlar.
+ *
+ * <p>
+ * Kümeler <b>yakınlaştırmaya göre yeniden hesaplanıyor</b>: hangi sayıların
+ * ekranda belireceği önceden bilinemez. Bu yüzden görüntüler `styleimagemissing`
+ * olayında, yani MapLibre "böyle bir simge bulamadım" dediği anda üretiliyor —
+ * kullanılmayacak yüzlerce rozeti peşin çizmek yerine.
+ * </p>
+ */
+function eksikSimgeyiUret(h: maplibregl.Map, kimlik: string) {
+  if (h.hasImage(kimlik)) return;
+
+  if (kimlik.startsWith('kume-')) {
+    const sayi = Number(kimlik.slice(5));
+    if (!Number.isFinite(sayi)) return;
+
+    const gorsel = kumeGoruntusu(sayi);
+    if (gorsel) {
+      h.addImage(
+        kimlik,
+        { width: gorsel.width, height: gorsel.height, data: gorsel.data },
+        { pixelRatio: gorsel.pixelRatio },
+      );
+    }
+    return;
+  }
+
+  if (kimlik.startsWith('igne-')) {
+    const gecikti = kimlik.endsWith('-gecikti');
+    const renk = kimlik.slice(5, gecikti ? -8 : undefined);
+    igneyiKaydet(h, renk, gecikti);
+  }
+}
+
+/**
  * Noktaları kaynağa yazar ve görünümü ilk seferde noktalara sığdırır.
  */
 function veriyiYaz(h: maplibregl.Map, noktalar: WorkMapPoint[]) {
   const kaynak = h.getSource('isler') as maplibregl.GeoJSONSource | undefined;
   if (!kaynak) return;
+
+  // İğneler veriden ÖNCE kaydediliyor: katman çizime başladığında simge
+  // hazır olmazsa ilk kare boş geçiyor ve harita bir an işaretçisiz duruyor.
+  for (const n of noktalar) igneyiKaydet(h, n.renk || '#7C8592', !!n.gecikti);
 
   kaynak.setData({
     type: 'FeatureCollection',

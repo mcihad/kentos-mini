@@ -1,4 +1,5 @@
 import * as Tabs from '@radix-ui/react-tabs';
+import { SekmeListesi, SekmeTetigi } from '../components/Tabs';
 import { PERMISSION } from '../components/permissions';
 import { keepPreviousData, useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import {
@@ -125,23 +126,17 @@ export default function FileTransfer() {
           segmentte. Ekran üç sıra denetimle açılıyordu (sekmeler · arama ·
           tam genişlik "Dosya gönder") ve liste kıvrımın altında kalıyordu.
         */}
-        <Tabs.List className="hidden gap-1 border-b border-border md:flex" aria-label="Gönderim kutuları">
+        <SekmeListesi etiket="Gönderim kutuları" className="hidden md:flex">
           {[
             { d: 'gelen' as const, e: 'Gelen', i: <Inbox size={14} /> },
             { d: 'giden' as const, e: 'Giden', i: <Send size={14} /> },
           ].map((s) => (
-            <Tabs.Trigger
-              key={s.d}
-              value={s.d}
-              className="flex min-w-max flex-1 basis-0 items-center justify-center gap-1.5 h-ctrl-lg rounded-xs px-3 text-xs font-semibold transition-colors
-                  text-ink-2 hover:bg-surface hover:text-ink
-                  data-[state=active]:bg-brand data-[state=active]:text-on-brand data-[state=active]:shadow-1"
-            >
+            <SekmeTetigi key={s.d} deger={s.d}>
               {s.i}
               {s.e}
-            </Tabs.Trigger>
+            </SekmeTetigi>
           ))}
-        </Tabs.List>
+        </SekmeListesi>
       </Tabs.Root>
 
       {/* Mobilde gelen/giden seçimi ARAMANIN ÜSTÜNDE tek satır segment:
