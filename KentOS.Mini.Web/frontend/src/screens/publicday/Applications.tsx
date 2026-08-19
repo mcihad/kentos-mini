@@ -21,7 +21,7 @@ import { SegmentedSelect } from '../../components/Filters';
 import { useToast } from '../../components/Toast';
 import { PERMISSION } from '../../components/permissions';
 import { useSession } from '../../auth/SessionProvider';
-import { shortDate } from '../../data/format';
+import { shortDate, phone } from '../../data/format';
 import { api } from '../../data/client';
 import { usePublicDayApplications } from '../../data/hooks';
 import type { PublicDayApplication } from '../../data/types';
@@ -115,7 +115,7 @@ export default function Applications() {
             className="flex items-center gap-1.5 tabular-nums text-brand-2 hover:underline"
           >
             <Phone size={12} />
-            {b.telefon}
+            {phone(b.telefon)}
           </a>
         ) : (
           <span className="text-text-3">—</span>
@@ -336,7 +336,7 @@ export default function Applications() {
                           href={`tel:${b.telefon}`}
                           className="mt-0.5 block truncate text-xs tabular-nums text-ink-2 hover:underline"
                         >
-                          {b.telefon}
+                          {phone(b.telefon)}
                         </a>
                       )}
                       <span className="mt-0.5 block truncate text-2xs text-ink-3">

@@ -416,6 +416,9 @@ public class EtkinlikController(
         SeriId = a.SeriId,
         SeriAyrik = a.SeriAyrik,
         ResimVar = a.ResimVar,
+        // Gerçek fotoğraf sayısı: bayrak işaretlenmemiş olsa da liste
+        // kamera işaretini gösterebilsin (bkz. EtkinlikOzetDto.ResimSayisi).
+        ResimSayisi = a.Photos?.Count ?? 0,
         BasinKatilsin = a.BasinKatilsin,
         BirimId = a.BirimId,
         BirimAd = a.Birim?.Ad,

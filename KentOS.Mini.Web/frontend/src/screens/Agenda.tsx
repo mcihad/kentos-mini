@@ -22,7 +22,7 @@ import { Fab } from '../shell/mobile/Fab';
 import { queryKeys } from '../data/queryKeys';
 import { PERMISSION } from '../components/permissions';
 import { useSession } from '../auth/SessionProvider';
-import { range, relativeTime, date, shortDate } from '../data/format';
+import { range, relativeTime, date, shortDate, hasPhoto } from '../data/format';
 import { download } from '../data/download';
 import { api, queryString, type PagedResult } from '../data/client';
 import { useEventTypes } from '../data/hooks';
@@ -257,7 +257,7 @@ export default function Agenda() {
       hucre: (e) => (
         <span className="flex items-center gap-1.5 text-text-3">
           {e.seriId && <Repeat size={12} aria-label="Tekrar eden" />}
-          {e.resimVar && <Camera size={12} aria-label="Fotoğraf var" />}
+          {hasPhoto(e) && <Camera size={12} aria-label="Fotoğraf var" />}
         </span>
       ),
     },

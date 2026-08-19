@@ -143,17 +143,37 @@ export default function EventDetail() {
           </h2>
           <div className="mt-1.5 flex flex-wrap items-center gap-2">
             {durum && (
+              /*
+                Şartname §7.3: durum etiketi KÖŞELİ (`radius/sm`) ve renk tek
+                başına bilgi taşımaz — yanına nokta gelir. Tam yuvarlak hap
+                biçimi süzgeç çiplerinin dili; ikisini aynı biçimde çizmek
+                "tıklanabilir süzgeç" ile "kaydın durumu"nu karıştırıyordu.
+              */
               <span
-                className="inline-flex h-6 items-center rounded-full px-2.5 text-2xs font-semibold"
+                className="inline-flex h-6 items-center gap-1.5 rounded-sm px-2 text-2xs font-semibold"
                 style={{
                   color: durum.renk || 'var(--text-2)',
                   background: `color-mix(in srgb, ${durum.renk || 'var(--border-2)'} 14%, transparent)`,
                 }}
               >
+                <span className="h-[5px] w-[5px] rounded-full bg-current" aria-hidden />
                 {durum.ad}
               </span>
             )}
-            <StatuRozeti statu={e.status ?? STATUS.Pending} />
+            {/*
+              STATÜ ÇİPİ, DURUMU TEKRARLAMIYORSA çizilir.
+
+              İki ayrı kavram: `durum` kurumun kendi tanımladığı liste
+              (Beklemede · Onaylandı · Devam Ediyor…), `status` ise sistemin
+              üç sabit değeri. Çoğu kayıtta ikisi aynı kelimeye düşüyor ve
+              başlığın altında yan yana İKİ "Beklemede" çipi çıkıyordu —
+              okuyan kişiye hiçbir şey söylemeyen, yalnızca yer kaplayan bir
+              tekrar. Karşılaştırma Türkçe küçük harfle: "İptal Edildi" ile
+              "İptal edildi" aynı şeydir.
+            */}
+            {!ayniAd(durum?.ad, statuAdi(e.status ?? STATUS.Pending)) && (
+              <StatuRozeti statu={e.status ?? STATUS.Pending} />
+            )}
             {e.gizli && (
               <span className="inline-flex items-center gap-1 rounded-full bg-sunken px-2.5 py-0.5 text-2xs font-semibold text-text-2">
                 <Lock size={10} />
@@ -465,10 +485,19 @@ export default function EventDetail() {
 function Hazirlik({ etkinlik: e }: { etkinlik: Event }) {
   const [duzenlenen, setDuzenlenen] = useState<'konusma' | 'bilgi' | null>(null);
 
+  /*
+    SORGU BAYRAĞA BAĞLI DEĞİL.
+
+    Önce `enabled: e.resimVar === true` idi — yani "fotoğraf eklenecek"
+    kutusu işaretlenmemişse istek HİÇ atılmıyordu. Kutuyu işaretlemeden
+    fotoğraf yükleyen kullanıcının dosyaları bu yüzden hiçbir yerde
+    görünmüyordu: ne rozette, ne listede, ne de burada. Uç zaten gizlilik
+    süzgecinden geçiyor ve yetkisiz çağrıya boş liste dönüyor.
+  */
   const fotograflar = useQuery({
     queryKey: ['etkinlik', 'fotograflar', e.id!] as const,
     queryFn: () => api.get<EventPhoto[]>(`/etkinlik/${e.id}/fotograflar`),
-    enabled: e.resimVar === true,
+    enabled: e.id != null,
   });
 
   const ogeler = [
@@ -496,7 +525,16 @@ function Hazirlik({ etkinlik: e }: { etkinlik: Event }) {
       etiket: 'Fotoğraf',
       duzenlenebilir: false,
     },
-  ].filter((o) => o.istendi);
+    /*
+      İSTENDİ **VEYA** DOLU.
+
+      Filtre yalnızca `istendi`ye bakıyordu: hazırlık kutusu işaretlenmemiş
+      ama içeriği olan bir kayıt (yüklenmiş fotoğraf, sonradan yazılmış
+      konuşma metni) rozetsiz kalıyor ve kullanıcı elindeki dosyayı
+      göremiyordu. Var olan bir şeyi göstermemek, istenen bir şeyi
+      göstermemekten daha kötü.
+    */
+  ].filter((o) => o.istendi || o.dolu);
 
   const basin = e.basinKatilsin === true;
   const cicek = !!e.cicekId;
@@ -680,18 +718,33 @@ function Satir({ etiket, deger }: { etiket: string; deger?: string | null }) {
   );
 }
 
+/** Sistem statüsünün görünümü — etiket + renk çifti. */
+const STATU_GORUNUMU: Record<number, { e: string; r: string; z: string }> = {
+  [STATUS.Pending]: { e: 'Beklemede', r: '--st-wait', z: '--st-wait-bg' },
+  [STATUS.Completed]: { e: 'Tamamlandı', r: '--st-done', z: '--st-done-bg' },
+  [STATUS.Cancelled]: { e: 'İptal edildi', r: '--st-cancel', z: '--st-cancel-bg' },
+};
+
+/** Statünün kullanıcıya görünen adı — tekrar denetimi için de kullanılır. */
+function statuAdi(statu: number): string | undefined {
+  return STATU_GORUNUMU[statu]?.e;
+}
+
+/** İki etiket AYNI şeyi mi söylüyor? Türkçe küçük harfle karşılaştırır. */
+function ayniAd(a?: string | null, b?: string | null): boolean {
+  if (!a || !b) return false;
+  const d = (m: string) => m.trim().toLocaleLowerCase('tr-TR');
+  return d(a) === d(b);
+}
+
 function StatuRozeti({ statu }: { statu: number }) {
-  const g = {
-    [STATUS.Pending]: { e: 'Beklemede', r: '--st-wait', z: '--st-wait-bg' },
-    [STATUS.Completed]: { e: 'Tamamlandı', r: '--st-done', z: '--st-done-bg' },
-    [STATUS.Cancelled]: { e: 'İptal edildi', r: '--st-cancel', z: '--st-cancel-bg' },
-  }[statu];
+  const g = STATU_GORUNUMU[statu];
 
   if (!g) return null;
 
   return (
     <span
-      className="inline-flex h-6 items-center gap-1.5 rounded-full px-2.5 text-2xs font-semibold"
+      className="inline-flex h-6 items-center gap-1.5 rounded-sm px-2 text-2xs font-semibold"
       style={{ color: `var(${g.r})`, background: `var(${g.z})` }}
     >
       <span className="h-[5px] w-[5px] rounded-full bg-current" aria-hidden />

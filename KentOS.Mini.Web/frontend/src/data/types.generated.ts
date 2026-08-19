@@ -12529,6 +12529,8 @@ export interface components {
             seriId?: number | null;
             seriAyrik?: boolean;
             resimVar?: boolean;
+            /** Format: int32 */
+            resimSayisi?: number;
             basinKatilsin?: boolean;
             /** Format: int64 */
             birimId?: number | null;

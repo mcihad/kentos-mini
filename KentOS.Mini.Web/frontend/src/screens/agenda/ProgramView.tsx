@@ -3,7 +3,7 @@ import { Link } from 'react-router-dom';
 import { EmptyState } from '../../components/EmptyState';
 import { eventColors, ColoredBadge } from '../../components/Color';
 import { cn } from '../../components/utils';
-import { range, monthShort, dayName, dayNumber } from '../../data/format';
+import { range, monthShort, dayName, dayNumber, hasPhoto } from '../../data/format';
 import type { EventSummary } from '../../data/types';
 import { serverToLocal } from '../../data/time';
 import { useSession } from '../../auth/SessionProvider';
@@ -159,7 +159,7 @@ function EtkinlikKarti({ etkinlik: e }: { etkinlik: EventSummary }) {
   /** Hazırlık bayrakları — eski arayüzdeki sağ üst ikon kümesi. */
   const bayraklar = [
     e.basinKatilsin && { ikon: Newspaper, etiket: 'Basın katılacak' },
-    e.resimVar && { ikon: Camera, etiket: 'Fotoğraf var' },
+    hasPhoto(e) && { ikon: Camera, etiket: 'Fotoğraf var' },
   ].filter(Boolean) as { ikon: typeof Camera; etiket: string }[];
 
   return (

@@ -54,7 +54,29 @@ public class EtkinlikOzetDto
     [JsonPropertyName("seriId")] public long? SeriId { get; set; }
     [JsonPropertyName("seriAyrik")] public bool SeriAyrik { get; set; }
 
+    /// <summary>
+    /// "Fotoğraf eklenecek" HAZIRLIK BAYRAĞI — yüklenmiş fotoğraf değil.
+    /// </summary>
+    /// <remarks>
+    /// Adı yanıltıyor: bu alan kullanıcının formda işaretlediği bir İSTEK
+    /// ("bu etkinlikte fotoğraf çekilecek"), kayıtta gerçekten fotoğraf olup
+    /// olmadığını söylemiyor. Gerçek durum için <see cref="ResimSayisi"/>.
+    /// Ad v1 sözleşmesinin parçası olduğu için değiştirilmiyor.
+    /// </remarks>
     [JsonPropertyName("resimVar")] public bool ResimVar { get; set; }
+
+    /// <summary>
+    /// Etkinliğe YÜKLENMİŞ fotoğraf sayısı — bayraktan bağımsız gerçek durum.
+    /// </summary>
+    /// <remarks>
+    /// Alan eklendi çünkü ikisi ayrışıyordu: bir kullanıcı hazırlık kutusunu
+    /// işaretlemeden fotoğraf yüklediğinde kayıtta fotoğraf VAR ama listede
+    /// kamera işareti çıkmıyor, detayda rozet hiç çizilmiyor ve fotoğraf
+    /// sorgusu bile açılmıyordu (istemci sorguyu <c>resimVar</c>'a bağlıyordu)
+    /// — yüklenen dosyalar hiçbir ekranda görünmüyordu.
+    /// </remarks>
+    [JsonPropertyName("resimSayisi")] public int ResimSayisi { get; set; }
+
     [JsonPropertyName("basinKatilsin")] public bool BasinKatilsin { get; set; }
 
     /// <summary>Etkinliğin SAHİBİ birim.</summary>

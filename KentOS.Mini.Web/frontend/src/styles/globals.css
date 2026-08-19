@@ -219,6 +219,41 @@
   padding-bottom: env(safe-area-inset-bottom, 0px);
 }
 
+/*
+  ÜST GÜVENLİ ALAN — KURULU PWA'nın şartı.
+
+  `index.html` iki şeyi birlikte söylüyor: `viewport-fit=cover` (içerik
+  ekranın tamamını kaplasın) ve `apple-mobile-web-app-status-bar-style:
+  black-translucent` (durum çubuğu SAYDAM olsun). İkisi birlikteyken
+  tarayıcı sayfayı çentiğin ALTINDAN başlatır — sekmede fark edilmez,
+  ana ekrandan açılan kurulu uygulamada appbar saatin ve çentiğin altında
+  kalır: başlık okunmaz, ilk eylem düğmesi çentiğin arkasına girer.
+
+  Çözüm şeridi AŞAĞI İTMEK değil BÜYÜTMEK: yükseklik `56 + inset` olur ve
+  aynı kadar üst dolgu alır. Böylece şeridin ZEMİNİ durum çubuğunun
+  arkasına uzanmaya devam eder (marka rengi orada da görünür) ama İÇERİK
+  güvenli alanda durur. Sadece `top` verilseydi şeridin üstünde saydam bir
+  bant kalır, arkadaki liste oradan akardı.
+
+  Masaüstünde `env()` sıfır döner; yine de `md:` sınıflarıyla açıkça
+  sıfırlanıyor — tarayıcı penceresi de bir gün inset bildirebilir.
+*/
+@utility guvenli-ust {
+  padding-top: env(safe-area-inset-top, 0px);
+}
+
+/*
+  YAN GÜVENLİ ALAN — yatay çevrilmiş telefonda çentik SOLDA ya da SAĞDA.
+
+  Dikeyde her iki inset de 0; yalnızca yatay kullanımda devreye girer.
+  Kabuk sabit konumlu üç yüzeye uygulanır (appbar, alt çubuk, FAB):
+  akıştaki içerik zaten bunların dolgusundan yararlanıyor.
+*/
+@utility guvenli-yan {
+  padding-left: env(safe-area-inset-left, 0px);
+  padding-right: env(safe-area-inset-right, 0px);
+}
+
 @utility kaydirma-gizle {
   /*
    * Yatay kaydırma çubuğunu gizler — filtre çipi şeritlerinde kullanılır.

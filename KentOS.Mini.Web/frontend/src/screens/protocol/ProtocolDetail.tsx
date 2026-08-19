@@ -9,7 +9,7 @@ import { SkeletonRows } from '../../components/Skeleton';
 import { Card, CardHeader } from '../../components/Card';
 import { InsetGroup, ListRow } from '../../components/ListRow';
 import { useIsDesktop } from '../../components/screenSize';
-import { date, shortDate } from '../../data/format';
+import { date, shortDate, phone } from '../../data/format';
 import { api } from '../../data/client';
 
 type Protocol = {
@@ -127,7 +127,7 @@ export default function ProtocolDetail() {
       {/* ── İletişim ── */}
       <Card className="p-3.5">
         <dl className="grid gap-3 sm:grid-cols-2">
-          <Bilgi ikon={<Phone size={13} />} etiket="Telefon" deger={p.telefon} tel />
+          <Bilgi ikon={<Phone size={13} />} etiket="Telefon" deger={phone(p.telefon)} tel />
           <Bilgi ikon={<Smartphone size={13} />} etiket="Cep telefonu" deger={p.cepTelefon} tel />
           <Bilgi ikon={<AtSign size={13} />} etiket="E-posta" deger={p.eposta} eposta />
           <Bilgi ikon={<Landmark size={13} />} etiket="Kurum" deger={p.kurum} />
