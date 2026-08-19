@@ -29,7 +29,7 @@ import { useEventTypes } from '../data/hooks';
 import type { EventSummary } from '../data/types';
 import { startOfDay, localToServer } from '../data/time';
 import { InviteeBadge, ProgramView } from './agenda/ProgramView';
-import { ProgramMenu } from './agenda/ProgramMenu';
+import { ProgramExport } from './agenda/ProgramExport';
 import { dilimdenOneri, type BaslangicOnerisi } from './event/EventFields';
 import { EventModal } from './event/EventModal';
 
@@ -91,6 +91,8 @@ export default function Agenda() {
    * saklamak bizim işimiz değil.
    */
   const [suzgecAcik, setSuzgecAcik] = useState(false);
+  /** Program çıktı penceresi — tarih ve sayfa düzeni orada seçilir. */
+  const [ciktiAcik, setCiktiAcik] = useState(false);
   const [silinmisGun, setSilinmisGun] = useState(0);
   const [sayfa, setSayfa] = useState(1);
 
@@ -306,6 +308,30 @@ export default function Agenda() {
       <EventModal acik={ekleme !== null} oneri={ekleme} onKapat={() => setEkleme(null)} />
 
       {/*
+        ÇIKTI PENCERESİ — tarih ve sayfa düzeni burada sorulur.
+
+        Önerilen gün, ekranda görünen dönemin ilk günü: kullanıcı çoğu zaman
+        baktığı günün programını basıyor. Pencere her açılışta o güne döner
+        (bkz. `ProgramExport`), yani bir kez ileri bir tarih basmak sonraki
+        açılışı etkilemiyor.
+      */}
+      <ProgramExport
+        acik={ciktiAcik}
+        kapat={() => setCiktiAcik(false)}
+        onerilenTarih={basM.slice(0, 10)}
+        excel={() =>
+          download('/disa-aktar/etkinlik/excel', {
+            ara: arama, tipId, baslangic: basM, bitis: bitM,
+          })
+        }
+        pdf={() =>
+          download('/disa-aktar/etkinlik/pdf', {
+            ara: arama, tipId, baslangic: basM, bitis: bitM,
+          })
+        }
+      />
+
+      {/*
         TAZELENME İPUCU — liste yerinde kalırken üstte ince bir çizgi akar.
         Tam ekran iskelet yerine bu: kullanıcı bir şeyin çalıştığını görüyor
         ama okuduğu içerik kaybolmuyor.
@@ -371,25 +397,15 @@ export default function Agenda() {
             aria-label="Etkinliklerde ara"
             className="min-w-0 flex-1 bg-transparent pr-2 text-base text-ink outline-hidden placeholder:text-ink-3"
           />
-          <ProgramMenu
-            tarih={basM.slice(0, 10)}
-            excel={() =>
-              download('/disa-aktar/etkinlik/excel', { ara: arama, tipId, baslangic: basM, bitis: bitM })
-            }
-            pdf={() =>
-              download('/disa-aktar/etkinlik/pdf', { ara: arama, tipId, baslangic: basM, bitis: bitM })
-            }
-            tetikleyici={
-              <button
-                type="button"
-                title="Çıktılar"
-                aria-label="Çıktılar"
-                className="grid w-11 flex-none place-items-center border-l border-line text-ink-2 active:bg-sunken"
-              >
-                <Printer size={17} strokeWidth={1.9} />
-              </button>
-            }
-          />
+          <button
+            type="button"
+            title="Çıktılar"
+            aria-label="Çıktılar"
+            onClick={() => setCiktiAcik(true)}
+            className="grid w-11 flex-none place-items-center border-l border-line text-ink-2 active:bg-sunken"
+          >
+            <Printer size={17} strokeWidth={1.9} />
+          </button>
         </div>
         )}
 
@@ -487,19 +503,15 @@ export default function Agenda() {
                   }))}
               />
 
-              <ProgramMenu
-                tarih={basM.slice(0, 10)}
-                excel={() =>
-                  download('/disa-aktar/etkinlik/excel', {
-                    ara: arama, tipId, baslangic: basM, bitis: bitM,
-                  })
-                }
-                pdf={() =>
-                  download('/disa-aktar/etkinlik/pdf', {
-                    ara: arama, tipId, baslangic: basM, bitis: bitM,
-                  })
-                }
-              />
+              <Button
+                varyant="ikincil"
+                className="shrink-0"
+                onClick={() => setCiktiAcik(true)}
+                title="Program ve liste çıktıları"
+              >
+                <Printer size={15} />
+                Çıktılar
+              </Button>
             </>
           )}
         </div>

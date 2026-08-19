@@ -1627,3 +1627,37 @@ Aynı satırda üç kural daha:
 - **Sorumlu ilk adıyla.** Tam ad sığmayınca ekranda "· A…" kalıyordu; üç
   nokta bilgi taşımıyor. Tam ad `title`'da ve detayda duruyor, birden fazla
   sorumlu `+N` ile sayılıyor.
+
+## Program çıktısı: tarih ve düzen PENCEREDE sorulur
+
+`screens/agenda/ProgramExport.tsx` — ajanda araç çubuğundaki **Çıktılar**
+düğmesi artık bir açılır menü değil, `FormModal` tabanlı bir pencere
+(mobilde alt tabaka, masaüstünde ortalanmış).
+
+Önceki menü **tarihi hiç sormuyordu**: ekranda görünen dönemin ilk günü
+(`basM.slice(0, 10)`) sessizce kullanılıyordu. Kullanıcı "yarının programını
+bas" diyemiyor, önce takvimi o güne getirmek zorunda kalıyordu — üstelik
+hangi günün basıldığı çıktı elde edilene kadar görünmüyordu.
+
+| Pencerede | Ne var |
+|---|---|
+| Gün | `DatePicker` + **Dün / Bugün / Yarın** çipleri + seçilen günün ADI |
+| Sayfa düzeni | Altı tasarım, her birinin yanında kâğıt düzenini çizen küçük şema |
+| Liste çıktısı | Excel / PDF — ekrandaki listeyi süzgeçleriyle dışa aktarır |
+| Özet | "19.08.2026 günü, standart düzeninde basılacak." |
+| Alt çubuk | Vazgeç · PDF indir · **Yazdır** |
+
+- **Şema neden var:** altı düzenin farkı yazıyla ("kompakt", "detaylı")
+  anlaşılmıyordu. Aynı yaklaşım kesme kartı penceresinde (`NameCardExport`)
+  zaten kullanılıyor ve orada işe yaradığı görüldü.
+- **Pencere her açılışta önerilen güne döner.** Bir kez ileri bir tarih
+  basmak sonraki açılışı etkilemiyor: bir sonraki iş neredeyse her zaman
+  "şu an baktığım gün".
+- **Sunucu değişmedi** — uç zaten `tarih` ve `tasarim` alıyordu
+  (`GET disa-aktar/gunluk-program[/html]`), eksik olan istemcinin sorması.
+- `ProgramMenu.tsx` **silindi**: iki kademeli mobil tabaka ve masaüstü
+  açılır menüsü artık gereksiz.
+
+> Ölçüm (uçtan uca, sürülen tarayıcı): "Yarın" + "Pano" seçilip Yazdır'a
+> basıldığında giden istek `…/gunluk-program/html?tarih=2026-08-20&tasarim=6`;
+> sunucu HTML'inde "20 Ağustos 2026" başlığı, PDF yolu 200 / 55 KB / 1 sayfa.
