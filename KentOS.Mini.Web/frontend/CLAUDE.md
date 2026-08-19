@@ -1600,3 +1600,30 @@ hizalanmıyor ve iki kaydın aynı kişi olup olmadığı bakışta anlaşılmı
   devam eder.
 - 11 hane ve `0` ile başlamıyorsa **dokunulmaz** — yabancı numarayı ya da
   kısa hattı bozmaktansa olduğu gibi göstermek doğru.
+
+## Liste satırında SAĞ YUVA orta sütunu daraltır
+
+`ListRow`'un `sag` yuvası satırın tüm yüksekliğinde durur ve orta sütundan
+kendi genişliği kadar yer alır. Görev listesinde durum çipi oraya konmuştu:
+390px'te orta sütun **155px**'e düşüyor, üstteki tip adı ("· Yo…") ve alttaki
+sorumlu ("· …") kırpılıyor, başlık iki satıra çıkıyordu.
+
+Çip **kodun yanına**, üst satıra alındı — şartname §6.14 `record` anatomisi
+zaten böyle diyor: *kod + durum çipi + öncelik ikonu* aynı satırda, başlık
+altında tam genişlik.
+
+> Ölçüm (390px, görev listesi): kırpılan metin parçası **6 → 3**, başlıklar
+> iki satırdan tek satıra indi; satır 84 → 88px (çip üst satırı 4px
+> büyütüyor). Takas bilinçli: 4 piksel karşılığında başlık ve sorumlu adı
+> tam okunuyor.
+
+Aynı satırda üç kural daha:
+
+- **Kod kırılmaz.** `GRV-2026-000001` tiredeki kırılma noktasından bölünüp
+  yedi satırın dördünde iki satıra çıkıyordu. `whitespace-nowrap` + `font-mono`
+  (şartname §4.1: kod/sicil tek aralıklı).
+- **Sabit genişlikli bilgi önce, esneyen sonda.** İlerleme ve gecikme
+  `shrink-0`; kırpılacak olan hep en sondaki ad olur.
+- **Sorumlu ilk adıyla.** Tam ad sığmayınca ekranda "· A…" kalıyordu; üç
+  nokta bilgi taşımıyor. Tam ad `title`'da ve detayda duruyor, birden fazla
+  sorumlu `+N` ile sayılıyor.

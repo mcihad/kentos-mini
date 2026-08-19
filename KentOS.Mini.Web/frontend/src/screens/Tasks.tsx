@@ -421,24 +421,67 @@ export default function Tasks() {
                   ikonRengi={g.durumRenk ?? 'var(--brand-ui)'}
                   ust={
                     <>
-                      <span className="font-medium tabular-nums text-ink-2">{g.takipNo}</span>
+                      {/*
+                        TAKİP NUMARASI KIRILMAZ.
+
+                        Ölçüldü (390px): kod, tip adı ve durum çipi aynı
+                        satırda yarışırken tiredeki kırılma noktasından
+                        bölünüyor ve listedeki yedi satırın dördü
+                        "GRV-2026-" / "000001" diye İKİ SATIRA çıkıyordu —
+                        satır 30px uzuyor, kod da okunmuyordu. Kod bir
+                        kimlik: ya tam görünür ya hiç. `font-mono`, şartname
+                        §4.1 (kod/sicil tek aralıklı dizilir).
+                      */}
+                      <span className="shrink-0 whitespace-nowrap font-mono font-medium text-ink-2">
+                        {g.takipNo}
+                      </span>
+                      {/*
+                        DURUM ÇİPİ KODUN YANINDA (şartname §6.14 `record`:
+                        "kod + durum çipi + öncelik ikonu" aynı satırda).
+
+                        Çip önce satırın SAĞ yuvasındaydı ve tüm yüksekliği
+                        kaplayıp orta sütunu 155px'e düşürüyordu: hem tip adı
+                        ("· Yo…") hem alt satırdaki sorumlu ("· …") o yüzden
+                        kırpılıyordu. Üst satıra alınınca başlık ve alt satır
+                        TAM genişlik kazanıyor.
+                      */}
+                      <ColoredBadge etiket={g.durumAd} renk={g.durumRenk} />
                       {g.gorevTipiAd && <span className="truncate">· {g.gorevTipiAd}</span>}
                     </>
                   }
                   baslik={g.baslik}
                   alt={
+                    /*
+                      SIRA ÖNEMLİ: sabit genişlikli bilgiler önce, ESNEYEN
+                      sorumlu adı sonda. Sorumlu ortadayken üç öğe birbirini
+                      sıkıştırıyor ve ekranda yalnızca "· A…" ya da "· …"
+                      kalıyordu — üç nokta tek başına hiçbir şey söylemiyor.
+                      Sonda olduğunda kalan yeri alıyor; yer yoksa kırpılan
+                      yine o oluyor ama ilerleme ve gecikme tam okunuyor.
+                    */
                     <>
                       <StageProgress biten={g.asamaBiten ?? 0} toplam={g.asamaToplam ?? 0} ilerleme={g.ilerleme} />
-                      {(g.sorumlular ?? []).length > 0 && (
-                        <span className="truncate">· {(g.sorumlular ?? [])[0]}</span>
-                      )}
                       <SlaBadge gecikti={!!g.gecikti} kalanSaat={g.kalanSaat} kisa />
+                      {(g.sorumlular ?? []).length > 0 && (
+                        /*
+                          SORUMLU İLK ADIYLA — üç nokta bilgi taşımıyor.
+
+                          Tam ad ("Ahmet Yılmaz") ilerleme ve gecikme
+                          işaretinin yanında 390px'e sığmıyor ve ekranda
+                          yalnızca "· A…" ya da "· …" kalıyordu. İlk ad
+                          neredeyse her zaman sığıyor ve listede kimin işi
+                          olduğunu söylemeye yetiyor; tam ad `title`'da ve
+                          detay ekranında duruyor.
+                        */
+                        <span
+                          className="truncate"
+                          title={(g.sorumlular ?? []).join(', ')}
+                        >
+                          · {((g.sorumlular ?? [])[0] ?? '').split(' ')[0]}
+                          {(g.sorumlular ?? []).length > 1 && ` +${(g.sorumlular ?? []).length - 1}`}
+                        </span>
+                      )}
                     </>
-                  }
-                  sag={
-                    <span className="mt-2.5 shrink-0">
-                      <ColoredBadge etiket={g.durumAd} renk={g.durumRenk} />
-                    </span>
                   }
                 />
               ))}

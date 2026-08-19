@@ -116,7 +116,9 @@ export function StageProgress({
 
   return (
     <span
-      className={genis ? 'flex items-center gap-2' : 'inline-flex items-center gap-1.5 whitespace-nowrap'}
+      // Dar kipte `shrink-0`: satırdaki esneyen komşusu (sorumlu adı)
+      // sıkışırken ilerleme çubuğunu da daraltıyordu.
+      className={genis ? 'flex items-center gap-2' : 'inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap'}
       title={baslik}
     >
       <span
