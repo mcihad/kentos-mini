@@ -35,11 +35,34 @@ sağında yazılıdır ve oklarla ileri geri gidebilirsiniz.
 
 ## Çıktı alma
 
-**Çıktılar** düğmesi (yazıcı simgesi, arama kutusunun sağında) günlük programın
-yazdırılabilir hâlini ve listenin Excel / PDF dosyasını verir. Telefonda menü
-iki kademeli bir tabaka olarak açılır — iç içe açılan küçük menüler dokunmatik
-ekranda ekranın dışına taşıyordu. Çıktının başlığında kurum adı ve **sizin biriminiz**
-yazar.
+**Çıktılar** düğmesi (yazıcı simgesi, arama kutusunun sağında) bir pencere açar
+ve iki şeyi sorar:
+
+1. **Gün** — hangi günün programı basılacak. Takvimden seçebilir ya da
+   **Dün / Bugün / Yarın** düğmelerini kullanabilirsiniz. Seçtiğiniz günün adı
+   (Çarşamba, Cumartesi…) altında yazılıdır; hafta sonuna program bastığınızı
+   böyle fark edersiniz.
+2. **Sayfa düzeni** — altı seçenek. Her birinin yanındaki küçük şema kâğıdın
+   nasıl bölüneceğini gösterir:
+
+| Düzen | Ne zaman |
+|---|---|
+| Standart | Saat · Konu · Yer tablosu — günlük kullanım |
+| Kompakt | Büyük punto, uzaktan okunur |
+| Detaylı | İrtibat ve hazırlık bilgileriyle |
+| Saat şeridi | Dikey zaman çizgisi |
+| Pano | Duvara asılır, çok büyük punto |
+| Boş not sayfası | Yanında el yazısı alanı |
+
+Sonra **Yazdır** (tarayıcıda önizleme açar, yazıcı ayarları sizin) ya da
+**PDF indir** (e-postayla göndermek için). Pencerenin altındaki satır hangi
+günün hangi düzende basılacağını özetler.
+
+Aynı pencerede **Liste çıktısı** bölümü var: ekranda görünen listeyi
+süzgeçleriyle birlikte Excel veya PDF olarak indirir — bu, günlük programdan
+bağımsızdır.
+
+Çıktının başlığında kurum adı ve **sizin biriminiz** yazar.
 
 > Kilit simgesi olan kayıtlar **gizli etkinliktir**: yalnızca ekleyen kişi ve
 > onun seçtiği kişiler görebilir.
