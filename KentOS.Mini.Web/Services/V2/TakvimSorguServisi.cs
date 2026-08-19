@@ -101,6 +101,9 @@ public class TakvimSorguServisi(
                 SeriId = a.SeriId,
                 SeriAyrik = a.SeriAyrik,
                 ResimVar = a.ResimVar,
+                // EF bunu alt sorguya çeviriyor (COUNT); `Include` gerekmez
+                // ve satır çoğaltmıyor.
+                ResimSayisi = a.Photos.Count(),
                 BasinKatilsin = a.BasinKatilsin,
                 BirimId = a.BirimId,
                 BirimAd = a.Birim == null ? null : a.Birim.Ad,

@@ -24,6 +24,7 @@ import { cn } from '../components/utils';
 import { PERMISSION } from '../components/permissions';
 import { useSession } from '../auth/SessionProvider';
 import { api, queryString, type PagedResult } from '../data/client';
+import { phone } from '../data/format';
 
 type Protocol = {
   id: number;
@@ -400,7 +401,7 @@ export default function Protocol() {
                               className="inline-flex items-center gap-1.5 hover:text-brand-2"
                             >
                               <Phone size={12} />
-                              {p.telefon}
+                              {phone(p.telefon)}
                             </a>
                           )}
                           {p.cepTelefon && (

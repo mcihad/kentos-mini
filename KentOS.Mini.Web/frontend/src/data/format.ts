@@ -177,3 +177,62 @@ export function unitLabel(
   if (!yetkili || yetkili === ad) return ad;
   return `${ad} — ${yetkili}`;
 }
+
+/**
+ * Etkinlikte GÖSTERİLECEK bir fotoğraf var mı?
+ *
+ * <p>
+ * İki alanı birlikte okur ve ayrımı tek yerde tutar:
+ * </p>
+ * <ul>
+ *   <li><code>resimSayisi</code> — gerçekten yüklenmiş fotoğraf adedi.</li>
+ *   <li><code>resimVar</code> — "fotoğraf eklenecek" HAZIRLIK bayrağı; adı
+ *       yanıltıyor, kayıtta dosya olduğunu söylemiyor.</li>
+ * </ul>
+ *
+ * <p>
+ * Ayrımın bedeli ölçüldü: hazırlık kutusunu işaretlemeden fotoğraf yükleyen
+ * kullanıcının dosyaları <b>hiçbir ekranda görünmüyordu</b> — listede kamera
+ * işareti çıkmıyor, detayda rozet çizilmiyor ve fotoğraf sorgusu bayrağa
+ * bağlı olduğu için hiç çalışmıyordu. Kural artık şu: <b>dosya varsa
+ * gösterilir, bayrak yalnızca "beklenen ama henüz yok" durumunu ekler.</b>
+ * </p>
+ */
+export function hasPhoto(e: { resimVar?: boolean | null; resimSayisi?: number | null }): boolean {
+  return (e.resimSayisi ?? 0) > 0 || e.resimVar === true;
+}
+
+/**
+ * Telefonu tek biçime getirir: <c>0532 111 22 33</c>.
+ *
+ * <p>
+ * Aynı numara veritabanında yıllar içinde dört ayrı yazımla birikti —
+ * <code>05412983451</code>, <code>0541 298 34 50</code>,
+ * <code>+90 541 298 34 52</code>, <code>541 298 34 50</code> — çünkü eski MVC
+ * formu serbest metin alıyordu. Ekranda alt alta gelen bu dört biçim, listeyi
+ * tarayan gözü her satırda yeniden okumaya zorluyor: numaralar hizalanmıyor
+ * ve iki kaydın aynı kişi olup olmadığı bakışta anlaşılmıyor.
+ * </p>
+ *
+ * <p>
+ * Kural sunucudaki basılı çıktı biçiminin (<c>HalkGunuCiktiServisi</c>)
+ * birebir karşılığı: 11 haneli ve <code>0</code> ile başlıyorsa
+ * <code>0XXX XXX XX XX</code>, değilse dokunulmadan geri verilir — yabancı
+ * numarayı ya da kısa hattı bozmaktansa olduğu gibi göstermek doğru.
+ * </p>
+ */
+export function phone(ham?: string | null): string {
+  if (!ham) return '';
+
+  const rakam = ham.replace(/\D/g, '');
+
+  // `+90` ve boşluksuz yazımlar: baştaki ülke kodu atılır, `0` eklenir.
+  const yerel =
+    rakam.length === 12 && rakam.startsWith('90') ? `0${rakam.slice(2)}`
+    : rakam.length === 10 && !rakam.startsWith('0') ? `0${rakam}`
+    : rakam;
+
+  return yerel.length === 11 && yerel.startsWith('0')
+    ? `${yerel.slice(0, 4)} ${yerel.slice(4, 7)} ${yerel.slice(7, 9)} ${yerel.slice(9)}`
+    : ham.trim();
+}

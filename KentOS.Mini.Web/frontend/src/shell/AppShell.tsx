@@ -276,7 +276,28 @@ function AppShellIc() {
           üstte ince bir açık çizgi — karanlıkta yükseklik gölgeyle değil
           ışıkla anlatılıyor. İkisi de `--appbar-shadow` altında tanımlı.
         */}
-        <header className="sticky top-0 z-30 flex h-bar-m shrink-0 items-center gap-1 appbar-golge bg-surface px-3 md:h-appbar md:gap-2 md:px-[26px]">
+        {/*
+          YÜKSEKLİK GÜVENLİ ALANI DA KAPSAR (bkz. globals.css → `guvenli-ust`).
+
+          Kurulu PWA'da `viewport-fit=cover` + saydam durum çubuğu içeriği
+          çentiğin altından başlatıyordu: başlık saatin arkasında kalıyor,
+          şeridin ilk düğmesi çentikle örtüşüyordu. Şerit aşağı İTİLMİYOR,
+          BÜYÜTÜLÜYOR — zemini durum çubuğunun arkasına uzanmaya devam
+          ediyor, yalnızca içerik güvenli alana iniyor.
+        */}
+        {/*
+          Yan dolgu `max()` ile: normalde `--sp-3`, yatay çevrilmiş telefonda
+          çentik hangi taraftaysa o kenar onun kadar açılır. `guvenli-yan`
+          yardımcısı BURADA kullanılamaz — o da `padding-left/right` yazıyor
+          ve `px-3` ile çakışıp biri sessizce kayboluyordu.
+        */}
+        <header
+          className="sticky top-0 z-30 flex h-[calc(var(--h-bar-m)+env(safe-area-inset-top,0px))] shrink-0
+            items-center gap-1 appbar-golge bg-surface guvenli-ust
+            pl-[max(var(--sp-3),env(safe-area-inset-left,0px))]
+            pr-[max(var(--sp-3),env(safe-area-inset-right,0px))]
+            md:h-appbar md:gap-2 md:px-[26px] md:pt-0"
+        >
           <button
             onClick={() => setDaraltilmis((d) => !d)}
             aria-label={daraltilmis ? 'Menüyü genişlet' : 'Menüyü daralt'}
@@ -357,11 +378,22 @@ function AppShellIc() {
             ayrı yerlere koymak kullanıcıyı ikisini ayrı ayrı aramaya
             zorluyordu.
           */}
+          {/*
+            MOBİLDE GİZLİ — Menü tabakasında aynı satır duruyor.
+
+            Ölçüldü: 390px'te şerit altı düğme taşırken başlığa yalnızca
+            66px kalıyordu ve "Ana Sayfa" bile kırpılıyordu. Şartname §6.1
+            AppBar'a en fazla iki eylem veriyor; ölçüt "kaç düğme" değil,
+            HANGİ EYLEM NE SIKLIKTA: Tema Tasarımcısı bir KURULUM aracı,
+            ayda bir açılıyor. Gece/gündüz düğmesi kalıyor — o günde birkaç
+            kez kullanılıyor ve menüye indirilmesi daha önce denenip geri
+            alınmıştı.
+          */}
           <IconButton
             etiket="Tema Tasarımcısı"
             varyant="sade"
             onClick={() => setTemaPaneli(true)}
-            className="text-brand"
+            className="hidden text-brand md:grid"
           >
             <Palette size={17} strokeWidth={1.8} />
           </IconButton>
@@ -384,16 +416,15 @@ function AppShellIc() {
             {etkinTema === 'acik' ? <Moon size={17} strokeWidth={1.8} /> : <Sun size={17} strokeWidth={1.8} />}
           </IconButton>
 
-          {/* Mobilde kenar çubuğu yok; çıkış oradaki kullanıcı bloğuyla
-              birlikte erişilemez kalıyordu. */}
-          <IconButton
-            etiket="Çıkış yap"
-            varyant="sade"
-            onClick={() => setCikisSorusu(true)}
-            className="md:hidden"
-          >
-            <LogOut size={17} strokeWidth={1.8} />
-          </IconButton>
+          {/*
+            ÇIKIŞ ARTIK ŞERİTTE DEĞİL.
+
+            Buraya, kenar çubuğu telefonda hiç açılmadığı ve çıkış oradaki
+            kullanıcı bloğuyla birlikte erişilemez kaldığı için konmuştu. O
+            gerekçe artık geçersiz: Menü tabakasının dibinde kullanıcı
+            künyesiyle birlikte "Çıkış Yap" satırı duruyor. Günde bir kez
+            yapılan bir iş, her ekranda başlıktan 44px yiyordu.
+          */}
         </header>
 
         {/*
@@ -406,7 +437,12 @@ function AppShellIc() {
           kalırsa son kart sabit çubuğun altında kalıyor ve liste "kesilmiş"
           görünüyor.
         */}
-        <main className="flex-1 p-4 pb-[calc(var(--h-tabbar)+env(safe-area-inset-bottom,0px)+var(--sp-6))] md:p-[26px] md:pb-[26px]">
+        <main
+          className="flex-1 py-4 pb-[calc(var(--h-tabbar)+env(safe-area-inset-bottom,0px)+var(--sp-6))]
+            pl-[max(var(--sp-4),env(safe-area-inset-left,0px))]
+            pr-[max(var(--sp-4),env(safe-area-inset-right,0px))]
+            md:p-[26px] md:pb-[26px]"
+        >
           {/*
             Giriş sonrası bildirim izni — tarayıcının izin kutusunu doğrudan
             açmaz, önce ne için istendiğini anlatır (bkz. bileşen notu).
@@ -437,7 +473,10 @@ function AppShellIc() {
       */}
       <nav
         aria-label="Ana gezinme"
-        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface guvenli-alt md:hidden
+        // `guvenli-yan` burada güvenli: çubuğun kendi yan dolgusu yok,
+        // sekmeler `flex-1` ile bölüşüyor — yatayda çentik varsa şerit o
+        // kadar içeri çekilir ve son sekme çentiğin arkasında kalmaz.
+        className="fixed inset-x-0 bottom-0 z-20 border-t border-border bg-surface guvenli-alt guvenli-yan md:hidden
           shadow-[0_-2px_12px_rgba(16,26,45,.05)] dark:shadow-none"
       >
         {/*

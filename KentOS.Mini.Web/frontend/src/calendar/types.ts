@@ -35,7 +35,13 @@ export type CalendarEvent = {
   gizli: boolean;
   seriId: number | null;
   seriAyrik: boolean;
+  /**
+   * "Fotoğraf eklenecek" HAZIRLIK BAYRAĞI — yüklenmiş fotoğraf DEĞİL.
+   * Gerçek durum için `resimSayisi`. Ad sunucu sözleşmesinden geliyor.
+   */
   resimVar: boolean;
+  /** Etkinliğe yüklenmiş fotoğraf sayısı (bayraktan bağımsız gerçek durum). */
+  resimSayisi?: number;
   basinKatilsin: boolean;
 };
 

@@ -34,7 +34,7 @@ import { useToast } from '../../components/Toast';
 import { PlaceholderPicker, insertPlaceholder } from '../../components/PlaceholderPicker';
 import { PERMISSION } from '../../components/permissions';
 import { useSession } from '../../auth/SessionProvider';
-import { time, number, date } from '../../data/format';
+import { time, number, date, phone } from '../../data/format';
 import { ExportMenu } from './ExportMenu';
 import { PublicDayForm, DeleteConfirm } from '../PublicDays';
 import { api } from '../../data/client';
@@ -522,7 +522,7 @@ function KisiListesi({
                 href={`tel:${k.telefon}`}
                 className="mt-0.5 block truncate text-xs tabular-nums text-ink-2 hover:underline"
               >
-                {k.telefon}
+                {phone(k.telefon)}
               </a>
             )}
 
@@ -825,7 +825,7 @@ function AtamaPenceresi({
                   <span className="min-w-0">
                     <span className="block text-sm font-medium">{b.adSoyad}</span>
                     <span className="flex flex-wrap gap-x-2 text-xs text-text-3">
-                      {b.telefon && <span className="tabular-nums">{b.telefon}</span>}
+                      {b.telefon && <span className="tabular-nums">{phone(b.telefon)}</span>}
                       {b.mahalleAd && <span>{b.mahalleAd}</span>}
                       {b.konu && <span className="line-clamp-1">{b.konu}</span>}
                     </span>

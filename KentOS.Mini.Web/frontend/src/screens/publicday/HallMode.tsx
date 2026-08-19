@@ -16,7 +16,7 @@ import { Skeleton } from '../../components/Skeleton';
 import { PersonHistory } from '../../components/PersonHistory';
 import { useToast } from '../../components/Toast';
 import { cn } from '../../components/utils';
-import { date } from '../../data/format';
+import { date, phone } from '../../data/format';
 import { api } from '../../data/client';
 import { usePublicDay } from '../../data/hooks';
 import { ATTENDANCE, type PublicDayAttendance } from '../../data/types';
@@ -257,7 +257,7 @@ export default function HallMode() {
                     className="flex items-center gap-1.5 tabular-nums text-brand-2 hover:underline"
                   >
                     <Phone size={13} />
-                    {aktif.telefon}
+                    {phone(aktif.telefon)}
                   </a>
                 )}
                 {aktif.mahalleAd && <span>{aktif.mahalleAd}</span>}

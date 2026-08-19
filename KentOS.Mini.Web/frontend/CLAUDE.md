@@ -132,6 +132,30 @@ sınıfları ve ekran düzenleri orada birebir yazılı. Uydurma yok.
 
 > `design/*.dc.html` dosyaları Claude tasarım tuvali önizlemeleridir. Inline stil kullanırlar, içlerinde Tailwind/Radix **yoktur**. Görsel referanstır — kaynak kod olarak kopyalanmaz.
 
+## KURULU PWA GÜVENLİ ALANDA DURUR
+
+`index.html` iki şeyi birlikte söylüyor: `viewport-fit=cover` ve
+`apple-mobile-web-app-status-bar-style: black-translucent`. İkisi
+birlikteyken tarayıcı sayfayı **çentiğin altından** başlatır — sekmede fark
+edilmez, **ana ekrandan açılan kurulu uygulamada** appbar saatin altında
+kalır: başlık okunmaz, ilk eylem düğmesi çentiğin arkasına girer.
+
+| Yüzey | Kural |
+|---|---|
+| Appbar | Yükseklik `56 + env(safe-area-inset-top)`, aynı kadar üst dolgu (`guvenli-ust`) |
+| Alt çubuk | `guvenli-alt` (alt inset) + `guvenli-yan` (yatayda çentik) |
+| İçerik (`main`) | Yan dolgular `max(--sp-4, env(inset-left/right))` |
+| FAB | Alt konumu zaten `env(safe-area-inset-bottom)` okuyor |
+
+> **Şerit AŞAĞI İTİLMEZ, BÜYÜTÜLÜR.** Yalnızca `top` verilseydi şeridin
+> üstünde saydam bir bant kalır ve arkadaki liste oradan akardı; büyütünce
+> zemin durum çubuğunun arkasına uzanmaya devam ediyor (marka rengi orada da
+> görünür), yalnızca içerik güvenli alana iniyor.
+
+> **`guvenli-yan` kendi dolgusu OLAN kapta kullanılmaz** — o da
+> `padding-left/right` yazıyor ve `px-3` ile çakışıp biri sessizce
+> kayboluyor. Appbar'da bu yüzden `max(var(--sp-3), env(...))` yazılı.
+
 ## Mobil öncelikli
 
 `md = 768px`. Altında **tabbar** (60px + safe area, 5 sekme), üstünde **kenar çubuğu** (258px / daraltılmış 76px).
@@ -961,8 +985,18 @@ kalıyor. Sayfa 1652px → 950px.
 
 ## Mobil appbar ve bildirim merkezi
 
-Şerit **altı eylem** taşır: kurulum · yardım · bildirim · Tema Tasarımcısı ·
-gece/gündüz · çıkış. Yer açan şey düğmeleri kaldırmak değil, **künye
+Şerit mobilde **dört eylem** taşır: kurulum (geçici) · yardım · bildirim ·
+gece/gündüz. Tema Tasarımcısı ve çıkış **yalnızca masaüstünde / Menü
+tabakasında**.
+
+> **Ölçüm — başlık 66 → 154px.** Şerit altı düğme taşırken 390px'te başlığa
+> yalnızca 66px kalıyordu ve **her ekranda** kırpılıyordu: "Ana Sayfa" bile
+> "Ana S…" oluyordu. Şartname §6.1 AppBar'a en fazla iki eylem veriyor.
+> Kaldırılan ikisi Menü tabakasında zaten vardı — yani şeritteki kopyaları
+> tekrardı: **Tema Tasarımcısı** ayda bir açılan bir kurulum aracı,
+> **çıkış** günde bir yapılıyor. Gece/gündüz KALDI: günde birkaç kez
+> kullanılıyor ve menüye indirilmesi daha önce denenip geri alınmıştı —
+> ölçüt "kaç düğme" değil, **hangi eylem ne sıklıkta**. Yer açan şey düğmeleri kaldırmak değil, **künye
 satırıydı**: başlığın altında her ekranda tekrar eden "Admin · Belediye
 Başkanlığı" duruyordu ve hiçbir işe yaramıyordu (aynı bilgi Menü tabakasının
 tepesinde, avatarıyla birlikte). Kaldırılınca başlık iki punto büyüdü ve
@@ -1531,3 +1565,38 @@ dağılımları çizer (mahalle, meslek, tip, durum, saat…).
 **imlecin bulunduğu yere** eklenir, metnin sonuna değil. Katalog sunucudan
 gelir (`ayar/sms-yer-tutucular?baglam=`), yani etkinlik ve halk günü aynı
 bileşeni farklı listeyle kullanır.
+
+## Fotoğraf: BAYRAK ile DOSYA ayrı şeyler
+
+`resimVar` bir **hazırlık bayrağı** ("bu etkinlikte fotoğraf çekilecek"),
+kayıtta dosya olduğunu söylemiyor. Adı yanıltıyor ve v1 sözleşmesinin parçası
+olduğu için değiştirilemiyor; gerçek durum sunucudan yeni gelen
+**`resimSayisi`** ile geliyor (`EtkinlikOzetDto`, EF tarafında `Photos.Count()`
+alt sorgusu — `Include` gerekmiyor, satır çoğaltmıyor).
+
+Kural: **dosya varsa gösterilir; bayrak yalnızca "beklenen ama henüz yok"
+durumunu ekler.** Tek yerden okunur: `data/format.ts` → `hasPhoto(e)`.
+
+> **Kaybolan dosyalar.** Hazırlık kutusunu işaretlemeden fotoğraf yükleyen
+> kullanıcının dosyaları **hiçbir ekranda görünmüyordu**: listede kamera
+> işareti çıkmıyor, detayda rozet `filter(o => o.istendi)` ile eleniyor ve
+> fotoğraf sorgusu `enabled: e.resimVar === true` olduğu için hiç
+> çalışmıyordu — yani "Fotoğraflar" sekmesi de boştu. Üçü de düzeltildi;
+> detay filtresi artık `istendi || dolu`. Var olan bir şeyi göstermemek,
+> istenen bir şeyi göstermemekten kötü.
+
+## Telefon EKRANDA da tek biçim
+
+`data/format.ts` → `phone()`, sunucudaki basılı çıktı kuralının
+(`HalkGunuCiktiServisi.TelefonBicimi`) birebir karşılığı: `0532 111 22 33`.
+
+Aynı numara veritabanında dört ayrı yazımla duruyor (`05412983451`,
+`0541 298 34 50`, `+90 541 298 34 52`, `541 298 34 50`) — eski MVC formu
+serbest metin alıyordu. Çıktılarda 2026'da düzeltilmişti ama **ekranda
+düzeltilmemişti**: halk günü listesinde dört biçim alt alta duruyor, numaralar
+hizalanmıyor ve iki kaydın aynı kişi olup olmadığı bakışta anlaşılmıyordu.
+
+- Yalnızca **görünen metin** biçimlenir; `href="tel:"` ham numarayı taşımaya
+  devam eder.
+- 11 hane ve `0` ile başlamıyorsa **dokunulmaz** — yabancı numarayı ya da
+  kısa hattı bozmaktansa olduğu gibi göstermek doğru.
