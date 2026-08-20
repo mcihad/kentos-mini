@@ -1,12 +1,10 @@
-import * as Dialog from '@radix-ui/react-dialog';
 import { useSession } from '../auth/SessionProvider';
 import { PERMISSION } from '../components/permissions';
 import * as Tabs from '@radix-ui/react-tabs';
 import { SekmeListesi, SekmeTetigi } from '../components/Tabs';
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
-import {
-  AlertTriangle, ArrowLeft, Building2, CalendarDays, Camera, Check, Clock, FileText, Flower2, History, Info, Lock, MapPin, MessageSquarePlus, Newspaper, Pencil, Plus, Repeat, Trash2, Users, X,
-} from 'lucide-react';
+import { AlertTriangle, ArrowLeft, Building2, CalendarDays, Camera, Check, Clock, FileText, Flower2, History, Info, Lock, MapPin, MessageSquarePlus, Newspaper, Pencil, Plus, Repeat, Trash2, Users } from 'lucide-react';
+import { OverlayShell } from '../components/OverlayShell';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { Textarea } from '../components/Field';
@@ -678,32 +676,15 @@ function MetinDuzenleyici({
   const baslik = alan === 'konusma' ? 'Konuşma metni' : 'Bilgi notu';
 
   return (
-    <Dialog.Root open={alan !== null} onOpenChange={(a) => !a && kapat()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="anim-perde fixed inset-0 z-50 bg-perde" />
-        <Dialog.Content
-          className="katman anim-tabaka fixed inset-x-0 bottom-0 z-50 flex max-h-[90dvh] flex-col rounded-t-win bg-surface shadow-3
-            md:inset-x-auto md:bottom-auto md:left-1/2 md:top-1/2 md:max-h-[85dvh] md:w-[min(680px,calc(100vw-48px))]
-            md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-win"
-        >
-          <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-brand-tint text-brand-2">
-              <FileText size={15} />
-            </span>
-            <Dialog.Title className="flex-1 font-display text-lg font-bold">
-              {baslik}
-            </Dialog.Title>
-            <Dialog.Close asChild>
-              <IconButton etiket="Kapat">
-                <X size={16} />
-              </IconButton>
-            </Dialog.Close>
-          </div>
-
-          <Dialog.Description className="sr-only">
-            {baslik} metnini yazın veya düzenleyin.
-          </Dialog.Description>
-
+    // Kabuk elle kurulmuyordu ve mobilde parmakla kapanmıyordu; artık
+    // `OverlayShell` (mobilde `vaul`, masaüstünde ortalanmış pencere).
+    <OverlayShell
+      acik={alan !== null}
+      kapat={kapat}
+      baslik={baslik}
+      ikon={<FileText size={15} />}
+      genislik="orta"
+    >
           <div className="min-h-0 flex-1 overflow-y-auto p-4">
             <Textarea
               value={metin}
@@ -726,9 +707,7 @@ function MetinDuzenleyici({
               {kaydet.isPending ? 'Kaydediliyor…' : 'Kaydet'}
             </Button>
           </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+    </OverlayShell>
   );
 }
 

@@ -1,17 +1,27 @@
-import * as Dialog from '@radix-ui/react-dialog';
-import { BookOpen, X } from 'lucide-react';
-import { IconButton } from '../components/Button';
+import { BookOpen } from 'lucide-react';
+import { OverlayShell } from '../components/OverlayShell';
 import { Markdown } from './Markdown';
 
 /**
  * YARDIM PANELİ.
  *
- * Masaüstünde SAĞDAN açılan bir tabaka, telefonda alttan gelen bir sayfa.
+ * <p>
+ * Masaüstünde SAĞDAN açılan bir panel, telefonda alttan gelen bir tabaka.
  * Ekranın üstünü kapatan ortalanmış bir pencere değil: yardım okunurken
- * arkadaki ekranın görünmesi gerekiyor — kullanıcı anlatılan düğmeyi aynı anda
- * görebilsin.
+ * arkadaki ekranın görünmesi gerekiyor — kullanıcı anlatılan düğmeyi aynı
+ * anda görebilsin.
+ * </p>
  *
- * İçerik `metinler/*.md` dosyalarından geliyor; yazan kişi React bilmeden
+ * <p>
+ * <b>Kabuğu artık kendi kurmuyor.</b> Panel ham Radix Dialog + elle yazılmış
+ * CSS ile çiziliyordu ve telefonda <b>parmakla kapanmıyordu</b>: tepesinde
+ * tutamak vardı ama tutamağa bağlı hiçbir kod yoktu — görsel olarak
+ * "beni aşağı çek" diyen, çekilince hiçbir şey yapmayan bir şerit.
+ * <see cref="OverlayShell"/> mobilde <c>vaul</c> kullanıyor; kaydırarak
+ * kapatma oradan geliyor ve uygulamadaki bütün tabakalarla aynı davranıyor.
+ * </p>
+ *
+ * İçerik <c>texts/*.md</c> dosyalarından geliyor; yazan kişi React bilmeden
  * güncelleyebilsin diye düz markdown.
  */
 export function HelpPanel({
@@ -28,50 +38,28 @@ export function HelpPanel({
   metin: string;
 }) {
   return (
-    <Dialog.Root open={acik} onOpenChange={(a) => !a && kapat()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="anim-perde fixed inset-0 z-50 bg-[rgba(11,26,58,0.42)] backdrop-blur-[2px]" />
-        <Dialog.Content
-          aria-describedby={undefined}
-          className="katman anim-tabaka anim-yan fixed inset-x-0 bottom-0 z-50 flex max-h-[86dvh] flex-col rounded-t-xl border border-border bg-surface shadow-2
-            md:inset-y-0 md:left-auto md:right-0 md:max-h-none md:w-[min(460px,100vw)] md:rounded-none md:rounded-l-xl md:border-y-0 md:border-r-0"
-        >
-          {/* Telefonda tutamak: sayfanın aşağı çekilebileceğini söyler. */}
-          <span
-            aria-hidden
-            className="mx-auto mt-2.5 h-[4px] w-[38px] shrink-0 rounded-full bg-border-2 md:hidden"
-          />
+    <OverlayShell
+      acik={acik}
+      kapat={kapat}
+      baslik={baslik}
+      aciklama={ozet}
+      masaustuYerlesim="yan"
+      ikon={<BookOpen size={17} />}
+    >
+      <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 md:p-5">
+        <Markdown metin={metin} />
 
-          <div className="flex items-start gap-3 border-b border-border p-4 md:p-5">
-            <span
-              className="grid h-9 w-9 shrink-0 place-items-center rounded-md bg-gold-tint text-gold-2"
-              aria-hidden
-            >
-              <BookOpen size={17} />
-            </span>
-            <div className="min-w-0 flex-1">
-              <Dialog.Title className="font-display text-lg font-bold tracking-[-0.01em]">
-                {baslik}
-              </Dialog.Title>
-              {ozet && <p className="mt-0.5 text-xs leading-normal text-text-3">{ozet}</p>}
-            </div>
-            <Dialog.Close asChild>
-              <IconButton etiket="Yardımı kapat">
-                <X size={17} />
-              </IconButton>
-            </Dialog.Close>
-          </div>
-
-          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 md:p-5">
-            <Markdown metin={metin} />
-
-            <p className="mt-8 border-t border-border pt-3 text-xs leading-[1.6] text-text-3">
-              Anlatılanı ekranda bulamadıysanız yetkiniz kapalı olabilir; yetki
-              tanımları Akıllı Şehir ve Kent Bilgi Sistemleri Müdürlüğü'nden açılır.
-            </p>
-          </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+        {/*
+          KURUM ADI YAZILMAZ. Burada bir müdürlük adı gömülüydü; uygulama
+          başka kurumlara verildiğinde yardım metni yanlış bir birimi işaret
+          ediyordu. Kural yardım metinlerinde uygulanmıştı ama bu satır
+          `.tsx` içinde olduğu için taramanın dışında kalmıştı.
+        */}
+        <p className="mt-8 border-t border-border pt-3 text-xs leading-[1.6] text-text-3">
+          Anlatılanı ekranda bulamadıysanız yetkiniz kapalı olabilir; yetki
+          tanımlarını sistem yöneticiniz açar.
+        </p>
+      </div>
+    </OverlayShell>
   );
 }
