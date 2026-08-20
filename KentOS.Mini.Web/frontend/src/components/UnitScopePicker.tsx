@@ -1,9 +1,11 @@
 import { Building2 } from 'lucide-react';
 import { useQueryClient } from '@tanstack/react-query';
-import { activeUnitStore } from '../../data/client';
-import { useUnitScope } from '../../data/tasks';
-import { useSession } from '../../auth/SessionProvider';
-import { PERMISSION } from '../../components/permissions';
+import { activeUnitStore } from '../data/client';
+import { useUnitScope } from '../data/tasks';
+import { useSession } from '../auth/SessionProvider';
+import { PERMISSION } from './permissions';
+import { Secim } from './Field';
+import { cn } from './utils';
 
 /**
  * ETKİN BİRİM SEÇİCİ — "hangi birim adına çalışıyorum?"
@@ -17,8 +19,22 @@ import { PERMISSION } from '../../components/permissions';
  * <p>
  * <b>Seçim değişince BÜTÜN önbellek düşürülür.</b> Aksi hâlde kullanıcı
  * müdürlüğe geçtiğinde bir an kendi biriminin listesini görmeye devam eder ve
- * hangi verinin kimin olduğunu ayırt edemez — yanlış birimin listesine bakıp
- * "burada iş yok" demek, hata mesajı görmekten kötüdür.
+ * hangi verinin kimin olduğunu ayırt edemez.
+ * </p>
+ *
+ * <h4>Ölçü ORTAK KONTROLDEN gelir</h4>
+ *
+ * <p>
+ * Bileşen kendi <code>&lt;select&gt;</code>'ini kuruyor ve girdi
+ * sınıflarını elle kopyalıyordu; sonuç, <b>mobilde 40px</b> yüksekliğinde
+ * bir kutunun yanında <b>50px</b>'lik arama alanı ve düğmelerdi — araç
+ * çubuğu her ekranda hizasız görünüyordu. Artık <see cref="Secim"/>
+ * kullanıyor: ölçü, köşe, odak halkası ve zemin tek yerden geliyor.
+ * </p>
+ *
+ * <p>
+ * Dosya da <code>screens/task/</code> altından <code>components/</code>'e
+ * taşındı — altı ekran kullanıyor, hiçbiri göreve özel değil.
  * </p>
  *
  * <p>
@@ -39,10 +55,18 @@ export function UnitScopePicker({ className }: { className?: string }) {
   const secili = activeUnitStore.read() ?? kendi?.id ?? null;
 
   return (
-    <label className={`inline-flex h-ctrl items-center gap-1.5 ${className ?? ''}`}>
-      <span className="sr-only">Etkin birim</span>
-      <Building2 size={15} className="flex-none text-ink-3" aria-hidden />
-      <select
+    <div className={cn('relative min-w-0', className)}>
+      {/*
+        İkon kutunun İÇİNDE, yanında değil. Dışarıdayken bileşenin toplam
+        genişliği ikonun kendisi kadar artıyor ve dar ekranda araç çubuğu
+        bir satır daha kırıyordu.
+      */}
+      <Building2
+        size={15}
+        aria-hidden
+        className="pointer-events-none absolute left-3 top-1/2 z-10 -translate-y-1/2 text-ink-3"
+      />
+      <Secim
         value={secili ?? ''}
         onChange={(e) => {
           const id = Number(e.target.value);
@@ -54,7 +78,7 @@ export function UnitScopePicker({ className }: { className?: string }) {
           qc.clear();
         }}
         aria-label="Etkin birim"
-        className="h-ctrl min-w-0 max-w-[210px] rounded-md border border-line bg-surface-2 px-2 text-sm text-ink outline-hidden focus:border-brand focus:ring-[3px] focus:ring-(--focus-ring)"
+        className="w-full pl-9 md:max-w-[240px]"
       >
         {liste.map((b) => (
           <option key={b.id} value={b.id}>
@@ -65,7 +89,7 @@ export function UnitScopePicker({ className }: { className?: string }) {
             {b.kendiBirimi ? ' (birimim)' : ''}
           </option>
         ))}
-      </select>
-    </label>
+      </Secim>
+    </div>
   );
 }

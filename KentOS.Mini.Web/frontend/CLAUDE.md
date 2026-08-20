@@ -1075,6 +1075,102 @@ parmakla kapanmıyordu.
 > yarısını kullanıcı daha bakmadan kapatması kendi başına da yanlış.
 > Masaüstünde ilk alan odaklı kalır.
 
+## BİRİM SEÇİMİ HER EKRANDA AYNI
+
+İki ayrı tutarsızlık vardı, ikisi de "düzensiz duruyor" diye bildirildi.
+
+**1. Ölçü.** `UnitScopePicker` kendi `<select>`'ini kurup girdi sınıflarını
+kopyalıyordu ve hep `h-ctrl` idi. Ölçüm: **mobilde 40px**, yanındaki arama
+alanı ve düğmeler **50px** — araç çubuğu altı ekranda birden hizasız
+görünüyordu. Artık ortak `Secim` bileşenini kullanıyor:
+
+| | Önce | Sonra |
+|---|---|---|
+| Mobil | 40px | **50px** (arama 50, düğme 50) |
+| Masaüstü | 40px | 40px (arama 40, düğme 40) |
+
+Dosya `screens/task/` altından **`components/`**'e taşındı: altı ekran
+kullanıyor, hiçbiri göreve özel değil.
+
+İkon da kutunun **içine** alındı. Dışarıdayken bileşenin toplam genişliği
+ikon kadar artıyor ve dar ekranda araç çubuğu bir satır daha kırıyordu.
+
+**2. Etiket.** Birim bir ekranda `unitLabel()` ile ("Ad — Yetkili"), ötekinde
+düz `.ad` ile yazılıyordu. Kurumda **altı ayrı "Başkan Yardımcısı" birimi**
+var; yetkilisiz listede hangisinin seçildiği anlaşılmıyor.
+
+> **Bekçi: `test/units.test.ts`.** Hem `UnitScopePicker`'ın kendi `<select>`
+> kurmadığını hem de `birimler.liste.map` kalıbının düz `.ad` yazmadığını
+> tarıyor. **İkisinin de ateş ettiği ölçüldü.**
+
+## GÖREV DETAYI: EYLEMLER FAB'DA
+
+FAB **silme** düğmesiydi, menü ise başlık şeridindeydi. Yani en sık yapılan
+işler için kullanıcı başlığa uzanıyor, geri alınamaz tek iş parmağının
+altında duruyordu — tam tersi olmalıydı. Depo kuralı da (bkz. *Etkileşim
+mimarisi → FAB*) detay ekranlarında eylemlerin FAB'da toplanmasını söylüyor;
+görev detayı bunun dışında kalmıştı.
+
+- FAB artık **işlemler menüsü**; ikon `MoreHorizontal`. Çöp kutusu ikonu
+  "bu düğme siler" diyordu.
+- **Silme listenin dibinde**, ayırıcının altında ve yıkıcı tonda. Onay
+  penceresi yerinde duruyor.
+- Başlıktaki `⋯` düğmesi kaldırıldı: aynı menü iki yerden açılıyordu.
+
+### FAB ile menüsü artık AYNI EKSENDE
+
+Menü satırları `items-end` ile kabın sağ kenarına yaslanıyor ve ikonları
+46px; FAB ise 56px. İkisi aynı `right` değerinden başlayınca merkezleri
+ayrışıyordu.
+
+```
+ÖNCE   FAB merkezi 44px · menü ikonu merkezi 39px   (menü 5px sağda)
+SONRA  ikisi de 44px
+```
+
+Kap, iki boyutun farkının yarısı kadar içeri alınıyor ve sayı elle
+yazılmıyor: `calc(var(--sp-4) + (56px - 46px) / 2)`.
+
+> **Aynı yerde ikinci bir hata:** FAB yatayda `right-4` (Tailwind'in sabit
+> 1rem'i), dikeyde `var(--sp-4)` kullanıyordu. İkisi 16px'te çakıştığı için
+> görünmüyordu ama `--sp` bir **tema knob'u**: kullanıcı Tema
+> Tasarımcısı'ndan boşluk birimini büyütünce alt boşluk kayıyor, sağ boşluk
+> sabit kalıyor ve düğme köşeden çıkıyordu. Artık ikisi de `--sp-4`.
+
+## GÖREV TAMAMLAMA SAHA İŞİNE ÖZGÜ DEĞİL
+
+Arayüz "Onaya gönder" düğmesini yalnızca `gorev.asama` iznine bağlıyordu ama
+uç ikisini de kabul ediyor (`[Izin(GorevAsama, GorevDuzenle)]`). Sonuç:
+görevi düzenleyebilen **ofis personeli düğmeyi hiç göremiyordu**, oysa
+isteği gönderse sunucu kabul ederdi.
+
+Üç yerde aynı dar kapı vardı ve üçü de sunucuyla eşitlendi:
+`TaskDetail` (onaya gönder) · `Tasks` (kaydırma eylemi "Bitirdim") ·
+`TaskStages` (aşama tamamlama).
+
+Sunucuda da `POST gorev/{id}/asama/{asamaId}` artık `gorev.duzenle` kabul
+ediyor — aşama ilerlemesi ile "bitirdim" demek aynı sınıf iş. İzin
+kataloğundaki *"Saha personelinin izni"* ifadesi de kaldırıldı: yanlış
+zihinsel modeli o cümle besliyordu.
+
+## KİLOMETRE TAŞI PROJE DETAYINDAN EKLENİR
+
+Ara hedef eklemenin tek yolu `/projeler/{id}/duzenle` idi: bütçe, tarih,
+ekip ve pano sütunlarıyla açılan bir form, **tek satırlık bir iş için**.
+Üstelik o formu kaydetmek projenin geri kalanını da yeniden yazıyor — yalnızca
+hedef eklemek isteyen kişi farkında olmadan başka alanları da kaydediyordu.
+
+Artık proje detayında: boş durumdaki düğme ve dolu listede başlıktaki `+`
+küçük bir pencere açıyor (ad · hedef tarih · açıklama).
+
+- **Sıra numarası sunucuda verilir.** İstemciye bırakılsaydı iki kişi aynı
+  anda taş eklediğinde çakışan numaralar kalırdı.
+- **Silmek bağlı görevleri silmez**, yalnızca bağı koparır: taşı kaldırmak
+  "bu ara hedefi izlemiyoruz" demek, altındaki işler devam ediyor.
+
+Uçlar: `POST proje/{id}/kilometre-tasi` · `DELETE proje/{id}/kilometre-tasi/{tasId}`
+(ikisi de `proje.yonet`).
+
 ## MOBİLDE HER TABAKA PARMAKLA KAPANIR
 
 Telefonda alttan açılan bir pencerenin aşağı kaydırılarak kapanması bir

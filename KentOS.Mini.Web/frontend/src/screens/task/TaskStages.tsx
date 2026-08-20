@@ -61,7 +61,10 @@ function AsamaSatiri({ gorevId, asama }: { gorevId: number; asama: TaskStage }) 
   const dosyaAlani = useRef<HTMLInputElement>(null);
 
   const bekliyor = asama.durum === TASK_STAGE_STATUS.bekliyor;
-  const acik = !!asama.sirada && hasPermission(PERMISSION.gorevAsama);
+  // Aşama ucu da `gorev.asama` VEYA `gorev.duzenle` kabul ediyor: masa
+  // başında biten bir işin adımlarını işaretlemek saha yetkisi istemiyor.
+  const acik = !!asama.sirada
+    && hasPermission([PERMISSION.gorevAsama, PERMISSION.gorevDuzenle]);
 
   const ekler = asama.ekler ?? [];
   const fotograflar = ekler

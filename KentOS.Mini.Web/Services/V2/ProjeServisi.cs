@@ -37,6 +37,21 @@ public interface IProjeServisi
     Task<PanoDto> KartTasiAsync(long id, KartTasimaDto istek, CancellationToken iptal = default);
     Task<List<GanttSatiriDto>> GanttAsync(long id, CancellationToken iptal = default);
 
+    /// <summary>
+    /// Projeye TEK bir kilometre taşı ekler.
+    /// </summary>
+    /// <remarks>
+    /// Ara hedef eklemek için projenin tamamını düzenleme formuna girmek
+    /// gerekiyordu: bütçe, tarih, ekip ve pano sütunlarıyla birlikte açılan
+    /// bir form, tek satırlık bir iş için fazla — üstelik o formu kaydetmek
+    /// projenin geri kalanını da yeniden yazıyor.
+    /// </remarks>
+    Task<KilometreTasiDto> KilometreTasiEkleAsync(
+        long projeId, KilometreTasiDto istek, CancellationToken iptal = default);
+
+    /// <summary>Kilometre taşını siler.</summary>
+    Task KilometreTasiSilAsync(long projeId, long tasId, CancellationToken iptal = default);
+
     Task<KilometreTasiDto> KilometreTasiTamamlaAsync(
         long projeId, long tasId, bool tamamlandi, CancellationToken iptal = default);
 
@@ -491,6 +506,70 @@ public class ProjeServisi(
     }
 
     // ── kilometre taşı ─────────────────────────────────────────────────
+
+    public async Task<KilometreTasiDto> KilometreTasiEkleAsync(
+        long projeId, KilometreTasiDto istek, CancellationToken iptal = default)
+    {
+        await ErisebilirMiAsync(projeId, iptal);
+
+        if (string.IsNullOrWhiteSpace(istek.Ad))
+        {
+            throw new BusinessRuleException("Kilometre taşı adı zorunlu.");
+        }
+
+        // SIRA NUMARASI SUNUCUDA VERİLİR. İstemciye bıraksaydık iki kişi aynı
+        // anda taş eklediğinde çakışan numaralar kalırdı; listenin sırası da
+        // ekleme sırasına göre olmalı.
+        var sonSira = await _context.KilometreTaslari
+            .Where(k => k.ProjeId == projeId)
+            .Select(k => (int?)k.SiraNo)
+            .MaxAsync(iptal) ?? 0;
+
+        var tas = new Milestone
+        {
+            ProjeId = projeId,
+            Ad = istek.Ad.Trim(),
+            Aciklama = string.IsNullOrWhiteSpace(istek.Aciklama) ? null : istek.Aciklama.Trim(),
+            HedefTarih = istek.HedefTarih,
+            SiraNo = sonSira + 1,
+        };
+
+        _context.KilometreTaslari.Add(tas);
+        await _context.SaveChangesAsync(iptal);
+
+        await _olaylar.YazAsync(IsVarligi.Proje, projeId, GorevOlayTipi.Guncellendi,
+            $"{tas.Ad} kilometre taşı eklendi.", iptal: iptal);
+
+        var sayilar = await TasSayilariAsync(projeId, iptal);
+        return TasaCevir(tas, sayilar, DateTime.Now);
+    }
+
+    public async Task KilometreTasiSilAsync(
+        long projeId, long tasId, CancellationToken iptal = default)
+    {
+        await ErisebilirMiAsync(projeId, iptal);
+
+        var tas = await _context.KilometreTaslari
+            .FirstOrDefaultAsync(k => k.Id == tasId && k.ProjeId == projeId, iptal)
+            ?? throw new EntityNotFoundException("Kilometre taşı bulunamadı.");
+
+        /*
+          BAĞLI GÖREVLER SİLİNMEZ, YALNIZCA BAĞI KOPAR.
+
+          Taşı silmek "bu ara hedefi izlemiyoruz" demek; altındaki işler
+          devam ediyor. Görevleri de silmek, bir gruplama kaydını kaldırmanın
+          yan etkisi olarak gerçek iş kaybettirirdi.
+        */
+        await _context.Gorevler
+            .Where(g => g.KilometreTasiId == tasId)
+            .ExecuteUpdateAsync(a => a.SetProperty(g => g.KilometreTasiId, (long?)null), iptal);
+
+        _context.KilometreTaslari.Remove(tas);
+        await _context.SaveChangesAsync(iptal);
+
+        await _olaylar.YazAsync(IsVarligi.Proje, projeId, GorevOlayTipi.Guncellendi,
+            $"{tas.Ad} kilometre taşı silindi.", iptal: iptal);
+    }
 
     public async Task<KilometreTasiDto> KilometreTasiTamamlaAsync(
         long projeId, long tasId, bool tamamlandi, CancellationToken iptal = default)

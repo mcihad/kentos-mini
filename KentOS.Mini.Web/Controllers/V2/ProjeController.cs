@@ -146,6 +146,35 @@ public class ProjeController(IProjeServisi _servis) : V2ControllerBase
 
     // ── kilometre taşı ─────────────────────────────────────────────────
 
+    /// <summary>Projeye tek bir kilometre taşı ekler.</summary>
+    /// <remarks>
+    /// <b>Neden ayrı bir uç.</b> Ara hedef eklemenin tek yolu projenin
+    /// TAMAMINI düzenleme formuna girmekti: bütçe, tarih, ekip ve pano
+    /// sütunlarıyla açılan bir form, tek satırlık bir iş için fazla. Üstelik
+    /// o formu kaydetmek projenin geri kalanını da yeniden yazıyor, yani
+    /// yalnızca hedef eklemek isteyen kişi farkında olmadan başka alanları
+    /// da kaydetmiş oluyordu.
+    /// </remarks>
+    [HttpPost("{id:long}/kilometre-tasi")]
+    [Izin(Izinler.ProjeYonet)]
+    [ProducesResponseType<KilometreTasiDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public Task<KilometreTasiDto> KilometreTasiEkleAsync(
+        long id, [FromBody] KilometreTasiDto istek, CancellationToken iptal) =>
+        _servis.KilometreTasiEkleAsync(id, istek, iptal);
+
+    /// <summary>Kilometre taşını siler; bağlı görevlerin yalnızca bağı kopar.</summary>
+    [HttpDelete("{id:long}/kilometre-tasi/{tasId:long}")]
+    [Izin(Izinler.ProjeYonet)]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> KilometreTasiSilAsync(
+        long id, long tasId, CancellationToken iptal)
+    {
+        await _servis.KilometreTasiSilAsync(id, tasId, iptal);
+        return NoContent();
+    }
+
     /// <summary>Kilometre taşını tamamlar ya da yeniden açar.</summary>
     /// <remarks>
     /// Tamamlanma ELLE işaretleniyor. "Bağlı görevlerin hepsi bitince

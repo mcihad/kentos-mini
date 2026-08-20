@@ -27,7 +27,7 @@ import { useSession } from '../auth/SessionProvider';
 import { shortDate } from '../data/format';
 import { useTasks, useUsableTaskTypes, useTaskQuickActions } from '../data/tasks';
 import { TASK_PRIORITY_LABELS, TASK_STATUS_LABELS, type TaskSummary } from '../data/types';
-import { UnitScopePicker } from './task/UnitScopePicker';
+import { UnitScopePicker } from '../components/UnitScopePicker';
 import { SlaBadge, StageProgress } from './task/TaskBits';
 
 type Kapsam = 'kendi' | 'alt';
@@ -117,7 +117,10 @@ export default function Tasks() {
     const eylemler: { etiket: string; ikon: React.ReactNode; calistir: () => void; yikici?: boolean }[] = [];
     const kapali = g.durum === 4 || g.durum === 5;
 
-    if (!kapali && hasPermission(PERMISSION.gorevAsama)) {
+    // Yetki sunucuyla AYNI: `/tamamla` ucu `gorev.asama` VEYA
+    // `gorev.duzenle` kabul ediyor. Yalnızca ilkini aramak, ofis
+    // personelinden düğmeyi gizliyordu.
+    if (!kapali && hasPermission([PERMISSION.gorevAsama, PERMISSION.gorevDuzenle])) {
       eylemler.push({
         etiket: 'Bitirdim',
         ikon: <Check size={18} strokeWidth={2.4} />,

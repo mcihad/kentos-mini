@@ -227,7 +227,17 @@ export default function TaskDetail() {
       ? `Önce tamamlanmalı: ${eksikZorunlu.map((a) => a.ad).join(', ')}`
       : null;
 
-  const birincil = tamamlanabilir && hasPermission(PERMISSION.gorevAsama) ? (
+  /*
+    YETKİ SUNUCUYLA AYNI: `gorev.asama` VEYA `gorev.duzenle`.
+
+    Burada yalnızca `gorev.asama` aranıyordu ama uç ikisini de kabul ediyor
+    (`[Izin(GorevAsama, GorevDuzenle)]`). Sonuç: görevi düzenleyebilen ofis
+    personeli düğmeyi HİÇ göremiyor, oysa istek gönderse sunucu kabul
+    ederdi. Her görev saha görevi değil — masa başında biten bir işi
+    bitirmenin yolu da olmalı.
+  */
+  const birincil = tamamlanabilir
+    && hasPermission([PERMISSION.gorevAsama, PERMISSION.gorevDuzenle]) ? (
     <Button
       onClick={onayaGonder}
       disabled={m.tamamlanmayaGonder.isPending || !!engel}
@@ -347,13 +357,23 @@ export default function TaskDetail() {
       : []),
 
     /*
-      SİL BU LİSTEDE DEĞİL — kendi FAB'ında.
+      SİLME LİSTENİN SONUNDA ve YIKICI TONDA.
 
-      Tabakanın içinde, durum geçişlerinin arasında bir satırdı: geri
-      alınamaz tek eylem, geri alınabilir dört eylemle aynı görünürlükte ve
-      aynı dokunuş mesafesinde. Ayrı bir düğme hem onu ayırıyor hem de
-      aramadan bulunmasını sağlıyor.
+      Bir dönem kendi FAB'ındaydı: ekranın en erişilebilir düğmesi, geri
+      alınamaz tek eylemi taşıyordu ve menü ayrı bir yerde (başlık şeridinde)
+      duruyordu. Yani kullanıcı en sık yaptığı işler için başlığa, en riskli
+      iş için parmağının altındaki düğmeye uzanıyordu — tam tersi olmalıydı.
+      Şimdi bütün eylemler tek yerde; silme listenin dibinde, ayırıcının
+      altında ve kırmızı. Onay penceresi de yerinde duruyor.
     */
+    ...(hasPermission(PERMISSION.gorevSil)
+      ? [{
+          etiket: 'Görevi sil',
+          ikon: <Trash2 size={18} />,
+          ton: 'tehlike' as const,
+          calistir: () => setSilOnayi(true),
+        }]
+      : []),
   ];
 
   return (
@@ -428,18 +448,6 @@ export default function TaskDetail() {
           )}
         </div>
 
-        {/*
-          Telefonda TEK düğme: geçişler, düzenleme ve silme aynı tabakada.
-          Alt çubuk artık kalıcı olmadığı için bu düğmenin başlıkta durması
-          şart — aksi hâlde engellenmiş bir görevde silme yolu kalmıyordu.
-        */}
-        {tabakaEylemleri.length > 0 && (
-          <div className="lg:hidden">
-            <IconButton etiket="Diğer işlemler" onClick={() => setTabakaAcik(true)}>
-              <MoreHorizontal size={18} />
-            </IconButton>
-          </div>
-        )}
       </div>
 
       <IlerlemeSeridi gorev={gorev} />
@@ -602,12 +610,19 @@ export default function TaskDetail() {
         `ustPay`: yapışkan eylem çubuğu varken FAB onun üstüne çıkıyor,
         yoksa çubuğun düğmesini örtüyordu.
       */}
-      {hasPermission(PERMISSION.gorevSil) && (
+      {/*
+        FAB = İŞLEMLER MENÜSÜ.
+
+        Önce silme düğmesiydi ve menü başlık şeridindeydi. Detay
+        ekranlarının kuralı (bkz. frontend/CLAUDE.md → Etkileşim mimarisi)
+        eylemlerin FAB'da toplanması; görev detayı bunun dışında kalmıştı.
+        İkon da bunu söylemeli: çöp kutusu "bu düğme siler" diyordu.
+      */}
+      {tabakaEylemleri.length > 0 && (
         <Fab
-          etiket="Görevi sil"
-          ton="yikici"
-          ikon={<Trash2 size={22} strokeWidth={2} />}
-          onClick={() => setSilOnayi(true)}
+          etiket="Görev işlemleri"
+          ikon={<MoreHorizontal size={24} strokeWidth={2.2} />}
+          onClick={() => setTabakaAcik(true)}
           ustPay={cubukEylemi ? '60px' : undefined}
         />
       )}

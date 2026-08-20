@@ -314,7 +314,8 @@ public static class Izinler
         new(GorevAtama, "İş Takip", "Görev ata",
             "Görevi kişiye ya da ekibe verir. Ekibe atandığında bildirim ekip liderine gider."),
         new(GorevAsama, "İş Takip", "Aşama tamamla",
-            "Görevin aşamalarını sırayla tamamlar ve kanıt (not, fotoğraf) yükler. Saha personelinin izni."),
+            "Görevin aşamalarını sırayla tamamlar ve kanıt (not, fotoğraf) yükler. " +
+            "Sahada da masa başında da kullanılır — her görev saha görevi değil."),
         new(GorevOnayla, "İş Takip", "Görev onayla",
             "Personelin tamamlanma beyanını ONAYLAR ya da gerekçeyle İADE eder. " +
             "Bu izin olmadan hiçbir görev tamamlanmış sayılmaz."),

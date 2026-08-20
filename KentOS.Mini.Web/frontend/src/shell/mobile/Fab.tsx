@@ -80,7 +80,7 @@ export function Fab({
   }, [acik]);
 
   const dugmeSinifi = cn(
-    'bas-yay fixed right-4 z-40 grid h-[56px] w-[56px] place-items-center md:hidden',
+    'bas-yay fixed z-40 grid h-[56px] w-[56px] place-items-center md:hidden',
     'rounded-xl shadow-3',
     ton === 'yikici'
       ? 'border border-(--st-no-bg) bg-(--st-no-bg) text-(--st-no)'
@@ -89,18 +89,34 @@ export function Fab({
   /*
     ALT BOŞLUK = SAĞ BOŞLUK.
 
-    Düğme `right-4`, yani sağ kenardan `--sp-4` (16px) uzakta. Alt boşluk ise
+    Düğme sağ kenardan `--sp-4` uzakta; alt boşluk da aynı. Eskiden alt
     `--sp-10` (40px) idi ve FAB tabbar'ın epey yukarısında, sağa doğru
-    asimetrik duruyordu. İki boşluk eşitlenince düğme köşeye oturuyor ve
-    ekranın kendi kenar boşluğuyla aynı ritmi tutuyor.
+    asimetrik duruyordu.
+
+    SAĞ BOŞLUK ARTIK `right-4` DEĞİL, `var(--sp-4)`. İkisi 16px'te
+    çakışıyordu ama `--sp` bir TEMA KNOB'U: kullanıcı Tema Tasarımcısı'ndan
+    boşluk birimini büyütünce alt boşluk kayıyor, sağ boşluk sabit kalıyor
+    ve düğme köşeden çıkıyordu.
   */
+  const yanBosluk = 'var(--sp-4)';
+
+  /*
+    MENÜ FAB'IN EKSENİNE HİZALI.
+
+    Menü satırları `items-end` ile kabın sağ kenarına yaslanıyor ve ikonları
+    46px; FAB ise 56px. İkisi aynı `right` değerinden başlayınca menü
+    ikonlarının merkezi FAB'ın merkezinden 5px SAĞDA kalıyordu — kullanıcının
+    "menüler biraz daha sağda" dediği şey buydu. Kap, aradaki farkın yarısı
+    kadar içeri alınıyor; sayı elle yazılmıyor, iki boyuttan hesaplanıyor.
+  */
+  const menuBoslugu = `calc(${yanBosluk} + (56px - 46px) / 2)`;
   // Şartname §6.6: FAB, ALT ÇUBUĞUN (64px) 16px üstünde durur. Eskiden
   // sekme ÖĞESİNİN boyu (`--h-tab`, 56) okunuyordu ve pay 8px'e düşüyordu.
   const tabanBosluk =
     `calc(var(--h-tabbar) + var(--sp-4) + env(safe-area-inset-bottom, 0px)`
     + (ustPay ? ` + ${ustPay})` : ')');
 
-  const stil = { bottom: tabanBosluk };
+  const stil = { bottom: tabanBosluk, right: yanBosluk };
 
   if (eylemler?.length) {
     return (
@@ -128,8 +144,9 @@ export function Fab({
         )}
 
         <div
-          className="fixed right-4 z-40 flex flex-col items-end gap-2.5 md:hidden"
+          className="fixed z-40 flex flex-col items-end gap-2.5 md:hidden"
           style={{
+            right: menuBoslugu,
             // FAB'ın üstünden başlar: aynı taban + düğme boyu + bir nefes.
             bottom:
               `calc(var(--h-tabbar) + var(--sp-4) + 56px + var(--sp-3) + env(safe-area-inset-bottom, 0px)`

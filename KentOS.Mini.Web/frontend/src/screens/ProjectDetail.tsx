@@ -9,6 +9,9 @@ import { Card, CardHeader } from '../components/Card';
 import { ColoredBadge } from '../components/Color';
 import { ConfirmDialog } from '../components/ConfirmDialog';
 import { EmptyState } from '../components/EmptyState';
+import { FieldWrapper, Input, Textarea } from '../components/Field';
+import { FormModal } from '../components/FormModal';
+import { DatePicker } from '../components/DatePicker';
 import { Skeleton } from '../components/Skeleton';
 import { Tabs } from '../components/Tabs';
 import { useToast } from '../components/Toast';
@@ -37,6 +40,17 @@ type Sekme = (typeof PROJE_SEKMELERI)[number];
  * </p>
  */
 export default function ProjectDetail() {
+  /*
+    ARA HEDEF EKLEME BU EKRANDA.
+
+    Eskiden tek yol `/projeler/{id}/duzenle` idi: bütçe, tarih, ekip ve pano
+    sütunlarıyla açılan bir form, tek satırlık bir iş için fazla — üstelik
+    kaydetmek projenin geri kalanını da yeniden yazıyordu.
+  */
+  const [tasFormu, setTasFormu] = useState(false);
+  const [tasAd, setTasAd] = useState('');
+  const [tasAciklama, setTasAciklama] = useState('');
+  const [tasTarih, setTasTarih] = useState('');
   const { id } = useParams();
   const projeId = Number(id);
   const gezin = useNavigate();
@@ -238,6 +252,14 @@ export default function ProjectDetail() {
                   ? undefined
                   : `${proje.kilometreTasiBiten}/${proje.kilometreTasiToplam} tamamlandı`
               }
+              eylem={
+                hasPermission(PERMISSION.projeYonet)
+                  && (proje.kilometreTaslari ?? []).length > 0 ? (
+                    <IconButton etiket="Kilometre taşı ekle" onClick={() => setTasFormu(true)}>
+                      <Plus size={16} />
+                    </IconButton>
+                  ) : undefined
+              }
             />
 
             {(proje.kilometreTaslari ?? []).length === 0 ? (
@@ -252,12 +274,10 @@ export default function ProjectDetail() {
                   aciklama="Ara hedefler, gantt çizelgesinde ve ilerleme oranında görünür."
                   eylem={
                     hasPermission(PERMISSION.projeYonet) ? (
-                      <Link to={`/projeler/${projeId}/duzenle`}>
-                        <Button>
-                          <Plus size={14} />
-                          Hedef ekle
-                        </Button>
-                      </Link>
+                      <Button onClick={() => setTasFormu(true)}>
+                        <Plus size={14} />
+                        Hedef ekle
+                      </Button>
                     ) : undefined
                   }
                 />
@@ -427,6 +447,73 @@ export default function ProjectDetail() {
           }
         }}
       />
+
+      {/*
+        ARA HEDEF PENCERESİ — tek satırlık iş, tek pencere.
+
+        Alanlar bilerek üç tane: ad zorunlu, açıklama ve hedef tarih isteğe
+        bağlı. Bağlı görev, sıra numarası ve tamamlanma buraya girmiyor —
+        sıra sunucuda veriliyor, tamamlanma listeden işaretleniyor.
+      */}
+      <FormModal
+        acik={tasFormu}
+        kapat={() => setTasFormu(false)}
+        baslik="Kilometre taşı ekle"
+        aciklama="Ara hedefler gantt çizelgesinde ve ilerleme oranında görünür."
+        genislik="dar"
+        eylemler={
+          <>
+            <Button varyant="ikincil" onClick={() => setTasFormu(false)}>
+              Vazgeç
+            </Button>
+            <Button
+              disabled={!tasAd.trim() || m.kilometreTasiEkle.isPending}
+              onClick={async () => {
+                try {
+                  await m.kilometreTasiEkle.mutateAsync({
+                    ad: tasAd.trim(),
+                    aciklama: tasAciklama.trim() || undefined,
+                    hedefTarih: tasTarih || null,
+                  });
+                  bildir('basari', 'Kilometre taşı eklendi', tasAd.trim());
+                  setTasAd('');
+                  setTasAciklama('');
+                  setTasTarih('');
+                  setTasFormu(false);
+                } catch (h) {
+                  bildir('hata', 'Eklenemedi', (h as Error).message);
+                }
+              }}
+            >
+              {m.kilometreTasiEkle.isPending ? 'Ekleniyor…' : 'Ekle'}
+            </Button>
+          </>
+        }
+      >
+        <div className="space-y-3 p-3.5">
+          <FieldWrapper etiket="Hedef adı" id="kt-ad" zorunlu>
+            <Input
+              id="kt-ad"
+              value={tasAd}
+              onChange={(e) => setTasAd(e.target.value)}
+              placeholder="Örn. Zemin etüdü tamamlanacak"
+            />
+          </FieldWrapper>
+
+          <FieldWrapper etiket="Hedef tarih" id="kt-tarih">
+            <DatePicker id="kt-tarih" deger={tasTarih} degistir={setTasTarih} />
+          </FieldWrapper>
+
+          <FieldWrapper etiket="Açıklama" id="kt-aciklama">
+            <Textarea
+              id="kt-aciklama"
+              rows={3}
+              value={tasAciklama}
+              onChange={(e) => setTasAciklama(e.target.value)}
+            />
+          </FieldWrapper>
+        </div>
+      </FormModal>
     </div>
   );
 }

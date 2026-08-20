@@ -9,7 +9,7 @@ import { SegmentedSelect } from '../components/Filters';
 import { Skeleton } from '../components/Skeleton';
 import { useWorkStatistics } from '../data/citizen';
 import { SlaBadge, StageProgress } from './task/TaskBits';
-import { UnitScopePicker } from './task/UnitScopePicker';
+import { UnitScopePicker } from '../components/UnitScopePicker';
 
 type Kapsam = 'kendi' | 'alt';
 

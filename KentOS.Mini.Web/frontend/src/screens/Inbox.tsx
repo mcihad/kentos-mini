@@ -19,7 +19,7 @@ import { useUsableTaskTypes } from '../data/tasks';
 import {
   INBOX_STATUS, INBOX_STATUS_LABELS, TASK_PRIORITY_LABELS, type InboxItem,
 } from '../data/types';
-import { UnitScopePicker } from './task/UnitScopePicker';
+import { UnitScopePicker } from '../components/UnitScopePicker';
 
 type Kapsam = 'kendi' | 'alt';
 

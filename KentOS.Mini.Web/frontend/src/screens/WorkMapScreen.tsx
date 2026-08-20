@@ -10,7 +10,7 @@ import { useIsDesktop } from '../components/screenSize';
 import { cn } from '../components/utils';
 import { useSession } from '../auth/SessionProvider';
 import { useMapPoints } from '../data/citizen';
-import { UnitScopePicker } from './task/UnitScopePicker';
+import { UnitScopePicker } from '../components/UnitScopePicker';
 import { WorkMap } from './map/WorkMap';
 
 type Kapsam = 'kendi' | 'alt';

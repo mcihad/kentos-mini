@@ -116,5 +116,24 @@ export function useProjectMutations(id?: number) {
         ),
       onSuccess: bitince,
     }),
+
+    /**
+     * Tek bir ara hedef ekler — projenin TAMAMINI kaydetmeden.
+     *
+     * Önce bunun tek yolu düzenleme formuydu: bütçe, tarih, ekip ve pano
+     * sütunlarıyla açılan bir form, tek satırlık bir iş için fazla. Üstelik
+     * o formu kaydetmek projenin geri kalanını da yeniden yazıyordu.
+     */
+    kilometreTasiEkle: useMutation({
+      mutationFn: (govde: { ad: string; aciklama?: string; hedefTarih?: string | null }) =>
+        api.post<Milestone>(`/proje/${id}/kilometre-tasi`, govde),
+      onSuccess: bitince,
+    }),
+
+    kilometreTasiSil: useMutation({
+      mutationFn: (tasId: number) =>
+        api.delete<void>(`/proje/${id}/kilometre-tasi/${tasId}`),
+      onSuccess: bitince,
+    }),
   };
 }

@@ -20,7 +20,7 @@ import { useSession } from '../auth/SessionProvider';
 import { Avatar, PersonPicker } from '../components/PersonPicker';
 import { useTeamMutations, useTeams } from '../data/tasks';
 import type { Team, TeamSave } from '../data/types';
-import { UnitScopePicker } from './task/UnitScopePicker';
+import { UnitScopePicker } from '../components/UnitScopePicker';
 
 type Kapsam = 'kendi' | 'alt';
 

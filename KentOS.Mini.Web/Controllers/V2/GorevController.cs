@@ -167,8 +167,16 @@ public class GorevController(
     }
 
     /// <summary>Sıradaki aşamayı tamamlar ya da (zorunlu değilse) atlar.</summary>
+    /// <remarks>
+    /// <b>Aşama kaydetmek saha işine özgü değil.</b> Uç bir dönem yalnızca
+    /// <c>gorev.asama</c> istiyordu ve o izin katalogda "saha personelinin
+    /// izni" diye tarif ediliyordu; sonuç, masa başında biten bir işin
+    /// adımlarını görevi düzenleyebilen kişinin bile işaretleyememesiydi.
+    /// Kural artık tamamlama beyanıyla (<c>/tamamla</c>) aynı: aşama
+    /// ilerlemesi ile "bitirdim" demek aynı sınıf iş.
+    /// </remarks>
     [HttpPost("{id:long}/asama/{asamaId:long}")]
-    [Izin(Izinler.GorevAsama)]
+    [Izin(Izinler.GorevAsama, Izinler.GorevDuzenle)]
     [ProducesResponseType<GorevDetayDto>(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     public Task<GorevDetayDto> AsamaAsync(

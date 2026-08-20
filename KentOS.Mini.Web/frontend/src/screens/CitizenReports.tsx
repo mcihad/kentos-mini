@@ -16,7 +16,7 @@ import { SkeletonRows } from '../components/Skeleton';
 import { useToast } from '../components/Toast';
 import { PERMISSION } from '../components/permissions';
 import { useSession } from '../auth/SessionProvider';
-import { dateTime } from '../data/format';
+import { dateTime, unitLabel } from '../data/format';
 import { useUnits } from '../data/hooks';
 import { useUsableTaskTypes } from '../data/tasks';
 import {
@@ -397,9 +397,15 @@ function BildirimDetayi({
               onChange={(e) => setBirimId(e.target.value ? Number(e.target.value) : null)}
             >
               <option value="">Seçin</option>
+              {/*
+                BİRİM YETKİLİSİYLE ANILIR (bkz. frontend/CLAUDE.md).
+                Burada düz `ad` yazılıyordu; kurumda altı ayrı "Başkan
+                Yardımcısı" birimi var ve hangisinin seçildiği listede
+                ayırt edilemiyordu.
+              */}
               {birimler.liste.map((x) => (
                 <option key={x.id} value={x.id!}>
-                  {x.ad}
+                  {unitLabel(x)}
                 </option>
               ))}
             </Secim>

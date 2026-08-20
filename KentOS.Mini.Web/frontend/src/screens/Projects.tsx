@@ -20,7 +20,7 @@ import { shortDate } from '../data/format';
 import { useProjects } from '../data/projects';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { PROJECT_STATUS_LABELS, type ProjectSummary } from '../data/types';
-import { UnitScopePicker } from './task/UnitScopePicker';
+import { UnitScopePicker } from '../components/UnitScopePicker';
 
 type Kapsam = 'kendi' | 'alt';
 
