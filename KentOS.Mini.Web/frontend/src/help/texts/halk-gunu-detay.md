@@ -57,7 +57,7 @@ zaman çizgisinde döker: hangi tarihte ne istemişti, hangi birim baktı, talep
 ne
 duruma geldi, halk gününde ne konuşuldu.
 
-Liste **kurum genelidir** — vatandaş geçen sefer başka bir müdürlüğe gitmiş
+Liste **kurum genelidir** — vatandaş geçen sefer başka bir birime gitmiş
 olabilir; her satırda hangi birim olduğu yazar. Gizli etkinlikler dosyaya
 girmez.
 

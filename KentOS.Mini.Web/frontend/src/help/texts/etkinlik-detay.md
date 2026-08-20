@@ -44,5 +44,5 @@ alttan açılan bir pencere hâlinde gelir.
 > sayfanın içindeki bir kutuyu kullanırken altındaki notları tamamen
 > örtüyordu.
 
-> Etkinlik başka bir müdürlüğün ajandasındaysa (başlıkta birim adı yazan
+> Etkinlik başka bir birimin ajandasındaysa (başlıkta birim adı yazan
 > etiket görünür) yalnızca okuyabilir ve not ekleyebilirsiniz.

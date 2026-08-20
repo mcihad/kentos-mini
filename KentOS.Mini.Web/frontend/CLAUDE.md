@@ -1833,6 +1833,14 @@ il/ilçe müdürlükleri, kaymakamlıklar, üniversite ve hastane idareleri de
 kullanabilir. "Bilgi İşlem Müdürlüğü" gibi kuruma özgü birim adları
 "sistem yöneticiniz" oldu; "müdürlük" yerine kural olarak "birim" yazılır.
 
+> **Kural bir tur boyunca yazılıydı ama uygulanmamıştı.** Tarama dokuz
+> dosyada 10 "müdürlük" buldu ("başka bir müdürlüğün kayıtları", "ilgili
+> müdürlüğe havale"): kaymakamlıkta ya da üniversite idaresinde müdürlük
+> yok, metin sessizce belediyeye özel kalıyordu. Kör değiştirme yapılmadı —
+> her biri bağlamıyla okundu, "birim" tekrarına düşen cümleler ayrıca
+> düzeltildi. `program-nedir.md`'de "belediyeler" **örnek olarak** duruyor;
+> orada kurum türlerini saymak metnin işi.
+
 ### Başlık iki kez yazılmaz
 
 Her metin `# Ekran Adı` ile başlıyordu ve panel başlık şeridi zaten aynı adı

@@ -27,7 +27,7 @@ Satırın sağındaki indirme düğmesi dosyayı doğrudan indirir.
   giden bağlantı.
 - **Yönlendirildi** — Kayıt kime gönderildi, ne zaman ve **açıldı mı**.
 
-> Son bölüm en çok işe yarayanı: aynı özgeçmişi ikinci kez aynı müdürlüğe
+> Son bölüm en çok işe yarayanı: aynı özgeçmişi ikinci kez aynı birime
 > göndermenin önüne geçen tek bilgi odur.
 
 ## Özgeçmiş ekleme
