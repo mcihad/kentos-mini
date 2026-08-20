@@ -1771,3 +1771,33 @@ Aktif sekme artık `--surface` zeminle çukur yataktan **yükseliyor** ve
 (`data-[state=on]:bg-surface`); iki kontrol nihayet aynı şeyi söylüyor.
 Sekme yazısı da `text-sm`→`text-base`: sekme ekranın en geniş etkileşimli
 öğesi, gövde metninin altında kalmamalı.
+
+**Kayan altın gösterge KALDIRILDI.** Kutu yükselmesi zaten "buradasın"
+diyordu; altına ayrıca bir çizgi çizmek aynı şeyi ikinci kez, başka bir
+dilde söylüyordu. Gösterge gidince onu besleyen ölçüm kodu da gitti: iki
+gözlemci (`ResizeObserver` + `MutationObserver`), bir `useLayoutEffect` ve
+`offsetLeft/offsetWidth` okuyan kanca. Geriye yalnızca etkin sekmeyi görünür
+alana kaydıran küçük bir efekt kaldı.
+
+> Mobil alt çubuktaki altın gösterge **yerinde duruyor** — orada sekme
+> kutusu yükselmiyor, işareti taşıyan tek şey o çizgi.
+
+## Form alanı: boş yardım satırı yer kaplamaz
+
+Şartname §6.8 "hata metni satır kaydırmaz, alan altında sabit yer ayrılır"
+diyor ve ilk uygulamada bu **her** alana uygulanmıştı: ipucusuz alanların
+altında da 16px boş bir satır duruyordu.
+
+> **Ölçüm (390px, dokuz alanlı kullanıcı formu, alt tabakada):** alanlar
+> arası görsel boşluk 16px değil **32px** çıkıyordu (16 boş yardım satırı +
+> 16 form aralığı) ve alan yüksekliği **96px**'ti. Düzeltmeden sonra alan
+> **76px**; formda ~180px kazanıldı, telefonda iki alan daha ilk ekrana
+> giriyor.
+
+Kural artık şu:
+
+- **İpucu olan alanda** satır her zaman çizilir — hata geldiğinde metin
+  değişir, yükseklik aynı kalır, hiçbir şey zıplamaz.
+- **İpucusuz alanda** satır yalnızca hata varken çıkar. O an kullanıcı zaten
+  o alana odaklanmış durumda; tek seferlik 16px'lik kayma, her formda taşınan
+  yüzlerce boş pikselden ucuz.
