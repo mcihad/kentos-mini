@@ -361,6 +361,10 @@ builder.Services.AddScoped<IAnalizService, AnalizService>();
 // değil, yalnızca V2ControllerBase üzerinden takılır.
 // Kurum bilgisi VERİTABANINDAN okunur (tek satır), `.env` yalnızca ilk
 // tohumlamayı yapar. Böylece kurum adı/amblem/renk arayüzden düzenlenebilir.
+// Dışarıya verilen mutlak adresler İSTEKTEN türetiliyor: uygulama birden çok
+// alan adından yayınlanabiliyor ve tek bir `App:BaseUrl` yanlış adres
+// üretiyordu. Bkz. Services/AdresCozucu.cs.
+builder.Services.AddScoped<IAdresCozucu, AdresCozucu>();
 builder.Services.AddScoped<IInstitutionService, InstitutionService>();
 
 // Kimlik sağlayıcı: keşif belgesi ve jeton değişimi için HTTP istemcisi

@@ -18,6 +18,7 @@ namespace KentOS.Mini.Web.Services
         AppDbContext _context,
         ICurrentUserService _currentUserService,
         Options.ApplicationOptions _uygulamaAyari,
+        IAdresCozucu _adresCozucu,
         IMessageService _messageService,
         IAjandaOlayService _olayService,
         Storage.IFileStorage _fileStorage,
@@ -731,9 +732,17 @@ namespace KentOS.Mini.Web.Services
               controller'ı YOK: SMS'teki bağlantı çiçekçide 404 açıyordu.
               Yeni adres SPA'nın anonim teslim ekranı.
 
-              Alan adı KURUMDAN gelir (`APP__BASEURL`); koda yazılmaz.
+              ALAN ADI İSTEKTEN GELİR, AYARDAN DEĞİL.
+
+              Önce `App:BaseUrl` okunuyordu ve o TEK bir alan adı. Uygulama
+              başka bir adresten yayınlandığında (aynı kurumda ikinci alan
+              adı, taşınma, test ortamı) SMS yanlış adrese götürüyordu —
+              ölçülen durum: uygulama `akillisehir…` altında çalışıyor, SMS
+              `randevu…` yazıyordu ve çiçekçinin bağlantısı hiç açılmıyordu.
+              `IAdresCozucu` isteğin kendi şeması ve ana bilgisayarını
+              kullanıyor; istek dışındayken ayara düşüyor.
             */
-            var url = $"{_uygulamaAyari.BaseUrl.TrimEnd('/')}/cicek-teslim/{cicek.Guid}";
+            var url = _adresCozucu.Mutlak($"/cicek-teslim/{cicek.Guid}");
             var cicekciMessage = $"{ajanda.Baslik} konulu etkinlik için çiçek gönderilecek. Dogrulama kodu: {dogrulamaKodu}. Çiçeği gönderdikten sonra verilen adrese gidip doğrulama kodunu girin: {url}";
             var token = cicekci.Telefon;
             if (token.Length >= 10 && !string.IsNullOrEmpty(token))

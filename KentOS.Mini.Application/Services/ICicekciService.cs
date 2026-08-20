@@ -30,6 +30,24 @@ namespace KentOS.Mini.Application.Services
         /// </remarks>
         Task<Dto.V2.Cicek.CicekTeslimKartiDto> TeslimKartiAsync(string guid);
 
+    /// <summary>
+    /// Çiçekçinin teslimi işaretlemesi — isteğe bağlı TESLİM FOTOĞRAFIYLA.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <c>Stream</c> alıyor, <c>IFormFile</c> değil: <c>Application</c>
+    /// katmanının NuGet bağımlılığı yok ve olmayacak. Dosyayı okuyup akışı
+    /// veren taraf controller.
+    /// </para>
+    /// <para>
+    /// <b>Fotoğraf da doğrulama kodu ister</b> — kart teslim edilmiş olsa
+    /// bile. Kod aranmasaydı, bağlantıyı bilen herkes teslim fotoğrafının
+    /// üzerine yazabilirdi.
+    /// </para>
+    /// </remarks>
+    Task<Dto.V2.Cicek.CicekTeslimKartiDto> TeslimEtAsync(
+        string guid, int dogrulamaKodu, Stream? fotograf, string? dosyaAdi, string? icerikTipi);
+
         Task<bool> CicekKartGonderildiAsync(string guid,int dogrulamaKodu);
         Task<bool> AddCicekAsync(long cicekciId, CicekDto cicekDto);
     }

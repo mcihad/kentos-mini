@@ -18,6 +18,15 @@ hiçbir bilgi görünmez — çiçekçi kurumun kullanıcısı değildir.
 işaretlenir. Kod fişte yazmaz; yalnızca SMS'te geçer. Yanlış kod beş kez
 girilirse kart kilitlenir, teslimi siz bu ekrandan işaretlersiniz.
 
+**Teslim fotoğrafı.** Çiçekçi isterse aynı sayfadan bir fotoğraf ekleyebilir;
+telefonda kamera doğrudan açılır. Fotoğraf zorunlu değildir, teslimi
+engellemez. Yüklenen fotoğraf hem çiçekçinin fişinde hem de etkinlik
+detayında görünür — "çiçek gitti mi, nasıl gitti" sorusu için çiçekçiyi
+aramanız gerekmez.
+
+> Fotoğraf da doğrulama kodu ister. Bağlantıyı bilen ama kodu bilmeyen biri
+> fotoğraf yükleyemez, var olanın üzerine de yazamaz.
+
 ## Bu ekranda
 
 - Bekleyen ve gönderilen siparişler listelenir.
@@ -33,6 +42,9 @@ Etkinliğin çiçek durumu tek bakışta okunur:
 | Sarı üçgen | Talimat verildi, çiçek **henüz teslim edilmedi** |
 | Yeşil onay | Çiçek teslim edildi |
 | İşaret yok | Bu etkinlik için çiçek talimatı verilmemiş |
+
+Çiçekçi fotoğraf yüklediyse rozetin altında görünür; üzerine dokununca tam
+ekran açılır.
 
 Önceden iki durum ayırt edilemiyordu: talimat verilmiş bir etkinlik, çiçek
 hiç gitmemiş olsa bile "çiçek var" görünüyordu.

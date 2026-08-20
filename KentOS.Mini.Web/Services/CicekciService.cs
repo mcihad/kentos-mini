@@ -13,7 +13,8 @@ namespace KentOS.Mini.Web.Services
         AppDbContext _context,
         IAjandaService _ajandaService,
         ICurrentUserService _currentUserService,
-        IMapper _mapper
+        IMapper _mapper,
+        Storage.IFileStorage _fileStorage
         ) : ICicekciService
     {
         public async Task<CicekciDto> CreateAsync(CicekciDto cicekciDto)
@@ -134,6 +135,7 @@ namespace KentOS.Mini.Web.Services
                 KurumAdi = kurum?.DisplayName ?? kurum?.Name,
                 TeslimEdildi = cicek.Gonderildi,
                 TeslimTarihi = cicek.Gonderildi ? cicek.GonderilmeTarihi : null,
+                Fotograf = cicek.Resim,
             };
         }
 
@@ -153,6 +155,117 @@ namespace KentOS.Mini.Web.Services
         /// aşılabilirdi.
         /// </para>
         /// </remarks>
+        /// <summary>
+        /// Çiçekçinin gördüğü uçtan teslim — isteğe bağlı fotoğrafla.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// <b>Fotoğraf da doğrulama kodu ister.</b> Teslim işaretlemesi
+        /// devretmeli (aynı kartı ikinci kez işaretlemek hata değil) ama
+        /// fotoğraf öyle değil: kod aranmasaydı, bağlantıyı bilen herkes
+        /// teslim edilmiş bir kartın fotoğrafının üzerine yazabilirdi.
+        /// </para>
+        /// <para>
+        /// <b>Yalnızca resim.</b> Uzantı beyaz listeyle sınırlı; sunucu
+        /// tarafındaki ikinci savunma <c>Middleware/YuklemeGuvenligi</c> ama
+        /// burada anlaşılır bir hata vermek daha iyi. Boyut sınırı da var:
+        /// uç anonim, yani sınırsız yükleme diskin tamamını doldurabilirdi.
+        /// </para>
+        /// </remarks>
+        public async Task<Application.Dto.V2.Cicek.CicekTeslimKartiDto> TeslimEtAsync(
+            string guid, int dogrulamaKodu, Stream? fotograf, string? dosyaAdi, string? icerikTipi)
+        {
+            var cicek = await _context.Cicekler.FirstOrDefaultAsync(x => x.Guid == guid)
+                ?? throw new EntityNotFoundException("Çiçek kartı bulunamadı");
+
+            // Kod DAİMA denetlenir; teslim edilmiş kart da fotoğraf alabiliyor.
+            KoduDogrula(cicek);
+
+            if (fotograf is not null)
+            {
+                cicek.Resim = await FotografiKaydetAsync(guid, fotograf, dosyaAdi, icerikTipi);
+            }
+
+            if (!cicek.Gonderildi)
+            {
+                cicek.Gonderildi = true;
+                cicek.GonderilmeTarihi = DateTime.Now;
+            }
+
+            cicek.GuncellemeTarihi = DateTime.Now;
+            _context.Cicekler.Update(cicek);
+            await _context.SaveChangesAsync();
+
+            return await TeslimKartiAsync(guid);
+
+            void KoduDogrula(Cicek k)
+            {
+                const int denemeSiniri = 5;
+
+                if (k.DogrulamaDenemesi >= denemeSiniri)
+                {
+                    throw new BusinessRuleException(
+                        "Çok fazla hatalı deneme yapıldı. Talimatı veren personelle görüşün.");
+                }
+
+                if (k.DogrulamaKodu == dogrulamaKodu) return;
+
+                k.DogrulamaDenemesi++;
+                _context.Cicekler.Update(k);
+                _context.SaveChanges();
+
+                var kalan = denemeSiniri - k.DogrulamaDenemesi;
+                throw new BusinessRuleException(
+                    kalan > 0
+                        ? $"Doğrulama kodu hatalı. {kalan} deneme hakkınız kaldı."
+                        : "Doğrulama kodu hatalı. Deneme hakkınız bitti.");
+            }
+        }
+
+        /// <summary>İzin verilen teslim fotoğrafı uzantıları.</summary>
+        private static readonly string[] FotografUzantilari = [".jpg", ".jpeg", ".png", ".webp", ".heic"];
+
+        /// <summary>Teslim fotoğrafı üst sınırı — uç ANONİM.</summary>
+        private const long FotografSiniri = 12 * 1024 * 1024;
+
+        private async Task<string> FotografiKaydetAsync(
+            string guid, Stream akis, string? dosyaAdi, string? icerikTipi)
+        {
+            var uzanti = Path.GetExtension(dosyaAdi ?? string.Empty).ToLowerInvariant();
+
+            if (!FotografUzantilari.Contains(uzanti))
+            {
+                throw new BusinessRuleException(
+                    "Yalnızca fotoğraf yükleyebilirsiniz (JPG, PNG, WEBP, HEIC).");
+            }
+
+            using var bellek = new MemoryStream();
+            await akis.CopyToAsync(bellek);
+
+            if (bellek.Length == 0)
+            {
+                throw new BusinessRuleException("Fotoğraf okunamadı.");
+            }
+
+            if (bellek.Length > FotografSiniri)
+            {
+                throw new BusinessRuleException("Fotoğraf çok büyük (en fazla 12 MB).");
+            }
+
+            /*
+              AD KARTIN GUID'İNDEN TÜRETİLİR, kullanıcının dosya adından
+              değil: gelen ad yol ayracı taşıyabiliyor ve aynı kart yeniden
+              yüklendiğinde eskisinin üzerine yazılması isteniyor — her
+              denemede yeni bir dosya bırakmak diskte çöp biriktirirdi.
+            */
+            var anahtar = $"uploads/cicek/{guid}{uzanti}";
+
+            await _fileStorage.SaveAsync(
+                Storage.StorageArea.Public, anahtar, bellek.ToArray(), icerikTipi);
+
+            return "/" + anahtar;
+        }
+
         public async Task<bool> CicekKartGonderildiAsync(string guid, int dogrulamaKodu)
         {
             var cicek = await _context.Cicekler.FirstOrDefaultAsync(x => x.Guid == guid);

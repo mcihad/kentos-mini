@@ -523,6 +523,7 @@ DTO KentOS.Mini.Application.Dto.V2.Cicek.CicekTeslimKartiDto
   etkinlikBasligi
   etkinlikKonumu
   etkinlikTarihi
+  fotograf
   kurumAdi
   not
   teslimEdildi

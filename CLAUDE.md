@@ -1288,6 +1288,76 @@ dokunulmadan geçer.
 
 Ayrıntı ve bütün arayüz kuralları: `KentOS.Mini.Web/frontend/CLAUDE.md`.
 
+## DIŞARIYA VERİLEN ADRES İSTEKTEN GELİR
+
+`App:BaseUrl` **tek bir alan adı**. Uygulama başka bir adresten
+yayınlandığında (aynı kurumda ikinci alan adı, taşınma, test ortamı)
+dışarıya giden her bağlantı yanlış yeri gösteriyordu.
+
+> **Ölçülen durum:** uygulama `akillisehir…` altında çalışıyor, çiçekçiye
+> giden SMS `randevu…` yazıyor ve bağlantı **hiç açılmıyordu**.
+
+`Services/AdresCozucu.cs` isteğin kendi şeması ve ana bilgisayarını
+kullanıyor. İki yerde bağlı:
+
+| Nerede | Ne olurdu |
+|---|---|
+| Çiçekçiye giden SMS bağlantısı | Çiçekçi ölü bir adrese gidiyordu |
+| Kimlik sağlayıcı dönüş adresi | Sağlayıcı `redirect_uri mismatch` ile isteği reddederdi |
+
+- **Şema ters vekilden okunuyor.** IIS/nginx TLS'i sonlandırıp içeriye düz
+  HTTP konuşuyor; `Request.Scheme` tek başına `http` derdi. `UseForwardedHeaders`
+  (`X-Forwarded-Proto`) bunu düzeltiyor. Ölçüldü: `X-Forwarded-Proto: https`
+  ile üretilen adres `https://akillisehir…`.
+- **İstek dışındayken ayara düşülür.** Arka plan servisleri bir HTTP
+  isteğinin içinde değil; orada tahmin edilecek alan adı yok.
+
+> **GÜVENLİK — `Host` başlığı istemci denetimindedir.** Dinamik adres, host
+> header injection yüzeyini açar: kimliği doğrulanmış bir kullanıcı sahte
+> bir `Host` ile SMS'e kendi adresini yazdırabilir. Savunma **`AllowedHosts`**
+> ayarıdır; `*` bırakılırsa çerçevenin ana bilgisayar süzgeci devre dışı
+> kalır. `.env.example` bunu gerekçesiyle yazıyor.
+>
+> OpenID dönüş adresinde bu riski **sağlayıcının kendisi kapatıyor**:
+> gönderilen `redirect_uri` sağlayıcıdaki kayıtlı adreslerden biri değilse
+> istek zaten reddediliyor.
+
+Bekçi `AdresCozucuTests`: hem davranışı (istekten türetme, geri düşüş) hem
+de **kaynağı** tarıyor — biri kolaylık olsun diye `BaseUrl.TrimEnd`'e geri
+dönerse hata çalışma anında sessizdir, bağlantı üretilir yalnızca yanlış
+yere gider.
+
+## ÇİÇEK TESLİM FOTOĞRAFI
+
+Çiçekçi teslim ederken fotoğraf ekleyebiliyor. Makam "çiçek gitti mi, nasıl
+gitti" sorusunu çiçekçiyi aramadan görüyor.
+
+- **Tek çağrı.** Kod ve fotoğraf aynı çok parçalı istekte gidiyor. İki ayrı
+  uç olsaydı çiçekçi kodu iki kez girecek ya da fotoğraf **kodsuz** bir
+  uçtan yüklenecekti — ikincisi, bağlantıyı bilen herkesin teslim
+  fotoğrafını değiştirebilmesi demek.
+- **Fotoğraf da doğrulama kodu ister**, kart teslim edilmiş olsa bile.
+  Teslim işaretlemesi devretmeli (aynı kartı ikinci kez işaretlemek hata
+  değil) ama fotoğraf öyle değil. Bekçi `AnonimUcTests.Teslim_fotografi_kodsuz_yuklenemez`
+  kod denetiminin fotoğraf kaydından ÖNCE geldiğini kaynakta doğruluyor.
+- **Yalnızca resim**, 12 MB üst sınır. Uç anonim: sınırsız yükleme diski
+  doldurabilirdi. İkinci savunma `Middleware/YuklemeGuvenligi` ama burada
+  anlaşılır bir hata vermek daha iyi.
+- **Dosya adı GUID'den türetilir**, kullanıcının adından değil: gelen ad yol
+  ayracı taşıyabiliyor ve aynı kart yeniden yüklendiğinde eskisinin üzerine
+  yazılması isteniyor — her denemede yeni dosya bırakmak çöp biriktirirdi.
+- Telefonda `capture="environment"` arka kamerayı doğrudan açıyor; çiçekçi
+  teslim yerinde ve galeriden dosya aramak fazladan iki adım. Masaüstünde
+  yok sayılıyor.
+
+Fotoğraf iki yerde görünüyor: çiçekçinin kendi fişinde ve **etkinlik
+detayında** (rozetin altında, dokununca tam ekran).
+
+> **Ölçüldü (uçtan uca, jetonsuz):** yanlış kod → 400 ve fotoğraf
+> **kaydedilmedi**; doğru kod → teslim işaretlendi + fotoğraf
+> `/uploads/cicek/{guid}.png` olarak indi (`200 image/png`); `.html`
+> yükleme → 400 *"Yalnızca fotoğraf yükleyebilirsiniz"*.
+
 ## KURUMSAL KİMLİK SAĞLAYICI (OpenID Connect)
 
 Personel kurum hesabıyla girebiliyor; şifreyle giriş **kapanmıyor**.

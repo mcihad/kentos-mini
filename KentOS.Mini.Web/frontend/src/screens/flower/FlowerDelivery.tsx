@@ -1,9 +1,7 @@
 import { useState } from 'react';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useParams } from 'react-router-dom';
-import {
-  CalendarDays, Check, CircleAlert, Flower2, MapPin, StickyNote, User,
-} from 'lucide-react';
+import { CalendarDays, Camera, Check, CircleAlert, Flower2, MapPin, StickyNote, User } from 'lucide-react';
 import { Button } from '../../components/Button';
 import { Card } from '../../components/Card';
 import { FieldWrapper, Input } from '../../components/Field';
@@ -23,6 +21,7 @@ type TeslimKarti = {
   kurumAdi: string | null;
   teslimEdildi: boolean;
   teslimTarihi: string | null;
+  fotograf: string | null;
 };
 
 /**
@@ -56,6 +55,8 @@ export function FlowerDelivery() {
   const kurum = useInstitution();
   const [kod, setKod] = useState('');
   const [hata, setHata] = useState<string | null>(null);
+  const [fotograf, setFotograf] = useState<File | null>(null);
+  const [onizleme, setOnizleme] = useState<string | null>(null);
 
   const kart = useQuery({
     queryKey: ['cicek', 'teslim-karti', kimlik] as const,
@@ -66,9 +67,36 @@ export function FlowerDelivery() {
 
   const teslimEt = useMutation({
     mutationFn: () =>
-      api.post<boolean>(`/cicek/teslim-karti/${kimlik}/teslim`, {
-        dogrulamaKodu: Number(kod),
-      }),
+      /*
+        ÇOK PARÇALI İSTEK — kod ve fotoğraf TEK çağrıda.
+
+        `api` sarmalayıcısı JSON gönderiyor; burada `FormData` gerekiyor ve
+        tarayıcının sınır (boundary) başlığını kendisi yazması için
+        `Content-Type` ELLE VERİLMEZ.
+
+        Ayrı bir fotoğraf ucu olsaydı çiçekçi kodu iki kez girecek ya da
+        fotoğraf kodsuz bir uçtan yüklenecekti — ikincisi, bağlantıyı bilen
+        herkesin teslim fotoğrafını değiştirebilmesi demek.
+      */
+      (async () => {
+        const govde = new FormData();
+        govde.append('dogrulamaKodu', String(Number(kod)));
+        if (fotograf) govde.append('fotograf', fotograf);
+
+        const y = await fetch(`/api/v2/cicek/teslim-karti/${kimlik}/teslim`, {
+          method: 'POST',
+          body: govde,
+        });
+
+        const metin = await y.text();
+        if (!y.ok) {
+          let mesaj = 'Teslim işaretlenemedi.';
+          try { mesaj = JSON.parse(metin).detail ?? mesaj; } catch { /* düz metin */ }
+          throw new Error(mesaj);
+        }
+
+        return JSON.parse(metin) as TeslimKarti;
+      })(),
     onSuccess: () => {
       haptic('basari');
       setHata(null);
@@ -188,7 +216,21 @@ export function FlowerDelivery() {
                 )}
               </div>
             </Card>
-          ) : (
+          ) : null}
+
+          {kart.data.teslimEdildi && kart.data.fotograf ? (
+            /* Yüklenen fotoğraf teslimin kanıtı; çiçekçi de kendi
+               gönderdiğini görebilmeli. */
+            <Card className="overflow-hidden p-0">
+              <img
+                src={kart.data.fotograf}
+                alt="Teslim edilen çiçek"
+                className="block max-h-[420px] w-full bg-sunken object-contain"
+              />
+            </Card>
+          ) : null}
+
+          {!kart.data.teslimEdildi ? (
             <Card className="p-4">
               <p className="font-display text-base font-bold">Teslim ettiniz mi?</p>
               <p className="mt-1 text-sm text-text-2">
@@ -224,10 +266,63 @@ export function FlowerDelivery() {
                   />
                 </FieldWrapper>
 
+                {/*
+                  FOTOĞRAF İSTEĞE BAĞLI — teslimi engellemez.
+
+                  `capture="environment"` telefonda doğrudan arka kamerayı
+                  açıyor: çiçekçi çoğu zaman teslim yerinde, elinde telefonla
+                  duruyor ve galeriden dosya aramak fazladan iki adım.
+                  Masaüstünde bu ipucu yok sayılıyor, normal dosya seçici
+                  açılıyor.
+                */}
+                <label
+                  className="mt-1 flex cursor-pointer items-center gap-3 rounded-md border
+                    border-dashed border-border bg-surface-2 p-3 transition-colors
+                    hover:border-brand-2"
+                >
+                  <span
+                    className="grid size-10 shrink-0 place-items-center rounded-md
+                      bg-brand-soft text-brand"
+                    aria-hidden
+                  >
+                    <Camera size={18} strokeWidth={1.9} />
+                  </span>
+                  <span className="min-w-0 flex-1">
+                    <span className="block text-sm font-semibold">
+                      {fotograf ? 'Fotoğraf seçildi' : 'Teslim fotoğrafı ekle'}
+                    </span>
+                    <span className="block truncate text-xs text-text-3">
+                      {fotograf ? fotograf.name : 'İsteğe bağlı — JPG, PNG veya HEIC'}
+                    </span>
+                  </span>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    capture="environment"
+                    className="sr-only"
+                    onChange={(e) => {
+                      const d = e.target.files?.[0] ?? null;
+                      setFotograf(d);
+                      setOnizleme(d ? URL.createObjectURL(d) : null);
+                      setHata(null);
+                    }}
+                  />
+                </label>
+
+                {onizleme && (
+                  <div className="mt-2 overflow-hidden rounded-md border border-border">
+                    <img
+                      src={onizleme}
+                      alt="Seçilen fotoğraf"
+                      className="block max-h-56 w-full bg-sunken object-contain"
+                    />
+                  </div>
+                )}
+
                 <Button
                   type="submit"
                   boyut="mobil"
-                  className="mt-1 w-full"
+                  className="mt-3 w-full"
                   disabled={!gecerliKod || teslimEt.isPending}
                 >
                   <Check size={16} />
@@ -235,7 +330,7 @@ export function FlowerDelivery() {
                 </Button>
               </form>
             </Card>
-          )}
+          ) : null}
         </>
       )}
 

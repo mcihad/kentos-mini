@@ -546,6 +546,16 @@ function Hazirlik({ etkinlik: e }: { etkinlik: Event }) {
   const cicekTalimati = !!e.cicekId;
   const cicekTeslim = e.cicek?.gonderildi === true;
 
+  /*
+    TESLİM FOTOĞRAFI — çiçekçinin yüklediği kanıt.
+
+    Makam "çiçek gitti mi, nasıl gitti" sorusunu çiçekçiyi aramadan
+    görebilmeli. Fotoğraf isteğe bağlı olduğu için yoksa hiçbir şey
+    çizilmiyor — boş bir çerçeve "fotoğraf bekleniyor" gibi okunurdu.
+  */
+  const cicekFotografi = e.cicek?.resim ?? null;
+  const cicekGoruntuleyici = useImageViewer();
+
   if (ogeler.length === 0 && !basin && !cicekTalimati) return null;
 
   return (
@@ -618,7 +628,33 @@ function Hazirlik({ etkinlik: e }: { etkinlik: Event }) {
             </li>
           )}
         </ul>
+
+        {cicekTeslim && cicekFotografi && (
+          <button
+            type="button"
+            onClick={() => cicekGoruntuleyici.ac(0)}
+            className="mt-3 block w-full overflow-hidden rounded-md border border-border
+              bg-sunken transition-opacity hover:opacity-90"
+            title="Teslim fotoğrafını büyüt"
+          >
+            <img
+              src={cicekFotografi}
+              alt="Çiçekçinin yüklediği teslim fotoğrafı"
+              loading="lazy"
+              className="block max-h-64 w-full object-contain"
+            />
+          </button>
+        )}
       </Card>
+
+      {cicekFotografi && (
+        <ImageViewer
+          resimler={[{ yol: cicekFotografi, baslik: 'Çiçek teslim fotoğrafı' }]}
+          acikIndeks={cicekGoruntuleyici.acikIndeks}
+          kapat={cicekGoruntuleyici.kapat}
+          indeksDegistir={cicekGoruntuleyici.indeksDegistir}
+        />
+      )}
 
       <MetinDuzenleyici
         etkinlik={e}

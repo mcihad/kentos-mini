@@ -51,5 +51,16 @@ public class CicekTeslimKartiDto
     [JsonPropertyName("teslimEdildi")] public bool TeslimEdildi { get; set; }
 
     /// <summary>Teslim zamanı — işaretlendiyse.</summary>
+    /// <summary>
+    /// Çiçekçinin yüklediği teslim fotoğrafının adresi.
+    /// </summary>
+    /// <remarks>
+    /// Teslimin kanıtı: makam "çiçek gitti mi, nasıl gitti" sorusunu
+    /// çiçekçiyi aramadan görüyor. Boşsa fotoğraf yüklenmemiş demektir —
+    /// fotoğraf isteğe bağlı, teslimi engellemiyor.
+    /// </remarks>
+    [JsonPropertyName("fotograf")]
+    public string? Fotograf { get; set; }
+
     [JsonPropertyName("teslimTarihi")] public DateTime? TeslimTarihi { get; set; }
 }

@@ -1,6 +1,7 @@
 using KentOS.Mini.Application.Identity;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using KentOS.Mini.Application.Dto.V2.Ortak;
 using KentOS.Mini.Application.Dto;
 using KentOS.Mini.Application.Services;
@@ -154,11 +155,32 @@ public class CicekController(
     /// veritabanında).
     /// </para>
     /// </remarks>
+    /// <remarks>
+    /// <para>
+    /// <b>Çok parçalı istek</b>: doğrulama kodu ve isteğe bağlı teslim
+    /// fotoğrafı TEK çağrıda gidiyor. İki ayrı uç olsaydı çiçekçi kodu iki
+    /// kez girecek ya da fotoğraf kodsuz bir uçtan yüklenecekti — ikincisi,
+    /// bağlantıyı bilen herkesin fotoğrafı değiştirebilmesi demek.
+    /// </para>
+    /// <para>
+    /// Hız sınırı giriş politikasıyla aynı: uç anonim ve beş denemelik
+    /// kod kapısını dakikada binlerce istekle zorlamak mümkün olmamalı.
+    /// </para>
+    /// </remarks>
     [AllowAnonymous]
+    [EnableRateLimiting(Filters.HizSiniri.Giris)]
     [HttpPost("teslim-karti/{guid}/teslim")]
-    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
-    public async Task<IActionResult> TeslimEtAsync(string guid, [FromBody] TeslimIstegi istek)
-        => Ok(await _cicekciService.CicekKartGonderildiAsync(guid, istek.DogrulamaKodu));
+    [ProducesResponseType<CicekTeslimKartiDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TeslimEtAsync(
+        string guid,
+        [FromForm] int dogrulamaKodu,
+        IFormFile? fotograf)
+    {
+        await using var akis = fotograf?.OpenReadStream();
+
+        return Ok(await _cicekciService.TeslimEtAsync(
+            guid, dogrulamaKodu, akis, fotograf?.FileName, fotograf?.ContentType));
+    }
 
     /// <summary>Kurum içinden teslim işaretleme (yetkiyle).</summary>
     [Izin(Izinler.CicekYonet)]

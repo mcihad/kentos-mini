@@ -46,7 +46,7 @@ public sealed class OpenIdServisi(
     IOturumServisi _oturumServisi,
     IHttpClientFactory _istemciFabrikasi,
     IMemoryCache _onbellek,
-    ApplicationOptions _uygulamaAyari,
+    IAdresCozucu _adresCozucu,
     ILogger<OpenIdServisi> _gunluk) : IOpenIdService
 {
     /// <summary>Sağlayıcıya kaydedilecek dönüş yolu — tek yerde.</summary>
@@ -75,8 +75,24 @@ public sealed class OpenIdServisi(
     private async Task<OpenIdSettings?> KayitAsync() =>
         await _context.OpenIdAyarlari.FirstOrDefaultAsync(a => a.Id == OpenIdSettings.TekilId);
 
-    private string TamDonusAdresi() =>
-        $"{(_uygulamaAyari.BaseUrl ?? string.Empty).TrimEnd('/')}{DonusYolu}";
+    /// <summary>
+    /// Sağlayıcıya gidecek dönüş adresi — <b>istekten</b> türetilir.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Uygulama birden çok alan adından yayınlanabiliyor. Sabit bir taban
+    /// adres, kullanıcının BULUNDUĞU adres ile sağlayıcıya bildirilen adres
+    /// arasında uyuşmazlık yaratıyor ve sağlayıcı isteği
+    /// <c>redirect_uri mismatch</c> ile reddediyor.
+    /// </para>
+    /// <para>
+    /// <b>Buradaki host injection riskini sağlayıcının kendisi kapatıyor:</b>
+    /// gönderilen <c>redirect_uri</c> sağlayıcıdaki kayıtlı adreslerden biri
+    /// değilse istek zaten reddediliyor. Yani sahte bir <c>Host</c>
+    /// başlığıyla kullanıcıyı başka bir yere yollamak mümkün değil.
+    /// </para>
+    /// </remarks>
+    private string TamDonusAdresi() => _adresCozucu.Mutlak(DonusYolu);
 
     public async Task<OpenIdAyarDto> AyarAsync()
     {

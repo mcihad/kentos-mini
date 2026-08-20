@@ -153,6 +153,35 @@ public class AnonimUcTests
     /// <c>CicekKartDto</c> kodu taşımaya devam ediyor, bu DTO ondan ayrı
     /// tutulmasının tek sebebi de bu.
     /// </remarks>
+    /// <summary>
+    /// TESLİM FOTOĞRAFI da doğrulama kodu ister.
+    /// </summary>
+    /// <remarks>
+    /// Teslim işaretlemesi devretmeli (aynı kartı ikinci kez işaretlemek
+    /// hata değil) ama fotoğraf öyle değil: kod aranmasaydı, bağlantıyı
+    /// bilen herkes teslim edilmiş bir kartın fotoğrafının ÜZERİNE
+    /// yazabilirdi. Kaynak taranıyor çünkü yanlış davranış sessiz —
+    /// fotoğraf kaydedilir, kimse fark etmez.
+    /// </remarks>
+    [Fact]
+    public void Teslim_fotografi_kodsuz_yuklenemez()
+    {
+        var kaynak = File.ReadAllText(Path.Combine(
+            Path.GetFullPath(Path.Combine(AppContext.BaseDirectory, "..", "..", "..", "..")),
+            "KentOS.Mini.Web", "Services", "CicekciService.cs"));
+
+        var govde = kaynak[kaynak.IndexOf("public async Task<Application.Dto.V2.Cicek.CicekTeslimKartiDto> TeslimEtAsync",
+            StringComparison.Ordinal)..];
+
+        var kodDenetimi = govde.IndexOf("KoduDogrula(cicek)", StringComparison.Ordinal);
+        var fotografKaydi = govde.IndexOf("FotografiKaydetAsync", StringComparison.Ordinal);
+
+        Assert.True(kodDenetimi > 0, "TeslimEtAsync kodu hiç doğrulamıyor.");
+        Assert.True(fotografKaydi > 0, "TeslimEtAsync fotoğrafı hiç kaydetmiyor.");
+        Assert.True(kodDenetimi < fotografKaydi,
+            "Fotoğraf, doğrulama kodu denetlenmeden kaydediliyor.");
+    }
+
     [Fact]
     public void Teslim_karti_dogrulama_kodunu_disari_vermez()
     {

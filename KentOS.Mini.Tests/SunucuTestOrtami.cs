@@ -353,10 +353,25 @@ public static class TestServisFabrikasi
         var mesaj = new SahteMesajServisi();
         var olay = new AjandaOlayService(baglam, kullanici, NullLogger<AjandaOlayService>.Instance);
         var seri = new AjandaSeriService(baglam, kullanici, mesaj, olay, mapper, NullLogger<AjandaSeriService>.Instance);
-        var ajanda = new AjandaService(baglam, kullanici, new ApplicationOptions(), mesaj, olay,
-            new SahteDepo(), seri, mapper);
+        var ajanda = new AjandaService(baglam, kullanici, new ApplicationOptions(),
+            new SahteAdresCozucu(), mesaj, olay, new SahteDepo(), seri, mapper);
 
         return (ajanda, seri, mesaj);
+    }
+
+    /// <summary>
+    /// Test ortamında HTTP isteği YOK; sabit bir taban adres döner.
+    /// </summary>
+    /// <remarks>
+    /// Gerçek <c>AdresCozucu</c> isteğin şeması ve ana bilgisayarından
+    /// türetiyor. Testte istek olmadığı için üretimdeki geri düşüş yolunun
+    /// aynısı: sabit taban.
+    /// </remarks>
+    public sealed class SahteAdresCozucu : KentOS.Mini.Web.Services.IAdresCozucu
+    {
+        public string Taban() => "https://test.local";
+
+        public string Mutlak(string goreliYol) => $"{Taban()}/{goreliYol.TrimStart('/')}";
     }
 
     /// <summary>Yalnızca dosya yükleme yolunda kullanılan barındırma ortamı yerine geçen.</summary>
