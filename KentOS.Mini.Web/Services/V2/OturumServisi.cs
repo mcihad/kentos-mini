@@ -44,7 +44,25 @@ public record GirisSonucu(
 
 public interface IOturumServisi
 {
+    /// <summary>
+    /// Doğrulanmış bir kullanıcı için jeton üretir — <b>parola sormadan</b>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Kurumsal kimlik sağlayıcı (OpenID) yolu bunu çağırıyor: kimliği
+    /// sağlayıcı kanıtladı, geriye jetonu üretmek kaldı.
+    /// </para>
+    /// <para>
+    /// <b>Neden ayrı bir metot, kopya değil.</b> Talep listesi (rol, birim,
+    /// kullanıcı kimliği, jti) ve oturum kaydı iki giriş yolunda da BİREBİR
+    /// aynı olmak zorunda. Kopyalansaydı, bir talep eklendiğinde yalnızca
+    /// bir yola eklenir ve sağlayıcıyla giren kullanıcı sessizce eksik
+    /// yetkiyle dolaşırdı.
+    /// </para>
+    /// </remarks>
+
     Task<GirisSonucu> GirisYapAsync(string kullaniciAdi, string parola);
+    Task<GirisSonucu> JetonUretAsync(AppUser kullanici, OturumOlayi olay);
 }
 
 /// <summary>
@@ -100,6 +118,11 @@ public class OturumServisi(
 
         await _userManager.ResetAccessFailedCountAsync(kullanici);
 
+        return await JetonUretAsync(kullanici, OturumOlayi.Giris);
+    }
+
+    public async Task<GirisSonucu> JetonUretAsync(AppUser kullanici, OturumOlayi olay)
+    {
         var roller = await _userManager.GetRolesAsync(kullanici);
 
         var talepler = new List<Claim>
@@ -128,7 +151,7 @@ public class OturumServisi(
 
         var jeton = _jwtService.GenerateToken(talepler);
 
-        await _oturumKaydi.KaydetAsync(kullanici.Id, kullaniciAdi, OturumOlayi.Giris, true);
+        await _oturumKaydi.KaydetAsync(kullanici.Id, kullanici.UserName!, olay, true);
 
         return new GirisSonucu(
             GirisSonucTuru.Basarili,

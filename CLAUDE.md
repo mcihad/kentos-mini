@@ -1288,6 +1288,125 @@ dokunulmadan geçer.
 
 Ayrıntı ve bütün arayüz kuralları: `KentOS.Mini.Web/frontend/CLAUDE.md`.
 
+## KURUMSAL KİMLİK SAĞLAYICI (OpenID Connect)
+
+Personel kurum hesabıyla girebiliyor; şifreyle giriş **kapanmıyor**.
+
+### Ayar VERİTABANINDA, `.env`'de değil
+
+Kurulum kuralının ikinci yarısı: okumak için zaten veritabanına bağlanmak
+gereken şeyler `.env`'de, **yetkilinin arayüzden değiştirmesi gerekenler**
+veritabanında. Kimlik sağlayıcı ikincisi — kurum sağlayıcı değiştirdiğinde
+ya da istemci sırrı döndüğünde sunucuya girip dosya düzenlemek ve
+uygulamayı yeniden başlatmak gerekmemeli.
+
+`openid_ayarlari` tek satır, `Institution` deseninin aynısı. Ekran
+`/kimlik-saglayici`, izin **`sistem.openid`** — kurum bilgilerinden ayrı,
+çünkü yanlış girildiğinde giriş ekranı etkileniyor.
+
+### Handler değil, elle akış
+
+`AddOpenIdConnect` açılışta yapılandırılıyor; buradaki ayar çalışma anında
+değişiyor. Handler'ı çalışırken yeniden yapılandırmak, ayarı `.env`'e
+taşımaktan daha kırılgan olurdu. Akış üç HTTP çağrısı (keşif →
+yetkilendirme → jeton); kütüphane getirisi düşük.
+
+| Karar | Neden |
+|---|---|
+| **PKCE (S256) zorunlu** | Gizli istemci olsak da tek satırlık maliyeti var; Azure AD ve yeni Keycloak zaten şart koşuyor |
+| **`state` sunucuda, 10 dk ömürlü** | CSRF koruması; süresi geçmiş ya da uydurulmuş `state` reddediliyor |
+| **Keşif belgesi 10 dk önbellekli** | Her girişte indirmek, sağlayıcı yavaşladığında giriş ekranını da yavaşlatıyor. "Sına" düğmesi önbelleği ATLAR — o kişi ŞU ANKİ durumu soruyor |
+| **`id_token` imzası doğrulanmıyor** | Jeton, sağlayıcının jeton ucundan **doğrudan bize**, TLS üzerinden ve istemci sırrıyla kimlik kanıtlayarak geldi. İmza, jeton güvenilmeyen bir taraftan (ör. tarayıcıdan) gelseydi şart olurdu |
+| **Jeton uygulamanın KENDİ jetonu** | Sağlayıcının kimlik jetonu yalnızca kimliği kanıtlıyor, sonra atılıyor: yetkiler bu sistemde |
+
+### Jeton üretimi TEK YERDE
+
+`OturumServisi.JetonUretAsync` — parola girişi de sağlayıcı girişi de onu
+çağırıyor. Talep listesi (rol, birim, kullanıcı kimliği, `jti`) ve oturum
+kaydı kopyalansaydı, sisteme yeni bir talep eklendiğinde yalnızca bir yola
+eklenir ve **sağlayıcıyla giren kullanıcı sessizce eksik yetkiyle**
+dolaşırdı.
+
+Kilitli hesap sağlayıcıyla da giremiyor: kilit bu sistemin kararı, sağlayıcı
+onu bilmiyor. Denetlenmeseydi parolayla kilitlenen hesap sağlayıcı
+düğmesiyle girmeye devam eder, yani kilit hiçbir şey ifade etmezdi.
+
+### Düğme İKİ şartla çıkar
+
+Kullanıcının istediği buydu: *"eğer openid ayarları yapılmış **ve
+erişilebilir** ise"*.
+
+```
+ayar açık? ─── hayır ──▶ düğme yok
+   │ evet
+   ▼
+sağlayıcıya ulaşılıyor? ─── hayır ──▶ düğme yok
+   │ evet
+   ▼
+"<Düğme metni> ile giriş yap"
+```
+
+> **Ölçüldü:** sahte bir OIDC sağlayıcı ayağa kaldırıldı. Sağlayıcı
+> ayaktayken `giris-durumu` → `{kullanilabilir:true}` ve düğme hem 390px
+> hem 1280px'te çıktı; sağlayıcı kapatılıp sunucu yeniden başlatılınca
+> `{kullanilabilir:false}` ve düğme **kayboldu**. Giriş ekranının kendisi
+> etkilenmedi — şifreyle giriş sağlayıcıya bağımlı değil.
+
+`GET openid/giris-durumu` **anonim** (çağıran henüz giriş yapmamış) ve
+yalnızca iki alan döner: `kullanilabilir` + `gorunenAd`. Yetkili adres,
+istemci kimliği ve kapsamlar oradan sızmaz — `OpenIdTests` bunu alan alan
+kilitliyor.
+
+### Sızdırmayan üç yer
+
+| Ne | Nasıl |
+|---|---|
+| **İstemci sırrı** | Okuma ucu döndürmüyor; DTO'da alan bile yok, yalnızca `sirTanimli` bayrağı. Yazmada **boş = değiştirme** — aksi hâlde ayarı açıp kaydeden herkes girişi bozardı |
+| **Jeton** | Dönüşte adres **parçasında** (`#`) taşınıyor, sorgu dizesinde değil: sorgu dizesi sunucu günlüklerine, ters vekil kayıtlarına ve `Referer` başlığına düşüyor. SPA okuyup hemen adres çubuğundan siliyor |
+| **Sağlayıcı hatası** | Jeton ucunun gövdesi kullanıcıya verilmiyor (istemci kimliği ve yapılandırma ayrıntısı içerebiliyor); günlüğe tam hâli, kullanıcıya anlaşılır bir cümle |
+
+### AÇIK YÖNLENDİRME kapalı
+
+Dönüş yolu sorgu dizesinden geliyor. Süzülmeseydi
+`?donus=https://saldirgan.example` ile kullanıcı giriş yaptıktan **hemen
+sonra** saldırganın sayfasına gönderilirdi — üstelik jeton adres parçasında,
+yani saldırganın eline geçerek. Yalnızca `/` ile başlayan ve `//`
+içermeyen yollar kabul ediliyor (`OpenIdTests`, 8 vaka).
+
+### Eksik yapılandırmayla AÇILAMAZ
+
+Sağlayıcı adresi, istemci kimliği ve sır dolu değilken `etkin=true`
+kaydedilemiyor (400). Yarım yapılandırmayla açmak, giriş ekranına çalışmayan
+bir düğme koymak demek: kullanıcı basıyor, sağlayıcıya gidiyor ve geri
+dönemeyeceği bir sayfada kalıyor.
+
+### Ekranın iki kritik parçası
+
+Yapılandırmanın en sık yanlış giren yerleri:
+
+1. **Kopyalanabilir dönüş adresi** — sağlayıcı tarafında birebir eşleşmeli.
+   Elle yazıldığında bir harf kayması yetiyor ve alınan hata **sağlayıcının
+   sayfasında** çıkıyor, yani kullanıcı neyi düzelteceğini bu ekranda
+   göremiyor.
+2. **"Bağlantıyı sına"** — kaydetmeden önce denenebiliyor.
+
+**Otomatik kullanıcı oluşturma varsayılan KAPALI** ve açıldığında uyarı
+tonuyla çiziliyor: açıkken sağlayıcıda hesabı olan **herkes** girebilir.
+Kurumsal dizinde binlerce hesap var, uygulamayı kullanması gereken kişi
+sayısı onlarca.
+
+## GİRİŞ EKRANI
+
+- **Büyük harf kilidi uyarısı.** Şifre alanı yazılanı göstermiyor; kilit
+  açıkken kullanıcı doğru şifreyi yazdığını sanıp üst üste reddediliyor ve
+  **hesap kilidine (10 deneme) kadar** gidebiliyor. `getModifierState`
+  tuşa basıldığı anda okunuyor.
+- **Sağlayıcı düğmesi şifreli girişin ALTINDA**, "ya da" ayracıyla. Şifreyle
+  giriş üstte ve dolgulu kalıyor: sağlayıcı kapandığında ekranın düzeni
+  değişmesin, kas hafızası bozulmasın.
+- Sağlayıcı sorgusu **düşerse hiçbir şey olmuyor** — giriş ekranının kendisi
+  sağlayıcıya bağımlı değil.
+
 ## GÜVENLİK — kapatılan açıklar
 
 ### Yüklenen dosya tarayıcıda ÇALIŞIYORDU (depolanmış XSS)

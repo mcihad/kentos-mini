@@ -57,6 +57,16 @@ public class AnonimUcTests
         "BildirimPortalController.FotografAsync",
         "BildirimPortalController.KodAsync",
 
+        // KİMLİK SAĞLAYICI ile giriş yolu: çağıran henüz giriş YAPMAMIŞ.
+        // Üçü de yalnızca giriş akışını yürütüyor:
+        //  - giris-durumu: "düğme çizilsin mi" + düğme metni. Yetkili adres,
+        //    istemci kimliği ve kapsamlar bu yanıttan SIZMAZ.
+        //  - baslat / geri-donus: yönlendirme akışının kendisi; ikisi de
+        //    giriş hız sınırına bağlı ve `state` ile korunuyor.
+        "OpenIdController.GirisDurumuAsync",
+        "OpenIdController.BaslatAsync",
+        "OpenIdController.GeriDonusAsync",
+
         // Çiçekçi kurumun kullanıcısı değil: hesabı, rolü, jetonu yok.
         // Yetki belirteci bağlantıdaki GUID; yanıt da ona göre daraltıldı.
         "CicekController.TeslimKartiAsync",

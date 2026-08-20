@@ -1,10 +1,10 @@
-import { CircleAlert, Eye, EyeOff, LogIn } from 'lucide-react';
-import { useState } from 'react';
+import { Building2, CircleAlert, Eye, EyeOff, LogIn } from 'lucide-react';
+import { useEffect, useState } from 'react';
 import { Navigate, useLocation, useNavigate } from 'react-router-dom';
 import { Button } from '../components/Button';
 import { useSession } from '../auth/SessionProvider';
 import { inisYolu } from '../auth/inisEkrani';
-import { ApiError } from '../data/client';
+import { ApiError, api, tokenStore } from '../data/client';
 import { buyukHarf, useInstitution } from '../institution/institution';
 
 /**
@@ -40,6 +40,52 @@ export default function Login() {
   const [hata, setHata] = useState<string | null>(null);
   const [alanHatalari, setAlanHatalari] = useState<Record<string, string[]>>({});
   const [gonderiliyor, setGonderiliyor] = useState(false);
+  const [buyukHarfKilidi, setBuyukHarfKilidi] = useState(false);
+  const [saglayici, setSaglayici] = useState<{ kullanilabilir: boolean; gorunenAd?: string } | null>(null);
+
+  /*
+    SAĞLAYICI DÜĞMESİ KOŞULLU.
+
+    Uç anonim ve yalnızca "düğme çizilsin mi" + düğme metni dönüyor. Ayar
+    açık AMA sağlayıcıya ulaşılamıyorsa `kullanilabilir` false geliyor:
+    çalışmayan bir düğme göstermek, kullanıcıyı geri dönemeyeceği bir
+    sayfaya yolluyor.
+
+    Sorgu düşerse hiçbir şey olmuyor — giriş ekranının kendisi sağlayıcıya
+    bağımlı değil; şifreyle giriş her hâlükârda çalışmalı.
+  */
+  useEffect(() => {
+    let iptal = false;
+    api.get<{ kullanilabilir: boolean; gorunenAd?: string }>('/openid/giris-durumu')
+      .then((d) => { if (!iptal) setSaglayici(d); })
+      .catch(() => { /* sağlayıcı yoksa düğme de yok */ });
+    return () => { iptal = true; };
+  }, []);
+
+  /*
+    SAĞLAYICIDAN DÖNÜŞ — jeton adres PARÇASINDA (`#`) geliyor.
+
+    Sorgu dizesi sunucu günlüklerine, ters vekil kayıtlarına ve `Referer`
+    başlığına düşüyor; adres parçası tarayıcıdan hiç çıkmıyor. Okur okumaz
+    adres çubuğundan siliyoruz ki geri tuşu ya da yer imi jetonu taşımasın.
+  */
+  useEffect(() => {
+    const parca = window.location.hash.replace(/^#/, '');
+    if (!parca) return;
+
+    const p = new URLSearchParams(parca);
+    const jeton = p.get('jeton');
+    const saglayiciHata = p.get('saglayiciHata');
+
+    window.history.replaceState(null, '', window.location.pathname + window.location.search);
+
+    if (saglayiciHata) { setHata(saglayiciHata); return; }
+    if (jeton) {
+      tokenStore.write({ jeton, gecerlilikSonu: p.get('bitis') || '' });
+      // `replace`: geri tuşu kullanıcıyı giriş ekranına döndürmesin.
+      window.location.replace(p.get('donus') || '/');
+    }
+  }, []);
 
   if (me) {
     // Zaten açık bir oturumla giriş ekranına gelindi (geri tuşu, yer imi).
@@ -161,7 +207,11 @@ export default function Login() {
             otomatikTamamla="username"
             hatalar={alanHatalari.kullaniciAdi}
           />
-          <ParolaAlani hatalar={alanHatalari.parola} />
+          <ParolaAlani
+            hatalar={alanHatalari.parola}
+            buyukHarfKilidi={buyukHarfKilidi}
+            kilidiYaz={setBuyukHarfKilidi}
+          />
 
           <Button
             type="submit"
@@ -171,6 +221,30 @@ export default function Login() {
             <LogIn size={17} strokeWidth={2} />
             {gonderiliyor ? 'Giriş yapılıyor…' : 'Giriş yap'}
           </Button>
+
+          {saglayici?.kullanilabilir && (
+            <>
+              {/* Ayırıcı: iki giriş yolu var ve hangisinin "asıl" olduğu
+                  belli olmalı. Şifreyle giriş üstte kalıyor — sağlayıcı
+                  kapandığında ekranın düzeni değişmesin. */}
+              <div className="my-5 flex items-center gap-3" aria-hidden>
+                <span className="h-px flex-1 bg-border" />
+                <span className="text-xs text-text-3">ya da</span>
+                <span className="h-px flex-1 bg-border" />
+              </div>
+
+              <a
+                href={`/api/v2/openid/baslat?donus=${encodeURIComponent(
+                  new URLSearchParams(konum.search).get('donus') || '/')}`}
+                className="flex h-[52px] w-full items-center justify-center gap-2 rounded-md
+                  border border-border bg-surface text-base font-semibold text-text
+                  transition-colors hover:bg-surface-2 md:h-12"
+              >
+                <Building2 size={17} strokeWidth={2} />
+                {saglayici.gorunenAd} ile giriş yap
+              </a>
+            </>
+          )}
 
           <p className="mt-8 text-center text-xs leading-normal text-text-3 md:hidden">
             © {new Date().getFullYear()} {kurum.gorunenAd || kurum.ad}
@@ -240,7 +314,15 @@ function Alan({
  * Göz düğmesi `type="button"`: varsayılan `submit` olsaydı parolayı görmek
  * için basmak formu gönderirdi.
  */
-function ParolaAlani({ hatalar }: { hatalar?: string[] }) {
+function ParolaAlani({
+  hatalar,
+  buyukHarfKilidi,
+  kilidiYaz,
+}: {
+  hatalar?: string[];
+  buyukHarfKilidi: boolean;
+  kilidiYaz: (a: boolean) => void;
+}) {
   const [acik, setAcik] = useState(false);
   const hataliMi = (hatalar?.length ?? 0) > 0;
 
@@ -256,6 +338,17 @@ function ParolaAlani({ hatalar }: { hatalar?: string[] }) {
           type={acik ? 'text' : 'password'}
           autoComplete="current-password"
           aria-invalid={hataliMi}
+          /*
+            BÜYÜK HARF KİLİDİ UYARISI.
+
+            Şifre alanı yazılanı göstermiyor; kilit açıkken kullanıcı doğru
+            şifreyi yazdığını sanıp üst üste reddediliyor ve hesap kilidine
+            (10 deneme) kadar gidebiliyor. `getModifierState` tuşa basıldığı
+            anda okunuyor — kilidin durumunu öğrenmenin başka yolu yok.
+          */
+          onKeyUp={(e) => kilidiYaz(e.getModifierState('CapsLock'))}
+          onKeyDown={(e) => kilidiYaz(e.getModifierState('CapsLock'))}
+          onBlur={() => kilidiYaz(false)}
           className={`${alanSinifi} pr-12 ${hataliMi ? 'border-(--st-no)' : ''}`}
         />
         <button
@@ -267,6 +360,15 @@ function ParolaAlani({ hatalar }: { hatalar?: string[] }) {
           {acik ? <EyeOff size={17} /> : <Eye size={17} />}
         </button>
       </div>
+      {buyukHarfKilidi && !hataliMi && (
+        <span
+          className="mt-1 flex items-center gap-1.5 text-xs"
+          style={{ color: 'var(--st-wait)' }}
+        >
+          <CircleAlert size={13} strokeWidth={2} />
+          Büyük harf kilidi açık
+        </span>
+      )}
       {hataliMi && (
         <span className="mt-1 block text-xs" style={{ color: 'var(--st-no)' }}>
           {hatalar!.join(' ')}

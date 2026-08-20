@@ -554,6 +554,17 @@ TABLE oneriler
   kullanici_id
   tarih
   tip
+TABLE openid_ayarlari
+  etkin
+  gorunen_ad
+  guncelleme_tarihi
+  id
+  istemci_id
+  istemci_sirri
+  kapsamlar
+  kullanici_adi_talebi
+  otomatik_kullanici_olustur
+  yetkili
 TABLE oturum_kayitlari
   aciklama
   basarili

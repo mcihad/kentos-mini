@@ -29,6 +29,7 @@ import cicek from './texts/cicek.md?raw';
 import yonetim from './texts/yonetim.md?raw';
 import tanimlar from './texts/tanimlar.md?raw';
 import kurum from './texts/kurum.md?raw';
+import kimlikSaglayici from './texts/kimlik-saglayici.md?raw';
 import hatalar from './texts/hatalar.md?raw';
 import bildirimler from './texts/bildirimler.md?raw';
 import ayarlar from './texts/ayarlar.md?raw';
@@ -383,6 +384,15 @@ const KATALOG: { kalip: string; kayit: HelpEntry }[] = [
       baslik: 'Kurum Bilgileri',
       ozet: 'Kurum adı, iletişim, uygulama adı, amblem ve kurumsal renkler',
       metin: kurum,
+    },
+  },
+  {
+    kalip: '/kimlik-saglayici',
+    kayit: {
+      grup: 'Yönetim',
+      baslik: 'Kimlik Sağlayıcı',
+      ozet: 'Personel kurum hesabıyla giriş yapsın',
+      metin: kimlikSaglayici,
     },
   },
   {

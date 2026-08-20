@@ -12,6 +12,7 @@ import Agenda from './screens/Agenda';
 import Home from './screens/Home';
 import Settings from './screens/Settings';
 import InstitutionSettings from './screens/InstitutionSettings';
+import OpenIdSettings from './screens/OpenIdSettings';
 import NotFound from './screens/NotFound';
 import Flowers from './screens/Flowers';
 import FloristDetail from './screens/flower/FloristDetail';
@@ -387,6 +388,14 @@ export default function App() {
         <Route
           path="kurum"
           element={<ProtectedRoute permission={PERMISSION.sistemKurum} role="Admin"><InstitutionSettings /></ProtectedRoute>}
+        />
+
+        {/* Kimlik sağlayıcı ayrı bir izinle korunuyor (`sistem.openid`):
+            yanlış girildiğinde giriş ekranındaki düğme çalışmaz, yani
+            kurum bilgisi düzenlemekten daha dar bir yetki istiyor. */}
+        <Route
+          path="kimlik-saglayici"
+          element={<ProtectedRoute permission={PERMISSION.sistemOpenid} role="Admin"><OpenIdSettings /></ProtectedRoute>}
         />
 
         <Route path="bildirimler" element={<NotificationsScreen />} />

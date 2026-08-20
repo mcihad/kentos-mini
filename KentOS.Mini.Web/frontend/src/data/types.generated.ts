@@ -7447,6 +7447,236 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/openid": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Ayarı okur; istemci sırrı DÖNMEZ, yalnızca tanımlı olup olmadığı. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OpenIdAyarDto"];
+                    };
+                };
+            };
+        };
+        /** Ayarı kaydeder. Boş istemci sırrı "değiştirme" demektir. */
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["OpenIdAyarIstegi"];
+                    "text/json": components["schemas"]["OpenIdAyarIstegi"];
+                    "application/*+json": components["schemas"]["OpenIdAyarIstegi"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OpenIdAyarDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/openid/sina": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Sağlayıcıya gerçekten ulaşılıyor mu?
+         * @description Ayar ekranındaki "bağlantıyı sına" düğmesi. Kaydetmeden önce
+         *     denenebilmesi önemli: yanlış adresle kaydedip giriş ekranına
+         *     çalışmayan bir düğme koymak, kullanıcıyı geri dönemeyeceği bir
+         *     sayfada bırakıyor.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OpenIdSinamaDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/openid/giris-durumu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Giriş ekranı: sağlayıcı düğmesi çizilsin mi?
+         * @description <b>Anonim</b>, çünkü çağıran henüz giriş yapmamış. Yanıt yalnızca
+         *                 "kullanılabilir mi" ve düğme metni; yetkili adres, istemci kimliği
+         *                 ya da kapsamlar buradan sızmaz.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["OpenIdGirisDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/openid/baslat": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Kullanıcıyı sağlayıcıya yönlendirir. */
+        get: {
+            parameters: {
+                query?: {
+                    donus?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/openid/geri-donus": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sağlayıcıdan dönüş: kodu jetona çevirir ve uygulamaya yollar.
+         * @description <b>Jeton ADRES PARÇASINDA (`#`) taşınıyor, sorgu dizesinde
+         *                 değil.</b> Sorgu dizesi sunucu günlüklerine, ters vekil kayıtlarına ve
+         *                 `Referer` başlığına düşüyor; adres parçası tarayıcıdan hiç
+         *                 çıkmıyor. SPA onu okuyup hemen adres çubuğundan siliyor.
+         *
+         *
+         *
+         *                 Hata da aynı yolla dönüyor: kullanıcı bir API gövdesi değil, giriş
+         *                 ekranında anlaşılır bir mesaj görmeli.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    code?: string;
+                    state?: string;
+                    error?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/oturum/giris": {
         parameters: {
             query?: never;
@@ -13996,6 +14226,36 @@ export interface components {
          * @enum {integer}
          */
         OneriTip: 1 | 2 | 3 | 4;
+        OpenIdAyarDto: {
+            etkin?: boolean;
+            gorunenAd?: string | null;
+            yetkili?: string | null;
+            istemciId?: string | null;
+            sirTanimli?: boolean;
+            kapsamlar?: string | null;
+            kullaniciAdiTalebi?: string | null;
+            otomatikKullaniciOlustur?: boolean;
+            donusAdresi?: string | null;
+        };
+        OpenIdAyarIstegi: {
+            etkin?: boolean;
+            gorunenAd?: string | null;
+            yetkili?: string | null;
+            istemciId?: string | null;
+            istemciSirri?: string | null;
+            kapsamlar?: string | null;
+            kullaniciAdiTalebi?: string | null;
+            otomatikKullaniciOlustur?: boolean;
+        };
+        OpenIdGirisDto: {
+            kullanilabilir?: boolean;
+            gorunenAd?: string | null;
+        };
+        OpenIdSinamaDto: {
+            basarili?: boolean;
+            mesaj?: string | null;
+            yetkilendirmeAdresi?: string | null;
+        };
         /** @description Denetim listesinde bir oturum kaydı. */
         OturumKaydiDto: {
             /** Format: int64 */

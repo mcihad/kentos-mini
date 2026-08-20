@@ -362,6 +362,12 @@ builder.Services.AddScoped<IAnalizService, AnalizService>();
 // Kurum bilgisi VERİTABANINDAN okunur (tek satır), `.env` yalnızca ilk
 // tohumlamayı yapar. Böylece kurum adı/amblem/renk arayüzden düzenlenebilir.
 builder.Services.AddScoped<IInstitutionService, InstitutionService>();
+
+// Kimlik sağlayıcı: keşif belgesi ve jeton değişimi için HTTP istemcisi
+// gerekiyor. `IHttpClientFactory` soket tükenmesini önlüyor — `new
+// HttpClient()` her çağrıda yeni bağlantı açar ve TIME_WAIT birikir.
+builder.Services.AddHttpClient();
+builder.Services.AddScoped<IOpenIdService, OpenIdServisi>();
 // İŞ TAKİP — ortak altyapı.
 //
 // `IBirimAgaci` özyinelemeli CTE ile alt ağacı TEK sorguda okur (eski
