@@ -1895,7 +1895,7 @@ export interface paths {
             path?: never;
             cookie?: never;
         };
-        /** Çiçek kartı (teslim fişi). */
+        /** Çiçek kartı (teslim fişi) — kurum içi görünüm. */
         get: {
             parameters: {
                 query?: never;
@@ -1926,6 +1926,117 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/cicek/teslim-karti/{guid}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * ÇİÇEKÇİNİN GÖRDÜĞÜ KART — giriş gerektirmez.
+         * @description <b>Neden anonim:</b> çiçekçi kurumun kullanıcısı değil. Hesabı, rolü,
+         *                 jetonu yok; kart bağlantısı ona SMS ile gidiyor. Uç önce sınıf
+         *                 düzeyindeki `[Izin(CicekGoruntule)]` ve JWT kapısının arkasındaydı,
+         *                 yani SMS'teki bağlantı çiçekçide <b>hiç açılmıyordu</b> — akış baştan
+         *                 sona kırıktı.
+         *
+         *
+         *
+         *       <b>Yetki belirteci GUID'in kendisi:</b> tahmin edilemez ve yalnızca
+         *                 talimatın SMS'inde geçiyor. Yanıt da buna göre daraltıldı — doğrulama
+         *                 kodu ve etkinliğin geri kalanı dönmez (bkz. `CicekTeslimKartiDto`).
+         *
+         *
+         *
+         *                 Gizli etkinlikler çiçek talimatı üretmiyor, dolayısıyla bu uçtan gizli
+         *                 bir kaydın bilgisi sızamaz.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    guid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["CicekTeslimKartiDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/cicek/teslim-karti/{guid}/teslim": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Kartın teslim edildiğini doğrulama koduyla işaretler — giriş gerektirmez.
+         * @description Uç `[Izin(CicekYonet)]` istiyordu; çiçeği teslim eden kişide o izin
+         *                 hiç olmadığı için <b>teslim işaretlemesi yapılamıyordu</b>. Kapı artık
+         *                 yetki değil <b>doğrulama kodu</b>: kod yalnızca talimat SMS'inde geçiyor
+         *                 ve kartla birlikte gösterilmiyor.
+         *
+         *
+         *
+         *                 Kaba kuvvete karşı beş deneme sınırı var (servis katmanında, sayaç
+         *                 veritabanında).
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    guid: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["TeslimIstegi"];
+                    "text/json": components["schemas"]["TeslimIstegi"];
+                    "application/*+json": components["schemas"]["TeslimIstegi"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": boolean;
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/cicek/kart/{guid}/teslim": {
         parameters: {
             query?: never;
@@ -1935,7 +2046,7 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Kartın teslim edildiğini doğrulama koduyla işaretler. */
+        /** Kurum içinden teslim işaretleme (yetkiyle). */
         post: {
             parameters: {
                 query?: never;
@@ -12249,6 +12360,19 @@ export interface components {
         CicekKartDto: {
             ajanda?: components["schemas"]["AjandaDto"];
             cicek?: components["schemas"]["CicekDto"];
+        };
+        CicekTeslimKartiDto: {
+            etkinlikBasligi?: string | null;
+            /** Format: date-time */
+            etkinlikTarihi?: string;
+            etkinlikKonumu?: string | null;
+            alici?: string | null;
+            adres?: string | null;
+            not?: string | null;
+            kurumAdi?: string | null;
+            teslimEdildi?: boolean;
+            /** Format: date-time */
+            teslimTarihi?: string | null;
         };
         /** @description Çiçekçi detay ekranının tek yanıtı. */
         CicekciDetayDto: {

@@ -194,6 +194,7 @@ TABLE cicekler
   adres
   ajanda_id
   cicekci_id
+  dogrulama_denemesi
   dogrulama_kodu
   gonderildi
   gonderilme_tarihi

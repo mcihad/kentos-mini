@@ -29,7 +29,20 @@ namespace KentOS.Mini.Application.Models
         [Column("resim")]
         public string? Resim { get; set; }
         [Column("dogrulama_kodu")]
-        public int DogrulamaKodu { get; set; }= 0;
+        public int DogrulamaKodu { get; set; } = 0;
+
+        /// <summary>
+        /// Hatalı doğrulama denemesi sayısı — kaba kuvvet koruması.
+        /// </summary>
+        /// <remarks>
+        /// Teslim ucu anonimdir (çiçekçinin hesabı yok) ve kod beş haneli;
+        /// sınırsız deneme kodu bulmayı birkaç dakikalık işe çevirirdi. Sayaç
+        /// bellekte değil VERİTABANINDA: uygulama birden çok sunucuda
+        /// çalışabiliyor ve bellekteki bir sayaç, istek başka örneğe
+        /// gönderilerek aşılabilirdi.
+        /// </remarks>
+        [Column("dogrulama_denemesi")]
+        public int DogrulamaDenemesi { get; set; }
         [Column("olusturan")]
         public string? Olusturan { get; set; }
         [Column("gonderildi")]

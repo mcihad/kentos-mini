@@ -54,6 +54,7 @@ import SystemErrors, { SystemErrorDetail } from './screens/SystemErrors';
 import Administration from './screens/Administration';
 import UnitDetailScreen from './screens/admin/UnitDetail';
 import RoleDetail from './screens/admin/RoleDetail';
+import { FlowerDelivery } from './screens/flower/FlowerDelivery';
 
 /**
  * Rota tablosu — design.md §6.
@@ -88,6 +89,19 @@ export default function App() {
       <Route element={<PortalLayout />}>
         <Route path="/bildir" element={<ReportPortal />} />
       </Route>
+
+      {/*
+        ÇİÇEK TESLİM FİŞİ — ANONİM ve KABUKSUZ.
+
+        Çiçekçi kurumun kullanıcısı değil; bağlantı ona SMS ile gidiyor ve tek
+        yetki belirteci adresteki tahmin edilemez kimlik. `ProtectedRoute` ve
+        `AppShell` yok: giriş ekranına yönlendirmek ya da yirmi yedi menü
+        öğesi göstermek, oturumu hiç olmayan birine anlamsız.
+
+        Adres SMS'te geçiyor (`AjandaService`), yani DEĞİŞTİRİLEMEZ: eski
+        bağlantılar hâlâ gelen kutularında duruyor.
+      */}
+      <Route path="/cicek-teslim/:kimlik" element={<FlowerDelivery />} />
 
       {/*
         SAHA — KENDİ KABUĞUNDA ve KİMLİK DOĞRULAMALI.

@@ -34,6 +34,23 @@ public sealed class IzinAttribute(params string[] izinler) : Attribute, IAsyncAu
 
     public async Task OnAuthorizationAsync(AuthorizationFilterContext context)
     {
+        /*
+          [AllowAnonymous] BU FİLTREYİ DE GEÇERSİZ KILAR.
+
+          `[Authorize]` için bunu çerçeve kendisi yapıyor ama `IzinAttribute`
+          elle yazılmış bir yetkilendirme filtresi ve kendi kapısını kuruyor:
+          sınıf düzeyinde `[Izin(...)]` taşıyan bir controller'da, metoda
+          `[AllowAnonymous]` yazmak yetmiyordu — istek yine 401 alıyordu.
+
+          Ölçülen sonuç: çiçekçiye SMS ile giden teslim bağlantısı, uçlar
+          anonim ilan edilmiş olmasına rağmen açılmıyordu. Anonim uç istisna
+          değil kural olduğu için denetim burada, tek yerde.
+        */
+        var anonimMi = context.ActionDescriptor.EndpointMetadata
+            .OfType<IAllowAnonymous>()
+            .Any();
+        if (anonimMi) return;
+
         // Kimlik doğrulaması ayrı bir katman; buraya gelmişse jeton geçerli.
         // Yine de savunma amaçlı: kimliksiz istek 401 almalı, 403 değil.
         var kullanici = context.HttpContext.RequestServices

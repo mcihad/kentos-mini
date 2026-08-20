@@ -427,8 +427,15 @@ namespace KentOS.Mini.Web.Services
             // için iki farklı kapsam, "listede var ama açılmıyor" demek.
             // Gizlilik kapısı `GorunurAjandalarAsync` içinde ve yerinde
             // duruyor: davetli birim GİZLİ etkinliği zaten göremez.
+            // ÇİÇEK DE YÜKLENİR. Liste ucu (`GetAllAsync`) `Cicek`i zaten
+            // Include ediyordu, DETAY etmiyordu: yanıtta `cicekId` dolu ama
+            // `cicek` null geliyordu. İstemcinin elinde yalnızca "talimat
+            // verilmiş mi" bilgisi kalıyor, "çiçek gitti mi" bilgisi HİÇ
+            // gelmiyordu — etkinlik detayındaki rozet, çiçek teslim edilmiş
+            // olsa bile sonsuza kadar "bekliyor" gösteriyordu.
             var ajanda = await (await GorunurAjandalarAsync(filtreleriAtla: true))
                 .Include(a => a.Photos)
+                .Include(a => a.Cicek)
                 .BirimKapsami(birimId)
                 .FirstOrDefaultAsync(m => m.Id == id);
 
@@ -666,7 +673,15 @@ namespace KentOS.Mini.Web.Services
                     "Gizli etkinlik için çiçek talimatı verilemez — talimat kurum dışı çiçekçiye gönderilir.");
             }
             var author = await _currentUserService.GetFullNameAsync();
-            var dogrulamaKodu = new Random().Next(10000, 99999);
+            /*
+              KOD KRİPTOGRAFİK ÜRETİLİR.
+
+              `new Random()` zaman tabanlı tohumlanır ve tahmin edilebilir:
+              aynı saniyede verilen iki talimat aynı kodu alabiliyor, kodun
+              üretim anını bilen biri aralığı daraltabiliyordu. Kod, çiçeğin
+              gerçekten teslim edildiğini kanıtlayan tek şey.
+            */
+            var dogrulamaKodu = System.Security.Cryptography.RandomNumberGenerator.GetInt32(10000, 100000);
             var cicek = new Cicek
             {
                 AjandaId = ajanda.Id,
@@ -709,8 +724,16 @@ namespace KentOS.Mini.Web.Services
             );
 
             var cicekci = await _context.Cicekciler.FindAsync(ajandaCicekGonderDto.CicekciId);
-            // Adres KURUMDAN gelir (`APP__BASEURL`); koda alan adı yazılmaz.
-            var url = $"{_uygulamaAyari.BaseUrl.TrimEnd('/')}/Cicekci/CicekKart/{cicek.Guid}";
+            /*
+              BAĞLANTI YENİ ARAYÜZE GİDER.
+
+              Eski adres `/Cicekci/CicekKart/{guid}` idi ve karşılığı olan MVC
+              controller'ı YOK: SMS'teki bağlantı çiçekçide 404 açıyordu.
+              Yeni adres SPA'nın anonim teslim ekranı.
+
+              Alan adı KURUMDAN gelir (`APP__BASEURL`); koda yazılmaz.
+            */
+            var url = $"{_uygulamaAyari.BaseUrl.TrimEnd('/')}/cicek-teslim/{cicek.Guid}";
             var cicekciMessage = $"{ajanda.Baslik} konulu etkinlik için çiçek gönderilecek. Dogrulama kodu: {dogrulamaKodu}. Çiçeği gönderdikten sonra verilen adrese gidip doğrulama kodunu girin: {url}";
             var token = cicekci.Telefon;
             if (token.Length >= 10 && !string.IsNullOrEmpty(token))

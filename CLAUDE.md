@@ -798,6 +798,81 @@ PDF dört türde (`DavetCiktiTuru`): takip · telefon listesi · boş katılım
 > başarısız olsa bile çıktı üretilir — font eksikliği yüzünden 500 vermek,
 > kartın biraz farklı görünmesinden kötü.
 
+### Çiçek teslim akışı — çiçekçinin HESABI YOK
+
+Akış baştan sona kırıktı ve üç ayrı yerden kırıktı:
+
+| Kırık | Belirti |
+|---|---|
+| SMS'teki adres koda yazılıydı ve karşılığı olan MVC sayfası kaldırılmıştı | Çiçekçinin eline **ölü bağlantı** gidiyordu |
+| Uçlar `[Izin(CicekGoruntule)]` + JWT arkasındaydı | Bağlantı açılsa bile **401** |
+| Etkinlik detayı `Cicek`i Include etmiyordu | Rozet, çiçek teslim edilse bile hep **"bekliyor"** |
+
+**Çiçekçi kurumun kullanıcısı değil**: hesabı, rolü, jetonu yok. Bu yüzden
+teslim yüzeyi anonim (`GET/POST api/v2/cicek/teslim-karti/{guid}`) ve yetki
+belirteci **bağlantıdaki GUID**. Yanıt ayrı bir DTO ile daraltıldı
+(`CicekTeslimKartiDto`): etkinlik, adres, alıcı ve not var — **doğrulama kodu
+yok**. Kod kartta gösterilseydi teslim kapısı hiçbir şeyi korumazdı; kod
+yalnızca SMS'te geçiyor. Kaba kuvvete karşı **beş deneme**, sayaç
+veritabanında (`cicekler.dogrulama_denemesi`) — bellekte olsaydı istek başka
+bir sunucu örneğine gönderilerek aşılabilirdi. Kod artık
+`RandomNumberGenerator` ile üretiliyor.
+
+> Gizli etkinlikler çiçek talimatı üretmiyor, dolayısıyla bu anonim uçtan
+> gizli bir kaydın bilgisi sızamaz.
+
+#### `[AllowAnonymous]` ARTIK GERÇEKTEN ANONİM
+
+`IzinAttribute` elle yazılmış bir `IAsyncAuthorizationFilter` ve
+`[AllowAnonymous]`'u **hiç okumuyordu**. Çerçeve bunu `[Authorize]` için
+kendisi yapıyor; kendi filtren kendi kapısını kuruyorsa istisnayı da kendin
+yazmak zorundasın. Sınıf düzeyinde `[Izin(...)]` taşıyan bir controller'da
+metoda anonim demek işe yaramıyordu.
+
+Düzeltme sistem geneli, o yüzden bedeli de sistem genelinde ölçüldü: değişiklik
+**yalnızca** `[AllowAnonymous]` VE `[Izin]` birlikte taşıyan uçları etkiliyor —
+kod tabanında bunlar sadece iki yeni çiçek ucu. `oturum/giris`,
+`institution`, `manifest.webmanifest` ve vatandaş portalı sınıf düzeyinde
+`[Izin]` taşımıyor, yani zaten anonimdiler.
+
+Bekçi `AnonimUcTests`: anonim yüzeyin tamamı **ad ad** kilitli (7 uç,
+her biri gerekçesiyle). Yeni bir `[AllowAnonymous]` testi düşürür — artık o
+işaret gerçekten kapıyı açtığı için bilinçli bir karar olmak zorunda. Test
+ayrıca filtrenin **erken çıktığını** kanıtlıyor: servis sağlayıcı bilerek boş,
+filtre kapıya uğrarsa istisna ile düşer.
+`IzinUcKapsamiTests` ("her yazma ucu kendi iznini ilan eder") anonim uçları
+bu listeye devrediyor — boşluk kalmıyor, kapı değişiyor.
+
+#### Etkinlik detayında üç durum
+
+`GetAsync(long id)` artık `Cicek`i de Include ediyor. Liste ucu ediyordu,
+detay etmiyordu: yanıtta `cicekId` dolu, `cicek` **null**. Sessiz bir hata —
+eksik `Include` istisna atmaz, sorgu çalışır, alan boş kalır. İstemcinin
+elinde yalnızca "talimat verilmiş mi" bilgisi vardı.
+
+| Rozet | Anlamı |
+|---|---|
+| Sarı üçgen | Talimat verildi, teslim edilmedi |
+| Yeşil onay | Teslim edildi |
+| Yok | Talimat verilmemiş |
+
+Bekçi `CicekAkisTests` (kaynak taraması — hata davranışta sessiz olduğu için).
+**Ateş ettiği ölçüldü:** `Include(a => a.Cicek)` silindiğinde test düştü,
+geri konunca yeşile döndü.
+
+> Kurum içi `CicekDto` doğrulama kodunu taşımaya **devam ediyor** (v1
+> sözleşmesi ve personel teslimi elle işaretleyebilmeli). Anonim DTO'nun
+> ondan ayrı tutulmasının tek sebebi bu; `AnonimUcTests` kod taşımadığını
+> kilitliyor.
+
+**Ölçüm (uçtan uca, jetonsuz):** anonim kart 200 · yanıtta kod yok · yanlış
+kod 400 ("kalan deneme") · doğru kod 200 · teslim ve tarih işaretlendi ·
+etkinlik detayı `gonderildi: true` · görsel tur 218 görüntü, taşma 0, JS
+hatası 0 · 579 sunucu testi yeşil.
+
+Sözleşme anlık görüntüleri +1 kolon (`dogrulama_denemesi`) ve +10 JSON alanı
+aldı; **hiçbir ad silinmedi ya da değişmedi** — v1 mobil sözleşmesi bozulmadı.
+
 ### Halk Günü
 
 Vatandaşın makamda sırayla dinlendiği günler. Akış: **havuz → gün → dilim →
