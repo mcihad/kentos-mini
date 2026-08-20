@@ -387,7 +387,7 @@ public class GelenKutusuServisi(
 
             await _mesajlar.CreateForUsersAsync(
                 hedefler, baslik, icerik,
-                SendMessageType.PushNotification, NotifikasyonTip.Always, veri.ToJson());
+                SendMessageType.PushNotification, NotifikasyonTip.InboxOnReceived, veri.ToJson());
         }
         catch (Exception hata)
         {

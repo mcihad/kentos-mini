@@ -455,7 +455,7 @@ public class OzgecmisServisi(
                 $"{paylasanAd}, {kayit.AdSoyad} adlı kişinin özgeçmişini paylaştı." +
                 (string.IsNullOrWhiteSpace(istek.Not) ? "" : $" Not: {istek.Not}"),
                 SendMessageType.PushNotification,
-                NotifikasyonTip.Always,
+                NotifikasyonTip.ResumeOnShared,
                 veri.ToJson());
         }
 

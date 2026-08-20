@@ -14,6 +14,7 @@ import { useSession } from '../auth/SessionProvider';
 import { useTheme, type ThemeMode } from '../theme/ThemeProvider';
 import { InstallCard } from '../pwa/InstallCard';
 import { initials } from '../data/format';
+import { NotificationPreferences } from './settings/NotificationPreferences';
 
 /** Ayarlar — profil, görünüm, bildirimler, oturum. */
 export default function Settings() {
@@ -167,10 +168,26 @@ export default function Settings() {
 
           <p className="mt-3 flex items-start gap-2 text-xs text-text-3">
             <Smartphone size={13} className="mt-0.5 shrink-0" />
-            Mobil uygulamadaki bildirimler bundan bağımsızdır; burada yapılan
-            değişiklik telefonunuzu etkilemez.
+            Bu düğme yalnızca <b>bu tarayıcıyı</b> açıp kapatır. Aşağıdaki
+            tercihler hesabınıza aittir ve telefon dahil her cihazda geçerlidir.
           </p>
         </div>
+      </Card>
+
+      {/*
+        HANGİ OLAYLARDA BİLDİRİM — hesaba ait tercih.
+
+        Yukarıdaki kart "bu tarayıcı bildirim alsın mı" sorusunu cevaplıyor;
+        bu kart "hangi olaylarda" sorusunu. İkisi ayrı kartta çünkü biri
+        CİHAZA, öteki HESABA ait: tarayıcıda kapatmak telefonu etkilemiyor,
+        buradaki tercih ise her cihazda geçerli.
+      */}
+      <Card>
+        <CardHeader
+          baslik="Neler bildirilsin?"
+          aciklama="Gruba dokunup tek tek seçebilir ya da grubun tamamını kapatabilirsiniz."
+        />
+        <NotificationPreferences />
       </Card>
 
       {/* ── Oturum ── */}

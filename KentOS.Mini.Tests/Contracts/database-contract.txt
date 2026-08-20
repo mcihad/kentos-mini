@@ -751,8 +751,16 @@ TABLE user_settings
   agenda_on_postponed
   agenda_on_status_change
   agenda_on_updated
+  citizen_report_on_update
+  file_on_received
   hide_old_agendas
   id
+  inbox_on_received
+  invitation_on_assigned
+  invitation_on_response
+  project_on_team_change
+  public_day_on_assigned
+  public_day_on_result
   request_on_added_to_agenda
   request_on_created
   request_on_deleted
@@ -762,6 +770,11 @@ TABLE user_settings
   request_on_remittance
   request_on_status_change
   request_on_updated
+  resume_on_shared
+  task_on_approval_needed
+  task_on_assigned
+  task_on_overdue
+  task_on_status_change
   user_id
 TABLE vatandas_bildirimleri
   aciklama

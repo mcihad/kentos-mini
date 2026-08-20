@@ -58,5 +58,62 @@ namespace KentOS.Mini.Application.Models
         public bool RequestOnRemittance { get; set; } = true;
         [Column("request_on_added_to_agenda")]
         public bool RequestOnAddedToAgenda { get; set; } = true;
-    }
+    
+        // ── YENİ MODÜLLER ───────────────────────────────────────────
+        // Hepsi VARSAYILAN AÇIK. Bildirim, kullanıcının istemediğini
+        // söylemesine kadar gelir; kapalı başlayan bir bildirim, ayarı hiç
+        // açmayan kullanıcı için hiç var olmamış demektir.
+
+        /// <summary>Size yeni bir görev atandı.</summary>
+        [Column("task_on_assigned")]
+        public bool TaskOnAssigned { get; set; } = true;
+
+        /// <summary>Görevin durumu değişti.</summary>
+        [Column("task_on_status_change")]
+        public bool TaskOnStatusChange { get; set; } = true;
+
+        /// <summary>Bir görev onayınızı bekliyor.</summary>
+        [Column("task_on_approval_needed")]
+        public bool TaskOnApprovalNeeded { get; set; } = true;
+
+        /// <summary>Görevin süre hedefi aşıldı.</summary>
+        [Column("task_on_overdue")]
+        public bool TaskOnOverdue { get; set; } = true;
+
+        /// <summary>Proje ekibine eklendiniz.</summary>
+        [Column("project_on_team_change")]
+        public bool ProjectOnTeamChange { get; set; } = true;
+
+        /// <summary>Halk gününde göreviniz var.</summary>
+        [Column("public_day_on_assigned")]
+        public bool PublicDayOnAssigned { get; set; } = true;
+
+        /// <summary>Halk günü görüşmesi sonuçlandı.</summary>
+        [Column("public_day_on_result")]
+        public bool PublicDayOnResult { get; set; } = true;
+
+        /// <summary>Davet listesi size atandı.</summary>
+        [Column("invitation_on_assigned")]
+        public bool InvitationOnAssigned { get; set; } = true;
+
+        /// <summary>Davette cevap değişti.</summary>
+        [Column("invitation_on_response")]
+        public bool InvitationOnResponse { get; set; } = true;
+
+        /// <summary>Size dosya gönderildi.</summary>
+        [Column("file_on_received")]
+        public bool FileOnReceived { get; set; } = true;
+
+        /// <summary>Size özgeçmiş paylaşıldı.</summary>
+        [Column("resume_on_shared")]
+        public bool ResumeOnShared { get; set; } = true;
+
+        /// <summary>Gelen kutunuza yeni kayıt düştü.</summary>
+        [Column("inbox_on_received")]
+        public bool InboxOnReceived { get; set; } = true;
+
+        /// <summary>Vatandaş bildiriminizde gelişme.</summary>
+        [Column("citizen_report_on_update")]
+        public bool CitizenReportOnUpdate { get; set; } = true;
+}
 }

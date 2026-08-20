@@ -442,7 +442,7 @@ public class DosyaGonderimiServisi(
             baslik,
             string.IsNullOrWhiteSpace(gonderenAdi) ? konu : $"{gonderenAdi} · {konu}",
             SendMessageType.PushNotification,
-            NotifikasyonTip.Always,
+            NotifikasyonTip.FileOnReceived,
             veri.ToJson());
     }
 

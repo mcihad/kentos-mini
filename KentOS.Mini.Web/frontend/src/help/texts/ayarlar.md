@@ -15,10 +15,32 @@ ayarları değiştirir. Bilgisayarda üst çubuktaki palet simgesinden,
 telefonda **Menü → Tema Tasarımcısı** satırından açılır. Seçiminiz bu
 tarayıcıda saklanır; bir dahaki girişte aynı görünümle açılır.
 
-## Bildirim tercihleri
+## Bildirimler
 
-Hangi olaylarda bildirim almak istediğinizi buradan seçersiniz: yeni etkinlik,
-havale, dosya gönderimi.
+İki ayrı ayar var ve karıştırılmamalı:
+
+**Bu tarayıcı bildirim alsın mı?** — "Bildirimleri aç" düğmesi yalnızca
+kullandığınız tarayıcıyı açar veya kapatır. Telefonunuzdaki uygulamayı
+etkilemez; oradan da ayrıca izin vermeniz gerekir.
+
+**Neler bildirilsin?** — Bu tercihler **hesabınıza** aittir, yani bilgisayar
+ve telefon dahil her cihazda geçerlidir. Olaylar altı grupta toplanmıştır:
+
+| Grup | İçindekiler |
+|---|---|
+| Ajanda ve etkinlikler | Yeni kayıt, güncelleme, erteleme, durum, not, fotoğraf, çiçek |
+| Talepler | Yeni talep, havale, durum değişimi, dosya, not |
+| İş ve görev takibi | Size atanan görev, onay bekleyenler, süre aşımı, proje ekibi |
+| Halk günü | Görevlendirme ve görüşme sonucu |
+| Davetler | Size atanan davet listesi ve cevap değişiklikleri |
+| Gelen belgeler | Dosya, özgeçmiş, gelen kutusu, vatandaş bildirimi |
+
+- **Grubun tamamını kapatmak** için grup satırındaki anahtara dokunun.
+- **Tek tek seçmek** için grup adına dokunup listeyi açın.
+- Grup kapalı değilse başlığın altında kaç tanesinin açık olduğu yazar
+  ("3 / 5 açık").
+
+Kaydet düğmesi yoktur; her değişiklik anında kaydedilir.
 
 ## Hesabınız
 

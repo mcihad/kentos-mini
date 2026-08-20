@@ -1857,3 +1857,63 @@ olduğu · verinin nasıl korunduğu · nereden başlanacağı.
 > yazmıyordu, `ajanda.md` çıktı penceresinin eski akışını anlatıyordu. Yeni
 > eklenen iki jest (aşağı çekip yenile, satırı kaydırarak işlem) de yardımda
 > yoktu — hepsi bu turda yazıldı.
+
+## Bildirim tercihleri: SUNUCUDA VARDI, EKRANDA YOKTU
+
+Sunucu bildirim tercihlerini tutuyordu (`user_settings`, `oturum/tercihler`)
+ve `MessageService` her alıcı için `HasReceiveNotification` çağırıyordu — ama
+**arayüzde hiçbir ekran onları göstermiyordu**. Kullanıcının elinde yalnızca
+"bu tarayıcıda bildirimleri aç/kapat" düğmesi vardı: ya hepsi ya hiçbiri.
+Üstelik `ayarlar.md` yardım metni olmayan bir bölümü anlatıyordu.
+
+### Üç ayrı kusur birden
+
+1. **Yeni modüller kapıdan geçmiyordu.** Görev, proje, halk günü, davet,
+   özgeçmiş, dosya gönderimi ve gelen kutusu bildirimleri
+   `NotifikasyonTip.Always` ile gönderiliyordu — yani kapatılamıyordu. 13 yeni
+   tip eklendi ve her biri kolon + DTO alanı + `switch` koluna bağlandı.
+2. **Ayar satırı olmayan kullanıcı hiç bildirim almıyordu.** Kapı
+   `setting == null` durumunda `false` dönüyordu; satır ancak `GetSetting()`
+   ilk çağrıldığında oluşuyor ve o ekran arayüzde hiç yoktu. Artık `true`:
+   satırın yokluğu "tercih belirtilmemiş" demek, "istemiyorum" değil.
+3. **Entity varsayılanı veritabanına yansımıyordu.** `= true` başlatıcısı
+   yalnızca C# tarafında yeni nesne için çalışır; EF `ALTER TABLE ADD COLUMN`
+   üretirken onu görmez ve kolonu `DEFAULT false` ile ekler — var olan her
+   satır bütün yeni bildirimleri kapalı alırdı. `AppDbContext`'te
+   `SetDefaultValue(true)` ile veritabanı düzeyinde sabitlendi.
+
+### Arayüz: grup + tek tek
+
+`screens/settings/NotificationPreferences.tsx` — 30 anahtar altı grupta
+(ajanda · talepler · iş ve görev · halk günü · davetler · gelen belgeler).
+
+- Grup satırındaki anahtar o gruptaki **her şeyi birden** çevirir.
+- Grup adına dokunmak listeyi açar; satırlar tek tek kapatılabilir.
+- Başlık altındaki sayı grubu açmadan durumu söyler ("3 / 5 açık").
+- **Kaydet düğmesi yok**, her değişiklik anında gider. İstek düşerse anahtar
+  eski hâline döner ve şerit sebebi yazar.
+
+İki kart bilinçli olarak ayrı: üstteki "bu tarayıcı bildirim alsın mı"
+(CİHAZA ait), alttaki "neler bildirilsin" (HESABA ait, telefon dahil her
+cihazda geçerli).
+
+### Bekçi: zincirin kopuk halkası sessizdir
+
+`BildirimTercihleriTests` (5 test, veritabanı istemez). Zincir dört dosyada:
+enum → kolon → DTO alanı → `switch` kolu. Eksik halka **sessizdir**:
+`HasReceiveNotification` tanımadığı tipte `false` döner, yani bildirim hiç
+gönderilmez — istisna yok, günlük yok, testler yeşil kalır.
+
+> **Bekçinin ateş ettiği ölçüldü.** `TaskOnOverdue` kolu switch'ten bilerek
+> silindi; test *"switch'inde kolu olmayan tip(ler): TaskOnOverdue"* diyerek
+> düştü, geri konunca yeşile döndü.
+
+`switch` kolu ve `null` koruması **kaynak dosya okunarak** denetleniyor —
+davranış olarak "bildirim yok"tan ayırt edilemediği için tek ucuz yol bu
+(ön yüzdeki kaynak tarayan testlerle aynı gerekçe).
+
+### Sözleşme anlık görüntüsü güncellendi
+
+`database-contract.txt` +13 kolon, `json-contract.txt` +14 alan. **Hiçbir ad
+silinmedi ya da değişmedi** (diff'te `<` satırı yok) — yalnızca ekleme, yani
+v1 mobil sözleşmesi bozulmadı: bilinmeyen alanı istemci yok sayar.
