@@ -30,7 +30,7 @@ export function InsetGroup({
       {(baslik || eylem) && (
         <header className="flex items-baseline justify-between px-1 pb-2">
           {baslik && (
-            <h2 className="font-display text-base font-bold tracking-[var(--track-d)] text-ink">
+            <h2 className="font-display text-lg font-bold text-ink">
               {baslik}
             </h2>
           )}
@@ -46,6 +46,19 @@ export function InsetGroup({
 
 /**
  * LİSTE SATIRI — `rowMin` 64px (şartname §4), sol durum çipi, iki satır başlık, sağda chevron.
+ *
+ * <h4>Kademeler bir basamak YUKARI alındı</h4>
+ * <p>
+ * Ölçüldü (390px): görev listesinde 137 metin öğesinin <b>%99'u</b> 15px'in
+ * altındaydı ve baskın boy <b>11px</b>'ti — yani şartnamenin yalnızca durum
+ * etiketi ve sayaç için ayırdığı <c>caption</c> kademesi ekranın gövdesi
+ * olmuştu. Satırın kendisi de bir basamak aşağıdaydı: başlık 13, meta 11.
+ * </p>
+ * <p>
+ * Şartname §3.1 liste birincil satırını <c>body</c> (15), ikincil satırı
+ * <c>bodySm</c> (13), üst meta etiketini <c>label</c> (12) olarak veriyor.
+ * Kademeler oraya çekildi; 11px artık yalnızca rozet ve çipte kalıyor.
+ * </p>
  *
  * `sira` verilirse satırlar kademeli girer (`rowIn`, index × 28ms). Kademe
  * listeye "geldi" hissi veriyor; hepsi aynı anda belirince ekran bir anda
@@ -95,11 +108,11 @@ export function ListRow({
 
       <span className="min-w-0 flex-1">
         {ust && (
-          <span className="mb-1 flex items-center gap-1.5 text-2xs text-ink-3">{ust}</span>
+          <span className="mb-1 flex items-center gap-1.5 text-xs text-ink-3">{ust}</span>
         )}
-        <span className="line-clamp-2 block text-sm leading-[1.45] text-ink">{baslik}</span>
+        <span className="line-clamp-2 block text-base font-medium text-ink">{baslik}</span>
         {alt && (
-          <span className="mt-1.5 flex items-center gap-1.5 text-2xs text-ink-3">{alt}</span>
+          <span className="mt-1.5 flex items-center gap-1.5 text-sm text-ink-3">{alt}</span>
         )}
       </span>
 
@@ -138,7 +151,7 @@ export function GroupFooterLink({ yol, children }: { yol: string; children: Reac
   return (
     <Link
       to={yol}
-      className="flex h-[46px] w-full items-center justify-center text-sm font-medium text-brand transition-colors active:bg-sunken"
+      className="flex h-[48px] w-full items-center justify-center text-base font-semibold text-brand transition-colors active:bg-sunken"
     >
       {children}
     </Link>

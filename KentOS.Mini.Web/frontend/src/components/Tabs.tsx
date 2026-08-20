@@ -49,8 +49,14 @@ export type TabItem<T extends string> = {
  * sayede aynı dili konuşuyor: <b>altın, "buradasın" demenin yolu</b>.
  * </p>
  * <p>
- * Zemin tamamen kalkmıyor, marka <i>tonuna</i> düşüyor: dokunmatikte basılan
- * yerin geri bildirimi kalmalı, ama sesi kısılmalı.
+ * <b>Aktif sekme YÜKSELİR, renklenmez.</b> Bir dönem zemini
+ * <c>--brand-soft</c> idi ve yatak <c>--sunken</c>: ikisi de markanın ~%%9
+ * karışımı, yani neredeyse aynı açıklıkta. Sonuç, kullanıcının tarifiyle,
+ * "arka planla ön planın karışması"ydı — hangi sekmede olduğunuz ancak yazı
+ * ağırlığından anlaşılıyordu. Artık aktif sekme <c>--surface</c> zeminle
+ * çukur yataktan yükseliyor ve <c>--sh-2</c> ile ayrılıyor; aynı dil
+ * <c>SegmentedSelect</c>'te zaten kullanılıyordu, iki kontrol nihayet aynı
+ * şeyi söylüyor.
  * </p>
  *
  * <h3>Davranış</h3>
@@ -179,7 +185,7 @@ function sekmeSinifi(aktif: boolean) {
     // `flex-1` + `basis-0`: sığdıkları sürece eşit bölüşürler. `min-w-max`
     // taşmada etiketin kırpılmasını engeller.
     'group relative flex min-w-max flex-1 basis-0 items-center justify-center gap-2',
-    'h-11 rounded-sm px-3.5 text-sm transition-colors',
+    'h-11 rounded-sm px-3.5 text-base transition-colors',
 
     // Yazı AĞIRLIKLA da ayrışıyor, yalnızca renkle değil: güneş altındaki bir
     // telefonda renk farkı ilk kaybolan şey.
@@ -189,12 +195,12 @@ function sekmeSinifi(aktif: boolean) {
     // Etkin sekme çukur yataktan YÜKSELİYOR: koyu temada marka tonu tek
     // başına yetiyor ama açık temada `brand-soft` ile `sunken` birbirine
     // çok yakın. Gölge, iki temada da aynı "kaldırılmış" hissi veriyor.
-    'data-[state=active]:bg-brand-soft data-[state=active]:font-bold data-[state=active]:text-brand data-[state=active]:shadow-1',
-    'aria-selected:bg-brand-soft aria-selected:font-bold aria-selected:text-brand aria-selected:shadow-1',
+    'data-[state=active]:bg-surface data-[state=active]:font-bold data-[state=active]:text-brand data-[state=active]:shadow-2',
+    'aria-selected:bg-surface aria-selected:font-bold aria-selected:text-brand aria-selected:shadow-2',
 
     // Odak halkası: klavyeyle gezenin nerede olduğu görünmeli.
     'outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset',
-    aktif && 'bg-brand-soft font-bold text-brand shadow-1',
+    aktif && 'bg-surface font-bold text-brand shadow-2',
   );
 }
 

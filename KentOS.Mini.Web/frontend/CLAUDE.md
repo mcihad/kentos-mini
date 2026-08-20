@@ -1727,3 +1727,47 @@ fazla **iki** eylem veriyor.
 
 > Düğmenin ne yapacağını kendisi söylüyor; basmadan önce özet satırı da
 > ("20.08.2026 günü, standart düzeninde yazdırılacak") aynı şeyi yazıyor.
+
+## TİP DENGESİ — merdivenin alt ucu ölçülerek yükseltildi
+
+Şartnamenin merdiveni React Native içindi ve `caption` 11dp veriyor. Web'de
+aynı sayı gözle **bir kademe küçük** okunuyor; üstelik uygulama hem telefonda
+hem masaüstünde kullanılıyor ve masaüstünde okuma mesafesi daha uzun.
+
+**Ölçüm — 390px, ekranlardaki görünür metin öğelerinin punto dağılımı:**
+
+| Ekran | Önce | Sonra |
+|---|---|---|
+| Görevler | %99'u 15px altı · baskın **11px × 115** | baskın 12px · **11px kalmadı** · 15px × 19 |
+| Talepler | %99'u 15px altı · 11px × 75 | 13px × 29 · 14px × 28 · 15px × 14 |
+| Projeler | %95'i 15px altı · 11px × 11 | 14px × 10 · 12px × 6 |
+
+Yani şartnamenin **yalnızca rozet ve sayaç için** ayırdığı kademe, ekranların
+gövdesi olmuştu. İki kök neden vardı ve ikisi de sistem düzeyinde düzeltildi:
+
+1. **Merdivenin alt ucu tabana yaklaştırıldı** (`tokens.css`): 3xs 10→11,
+   2xs 11→12, xs 12→13, sm 13→14. `md` (15, `body`) ve üstü **değişmedi** —
+   orada sorun yoktu. Ekran ekran yamamak yerine tek yer: `text-2xs`
+   yüzlerce çağrı yerinde geçiyor.
+2. **`ListRow` kademeleri bir basamak yukarı**: başlık `text-sm`→`text-base`
+   (liste birincil satırı = `body`), üst meta `text-2xs`→`text-xs`, alt satır
+   `text-2xs`→`text-sm`. Aynı kayma proje kartında da vardı (başlık 13px).
+
+> **Ders:** bir tasarım sistemini başka bir platformdan alırken sayılar
+> birebir taşınmaz. dp ile CSS pikseli aynı sayı olabilir ama okuma mesafesi,
+> font rendering ve ekran yoğunluğu farklı. Ölçüm olmadan "şartnameye uygun"
+> demek yetmiyor — kullanıcı "fontlar minnacık" dediğinde şartname değil
+> **algı** haklıydı.
+
+## Aktif sekme YÜKSELİR, renklenmez
+
+Sekme yatağı `--sunken` (marka %8 + nötr), aktif sekme ise `--brand-soft`
+(marka %9 + yüzey) idi: ikisi neredeyse aynı açıklıkta. Kullanıcının tarifiyle
+"arka planla ön plan karışıyordu" — hangi sekmede olunduğu ancak yazı
+ağırlığından anlaşılıyordu.
+
+Aktif sekme artık `--surface` zeminle çukur yataktan **yükseliyor** ve
+`--sh-2` ile ayrılıyor. Aynı dil `SegmentedSelect`'te zaten kullanılıyordu
+(`data-[state=on]:bg-surface`); iki kontrol nihayet aynı şeyi söylüyor.
+Sekme yazısı da `text-sm`→`text-base`: sekme ekranın en geniş etkileşimli
+öğesi, gövde metninin altında kalmamalı.

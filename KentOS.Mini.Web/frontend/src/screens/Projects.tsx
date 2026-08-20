@@ -265,8 +265,8 @@ function ProjeKarti({ proje: p }: { proje: ProjectSummary }) {
             aria-hidden
           />
           <div className="min-w-0 flex-1">
-            <h3 className="line-clamp-1 font-display text-sm font-semibold text-ink">{p.ad}</h3>
-            <p className="mt-0.5 text-2xs text-ink-3">
+            <h3 className="line-clamp-2 font-display text-lg font-bold text-ink">{p.ad}</h3>
+            <p className="mt-0.5 text-sm text-ink-3">
               {p.kod && <span className="tabular-nums">{p.kod} · </span>}
               {p.birimAd}
             </p>
@@ -276,7 +276,7 @@ function ProjeKarti({ proje: p }: { proje: ProjectSummary }) {
 
         {/* İLERLEME görevlerden geliyor; projede saklanan bir yüzde yok. */}
         <div className="mt-3">
-          <div className="flex items-baseline justify-between text-2xs text-ink-3">
+          <div className="flex items-baseline justify-between text-xs text-ink-3">
             <span>
               {toplam === 0 ? 'Görev yok' : `${biten}/${toplam} görev kapandı`}
             </span>
@@ -290,7 +290,7 @@ function ProjeKarti({ proje: p }: { proje: ProjectSummary }) {
           </span>
         </div>
 
-        <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-2xs text-ink-3">
+        <div className="mt-2.5 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-ink-3">
           {p.bitis && (
             <span className={`inline-flex items-center gap-1 ${p.gecikti ? 'text-(--st-no)' : ''}`}>
               <Calendar size={12} />
@@ -319,7 +319,7 @@ function ProjeKarti({ proje: p }: { proje: ProjectSummary }) {
         </div>
 
         {p.yoneticiAd && (
-          <p className="mt-2 truncate text-2xs text-text-3">Yönetici: {p.yoneticiAd}</p>
+          <p className="mt-2 truncate text-sm text-text-3">Yönetici: {p.yoneticiAd}</p>
         )}
       </Card>
     </Link>
