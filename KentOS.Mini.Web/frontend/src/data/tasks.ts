@@ -388,3 +388,30 @@ export function useUnitScope(etkin: boolean) {
   });
   return { ...s, liste: s.data ?? [] };
 }
+
+/**
+ * LİSTE SATIRINDAN çalışan hızlı eylemler.
+ *
+ * <p>
+ * <c>useTaskMutations(id)</c> tek bir görevin uçlarına bağlı; liste satırında
+ * kullanılamaz çünkü kanca her satır için ayrı çağrılamaz. Bu kanca aynı
+ * uçları <b>görev kimliğini parametre alarak</b> sunar, böylece tek bir
+ * çağrıyla bütün liste satırları kaydırma eylemlerini paylaşır.
+ * </p>
+ */
+export function useTaskQuickActions() {
+  const qc = useQueryClient();
+  const tazeleHepsi = () => qc.invalidateQueries({ queryKey: taskKeys.all() });
+
+  return {
+    /** Personelin "bitirdim" beyanı — görevi TAMAMLAMAZ, onaya gönderir. */
+    tamamlanmayaGonder: useMutation({
+      mutationFn: (gorevId: number) => api.post<TaskDetail>(`/gorev/${gorevId}/tamamla`),
+      onSuccess: tazeleHepsi,
+    }),
+    sil: useMutation({
+      mutationFn: (gorevId: number) => api.delete<void>(`/gorev/${gorevId}`),
+      onSuccess: tazeleHepsi,
+    }),
+  };
+}

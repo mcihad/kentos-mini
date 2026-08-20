@@ -1,6 +1,6 @@
 import {
-  AlertTriangle, ArrowDownWideNarrow, ArrowUpNarrowWide, ClipboardCheck,
-  Plus, Search, SlidersHorizontal,
+  AlertTriangle, ArrowDownWideNarrow, ArrowUpNarrowWide, Check, ClipboardCheck,
+  Plus, Search, SlidersHorizontal, Trash2,
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -14,13 +14,18 @@ import { Pagination } from '../components/Pagination';
 import { SelectMenu } from '../components/SelectMenu';
 import { useIsDesktop } from '../components/screenSize';
 import { InsetGroup, ListRow } from '../components/ListRow';
+import { PullToRefresh } from '../components/PullToRefresh';
+import { SwipeRow } from '../components/SwipeRow';
 import { SegmentedSelect, ChipStrip, FilterChip } from '../components/Filters';
 import { Segment, FilterSection, FilterOptions, FilterSheet } from '../components/FilterSheet';
 import { Fab } from '../shell/mobile/Fab';
+import { ConfirmDialog } from '../components/ConfirmDialog';
+import { useToast } from '../components/Toast';
+import { haptic } from '../data/haptics';
 import { PERMISSION } from '../components/permissions';
 import { useSession } from '../auth/SessionProvider';
 import { shortDate } from '../data/format';
-import { useTasks, useUsableTaskTypes } from '../data/tasks';
+import { useTasks, useUsableTaskTypes, useTaskQuickActions } from '../data/tasks';
 import { TASK_PRIORITY_LABELS, TASK_STATUS_LABELS, type TaskSummary } from '../data/types';
 import { UnitScopePicker } from './task/UnitScopePicker';
 import { SlaBadge, StageProgress } from './task/TaskBits';
@@ -47,10 +52,20 @@ const DURUM_SIRASI = [0, 1, 2, 3, 4, 5, 7, 8, 6, 9];
  */
 export default function Tasks() {
   const { hasPermission } = useSession();
+  const { bildir } = useToast();
+  const hizli = useTaskQuickActions();
   const gezin = useNavigate();
   const masaustu = useIsDesktop();
 
   const [suzgecAcik, setSuzgecAcik] = useState(false);
+  /*
+    KAYDIRARAK EYLEM — yıkıcı olan ONAY İSTER.
+
+    Şartname §6.14: tam kaydırma yıkıcı işlemi tetiklemez, panel açılır ve
+    eylem ancak düğmeye dokununca çalışır. Silme bir adım daha uzakta:
+    düğme paneli kapatıp onay penceresini açıyor.
+  */
+  const [silinecek, setSilinecek] = useState<TaskSummary | null>(null);
   const [kapsam, setKapsam] = useState<Kapsam>('kendi');
   const [aramaGirdisi, setAramaGirdisi] = useState('');
   const [arama, setArama] = useState('');
@@ -74,7 +89,7 @@ export default function Tasks() {
 
   const tipler = useUsableTaskTypes();
 
-  const { data, isLoading, isError, error, isPlaceholderData } = useTasks({
+  const { data, isLoading, isError, error, isPlaceholderData, refetch, isFetching } = useTasks({
     sayfa,
     boyut,
     ara: arama,
@@ -89,6 +104,49 @@ export default function Tasks() {
   });
 
   const satirlar = data?.veriler ?? [];
+
+  /**
+   * Satır kaydırınca çıkan hızlı eylemler.
+   *
+   * En fazla iki tane: panel 84px'lik hücrelerden oluşuyor ve üçüncüsü
+   * telefonda okunmuyor (şartname §6.14). Seçim işin akışından geliyor —
+   * bir görevde yapılacak en sık iki şey "bitirdim" demek ve yanlış açılmış
+   * bir kaydı silmek.
+   */
+  function kaydirmaEylemleri(g: TaskSummary) {
+    const eylemler: { etiket: string; ikon: React.ReactNode; calistir: () => void; yikici?: boolean }[] = [];
+    const kapali = g.durum === 4 || g.durum === 5;
+
+    if (!kapali && hasPermission(PERMISSION.gorevAsama)) {
+      eylemler.push({
+        etiket: 'Bitirdim',
+        ikon: <Check size={18} strokeWidth={2.4} />,
+        calistir: () => {
+          hizli.tamamlanmayaGonder.mutate(g.id!, {
+            onSuccess: () => bildir('basari', 'Onaya gönderildi', g.baslik ?? undefined),
+            onError: (h: Error) => {
+              haptic('hata');
+              bildir('hata', 'Gönderilemedi', h.message);
+            },
+          });
+        },
+      });
+    }
+
+    if (hasPermission(PERMISSION.gorevSil)) {
+      eylemler.push({
+        etiket: 'Sil',
+        ikon: <Trash2 size={18} strokeWidth={2.2} />,
+        yikici: true,
+        // Panel kapanır ve ONAY penceresi açılır: kaydırma tek başına
+        // yıkıcı işlem tetiklemez.
+        calistir: () => setSilinecek(g),
+      });
+    }
+
+    return eylemler;
+  }
+
 
   const suzgecDegisti = (f: () => void) => {
     f();
@@ -317,6 +375,38 @@ export default function Tasks() {
         ]}
       />
 
+      {/*
+        SİLME ONAYI — kaydırma panelindeki düğme buraya bağlı.
+
+        Şartname §6.19: yıkıcı onay diyaloğu sonucu SAYIYLA/ADLA anlatır ve
+        tek dolu kırmızı buton buradadır. Kaydırmanın kendisi hiçbir şeyi
+        silmez.
+      */}
+      <ConfirmDialog
+        acik={silinecek !== null}
+        kapat={() => setSilinecek(null)}
+        baslik="Görev silinsin mi?"
+        aciklama={
+          silinecek
+            ? `"${silinecek.baslik}" ve ona bağlı aşamalar, yorumlar ve ekler kaldırılır.`
+            : undefined
+        }
+        onayEtiketi="Sil"
+        yikici
+        onayla={() => {
+          const hedef = silinecek;
+          setSilinecek(null);
+          if (!hedef?.id) return;
+          hizli.sil.mutate(hedef.id, {
+            onSuccess: () => bildir('basari', 'Görev silindi', hedef.baslik ?? undefined),
+            onError: (h: Error) => {
+              haptic('hata');
+              bildir('hata', 'Silinemedi', h.message);
+            },
+          });
+        }}
+      />
+
       <FilterSheet
         acik={suzgecAcik}
         kapat={() => setSuzgecAcik(false)}
@@ -410,10 +500,16 @@ export default function Tasks() {
         <div className={isPlaceholderData ? 'opacity-60 transition-opacity' : undefined}>
           {!masaustu && satirlar.length === 0 && bosDurum}
           {!masaustu && satirlar.length > 0 && (
+            /*
+              AŞAĞI ÇEKİP BIRAK — telefonda listeyi yenilemenin tek doğal
+              yolu. Önce yenilemek için ekrandan çıkıp geri gelmek
+              gerekiyordu; liste "donmuş" hissettiriyordu.
+            */
+            <PullToRefresh yenile={() => refetch()} yenileniyor={isFetching}>
             <InsetGroup>
               {satirlar.map((g, i) => (
+                <SwipeRow key={g.id} eylemler={kaydirmaEylemleri(g)}>
                 <ListRow
-                  key={g.id}
                   sira={i}
                   sonuncu={i === satirlar.length - 1}
                   yol={`/gorevler/${g.id}`}
@@ -484,8 +580,10 @@ export default function Tasks() {
                     </>
                   }
                 />
+                </SwipeRow>
               ))}
             </InsetGroup>
+            </PullToRefresh>
           )}
 
           {masaustu && (

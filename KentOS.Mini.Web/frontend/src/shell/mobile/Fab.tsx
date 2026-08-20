@@ -2,6 +2,7 @@ import { Plus, X } from 'lucide-react';
 import { useEffect, useState, type ReactNode } from 'react';
 import { Link } from 'react-router-dom';
 import { cn } from '../../components/utils';
+import { haptic } from '../../data/haptics';
 
 export type FabAction = {
   etiket: string;
@@ -142,6 +143,7 @@ export function Fab({
                 type="button"
                 onClick={() => {
                   setAcik(false);
+                  haptic('secim');
                   e.onClick();
                 }}
                 className="flex items-center gap-2.5 active:scale-[0.97]"
@@ -163,7 +165,10 @@ export function Fab({
 
         <button
           type="button"
-          onClick={() => setAcik((a) => !a)}
+          onClick={() => {
+            haptic('secim');
+            setAcik((a) => !a);
+          }}
           aria-label={acik ? 'Menüyü kapat' : etiket}
           aria-expanded={acik}
           title={etiket}
