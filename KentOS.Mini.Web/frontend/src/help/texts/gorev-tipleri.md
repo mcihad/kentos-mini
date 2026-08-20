@@ -1,5 +1,3 @@
-# Görev Tipleri
-
 Görev tipi bir etiket değil bir **sözleşmedir**: bir işin kaç aşamadan
 geçeceğini, her aşamada ne kanıt isteneceğini ve kaç saatte bitmesi
 gerektiğini o söyler.
@@ -10,7 +8,7 @@ gerektiğini o söyler.
 2. Adı yazın.
 3. **Hizmet standardı (gün)** — vatandaşa taahhüt edilen süre. Görev
    açılırken planlanan bitiş tarihi buradan hesaplanır.
-4. **SLA (saat)** — iç hedef. Sayaç görev **başlatıldığında** işlemeye
+4. **Süre hedefi (saat)** — iç hedef. Sayaç görev **başlatıldığında** işlemeye
    başlar, açıldığında değil: henüz kimseye verilmemiş bir işi geciktirilmiş
    saymak ölçümü anlamsız kılardı.
 5. Gerekiyorsa **Konum zorunlu** anahtarını açın; o tipte koordinat

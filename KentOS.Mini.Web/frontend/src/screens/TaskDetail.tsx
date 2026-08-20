@@ -116,7 +116,17 @@ export default function TaskDetail() {
       <EmptyState
         ikon={ClipboardCheck}
         baslik="Görev bulunamadı"
-        aciklama={(error as Error)?.message ?? 'Bu görev silinmiş ya da biriminizin dışında olabilir.'}
+        /*
+          SUNUCU MESAJI BAŞLIĞI TEKRARLAMASIN. Uç "Görev bulunamadı." dönüyor
+          ve ekranda başlıkla açıklama aynı cümle oluyordu — şartname §6.18
+          açıklamanın NE YAPILACAĞINI söylemesini istiyor.
+        */
+        aciklama={
+          ((error as Error)?.message ?? '').replace(/[.\s]*$/, '').toLocaleLowerCase('tr-TR')
+            === 'görev bulunamadı'
+            ? 'Bu görev silinmiş ya da biriminizin dışında olabilir.'
+            : ((error as Error)?.message || 'Bu görev silinmiş ya da biriminizin dışında olabilir.')
+        }
         eylem={
           <Link to="/gorevler">
             <Button varyant="ikincil">

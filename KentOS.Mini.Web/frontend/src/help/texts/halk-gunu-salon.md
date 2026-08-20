@@ -1,5 +1,3 @@
-# Salon Modu
-
 Halk günü sırasında kullanılan ekran. Tek işi vardır: sırayı yürütmek.
 Tablet gerekmez — aynı işi bilgisayardan da yapabilirsiniz.
 

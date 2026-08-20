@@ -51,18 +51,26 @@ export function FieldWrapper({
       </label>
       {children}
       {/*
-        YARDIM SATIRI SABİT — şartname §6.8: "hata metni satır kaydırmaz;
-        alan altında sabit yer ayrılır." Kap hep çizilir (min-h), hata
-        belirdiğinde altındaki alanlar zıplamaz.
+        YARDIM SATIRI YALNIZCA GEREKTİĞİNDE YER KAPLAR.
+
+        Şartname §6.8 "hata metni satır kaydırmaz, alan altında sabit yer
+        ayrılır" diyor ve ilk uygulamada bu HER alana uygulanmıştı: ipucusuz
+        alanların altında da 16px boş bir satır duruyordu. Ölçüldü (390px,
+        dokuz alanlı kullanıcı formu): alanlar arası görsel boşluk 16px değil
+        **32px** çıkıyordu (16 boş yardım satırı + 16 form aralığı) ve mobil
+        tabakada form gereksizce uzuyordu.
+
+        Kural artık şu: **ipucu olan alanda satır her zaman çizilir** — hata
+        geldiğinde metin değişir, yükseklik aynı kalır, hiçbir şey zıplamaz.
+        İpucusuz alanda satır yalnızca hata varken çıkar; o an kullanıcı
+        zaten o alana odaklanmış durumda ve tek seferlik 16px'lik kayma,
+        her formda taşınan yüzlerce boş pikselden ucuz.
       */}
-      <p
-        className={cn(
-          'mt-1 min-h-4 text-2xs',
-          hata ? 'text-danger' : 'text-ink-3',
-        )}
-      >
-        {hata ?? ipucu ?? ''}
-      </p>
+      {(hata || ipucu) && (
+        <p className={cn('mt-1 min-h-4 text-2xs', hata ? 'text-danger' : 'text-ink-3')}>
+          {hata ?? ipucu}
+        </p>
+      )}
     </div>
   );
 }

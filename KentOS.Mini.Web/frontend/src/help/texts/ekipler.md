@@ -1,5 +1,3 @@
-# Ekipler
-
 Biriminizin kalıcı çalışma grupları. Park bahçelerin budama ekibi her
 projede aynı ekiptir — ekip birimin yapısıdır, bir işin katılımcı listesi
 değil.

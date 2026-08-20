@@ -115,7 +115,7 @@ public class SlaTarayici(
                         "Süre aşımı",
                         $"{g.TakipNo} — {g.Baslik} ({gecikme} saat gecikti)",
                         SendMessageType.PushNotification,
-                        NotifikasyonTip.Always,
+                        NotifikasyonTip.TaskOnOverdue,
                         veri.ToJson());
                 }
                 catch (Exception hata)

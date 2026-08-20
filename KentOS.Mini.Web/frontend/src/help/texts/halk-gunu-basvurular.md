@@ -1,5 +1,3 @@
-# Vatandaş Havuzu
-
 Halk gününde görüşmek isteyen vatandaşların bekleme listesi. Halk günü
 akışı **buradan başlar**.
 
@@ -10,8 +8,8 @@ akışı **buradan başlar**.
 2. Önce **telefon numarasını** yazın. Numara girilir girilmez sistem "bu
    kişiyi daha önce gördük mü?" sorusunun cevabını gösterir: geçmiş talepleri,
    önceki halk günü görüşmeleri ve protokol kaydı.
-3. Ad, soyad, mahalle ve **konu**yu girin. Konu, başkanın ekranda göreceği
-   metindir; tek cümleyle ne istendiğini yazın.
+3. Ad, soyad, mahalle ve **konu**yu girin. Konu, görüşmeyi yapacak kişinin
+   ekranda göreceği metindir; tek cümleyle ne istendiğini yazın.
 4. **Kaydet** deyin. Kayıt "Bekleyenler" sekmesine düşer.
 
 ## Üç sekme

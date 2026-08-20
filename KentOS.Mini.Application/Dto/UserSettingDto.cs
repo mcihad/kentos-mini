@@ -69,5 +69,47 @@ namespace KentOS.Mini.Application.Dto
 
         [JsonPropertyName("requestOnAddedToAgenda")]
         public bool RequestOnAddedToAgenda { get; set; }
-    }
+    
+        // İş takip, halk günü, davet ve kutu bildirimleri.
+        // Varsayılan AÇIK — kullanıcı kapatana kadar gelir.
+
+        [JsonPropertyName("taskOnAssigned")]
+        public bool TaskOnAssigned { get; set; } = true;
+
+        [JsonPropertyName("taskOnStatusChange")]
+        public bool TaskOnStatusChange { get; set; } = true;
+
+        [JsonPropertyName("taskOnApprovalNeeded")]
+        public bool TaskOnApprovalNeeded { get; set; } = true;
+
+        [JsonPropertyName("taskOnOverdue")]
+        public bool TaskOnOverdue { get; set; } = true;
+
+        [JsonPropertyName("projectOnTeamChange")]
+        public bool ProjectOnTeamChange { get; set; } = true;
+
+        [JsonPropertyName("publicDayOnAssigned")]
+        public bool PublicDayOnAssigned { get; set; } = true;
+
+        [JsonPropertyName("publicDayOnResult")]
+        public bool PublicDayOnResult { get; set; } = true;
+
+        [JsonPropertyName("invitationOnAssigned")]
+        public bool InvitationOnAssigned { get; set; } = true;
+
+        [JsonPropertyName("invitationOnResponse")]
+        public bool InvitationOnResponse { get; set; } = true;
+
+        [JsonPropertyName("fileOnReceived")]
+        public bool FileOnReceived { get; set; } = true;
+
+        [JsonPropertyName("resumeOnShared")]
+        public bool ResumeOnShared { get; set; } = true;
+
+        [JsonPropertyName("inboxOnReceived")]
+        public bool InboxOnReceived { get; set; } = true;
+
+        [JsonPropertyName("citizenReportOnUpdate")]
+        public bool CitizenReportOnUpdate { get; set; } = true;
+}
 }

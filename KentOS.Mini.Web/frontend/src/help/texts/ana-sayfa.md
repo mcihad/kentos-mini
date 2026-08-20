@@ -1,5 +1,3 @@
-# Ana Sayfa
-
 Güne buradan başlarsınız. Ekran üç soruya cevap verir: **bugün ne var**,
 **bekleyen iş ne kadar**, **sırada kim var**.
 

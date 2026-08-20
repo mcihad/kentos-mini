@@ -1,5 +1,3 @@
-# Talep Detayı
-
 Tek bir talebin bütün hikâyesi: kim başvurdu, ne istedi, ne yapıldı.
 
 ## Ekranın bölümleri

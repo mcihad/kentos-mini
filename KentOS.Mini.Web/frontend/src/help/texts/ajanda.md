@@ -1,5 +1,3 @@
-# Ajanda
-
 Makamın programı burada tutulur: toplantılar, ziyaretler, törenler.
 
 ## Üç görünüm
@@ -18,7 +16,7 @@ sağında yazılıdır ve oklarla ileri geri gidebilirsiniz.
    yuvarlak **+** düğmesine basıp **Yeni etkinlik** deyin.
 2. Başlık, tarih ve saati girin. Süre varsayılan olarak 30 dakikadır.
 3. Gerekiyorsa yeri, irtibat kişisini ve telefonunu yazın.
-4. Toplantıya bir müdürlük çağıracaksanız **Katılımcı birimler** bölümünden
+4. Toplantıya başka bir birim çağıracaksanız **Katılımcı birimler** bölümünden
    seçin; o birim etkinliği kendi ajandasında görür.
 5. **Kaydet** deyin.
 
@@ -35,15 +33,22 @@ sağında yazılıdır ve oklarla ileri geri gidebilirsiniz.
 
 ## Çıktı alma
 
-**Çıktılar** düğmesi (yazıcı simgesi, arama kutusunun sağında) bir pencere açar
-ve iki şeyi sorar:
+**Çıktılar** düğmesi (yazıcı simgesi, arama kutusunun sağında) bir pencere
+açar. Pencere sırayla üç şey sorar; her adımda tek karar verirsiniz.
 
-1. **Gün** — hangi günün programı basılacak. Takvimden seçebilir ya da
-   **Dün / Bugün / Yarın** düğmelerini kullanabilirsiniz. Seçtiğiniz günün adı
-   (Çarşamba, Cumartesi…) altında yazılıdır; hafta sonuna program bastığınızı
-   böyle fark edersiniz.
-2. **Sayfa düzeni** — altı seçenek. Her birinin yanındaki küçük şema kâğıdın
-   nasıl bölüneceğini gösterir:
+**1. Ne basılacak?** Üstteki iki seçenek:
+
+- **Günlük program** — Tek bir günün programı, kâğıda basmak için.
+- **Liste** — Ekranda görünen listenin tamamı, süzgeçleriyle birlikte.
+
+**2. Hangi gün ve hangi düzende?** (yalnızca günlük programda)
+
+Günü takvimden seçebilir ya da **Dün / Bugün / Yarın** düğmelerini
+kullanabilirsiniz. Seçtiğiniz günün adı (Çarşamba, Cumartesi…) altında
+yazılıdır; hafta sonuna program bastığınızı böyle fark edersiniz.
+
+Sayfa düzeni altı seçenektir; her birinin yanındaki küçük şema kâğıdın nasıl
+bölüneceğini gösterir:
 
 | Düzen | Ne zaman |
 |---|---|
@@ -54,13 +59,13 @@ ve iki şeyi sorar:
 | Pano | Duvara asılır, çok büyük punto |
 | Boş not sayfası | Yanında el yazısı alanı |
 
-Sonra **Yazdır** (tarayıcıda önizleme açar, yazıcı ayarları sizin) ya da
-**PDF indir** (e-postayla göndermek için). Pencerenin altındaki satır hangi
-günün hangi düzende basılacağını özetler.
+**3. Nasıl alınsın?** Günlük programda **Yazdır** (tarayıcıda önizleme
+açılır, yazıcı ayarları sizindir) ya da **PDF indir**. Listede **Excel** ya
+da **PDF**.
 
-Aynı pencerede **Liste çıktısı** bölümü var: ekranda görünen listeyi
-süzgeçleriyle birlikte Excel veya PDF olarak indirir — bu, günlük programdan
-bağımsızdır.
+Sağ alttaki düğme seçiminize göre adını değiştirir — "Yazdır", "PDF indir"
+ya da "Excel indir". Hemen üstündeki satır ne olacağını özetler:
+*"20.08.2026 günü, standart düzeninde yazdırılacak."*
 
 Çıktının başlığında kurum adı ve **sizin biriminiz** yazar.
 
@@ -68,5 +73,5 @@ bağımsızdır.
 > onun seçtiği kişiler görebilir.
 
 > Bir satırın yanında birim adı yazan altın çerçeveli etiket varsa o etkinlik
-> **başka bir müdürlüğün ajandasındadır**; siz katılımcı olarak davet
+> **başka bir birimin ajandasındadır**; siz katılımcı olarak davet
 > edildiniz. Bu kayıtları düzenleyemez veya silemezsiniz.

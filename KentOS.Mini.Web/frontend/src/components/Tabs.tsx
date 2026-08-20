@@ -1,5 +1,5 @@
 import * as RadixTabs from '@radix-ui/react-tabs';
-import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { useEffect, useRef } from 'react';
 import type { ReactNode } from 'react';
 import { cn } from './utils';
 import { haptic } from '../data/haptics';
@@ -49,8 +49,14 @@ export type TabItem<T extends string> = {
  * sayede aynı dili konuşuyor: <b>altın, "buradasın" demenin yolu</b>.
  * </p>
  * <p>
- * Zemin tamamen kalkmıyor, marka <i>tonuna</i> düşüyor: dokunmatikte basılan
- * yerin geri bildirimi kalmalı, ama sesi kısılmalı.
+ * <b>Aktif sekme YÜKSELİR, renklenmez.</b> Bir dönem zemini
+ * <c>--brand-soft</c> idi ve yatak <c>--sunken</c>: ikisi de markanın ~%%9
+ * karışımı, yani neredeyse aynı açıklıkta. Sonuç, kullanıcının tarifiyle,
+ * "arka planla ön planın karışması"ydı — hangi sekmede olduğunuz ancak yazı
+ * ağırlığından anlaşılıyordu. Artık aktif sekme <c>--surface</c> zeminle
+ * çukur yataktan yükseliyor ve <c>--sh-2</c> ile ayrılıyor; aynı dil
+ * <c>SegmentedSelect</c>'te zaten kullanılıyordu, iki kontrol nihayet aynı
+ * şeyi söylüyor.
  * </p>
  *
  * <h3>Davranış</h3>
@@ -72,10 +78,10 @@ export function Tabs<T extends string>({
   degistir: (d: T) => void;
   className?: string;
 }) {
-  const { yatakRef, gosterge } = useSekmeGostergesi(deger);
+  const yatakRef = useEtkinSekmeyeKaydir(deger);
 
   return (
-    <SekmeYatagi ref={yatakRef} gosterge={gosterge} className={className} rol="tablist">
+    <SekmeYatagi ref={yatakRef} className={className} rol="tablist">
       {sekmeler.map((s) => {
         const aktif = s.deger === deger;
         return (
@@ -130,11 +136,11 @@ export function SekmeListesi({
     istemek o ekranları gereksizce kontrollü hâle getirmek olurdu. Gösterge
     zaten DOM'u ölçüyor; değişimi de DOM'dan dinliyor.
   */
-  const { yatakRef, gosterge } = useSekmeGostergesi();
+  const yatakRef = useEtkinSekmeyeKaydir();
 
   return (
     <RadixTabs.List asChild aria-label={etiket}>
-      <SekmeYatagi ref={yatakRef} gosterge={gosterge} className={className}>
+      <SekmeYatagi ref={yatakRef} className={className}>
         {children}
       </SekmeYatagi>
     </RadixTabs.List>
@@ -179,7 +185,7 @@ function sekmeSinifi(aktif: boolean) {
     // `flex-1` + `basis-0`: sığdıkları sürece eşit bölüşürler. `min-w-max`
     // taşmada etiketin kırpılmasını engeller.
     'group relative flex min-w-max flex-1 basis-0 items-center justify-center gap-2',
-    'h-11 rounded-sm px-3.5 text-sm transition-colors',
+    'h-11 rounded-sm px-3.5 text-base transition-colors',
 
     // Yazı AĞIRLIKLA da ayrışıyor, yalnızca renkle değil: güneş altındaki bir
     // telefonda renk farkı ilk kaybolan şey.
@@ -189,12 +195,12 @@ function sekmeSinifi(aktif: boolean) {
     // Etkin sekme çukur yataktan YÜKSELİYOR: koyu temada marka tonu tek
     // başına yetiyor ama açık temada `brand-soft` ile `sunken` birbirine
     // çok yakın. Gölge, iki temada da aynı "kaldırılmış" hissi veriyor.
-    'data-[state=active]:bg-brand-soft data-[state=active]:font-bold data-[state=active]:text-brand data-[state=active]:shadow-1',
-    'aria-selected:bg-brand-soft aria-selected:font-bold aria-selected:text-brand aria-selected:shadow-1',
+    'data-[state=active]:bg-surface data-[state=active]:font-bold data-[state=active]:text-brand data-[state=active]:shadow-2',
+    'aria-selected:bg-surface aria-selected:font-bold aria-selected:text-brand aria-selected:shadow-2',
 
     // Odak halkası: klavyeyle gezenin nerede olduğu görünmeli.
     'outline-hidden focus-visible:ring-2 focus-visible:ring-brand focus-visible:ring-inset',
-    aktif && 'bg-brand-soft font-bold text-brand shadow-1',
+    aktif && 'bg-surface font-bold text-brand shadow-2',
   );
 }
 
@@ -221,16 +227,25 @@ function Sayac({ deger, aktif }: { deger: number; aktif?: boolean }) {
   );
 }
 
-/** Çukur yatak + kayan altın gösterge. */
+/**
+ * Çukur yatak.
+ *
+ * <p>
+ * Altın kayan gösterge KALDIRILDI. Aktif sekme artık `--surface` zeminle
+ * yataktan yükseliyor ve gölgeyle ayrılıyor; altına ayrıca bir çizgi çizmek
+ * aynı şeyi ikinci kez söylüyordu. İki işaret bir arada, sekmeyi "seçili
+ * kutu + altı çizili" diye iki farklı dilde anlatıyor ve şeridi
+ * kalabalıklaştırıyordu — mobil alt çubuktaki gösterge yerinde duruyor,
+ * orada kutu yükselmesi yok.
+ * </p>
+ */
 const SekmeYatagi = ({
   ref,
-  gosterge,
   className,
   rol,
   children,
 }: {
   ref: React.Ref<HTMLDivElement>;
-  gosterge: { sol: number; genislik: number } | null;
   className?: string;
   rol?: 'tablist';
   children: ReactNode;
@@ -246,112 +261,40 @@ const SekmeYatagi = ({
   >
     {children}
 
-    {/*
-      KAYAN GÖSTERGE — mobil alt çubuğun aynısı.
-
-      Her sekmede ayrı bir öğe belirip kaybolmuyor; TEK öğe kayıyor. Böylece
-      hareket sürekli ve `translate3d` sayesinde ekran kartında çalışıyor —
-      `left` canlandırmak her karede yeniden yerleşim demekti.
-
-      Yatağın İÇİNDE ve kaydırma içeriğiyle birlikte hareket ediyor:
-      `absolute` konumu `offsetLeft`ten geliyor, dolayısıyla taşan bir şerit
-      kaydırıldığında gösterge sekmesinin altında kalıyor.
-    */}
-    {gosterge && (
-      <span
-        aria-hidden
-        className="pointer-events-none absolute bottom-1 h-[2.5px] rounded-pill bg-accent transition-transform duration-260 ease-[cubic-bezier(.22,1,.36,1)] motion-reduce:transition-none"
-        style={{
-          left: 0,
-          width: gosterge.genislik,
-          transform: `translate3d(${gosterge.sol}px, 0, 0)`,
-        }}
-      />
-    )}
   </div>
 );
 
 /**
- * Etkin sekmeyi ölçüp göstergeyi yerleştirir.
+ * Etkin sekmeyi görünür alana kaydırır.
  *
  * <p>
- * Ölçüm <b>DOM'dan</b> okunuyor, indeksten hesaplanmıyor: sekmeler eşit
- * genişlikte olmayabilir (uzun etiket + sayaç rozeti) ve şerit taşabilir.
- * İndeks × sabit genişlik varsayımı, tam da bu iki durumda kayardı.
+ * Şerit taşabiliyor (dar ekranda dört-beş sekme); klavye ya da derin
+ * bağlantıyla etkin hâle gelen bir sekme görünmüyorsa kullanıcı nerede
+ * olduğunu göremez.
+ * </p>
+ *
+ * <p>
+ * Bu kanca eskiden kayan altın göstergeyi de ölçüyordu: etkin sekmenin
+ * <c>offsetLeft/offsetWidth</c> değerlerini okuyup çizgiyi yerleştiriyor,
+ * bunun için iki gözlemci (<c>ResizeObserver</c> + <c>MutationObserver</c>)
+ * ve bir <c>useLayoutEffect</c> gerekiyordu. Gösterge kalkınca ölçüm de
+ * gereksizleşti; geriye yalnızca kaydırma kaldı ve DOM'u okuyan kod
+ * tamamen gitti.
  * </p>
  */
-function useSekmeGostergesi(deger?: string) {
+function useEtkinSekmeyeKaydir(deger?: string) {
   const yatakRef = useRef<HTMLDivElement>(null);
-  const [gosterge, setGosterge] = useState<{ sol: number; genislik: number } | null>(null);
-
-  const olc = useCallback(() => {
-    const yatak = yatakRef.current;
-    if (!yatak) return;
-
-    const aktif = yatak.querySelector<HTMLElement>(
-      '[data-state="active"], [aria-selected="true"], [data-aktif="true"]',
-    );
-    if (!aktif) return;
-
-    // Çizgi sekmenin TAMAMI kadar değil, etiketin altına oturacak kadar
-    // geniş: kenardan kenara bir kural, sekmeyi sekmeden ayıran boşluğu da
-    // kaplayıp bitişik iki sekmeyi tek parça gösteriyordu.
-    const genislik = Math.max(18, Math.round(aktif.offsetWidth * 0.42));
-    const sol = Math.round(aktif.offsetLeft + (aktif.offsetWidth - genislik) / 2);
-
-    setGosterge((eski) =>
-      eski && eski.sol === sol && eski.genislik === genislik ? eski : { sol, genislik },
-    );
-  }, []);
-
-  // `useLayoutEffect`: boyama ÖNCESİ ölçülüyor, yoksa gösterge ilk karede
-  // sol kenarda bir kez çakıp yerine kayıyordu.
-  useLayoutEffect(olc, [olc, deger]);
 
   useEffect(() => {
     const yatak = yatakRef.current;
     if (!yatak) return;
 
-    /*
-      GÖZLEMCİLER İSTEĞE BAĞLI.
-
-      Gösterge bir İYİLEŞTİRME: yoksa sekmeler zemin ve yazı ağırlığıyla
-      zaten ayrışıyor. `ResizeObserver` jsdom'da tanımlı değil ve doğrudan
-      kurmak bütün ekran testlerini render sırasında düşürüyordu — bir
-      süslemenin uygulamayı çökertebilmesi kabul edilemez. Aynı koruma
-      eski tarayıcılar için de geçerli.
-    */
-    const gozlemci =
-      typeof ResizeObserver === 'undefined' ? null : new ResizeObserver(olc);
-
-    if (gozlemci) {
-      gozlemci.observe(yatak);
-      for (const c of yatak.children) gozlemci.observe(c);
-    }
-
-    // Radix etkin sekmeyi `data-state` niteliğiyle yazıyor; kontrolsüz
-    // kullanımda React'in haberi olmuyor. Niteliği doğrudan dinlemek, iki
-    // kullanım biçimini de tek yoldan destekliyor.
-    const nitelikGozlemcisi =
-      typeof MutationObserver === 'undefined' ? null : new MutationObserver(olc);
-
-    nitelikGozlemcisi?.observe(yatak, {
-      subtree: true,
-      attributes: true,
-      attributeFilter: ['data-state', 'aria-selected', 'data-aktif'],
-    });
-
     const aktif = yatak.querySelector<HTMLElement>(
       '[data-state="active"], [aria-selected="true"], [data-aktif="true"]',
     );
-    // jsdom'da `scrollIntoView` de yok.
+    // jsdom'da `scrollIntoView` yok; süsleme yüzünden test düşmemeli.
     aktif?.scrollIntoView?.({ inline: 'nearest', block: 'nearest', behavior: 'smooth' });
+  }, [deger]);
 
-    return () => {
-      gozlemci?.disconnect();
-      nitelikGozlemcisi?.disconnect();
-    };
-  }, [olc, deger]);
-
-  return { yatakRef, gosterge };
+  return yatakRef;
 }

@@ -1,5 +1,3 @@
-# Proje Detayı
-
 Dört sekme: **Özet**, **Pano**, **Gantt** ve **Görevler**.
 
 ## Özet
@@ -24,7 +22,8 @@ kaynağı değildir. Böylece "panoda Tamamlandı ama listede Devam Ediyor"
 çelişkisi oluşamaz.
 
 **Görev akışı panoda da geçerlidir.** Atanmamış bir görevi "Devam ediyor"a,
-onaydan geçmemiş bir görevi "Tamamlandı"ya sürükleyemezsiniz; sunucu reddeder
+onaydan geçmemiş bir görevi "Tamamlandı"ya sürükleyemezsiniz; sistem kabul
+etmez
 ve size sebebini söyler. Onay kapısı panodan atlanamaz.
 
 **Sütunsuz** başlıklı sütun, durumuna karşılık gelen bir sütun bulunmayan

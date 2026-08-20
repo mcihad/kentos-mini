@@ -91,28 +91,48 @@
   /*
     TİPOGRAFİ — şartname §3.1 tablosu, 15 tabanına oranlanmış hâli.
 
-    | kademe | çarpan | 15px tabanda | şartname adı |
-    |--------|--------|--------------|--------------|
-    | 3xs    | 0.667  | 10           | rozet sayısı (şartname 9–10) |
-    | 2xs    | 0.733  | 11           | `caption` |
-    | xs     | 0.8    | 12           | `label` |
-    | sm     | 0.867  | 13           | `bodySm` |
-    | md     | 1      | 15           | `body` |
+    | kademe | 15px tabanda | şartname adı |
+    |--------|--------------|--------------|
+    | 3xs    | 11           | rozet sayısı |
+    | 2xs    | 12           | `caption` |
+    | xs     | 13           | `label` |
+    | sm     | 14           | `bodySm` |
+    | md     | 15           | `body` |
     | lg     | 1.067  | 16           | `title3` |
     | xl     | 1.267  | 19           | `title2` |
     | 2xl    | 1.6    | 24           | `title1` |
     | 3xl    | 2      | 30           | `display` |
     | 4xl    | 2.4    | 36           | büyük metrik (web eki) |
 
-    ÖNCEKİ MOBİL MEDYA BLOĞU KALDIRILDI. Eski ölçek (14 taban, 0.74–1.08
-    çarpanlar) masaüstü yoğunluğuna göreydi ve telefonda küçük kademeleri
-    ayrıca büyütmek gerekmişti. Yeni merdiven zaten MOBİL şartnameden geliyor
-    — 11'in altında kademe yok (eski en küçük 10.4'tü), gövde 15. Aynı ölçek
-    iki bağlamda da geçerli; masaüstü yoğunluğu satır yüksekliği ve bileşen
-    boyundan geliyor, puntoyu küçültmekten değil.
+    ÖNCEKİ MOBİL MEDYA BLOĞU KALDIRILDI. Aynı ölçek iki bağlamda da geçerli;
+    masaüstü yoğunluğu satır yüksekliği ve bileşen boyundan geliyor, puntoyu
+    küçültmekten değil. Alt ucun neden şartnameden bir basamak yukarıda
+    olduğu aşağıda yazılı.
   */
-  --fs-3xs: calc(var(--fs) * 0.667); --fs-2xs: calc(var(--fs) * 0.733); --fs-xs: calc(var(--fs) * 0.8);
-  --fs-sm: calc(var(--fs) * 0.867);  --fs-md: var(--fs);               --fs-lg: calc(var(--fs) * 1.067);
+  /*
+    ALT UÇ BİR BASAMAK YUKARI — ölçülmüş bir algı sorunu.
+
+    Şartnamenin merdiveni React Native içindi ve `caption` 11dp veriyor.
+    Web'de aynı sayı gözle BİR KADEME KÜÇÜK okunuyor; üstelik bu uygulama
+    telefonda da masaüstünde de kullanılıyor ve masaüstünde okuma mesafesi
+    daha uzun. Ölçüm (390px, düzeltmeden önce): görev listesindeki 137 metin
+    öğesinin %99'u 15px altındaydı ve BASKIN BOY 11px'ti — yani şartnamenin
+    yalnızca rozet ve sayaç için ayırdığı kademe ekranların gövdesi olmuştu.
+
+    Kademeler ekran ekran yamanmıyor (yüzlerce çağrı yeri var); merdivenin
+    alt ucu tabana yaklaştırılıyor. Üst kademeler (lg ve yukarısı) şartnameyle
+    birebir kalıyor — orada sorun yoktu.
+
+    | token | eski | yeni | rol |
+    |-------|------|------|-----|
+    | 3xs   | 10   | 11   | rozet sayısı (yalnızca) |
+    | 2xs   | 11   | 12   | caption — durum etiketi, sayaç |
+    | xs    | 12   | 13   | label — form etiketi, çip |
+    | sm    | 13   | 14   | bodySm — ikincil satır |
+    | md    | 15   | 15   | body — DEĞİŞMEDİ |
+  */
+  --fs-3xs: calc(var(--fs) * 0.733); --fs-2xs: calc(var(--fs) * 0.8);   --fs-xs: calc(var(--fs) * 0.867);
+  --fs-sm: calc(var(--fs) * 0.933);  --fs-md: var(--fs);               --fs-lg: calc(var(--fs) * 1.067);
   --fs-xl: calc(var(--fs) * 1.267 * var(--fs-d));
   --fs-2xl: calc(var(--fs) * 1.6 * var(--fs-d));
   --fs-3xl: calc(var(--fs) * 2 * var(--fs-d));
@@ -124,7 +144,7 @@
     buradan türedi; `globals.css` bunları Tailwind'in `--text-*--line-height`
     eşlerine bağlar, yani `text-sm` yazan her yer 13/19 alır.
   */
-  --lh-3xs: 1.4;   --lh-2xs: 1.364; --lh-xs: 1.333; --lh-sm: 1.462;
+  --lh-3xs: 1.364; --lh-2xs: 1.333; --lh-xs: 1.385; --lh-sm: 1.429;
   --lh-md: 1.467;  --lh-lg: 1.375;  --lh-xl: 1.316; --lh-2xl: 1.25;
   --lh-3xl: 1.133; --lh-4xl: 1.1;
 

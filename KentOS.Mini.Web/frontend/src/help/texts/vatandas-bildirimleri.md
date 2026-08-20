@@ -1,5 +1,3 @@
-# Vatandaş Bildirimleri
-
 Vatandaş portalından (`/bildir`) gelen kayıtlar burada birikir. Buradaki
 işin tamamı **ayıklamak ve yönlendirmek**.
 

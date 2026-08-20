@@ -53,7 +53,19 @@ namespace KentOS.Mini.Web.Services
             var setting = await _context.UserSettings.FirstOrDefaultAsync(x => x.UserId == userId);
             if (setting == null)
             {
-                return false;
+                /*
+                  AYAR SATIRI YOKSA VARSAYILAN AÇIK.
+
+                  Burası `false` dönüyordu: ayar satırı ancak `GetSetting()`
+                  ilk kez çağrıldığında oluşuyor, dolayısıyla ayar ekranını hiç
+                  açmamış bir kullanıcı ajanda ve talep bildirimlerinin
+                  TAMAMINI sessizce kaçırıyordu.
+
+                  Entity'deki bütün bayrakların varsayılanı `true`; satırın
+                  yokluğu "tercih belirtilmemiş" demektir, "hiçbirini
+                  istemiyorum" değil.
+                */
+                return true;
             }
 
             return tip switch
@@ -78,6 +90,21 @@ namespace KentOS.Mini.Web.Services
                 NotifikasyonTip.RequestOnNoteAdded => setting.RequestOnNoteAdded,
                 NotifikasyonTip.RequestOnRemittance => setting.RequestOnRemittance,
                 NotifikasyonTip.RequestOnAddedToAgenda => setting.RequestOnAddedToAgenda,
+
+                NotifikasyonTip.TaskOnAssigned => setting.TaskOnAssigned,
+                NotifikasyonTip.TaskOnStatusChange => setting.TaskOnStatusChange,
+                NotifikasyonTip.TaskOnApprovalNeeded => setting.TaskOnApprovalNeeded,
+                NotifikasyonTip.TaskOnOverdue => setting.TaskOnOverdue,
+                NotifikasyonTip.ProjectOnTeamChange => setting.ProjectOnTeamChange,
+                NotifikasyonTip.PublicDayOnAssigned => setting.PublicDayOnAssigned,
+                NotifikasyonTip.PublicDayOnResult => setting.PublicDayOnResult,
+                NotifikasyonTip.InvitationOnAssigned => setting.InvitationOnAssigned,
+                NotifikasyonTip.InvitationOnResponse => setting.InvitationOnResponse,
+                NotifikasyonTip.FileOnReceived => setting.FileOnReceived,
+                NotifikasyonTip.ResumeOnShared => setting.ResumeOnShared,
+                NotifikasyonTip.InboxOnReceived => setting.InboxOnReceived,
+                NotifikasyonTip.CitizenReportOnUpdate => setting.CitizenReportOnUpdate,
+
                 _ => false
             };
         }

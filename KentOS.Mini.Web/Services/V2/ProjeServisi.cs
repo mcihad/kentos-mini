@@ -606,7 +606,7 @@ public class ProjeServisi(
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <c>NotifikasyonTip.Always</c> ZORUNLU: <c>HasReceiveNotification</c>
+    /// <c>NotifikasyonTip.ProjectOnTeamChange</c> ZORUNLU: <c>HasReceiveNotification</c>
     /// başka bir tipte, kullanıcının ayar satırı yoksa <c>false</c> dönüyor ve
     /// bildirim sessizce düşüyor.
     /// </para>
@@ -638,7 +638,7 @@ public class ProjeServisi(
             await _mesajlar.CreateForUsersAsync(
                 liste, baslik, icerik,
                 SendMessageType.PushNotification,
-                NotifikasyonTip.Always,
+                NotifikasyonTip.ProjectOnTeamChange,
                 veri.ToJson());
         }
         catch (Exception hata)

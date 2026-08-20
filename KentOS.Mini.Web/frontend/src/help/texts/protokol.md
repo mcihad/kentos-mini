@@ -1,5 +1,3 @@
-# İl Protokolü
-
 Törende, açılışta ve davetlerde aranacak kişilerin listesi.
 
 ## Listeyi kullanma
@@ -19,7 +17,8 @@ geçen seferi görmüş olursunuz.
 
 ## Kayıt ekleme ve düzenleme
 
-**Yeni kişi** düğmesi kayıt açar (telefonda sağ alttaki **+**). Sıra numarası protokol düzenindeki yeri
+**Yeni kişi** düğmesi kayıt açar (telefonda sağ alttaki **+**). Sıra numarası
+protokol düzenindeki yeri
 belirler; liste bu numaraya göre dizilir.
 
 > Bu liste kişisel iletişim bilgisi taşır. Yetkisi olmayan kullanıcı menüde

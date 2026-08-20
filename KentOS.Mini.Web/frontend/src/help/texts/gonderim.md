@@ -1,5 +1,3 @@
-# Dosya Gönderimi
-
 Kurum içinde kişiden kişiye belge göndermek için. E‑postaya gerek kalmadan,
 kaydı sistemde kalarak.
 

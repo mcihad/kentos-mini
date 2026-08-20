@@ -1,5 +1,3 @@
-# Takvim
-
 Aynı etkinliklerin takvim üzerinde görünümü. Yoğunluğu bir bakışta okumak ve
 boş saat bulmak için kullanılır.
 
@@ -25,5 +23,5 @@ kaybolmaz.
 - Kırmızı yatay çizgi **şu anki saati** gösterir.
 - Altın halka **bugünü** işaretler.
 
-> Etkinlikleri sürüklerken çakışma engellenmez, yalnızca uyarılır: makamda
-> aynı saate bilinçli olarak iki kayıt girilebiliyor.
+> Etkinlikleri sürüklerken çakışma engellenmez, yalnızca uyarılır: aynı
+> saate iki kayıt girmek bazen gerekir.

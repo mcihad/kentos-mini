@@ -1727,3 +1727,193 @@ fazla **iki** eylem veriyor.
 
 > Düğmenin ne yapacağını kendisi söylüyor; basmadan önce özet satırı da
 > ("20.08.2026 günü, standart düzeninde yazdırılacak") aynı şeyi yazıyor.
+
+## TİP DENGESİ — merdivenin alt ucu ölçülerek yükseltildi
+
+Şartnamenin merdiveni React Native içindi ve `caption` 11dp veriyor. Web'de
+aynı sayı gözle **bir kademe küçük** okunuyor; üstelik uygulama hem telefonda
+hem masaüstünde kullanılıyor ve masaüstünde okuma mesafesi daha uzun.
+
+**Ölçüm — 390px, ekranlardaki görünür metin öğelerinin punto dağılımı:**
+
+| Ekran | Önce | Sonra |
+|---|---|---|
+| Görevler | %99'u 15px altı · baskın **11px × 115** | baskın 12px · **11px kalmadı** · 15px × 19 |
+| Talepler | %99'u 15px altı · 11px × 75 | 13px × 29 · 14px × 28 · 15px × 14 |
+| Projeler | %95'i 15px altı · 11px × 11 | 14px × 10 · 12px × 6 |
+
+Yani şartnamenin **yalnızca rozet ve sayaç için** ayırdığı kademe, ekranların
+gövdesi olmuştu. İki kök neden vardı ve ikisi de sistem düzeyinde düzeltildi:
+
+1. **Merdivenin alt ucu tabana yaklaştırıldı** (`tokens.css`): 3xs 10→11,
+   2xs 11→12, xs 12→13, sm 13→14. `md` (15, `body`) ve üstü **değişmedi** —
+   orada sorun yoktu. Ekran ekran yamamak yerine tek yer: `text-2xs`
+   yüzlerce çağrı yerinde geçiyor.
+2. **`ListRow` kademeleri bir basamak yukarı**: başlık `text-sm`→`text-base`
+   (liste birincil satırı = `body`), üst meta `text-2xs`→`text-xs`, alt satır
+   `text-2xs`→`text-sm`. Aynı kayma proje kartında da vardı (başlık 13px).
+
+> **Ders:** bir tasarım sistemini başka bir platformdan alırken sayılar
+> birebir taşınmaz. dp ile CSS pikseli aynı sayı olabilir ama okuma mesafesi,
+> font rendering ve ekran yoğunluğu farklı. Ölçüm olmadan "şartnameye uygun"
+> demek yetmiyor — kullanıcı "fontlar minnacık" dediğinde şartname değil
+> **algı** haklıydı.
+
+## Aktif sekme YÜKSELİR, renklenmez
+
+Sekme yatağı `--sunken` (marka %8 + nötr), aktif sekme ise `--brand-soft`
+(marka %9 + yüzey) idi: ikisi neredeyse aynı açıklıkta. Kullanıcının tarifiyle
+"arka planla ön plan karışıyordu" — hangi sekmede olunduğu ancak yazı
+ağırlığından anlaşılıyordu.
+
+Aktif sekme artık `--surface` zeminle çukur yataktan **yükseliyor** ve
+`--sh-2` ile ayrılıyor. Aynı dil `SegmentedSelect`'te zaten kullanılıyordu
+(`data-[state=on]:bg-surface`); iki kontrol nihayet aynı şeyi söylüyor.
+Sekme yazısı da `text-sm`→`text-base`: sekme ekranın en geniş etkileşimli
+öğesi, gövde metninin altında kalmamalı.
+
+**Kayan altın gösterge KALDIRILDI.** Kutu yükselmesi zaten "buradasın"
+diyordu; altına ayrıca bir çizgi çizmek aynı şeyi ikinci kez, başka bir
+dilde söylüyordu. Gösterge gidince onu besleyen ölçüm kodu da gitti: iki
+gözlemci (`ResizeObserver` + `MutationObserver`), bir `useLayoutEffect` ve
+`offsetLeft/offsetWidth` okuyan kanca. Geriye yalnızca etkin sekmeyi görünür
+alana kaydıran küçük bir efekt kaldı.
+
+> Mobil alt çubuktaki altın gösterge **yerinde duruyor** — orada sekme
+> kutusu yükselmiyor, işareti taşıyan tek şey o çizgi.
+
+## Form alanı: boş yardım satırı yer kaplamaz
+
+Şartname §6.8 "hata metni satır kaydırmaz, alan altında sabit yer ayrılır"
+diyor ve ilk uygulamada bu **her** alana uygulanmıştı: ipucusuz alanların
+altında da 16px boş bir satır duruyordu.
+
+> **Ölçüm (390px, dokuz alanlı kullanıcı formu, alt tabakada):** alanlar
+> arası görsel boşluk 16px değil **32px** çıkıyordu (16 boş yardım satırı +
+> 16 form aralığı) ve alan yüksekliği **96px**'ti. Düzeltmeden sonra alan
+> **76px**; formda ~180px kazanıldı, telefonda iki alan daha ilk ekrana
+> giriyor.
+
+Kural artık şu:
+
+- **İpucu olan alanda** satır her zaman çizilir — hata geldiğinde metin
+  değişir, yükseklik aynı kalır, hiçbir şey zıplamaz.
+- **İpucusuz alanda** satır yalnızca hata varken çıkar. O an kullanıcı zaten
+  o alana odaklanmış durumda; tek seferlik 16px'lik kayma, her formda taşınan
+  yüzlerce boş pikselden ucuz.
+
+## Yardım metinleri SON KULLANICI içindir
+
+36 metin (`help/texts/*.md`) baştan sona elden geçirildi. Kural tek cümle:
+**yardım, ekranı kullanan memura yazılır — yazılımcıya değil.**
+
+### Kaldırılanlar
+
+| Ne | Nereye döndü |
+|---|---|
+| `SLA` | "süre hedefi" / "hedeflenen süre" |
+| "tabaka" (tasarım terimi) | "alttan açılan pencere" |
+| "çip" | "etiket" / "renk işareti" |
+| `FAB` | "yuvarlak düğme" |
+| "kök görev" | "ana görev" |
+| "enlem ve boylam" | "konum" |
+| `POST /api/v2/etkinlik` | "hangi işlemde oluştu" |
+| "sunucudaki `.env` dosyası", "`wwwroot` klasörü" | "sistem yöneticiniz" |
+| "56 piksellik satırlar" | ölçü hiç yazılmıyor |
+
+Ayrıca **tasarım gerekçeleri** kullanıcı bilgisine çevrildi: "Ayrım olmasaydı
+kutu kullanılamaz hâle gelirdi" yerine "Bu ayrım kutunun birikmesini önler".
+Kullanıcı kararın *neden* verildiğini değil, *kendisi için ne anlama
+geldiğini* okumak istiyor.
+
+### Kurum adı geçmez, kurum TÜRÜ de dayatılmaz
+
+Metinler "belediye" demez; program **kamu kurumları** için yazılmıştır ve
+il/ilçe müdürlükleri, kaymakamlıklar, üniversite ve hastane idareleri de
+kullanabilir. "Bilgi İşlem Müdürlüğü" gibi kuruma özgü birim adları
+"sistem yöneticiniz" oldu; "müdürlük" yerine kural olarak "birim" yazılır.
+
+### Başlık iki kez yazılmaz
+
+Her metin `# Ekran Adı` ile başlıyordu ve panel başlık şeridi zaten aynı adı
+gösteriyordu — telefonda tekrar ~60px yer yiyordu. 36 dosyadan da H1
+kaldırıldı; metinler doğrudan bir giriş cümlesiyle başlıyor.
+
+### YENİ: "Bu Program Nedir?"
+
+`help/texts/program-nedir.md` — Yardım Merkezi'nin **ilk sırasında**, hiçbir
+ekrana bağlı değil (`kalip: ''`). Yeni bir kullanıcının ilk sorusu "bu program
+ne işe yarıyor" oluyor ve ekran yardımları buna cevap vermiyordu; her biri
+kendi ekranını anlatıyor.
+
+İçerik: ne olduğu · hangi sorunu çözdüğü (eski hâli / bu programla tablosu) ·
+kimler için uygun olduğu (rol rol) · ne iş yaptığı (modül modül) · ne faydası
+olduğu · verinin nasıl korunduğu · nereden başlanacağı.
+
+> **Yardım, arayüzle birlikte güncellenir.** Bu turda üç metin arayüzün
+> gerisinde kalmıştı: `ayarlar.md` Tema Tasarımcısı'nı hâlâ mobil üst
+> çubukta gösteriyordu (oradan kaldırılmıştı), `mobil.md` üst şeritte artık
+> olmayan iki simgeyi sayıyordu ve çıkışın nereye taşındığını hiçbir metin
+> yazmıyordu, `ajanda.md` çıktı penceresinin eski akışını anlatıyordu. Yeni
+> eklenen iki jest (aşağı çekip yenile, satırı kaydırarak işlem) de yardımda
+> yoktu — hepsi bu turda yazıldı.
+
+## Bildirim tercihleri: SUNUCUDA VARDI, EKRANDA YOKTU
+
+Sunucu bildirim tercihlerini tutuyordu (`user_settings`, `oturum/tercihler`)
+ve `MessageService` her alıcı için `HasReceiveNotification` çağırıyordu — ama
+**arayüzde hiçbir ekran onları göstermiyordu**. Kullanıcının elinde yalnızca
+"bu tarayıcıda bildirimleri aç/kapat" düğmesi vardı: ya hepsi ya hiçbiri.
+Üstelik `ayarlar.md` yardım metni olmayan bir bölümü anlatıyordu.
+
+### Üç ayrı kusur birden
+
+1. **Yeni modüller kapıdan geçmiyordu.** Görev, proje, halk günü, davet,
+   özgeçmiş, dosya gönderimi ve gelen kutusu bildirimleri
+   `NotifikasyonTip.Always` ile gönderiliyordu — yani kapatılamıyordu. 13 yeni
+   tip eklendi ve her biri kolon + DTO alanı + `switch` koluna bağlandı.
+2. **Ayar satırı olmayan kullanıcı hiç bildirim almıyordu.** Kapı
+   `setting == null` durumunda `false` dönüyordu; satır ancak `GetSetting()`
+   ilk çağrıldığında oluşuyor ve o ekran arayüzde hiç yoktu. Artık `true`:
+   satırın yokluğu "tercih belirtilmemiş" demek, "istemiyorum" değil.
+3. **Entity varsayılanı veritabanına yansımıyordu.** `= true` başlatıcısı
+   yalnızca C# tarafında yeni nesne için çalışır; EF `ALTER TABLE ADD COLUMN`
+   üretirken onu görmez ve kolonu `DEFAULT false` ile ekler — var olan her
+   satır bütün yeni bildirimleri kapalı alırdı. `AppDbContext`'te
+   `SetDefaultValue(true)` ile veritabanı düzeyinde sabitlendi.
+
+### Arayüz: grup + tek tek
+
+`screens/settings/NotificationPreferences.tsx` — 30 anahtar altı grupta
+(ajanda · talepler · iş ve görev · halk günü · davetler · gelen belgeler).
+
+- Grup satırındaki anahtar o gruptaki **her şeyi birden** çevirir.
+- Grup adına dokunmak listeyi açar; satırlar tek tek kapatılabilir.
+- Başlık altındaki sayı grubu açmadan durumu söyler ("3 / 5 açık").
+- **Kaydet düğmesi yok**, her değişiklik anında gider. İstek düşerse anahtar
+  eski hâline döner ve şerit sebebi yazar.
+
+İki kart bilinçli olarak ayrı: üstteki "bu tarayıcı bildirim alsın mı"
+(CİHAZA ait), alttaki "neler bildirilsin" (HESABA ait, telefon dahil her
+cihazda geçerli).
+
+### Bekçi: zincirin kopuk halkası sessizdir
+
+`BildirimTercihleriTests` (5 test, veritabanı istemez). Zincir dört dosyada:
+enum → kolon → DTO alanı → `switch` kolu. Eksik halka **sessizdir**:
+`HasReceiveNotification` tanımadığı tipte `false` döner, yani bildirim hiç
+gönderilmez — istisna yok, günlük yok, testler yeşil kalır.
+
+> **Bekçinin ateş ettiği ölçüldü.** `TaskOnOverdue` kolu switch'ten bilerek
+> silindi; test *"switch'inde kolu olmayan tip(ler): TaskOnOverdue"* diyerek
+> düştü, geri konunca yeşile döndü.
+
+`switch` kolu ve `null` koruması **kaynak dosya okunarak** denetleniyor —
+davranış olarak "bildirim yok"tan ayırt edilemediği için tek ucuz yol bu
+(ön yüzdeki kaynak tarayan testlerle aynı gerekçe).
+
+### Sözleşme anlık görüntüsü güncellendi
+
+`database-contract.txt` +13 kolon, `json-contract.txt` +14 alan. **Hiçbir ad
+silinmedi ya da değişmedi** (diff'te `<` satırı yok) — yalnızca ekleme, yani
+v1 mobil sözleşmesi bozulmadı: bilinmeyen alanı istemci yok sayar.

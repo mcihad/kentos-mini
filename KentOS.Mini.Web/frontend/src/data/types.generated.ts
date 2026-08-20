@@ -14802,6 +14802,19 @@ export interface components {
             requestOnNoteAdded?: boolean;
             requestOnRemittance?: boolean;
             requestOnAddedToAgenda?: boolean;
+            taskOnAssigned?: boolean;
+            taskOnStatusChange?: boolean;
+            taskOnApprovalNeeded?: boolean;
+            taskOnOverdue?: boolean;
+            projectOnTeamChange?: boolean;
+            publicDayOnAssigned?: boolean;
+            publicDayOnResult?: boolean;
+            invitationOnAssigned?: boolean;
+            invitationOnResponse?: boolean;
+            fileOnReceived?: boolean;
+            resumeOnShared?: boolean;
+            inboxOnReceived?: boolean;
+            citizenReportOnUpdate?: boolean;
         };
         /**
          * Format: int32

@@ -494,7 +494,15 @@ DTO KentOS.Mini.Application.Dto.UserSettingDto
   agendaOnPostponed
   agendaOnStatusChange
   agendaOnUpdated
+  citizenReportOnUpdate
+  fileOnReceived
   hideOldAgendas
+  inboxOnReceived
+  invitationOnAssigned
+  invitationOnResponse
+  projectOnTeamChange
+  publicDayOnAssigned
+  publicDayOnResult
   requestOnAddedToAgenda
   requestOnCreated
   requestOnDeleted
@@ -504,6 +512,11 @@ DTO KentOS.Mini.Application.Dto.UserSettingDto
   requestOnRemittance
   requestOnStatusChange
   requestOnUpdated
+  resumeOnShared
+  taskOnApprovalNeeded
+  taskOnAssigned
+  taskOnOverdue
+  taskOnStatusChange
 DTO KentOS.Mini.Application.Dto.V2.Etkinlik.AralikIstegi
   arama
   baslangic
@@ -523,6 +536,7 @@ DTO KentOS.Mini.Application.Dto.V2.Etkinlik.EtkinlikOzetDto
   gizli
   id
   konum
+  resimSayisi
   resimVar
   seriAyrik
   seriId

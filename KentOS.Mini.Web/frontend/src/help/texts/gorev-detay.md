@@ -1,5 +1,3 @@
-# Görev Detayı
-
 Bir işin yürütüldüğü ekran: aşamalar, atamalar, dosyalar, yorumlar ve
 geçmiş.
 
@@ -39,7 +37,7 @@ açılamaz; iş yeniden yapılacaksa yeni bir görev açılır ve ikisi ayrı ay
 
 ## Süre
 
-SLA sayacı görev **başlatıldığında** damgalanır, açıldığında değil.
+Süre sayacı görev **başlatıldığında** damgalanır, açıldığında değil.
 Görevi **beklemeye** aldığınızda sayaç durur ve bekleme süresi bitiş
 tarihine eklenir — malzeme bekleyen bir iş geciktirilmiş sayılmaz.
 

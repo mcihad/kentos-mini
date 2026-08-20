@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
+﻿using System.Linq;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 using KentOS.Mini.Application.Models;
 using KentOS.Mini.Application.Models.Sibeski;
@@ -112,6 +113,29 @@ namespace KentOS.Mini.Web.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+
+            /*
+              BİLDİRİM TERCİHLERİ VARSAYILAN AÇIK — VERİTABANI DÜZEYİNDE.
+
+              Entity'deki `= true` başlatıcısı yalnızca C# tarafında yeni
+              nesne oluşturulurken çalışır; `ALTER TABLE ... ADD COLUMN`
+              ürettiğinde EF onu görmez ve kolonu `DEFAULT false` ile ekler.
+              Sonuç: var olan her ayar satırı bütün yeni bildirimleri KAPALI
+              alır — kullanıcı hiçbir şey seçmemiş olduğu hâlde bildirim
+              almamaya başlar.
+
+              `HasDefaultValue(true)` hem migration'a doğru varsayılanı
+              yazdırır hem de sonradan eklenen satırlarda aynı davranışı
+              garanti eder.
+            */
+            builder.Entity<UserSetting>(entity =>
+            {
+                foreach (var alan in entity.Metadata.GetProperties()
+                             .Where(p => p.ClrType == typeof(bool)))
+                {
+                    alan.SetDefaultValue(true);
+                }
+            });
             //builder.HasPostgresExtension("uuid-ossp");
             builder.UseSerialColumns();
 

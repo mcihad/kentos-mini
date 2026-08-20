@@ -1,5 +1,3 @@
-# Gecikme Panosu
-
 Birimlerin iş yükünü ve süre aşımlarını gösterir.
 
 ## Bu bir sıralama değil
@@ -14,9 +12,9 @@ kıyaslamasını üretirdi.
 ## Sayı karoları
 
 - **Açık iş** — tamamlanmamış ve iptal edilmemiş görevler.
-- **Süresi aşılan** — SLA bitişi geçmiş açık görevler.
-- **Atanmamış** — kimseye verilmemiş yeni görevler. Ayrı bir karo çünkü
-  gecikmenin en sık sebebi budur ve "açık iş" içinde görünmez kalıyordu.
+- **Süresi aşılan** — süre hedefi aşılmış açık görevler.
+- **Atanmamış** — kimseye verilmemiş yeni görevler. Ayrı gösterilir çünkü
+  gecikmenin en sık sebebi, işin hiç başlamamış olmasıdır.
 - **Onay bekleyen** — personelin bitirdim dediği, yöneticinin kabulünü
   bekleyen işler.
 
@@ -25,7 +23,7 @@ doğrudan o ekranlara bağlantı çıkar.
 
 ## Birim karnesi
 
-- **Zamanında** — süresinde tamamlananların oranı. **SLA'sı olmayan iş bu
+- **Zamanında** — süresinde tamamlananların oranı. **Süre hedefi olmayan iş bu
   orana hiç girmez**; ölçülmemiş bir şeyi "zamanında" saymak sayıyı
   şişirirdi. Ölçülebilir iş yoksa "—" görünür.
 - **Ort. süre** — işin **başlatılmasından** tamamlanmasına kadar geçen

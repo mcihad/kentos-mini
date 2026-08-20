@@ -1,5 +1,3 @@
-# Talepler
-
 Vatandaştan gelen istek, şikâyet ve başvurular burada kaydedilir ve takip
 edilir.
 
@@ -19,7 +17,7 @@ edilir.
   yarayan bileşim "Onaylandı + ajandaya eklenmemiş"tir: sırada bekleyen iş
   tam olarak budur.
 - **Tarih** düğmesi listeyi eskiden yeniye ya da tersine sıralar.
-- **Telefonda** bütün bunlar sağ alttaki **+** → **Ara ve süz** tabakasında:
+- **Telefonda** bütün bunlar sağ alttaki **+** → **Ara ve süz** penceresinde:
   sekmeler, dönem, durum çipleri ve sıralama. Açık süzgeçler listenin üstünde
   etiket olarak durur.
 

@@ -1,5 +1,3 @@
-# Davetler
-
 Bir törene kimlerin çağrıldığını ve kimin geleceğini takip etmek için.
 
 ## Davet listesi oluşturma
@@ -25,9 +23,9 @@ Her satırda iki ayrı bilgi tutulur:
 İkisi ayrı olduğu için "aradık ama cevap vermedi" ile "hiç aranmadı" birbirine
 karışmaz.
 
-Satırda yalnızca ad, unvan·kurum, cevap çipi ve arandı/mesaj için iki küçük
+Satırda yalnızca ad, unvan·kurum, cevap etiketi ve arandı/mesaj için iki küçük
 simge durur (yapılmışsa dolu, değilse sönük). **Satıra dokununca kişinin kendi
-tabakası açılır**: arandı/mesaj işaretleri, cevap seçimi, not ve listeden
+penceresi açılır**: arandı/mesaj işaretleri, cevap seçimi, not ve listeden
 çıkarma orada. Bunların hepsi bir dönem satırın içindeydi ve telefonda isim
 "Ahm…" diye kırpılıyordu.
 

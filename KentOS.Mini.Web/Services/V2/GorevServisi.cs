@@ -889,7 +889,8 @@ public class GorevServisi(
         }
 
         await BildirAsync(hedefler, gorev,
-            "Yeni görev", $"{gorev.TakipNo} — {gorev.Baslik}", iptal);
+            "Yeni görev", $"{gorev.TakipNo} — {gorev.Baslik}", iptal,
+            NotifikasyonTip.TaskOnAssigned);
     }
 
     /// <summary>Durum değişiminde kime haber verilecek?</summary>
@@ -901,7 +902,8 @@ public class GorevServisi(
             // Tamamlanma BEYANI yöneticiye gider — onay kapısını o açacak.
             case GorevDurumu.TamamlanmaBekliyor:
                 await BildirAsync(await OnaylayabilirlerAsync(gorev.BirimId, iptal), gorev,
-                    "Görev onay bekliyor", $"{gorev.TakipNo} — {gorev.Baslik}", iptal);
+                    "Görev onay bekliyor", $"{gorev.TakipNo} — {gorev.Baslik}", iptal,
+                    NotifikasyonTip.TaskOnApprovalNeeded);
                 break;
 
             // Onay, iade ve ret PERSONELE gider — işi yapan sonucu öğrenmeli.
@@ -977,10 +979,12 @@ public class GorevServisi(
     /// </summary>
     /// <remarks>
     /// <para>
-    /// <c>NotifikasyonTip.Always</c> ZORUNLU: <c>HasReceiveNotification</c>
-    /// başka bir tipte, kullanıcının ayar satırı yoksa <c>false</c> dönüyor ve
-    /// bildirim sessizce düşüyor. Yeni bir tip eklemek, aynı işte ayar kolonu
-    /// ve <c>switch</c> kolu da eklemeyi gerektirir.
+    /// <b>Tip parametresi kullanıcının ayar ekranına bağlıdır.</b> Önce
+    /// <c>Always</c> yazılıydı çünkü <c>HasReceiveNotification</c> ayar satırı
+    /// olmayan kullanıcıda <c>false</c> dönüyordu ve tiplendirilen her bildirim
+    /// sessizce düşüyordu. O davranış düzeltildi (satır yoksa varsayılan
+    /// açık), böylece görev bildirimleri de kapatılabilir hâle geldi. Yeni bir
+    /// tip eklerken ayar kolonu ve <c>switch</c> kolu da eklenir.
     /// </para>
     /// <para>
     /// <c>NotificationAction.None</c>: iş takip yalnızca web. Yayındaki mobil
@@ -993,7 +997,7 @@ public class GorevServisi(
     /// </remarks>
     private async Task BildirAsync(
         IEnumerable<long> hedefler, WorkTask gorev, string baslik, string icerik,
-        CancellationToken iptal)
+        CancellationToken iptal, NotifikasyonTip tip = NotifikasyonTip.TaskOnStatusChange)
     {
         try
         {
@@ -1008,7 +1012,7 @@ public class GorevServisi(
             await _mesajlar.CreateForUsersAsync(
                 liste, baslik, icerik,
                 SendMessageType.PushNotification,
-                NotifikasyonTip.Always,
+                tip,
                 veri.ToJson());
         }
         catch (Exception hata)

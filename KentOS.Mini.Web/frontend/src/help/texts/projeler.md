@@ -1,5 +1,3 @@
-# Projeler
-
 Proje, görevlerin **çatısıdır**. Kendisi iş yapmaz; işleri toplar, ara
 hedeflere bağlar ve hepsini tek bir zaman çizelgesinde gösterir.
 
