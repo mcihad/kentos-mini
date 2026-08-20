@@ -56,6 +56,15 @@ public class KurumBilgisiDto
     /// başka bir işe yaramazdı.
     /// </remarks>
     [JsonPropertyName("vatandasBildirimi")] public bool VatandasBildirimi { get; set; }
+
+    /// <summary>
+    /// Dinamik form portalı açık mı.
+    /// </summary>
+    /// <remarks>
+    /// Vatandaş bildirim bayrağından AYRI: şikâyet portalını açmanın form
+    /// portalını da açması, tek kararla iki ayrı maruziyet demekti.
+    /// </remarks>
+    [JsonPropertyName("formPortali")] public bool FormPortali { get; set; }
 }
 
 /// <summary>Kurumsal kimlik çekirdeği — SPA tonları bunlardan türetir.</summary>
@@ -115,6 +124,15 @@ public class KurumGuncellemeIstegi
 
     /// <summary>Vatandaş şikayet portalını aç/kapat.</summary>
     [JsonPropertyName("vatandasBildirimi")] public bool VatandasBildirimi { get; set; }
+
+    /// <summary>
+    /// Dinamik form portalı açık mı.
+    /// </summary>
+    /// <remarks>
+    /// Vatandaş bildirim bayrağından AYRI: şikâyet portalını açmanın form
+    /// portalını da açması, tek kararla iki ayrı maruziyet demekti.
+    /// </remarks>
+    [JsonPropertyName("formPortali")] public bool FormPortali { get; set; }
 }
 
 // ═══════════════════════════════════════════════════════════════════ servis
@@ -238,7 +256,18 @@ public class InstitutionService(
                 await _mevcutKullanici.GetFullNameAsync());
         }
 
+        if (kayit.FormPortalEnabled != istek.FormPortali)
+        {
+            // Aynı gerekçe: bu bir GÜVENLİK kararı ve "kim ne zaman açtı"
+            // sorusunun sonradan sorulacağı tek yer.
+            _logger.LogWarning(
+                "Form portalı {Durum}: {Kullanici}",
+                istek.FormPortali ? "AÇILDI" : "KAPATILDI",
+                await _mevcutKullanici.GetFullNameAsync());
+        }
+
         kayit.CitizenReportEnabled = istek.VatandasBildirimi;
+        kayit.FormPortalEnabled = istek.FormPortali;
 
         kayit.GuncellemeTarihi = DateTime.Now;
         kayit.Guncelleyen = await _mevcutKullanici.GetFullNameAsync();
@@ -325,6 +354,7 @@ public class InstitutionService(
             : k.ApplicationShortName,
         UygulamaAciklamasi = k.ApplicationDescription,
         VatandasBildirimi = k.CitizenReportEnabled,
+        FormPortali = k.FormPortalEnabled,
         Marka = new MarkaDto
         {
             Birincil = k.BrandPrimary,

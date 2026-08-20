@@ -295,3 +295,20 @@ public sealed class FormTaslakSonucuDto
 {
     [JsonPropertyName("surdurmeAnahtari")] public string SurdurmeAnahtari { get; set; } = string.Empty;
 }
+
+/// <summary>Dosya yükleme sonucu — vatandaşa dönen.</summary>
+public sealed class FormDosyaSonucuDto
+{
+    [JsonPropertyName("dosyaId")] public long DosyaId { get; set; }
+    [JsonPropertyName("ad")] public string Ad { get; set; } = string.Empty;
+    [JsonPropertyName("boyut")] public long Boyut { get; set; }
+
+    /// <summary>
+    /// Dosya bir TASLAK yanıta bağlandı; gönderimde bu anahtar geri gelmeli.
+    /// </summary>
+    /// <remarks>
+    /// Gelmezse gönderim yeni bir yanıt açar ve yüklenen dosya sahipsiz
+    /// kalır — kullanıcının gördüğü, "dosyayı ekledim ama kayıtta yok".
+    /// </remarks>
+    [JsonPropertyName("surdurmeAnahtari")] public string SurdurmeAnahtari { get; set; } = string.Empty;
+}

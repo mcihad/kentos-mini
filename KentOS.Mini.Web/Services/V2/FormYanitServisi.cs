@@ -27,6 +27,30 @@ public interface IFormYanitServisi
     Task<FormYanitIstegiDto?> TaslakGetirAsync(
         string guid, string anahtar, CancellationToken iptal = default);
 
+    /// <summary>
+    /// Form alanına dosya yükler — TASLAK yanıt satırı açar.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Ayrı uç, gönderimle birlikte değil.</b> Zorunlu bir dosya alanı
+    /// doğrulamaya giriyor ve 12 MB'lık bir gövde doğrulamada düşerse her
+    /// şey yeniden yüklenirdi. Çiçek teslim akışındaki "tek çağrı" kararı
+    /// burada geçerli değil: orada ayrı uç, fotoğrafın KODSUZ
+    /// yüklenebilmesi demekti; burada kapı zaten adresteki erişim anahtarı.
+    /// </para>
+    /// <para>
+    /// Taslak satırı <b>yanıt sayacını ARTIRMAZ</b>: yoksa yüz dosya
+    /// yükleyen biri formu kotasından kapatırdı.
+    /// </para>
+    /// </remarks>
+    Task<FormDosyaSonucuDto> DosyaYukleAsync(
+        string guid, string alanKimligi, string? surdurmeAnahtari,
+        Stream icerik, string? dosyaAdi, string? icerikTipi, CancellationToken iptal = default);
+
+    /// <summary>Yetkili tarafın dosya indirmesi.</summary>
+    Task<(Stream Akis, string Ad, string Tip)> DosyaIndirAsync(
+        long formId, long yanitId, long dosyaId, CancellationToken iptal = default);
+
     // ── yetkili ──
     Task<SayfaliSonuc<FormYanitOzetDto>> ListeAsync(
         long formId, FormYanitSuzgecDto suzgec, CancellationToken iptal = default);
@@ -40,6 +64,7 @@ public sealed class FormYanitServisi(
     AppDbContext _context,
     IFormServisi _formServisi,
     IInstitutionService _kurum,
+    IFileStorage _depo,
     JwtOptions _jwtAyari) : IFormYanitServisi
 {
     /// <summary>Aynı IP'nin bir forma bir saatte gönderebileceği yanıt.</summary>
@@ -275,6 +300,144 @@ public sealed class FormYanitServisi(
             Eposta = yanit.Eposta,
             SurdurmeAnahtari = anahtar,
         };
+    }
+
+    /// <summary>Form dosyası üst sınırı ve izinli uzantılar.</summary>
+    /// <remarks>
+    /// Uç anonim: sınırsız yükleme diski doldurabilirdi. Uzantı listesi
+    /// alanın kendi ayarından daraltılabiliyor ama bu tavan her zaman
+    /// geçerli — çalışabilir uzantılar (`.html`, `.svg`…) hiçbir formda
+    /// açılamıyor.
+    /// </remarks>
+    private static readonly string[] IzinliUzantilar =
+    [
+        ".pdf", ".jpg", ".jpeg", ".png", ".webp", ".heic",
+        ".doc", ".docx", ".xls", ".xlsx", ".txt", ".csv", ".zip",
+    ];
+
+    private const long DosyaSiniri = 12 * 1024 * 1024;
+
+    public async Task<FormDosyaSonucuDto> DosyaYukleAsync(
+        string guid, string alanKimligi, string? surdurmeAnahtari,
+        Stream icerik, string? dosyaAdi, string? icerikTipi, CancellationToken iptal = default)
+    {
+        var form = await FormuBulAsync(guid, iptal);
+
+        var (aliyor, sebep) = FormServisi.YanitDurumu(form);
+        if (!aliyor) throw new BusinessRuleException(sebep ?? "Bu form yanıt kabul etmiyor.");
+
+        var surum = await _context.FormSurumleri.AsNoTracking()
+            .FirstOrDefaultAsync(v => v.Id == form.YayinSurumId, iptal)
+            ?? throw new EntityNotFoundException("Form bulunamadı.");
+
+        var tanim = FormServisi.TanimiCoz(surum.Tanim);
+
+        var alan = FormDogrulayici.TumAlanlar(tanim)
+            .FirstOrDefault(a => a.Kimlik == alanKimligi
+                && a.Tip == Application.Enums.FormAlanTipi.Dosya)
+            ?? throw new BusinessRuleException("Bu formda böyle bir dosya alanı yok.");
+
+        var uzanti = Path.GetExtension(dosyaAdi ?? string.Empty).ToLowerInvariant();
+
+        // Alanın kendi listesi varsa ONA da uymalı; tavan her hâlükârda bizim.
+        var alanListesi = alan.Dogrulama?.DosyaUzantilari;
+
+        if (!IzinliUzantilar.Contains(uzanti)
+            || (alanListesi is { Count: > 0 } && !alanListesi.Contains(uzanti)))
+        {
+            throw new BusinessRuleException(
+                "Bu dosya türü yüklenemez. İzin verilenler: "
+                + string.Join(", ", alanListesi is { Count: > 0 } ? alanListesi : IzinliUzantilar));
+        }
+
+        using var bellek = new MemoryStream();
+        await icerik.CopyToAsync(bellek, iptal);
+
+        var tavan = alan.Dogrulama?.EnCokDosyaMb is { } mb && mb > 0
+            ? Math.Min(DosyaSiniri, mb * 1024L * 1024L)
+            : DosyaSiniri;
+
+        if (bellek.Length == 0) throw new BusinessRuleException("Dosya okunamadı.");
+        if (bellek.Length > tavan)
+        {
+            throw new BusinessRuleException($"Dosya çok büyük (en fazla {tavan / 1024 / 1024} MB).");
+        }
+
+        // TASLAK SATIR: dosyanın bağlanacağı bir yanıt gerekiyor. Nullable
+        // bir yabancı anahtar + ikinci bir durum makinesi yerine zaten var
+        // olan `Taslak` durumu kullanılıyor — sürdürme özelliğini de
+        // bedavaya veriyor.
+        var yanit = surdurmeAnahtari is { Length: > 0 } a
+            ? await _context.FormYanitlari.FirstOrDefaultAsync(
+                y => y.FormId == form.Id && y.SurdurmeAnahtari == a
+                    && y.Durum == FormYanitDurumu.Taslak, iptal)
+            : null;
+
+        if (yanit is null)
+        {
+            yanit = new FormResponse
+            {
+                FormId = form.Id,
+                SurumId = surum.Id,
+                TakipNo = FormServisi.TakipNoUret(),
+                SurdurmeAnahtari = Convert.ToHexString(RandomNumberGenerator.GetBytes(24)),
+            };
+            _context.FormYanitlari.Add(yanit);
+            await _context.SaveChangesAsync(iptal);
+        }
+
+        /*
+          GİZLİ ALANDA saklanır. Vatandaşın yüklediği belge kimlik fotokopisi
+          olabiliyor; `wwwroot/uploads` altındaki her şey kimlik doğrulanmadan
+          servis ediliyor ve orası bu iş için yanlış yer.
+
+          Ad GUID'den türetiliyor: gelen ad yol ayracı taşıyabiliyor.
+        */
+        var depoAnahtari = $"form/{form.Id}/{Guid.NewGuid():N}{uzanti}";
+        await _depo.SaveAsync(StorageArea.Private, depoAnahtari, bellek.ToArray(), icerikTipi);
+
+        var kayit = new FormResponseFile
+        {
+            YanitId = yanit.Id,
+            AlanKimligi = alanKimligi,
+            Ad = Path.GetFileName(dosyaAdi ?? "belge") ?? "belge",
+            Anahtar = depoAnahtari,
+            IcerikTipi = icerikTipi,
+            Boyut = bellek.Length,
+        };
+
+        _context.FormYanitDosyalari.Add(kayit);
+        await _context.SaveChangesAsync(iptal);
+
+        return new FormDosyaSonucuDto
+        {
+            DosyaId = kayit.Id,
+            Ad = kayit.Ad,
+            Boyut = kayit.Boyut,
+            SurdurmeAnahtari = yanit.SurdurmeAnahtari!,
+        };
+    }
+
+    public async Task<(Stream Akis, string Ad, string Tip)> DosyaIndirAsync(
+        long formId, long yanitId, long dosyaId, CancellationToken iptal = default)
+    {
+        await ((FormServisi)_formServisi).ErisebilirMiAsync(formId, iptal);
+
+        var d = await _context.FormYanitDosyalari.AsNoTracking()
+            .FirstOrDefaultAsync(x => x.Id == dosyaId && x.YanitId == yanitId, iptal)
+            ?? throw new EntityNotFoundException("Dosya bulunamadı.");
+
+        // Yanıtın gerçekten BU forma ait olduğu ayrıca doğrulanıyor: yanıt
+        // kimliği tahmin edilerek başka bir formun dosyasına ulaşılmamalı.
+        var sahiplik = await _context.FormYanitlari.AnyAsync(
+            y => y.Id == yanitId && y.FormId == formId, iptal);
+
+        if (!sahiplik) throw new EntityNotFoundException("Dosya bulunamadı.");
+
+        var akis = await _depo.OpenReadAsync(StorageArea.Private, d.Anahtar, iptal)
+            ?? throw new EntityNotFoundException("Dosya bulunamadı.");
+
+        return (akis, d.Ad, d.IcerikTipi ?? "application/octet-stream");
     }
 
     // ═══════════════════════════════════════════════ yetkili yüzeyi

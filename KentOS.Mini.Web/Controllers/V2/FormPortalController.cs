@@ -89,6 +89,32 @@ public class FormPortalController(IFormYanitServisi _servis) : ControllerBase
         return taslak is null ? NotFound() : Ok(taslak);
     }
 
+    /// <summary>Form alanına dosya yükler.</summary>
+    /// <remarks>
+    /// <b>Ayrı uç, gönderimle birlikte değil:</b> zorunlu bir dosya alanı
+    /// doğrulamaya giriyor ve 12 MB'lık gövde doğrulamada düşerse her şey
+    /// yeniden yüklenirdi. Dönen <c>surdurmeAnahtari</c> gönderimde geri
+    /// gelmeli — gelmezse dosya sahipsiz kalır.
+    /// </remarks>
+    [HttpPost("{anahtar}/dosya")]
+    [EnableRateLimiting(HizSiniri.FormPortaliYazma)]
+    [RequestSizeLimit(12 * 1024 * 1024)]
+    [ProducesResponseType<FormDosyaSonucuDto>(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<FormDosyaSonucuDto> DosyaAsync(
+        string anahtar,
+        [FromForm] string alanKimligi,
+        [FromForm] string? surdurmeAnahtari,
+        IFormFile dosya,
+        CancellationToken iptal)
+    {
+        await using var akis = dosya.OpenReadStream();
+
+        return await _servis.DosyaYukleAsync(
+            anahtar, alanKimligi, surdurmeAnahtari,
+            akis, dosya.FileName, dosya.ContentType, iptal);
+    }
+
     /// <summary>
     /// İstek IP'si — ters vekil arkasında gerçek adres.
     /// </summary>

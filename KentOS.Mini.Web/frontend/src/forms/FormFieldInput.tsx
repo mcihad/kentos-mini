@@ -1,4 +1,5 @@
-import { Star } from 'lucide-react';
+import { FileUp, Star } from 'lucide-react';
+import { useState } from 'react';
 import { FieldWrapper, Input, Secim, Textarea } from '../components/Field';
 import { Switch } from '../components/Switch';
 import { DatePicker } from '../components/DatePicker';
@@ -29,6 +30,7 @@ export function FormFieldInput({
   hata,
   pasif,
   no,
+  yukle,
 }: {
   alan: FormField;
   cevap: Answer | undefined;
@@ -37,6 +39,13 @@ export function FormFieldInput({
   pasif?: boolean;
   /** Soru numarası; form "numaralandır" ayarı açıkken dolu. */
   no?: number | null;
+  /**
+   * Dosya yükleyici — yalnızca vatandaş sayfasında verilir.
+   *
+   * Tasarımcı önizlemesinde YOK: orada dosya yüklemek, kurulmakta olan
+   * bir forma gerçek bir taslak yanıt açmak demekti.
+   */
+  yukle?: (alanKimligi: string, dosya: File) => Promise<{ dosyaId: number; ad: string }>;
 }) {
   const kimlik = `alan-${alan.kimlik}`;
   const d = deger(cevap);
@@ -197,12 +206,13 @@ export function FormFieldInput({
     // ── dosya ──
     case FIELD_TYPE.dosya:
       return sar(
-        <Input
-          id={kimlik}
-          type="file"
-          disabled={pasif}
-          className="py-2.5"
-          onChange={(e) => yaz(e.target.files?.[0]?.name ?? '')}
+        <DosyaAlani
+          kimlik={kimlik}
+          alan={alan}
+          cevap={cevap}
+          degistir={degistir}
+          pasif={pasif}
+          yukle={yukle}
         />,
       );
 
@@ -518,5 +528,93 @@ function Matris({ alan, d, yaz, pasif }: {
         ))}
       </div>
     </>
+  );
+}
+
+
+/* ─────────────────────────────────────────────────────── dosya */
+
+/**
+ * DOSYA ALANI — yükleme GÖNDERİMDEN ÖNCE.
+ *
+ * <p>
+ * Dosya seçilir seçilmez sunucuya gidiyor ve geriye bir kimlik dönüyor;
+ * cevapta o kimlik duruyor. Gönderimle birlikte yollamak, 12 MB'lık bir
+ * gövdenin doğrulamada düşmesi hâlinde her şeyi yeniden yükletirdi.
+ * </p>
+ *
+ * <p>
+ * <b>Yükleyici yoksa alan salt okunur çizilir</b> (tasarımcı önizlemesi):
+ * kurulmakta olan bir forma gerçek bir taslak yanıt açmak istemiyoruz.
+ * </p>
+ */
+function DosyaAlani({
+  kimlik, alan, cevap, degistir, pasif, yukle,
+}: {
+  kimlik: string;
+  alan: FormField;
+  cevap: Answer | undefined;
+  degistir: (c: Answer) => void;
+  pasif?: boolean;
+  yukle?: (alanKimligi: string, dosya: File) => Promise<{ dosyaId: number; ad: string }>;
+}) {
+  const [yukleniyor, setYukleniyor] = useState(false);
+  const [hata, setHata] = useState<string | null>(null);
+
+  const mevcut = Array.isArray(deger(cevap)) ? (deger(cevap) as unknown[]) : [];
+  const adlar = (cevap?.metin ?? '').split('|').filter(Boolean);
+
+  return (
+    <div className="space-y-1.5">
+      <label
+        className={cn(
+          'flex min-h-field cursor-pointer items-center gap-3 rounded-md border border-dashed',
+          'border-line bg-surface-2 px-3 py-2.5 transition-colors hover:border-brand-2',
+          (pasif || !yukle) && 'cursor-default opacity-70',
+        )}
+      >
+        <span className="grid size-9 shrink-0 place-items-center rounded-md bg-brand-soft text-brand" aria-hidden>
+          <FileUp size={17} />
+        </span>
+        <span className="min-w-0 flex-1">
+          <span className="block text-sm font-semibold">
+            {yukleniyor ? 'Yükleniyor…' : adlar.length > 0 ? `${adlar.length} dosya seçildi` : 'Dosya seç'}
+          </span>
+          <span className="block truncate text-xs text-ink-3">
+            {adlar.length > 0 ? adlar.join(', ')
+              : (alan.dogrulama?.dosyaUzantilari?.join(', ') ?? 'PDF, resim ya da belge')}
+          </span>
+        </span>
+        <input
+          id={kimlik}
+          type="file"
+          className="sr-only"
+          disabled={pasif || !yukle || yukleniyor}
+          accept={alan.dogrulama?.dosyaUzantilari?.join(',') ?? undefined}
+          onChange={async (e) => {
+            const d = e.target.files?.[0];
+            if (!d || !yukle) return;
+
+            setYukleniyor(true);
+            setHata(null);
+
+            try {
+              const s = await yukle(alan.kimlik ?? '', d);
+              degistir({
+                deger: [...mevcut, s.dosyaId],
+                metin: [...adlar, s.ad].join('|'),
+              });
+            } catch (h) {
+              setHata((h as Error).message);
+            } finally {
+              setYukleniyor(false);
+              e.target.value = '';
+            }
+          }}
+        />
+      </label>
+
+      {hata && <p className="text-xs text-(--st-no)">{hata}</p>}
+    </div>
   );
 }

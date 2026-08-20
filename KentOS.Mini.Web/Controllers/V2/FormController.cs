@@ -110,6 +110,25 @@ public class FormController(
         long id, long yanitId, CancellationToken iptal) =>
         _yanitServisi.GetirAsync(id, yanitId, iptal);
 
+    /// <summary>
+    /// Yanıta eklenen dosyayı indirir — KİMLİK DENETİMLİ.
+    /// </summary>
+    /// <remarks>
+    /// Dosyalar gizli alanda; statik bir yol yok. Vatandaşın yüklediği belge
+    /// kimlik fotokopisi olabiliyor ve <c>wwwroot/uploads</c> kimlik
+    /// doğrulanmadan servis ediliyor.
+    /// </remarks>
+    [Izin(Izinler.FormYanitGoruntule)]
+    [HttpGet("{id:long}/yanit/{yanitId:long}/dosya/{dosyaId:long}")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DosyaAsync(
+        long id, long yanitId, long dosyaId, CancellationToken iptal)
+    {
+        var (akis, ad, tip) = await _yanitServisi.DosyaIndirAsync(id, yanitId, dosyaId, iptal);
+        return File(akis, tip, ad);
+    }
+
     /// <summary>Yanıt dağılımları — grafikler bu uçtan besleniyor.</summary>
     [Izin(Izinler.FormYanitGoruntule)]
     [HttpGet("{id:long}/ozet")]

@@ -41,6 +41,16 @@ export default function PublicForm() {
   const [kimlik, setKimlik] = useState({ adSoyad: '', telefon: '', eposta: '' });
   const [taslakSoruldu, setTaslakSoruldu] = useState(false);
 
+  /*
+    SÜRDÜRME ANAHTARI dosya yüklemesinden geliyor.
+
+    Sunucu ilk dosyada bir TASLAK yanıt açıyor ve anahtarını dönüyor;
+    gönderimde bu anahtar geri gitmezse yeni bir yanıt açılır ve yüklenen
+    dosya sahipsiz kalır — kullanıcının gördüğü "dosyayı ekledim ama
+    kayıtta yok".
+  */
+  const [surdurmeAnahtari, setSurdurmeAnahtari] = useState<string | null>(null);
+
   const tanim = form.data?.tanim;
   const adimlar = tanim?.adimlar ?? [];
   const cokAdimli = adimlar.length > 1;
@@ -225,6 +235,7 @@ export default function PublicForm() {
 
     try {
       const s = await gonder.mutateAsync({
+        surdurmeAnahtari: surdurmeAnahtari ?? undefined,
         cevaplar: gonderilecek(f.tanim!, cevaplar) as Record<string, unknown>,
         adSoyad: kimlik.adSoyad || undefined,
         telefon: kimlik.telefon || undefined,
@@ -265,6 +276,30 @@ export default function PublicForm() {
           degistir={degistir}
           hatalar={hatalar}
           adim={cokAdimli ? adim : undefined}
+          yukle={async (alanKimligi, dosya) => {
+            const govde = new FormData();
+            govde.append('alanKimligi', alanKimligi);
+            govde.append('dosya', dosya);
+            if (surdurmeAnahtari) govde.append('surdurmeAnahtari', surdurmeAnahtari);
+
+            const y = await fetch(`/api/v2/form-portal/${anahtar}/dosya`, {
+              method: 'POST', body: govde,
+            });
+
+            const metin = await y.text();
+            if (!y.ok) {
+              let mesaj = 'Dosya yüklenemedi.';
+              try { mesaj = JSON.parse(metin).detail ?? mesaj; } catch { /* düz metin */ }
+              throw new Error(mesaj);
+            }
+
+            const s = JSON.parse(metin) as {
+              dosyaId: number; ad: string; surdurmeAnahtari: string;
+            };
+
+            setSurdurmeAnahtari(s.surdurmeAnahtari);
+            return { dosyaId: s.dosyaId, ad: s.ad };
+          }}
         />
 
         {/* Kimlik alanları SON ADIMDA: formun başında ad-telefon sormak,

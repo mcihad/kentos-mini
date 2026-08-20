@@ -170,7 +170,10 @@ Yeni varlık **üç yerde** tanımlanır: `bildirim/BildirimMerkezi.tsx`,
 | Yanıt detayı | `GET form/{id}/yanit/{yid}` | yanıt tabakası | `form.yanitGoruntule` | ✅ |
 | Özet dağılımlar | `GET form/{id}/ozet` | Özet sekmesi | `form.yanitGoruntule` | ✅ |
 | Yanıt geçersiz sayma | `DELETE form/{id}/yanit/{yid}` | yanıt listesi | `form.yanitSil` | ✅ |
+| Dosya yükleme (vatandaş) | `POST form-portal/{a}/dosya` (anonim) | vatandaş formu | — | ✅ |
+| Dosya indirme (yetkili) | `GET form/{id}/yanit/{yid}/dosya/{did}` | yanıt detayı | `form.yanitGoruntule` | ✅ |
 | Excel (dinamik sütun) | `GET form/{id}/excel` | yanıt ekranı | `form.ciktiAl` | ✅ |
+| Portal anahtarı | `PUT api/v2/institution` | `/kurum` | `sistem.kurum` | ✅ |
 
 **Alan tipleri:** 29 tanımlı, **19'u paletten** çıkıyor — metin, e-posta,
 telefon, T.C. kimlik, sayı, tarih, saat, tek/çok seçim, açılır liste,

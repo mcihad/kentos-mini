@@ -59,6 +59,7 @@ type Form = {
   ciktiAmblemi: string;
   /** Vatandaş şikayet portalı açık mı — tek boolean alan. */
   vatandasBildirimi: boolean;
+  formPortali: boolean;
 };
 
 const BOS: Form = {
@@ -68,6 +69,7 @@ const BOS: Form = {
   markaBirincil: '', markaVurgu: '', markaNotr: '', markaBirincilKoyu: '',
   amblem: '', favicon: '', uygulamaIkonu: '', ciktiAmblemi: '',
   vatandasBildirimi: false,
+  formPortali: false,
 };
 
 function kurumdanForm(k: Institution): Form {
@@ -93,6 +95,7 @@ function kurumdanForm(k: Institution): Form {
     uygulamaIkonu: k.marka.uygulamaIkonu ?? '',
     ciktiAmblemi: '',
     vatandasBildirimi: k.vatandasBildirimi ?? false,
+    formPortali: k.formPortali ?? false,
   };
 }
 
@@ -254,6 +257,34 @@ export default function InstitutionSettings() {
             id="ciktiAmblemi" etiket="Çıktı amblemi" deger={form.ciktiAmblemi}
             yaz={yaz('ciktiAmblemi')} ipucu="PDF ve isim kartlarında. Boşsa amblem kullanılır."
           />
+        </div>
+      </FormSection>
+
+      {/*
+        FORM PORTALI AYRI BİR ANAHTAR.
+
+        Şikâyet portalını açmanın form portalını da açması, tek kararla iki
+        ayrı maruziyet demekti. İkisi farklı yüzeyler: biri serbest metin
+        alıyor, öteki kurumun tasarladığı her formu.
+      */}
+      <FormSection
+        baslik="FORM VE ANKET PORTALI"
+        aciklama="Kapalıyken vatandaş form adresleri de uçları da hiç yok."
+      >
+        <div className="space-y-3 p-3.5">
+          <Switch
+            isaretli={form.formPortali}
+            degistir={(a) => setForm((f) => ({ ...f, formPortali: a }))}
+            etiket="Vatandaş form doldurabilsin"
+            aciklama="Açıkken yayınladığınız formlar paylaşım adresinden doldurulabilir. Her form ayrıca kendi açık/kapalı durumunu, tarihini ve yanıt sınırını taşır."
+          />
+
+          {!form.formPortali && (
+            <p className="text-2xs text-ink-3">
+              Kapalıyken yayınlanmış formlar bile açılmaz; bağlantı
+              "Form bulunamadı" gösterir.
+            </p>
+          )}
         </div>
       </FormSection>
 

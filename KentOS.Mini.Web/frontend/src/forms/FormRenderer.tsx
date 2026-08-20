@@ -40,6 +40,7 @@ export function FormRenderer({
   hatalar,
   adim,
   pasif,
+  yukle,
 }: {
   tanim: FormDefinition;
   cevaplar: Answers;
@@ -48,6 +49,8 @@ export function FormRenderer({
   /** Verilirse yalnızca o adım çizilir (stepper). */
   adim?: number;
   pasif?: boolean;
+  /** Dosya yükleyici — yalnızca vatandaş sayfasında verilir. */
+  yukle?: (alanKimligi: string, dosya: File) => Promise<{ dosyaId: number; ad: string }>;
 }) {
   const adimlar = useMemo(
     () => (adim === undefined ? (tanim.adimlar ?? []) : [(tanim.adimlar ?? [])[adim]].filter(Boolean)),
@@ -80,6 +83,7 @@ export function FormRenderer({
                 degistir={degistir}
                 hatalar={hatalar}
                 pasif={pasif}
+                yukle={yukle}
                 numaralandir={tanim.ayarlar?.numaralandir ?? false}
                 siraBaslangici={() => ++sira}
               />
@@ -117,7 +121,7 @@ function genislik(deger: number | null | undefined, kolon: number): number {
 }
 
 function Grup({
-  grup, formKolon, cevaplar, degistir, hatalar, pasif, numaralandir, siraBaslangici,
+  grup, formKolon, cevaplar, degistir, hatalar, pasif, yukle, numaralandir, siraBaslangici,
 }: {
   grup: FormGroup;
   formKolon: number;
@@ -125,6 +129,7 @@ function Grup({
   degistir: (kimlik: string, cevap: { deger?: unknown; metin?: string }) => void;
   hatalar?: Record<string, string>;
   pasif?: boolean;
+  yukle?: (alanKimligi: string, dosya: File) => Promise<{ dosyaId: number; ad: string }>;
   numaralandir: boolean;
   siraBaslangici: () => number;
 }) {
@@ -162,6 +167,7 @@ function Grup({
                 hata={hatalar?.[alan.kimlik ?? '']}
                 pasif={pasif}
                 no={no}
+                yukle={yukle}
               />
             </div>
           );

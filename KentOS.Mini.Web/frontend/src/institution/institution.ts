@@ -60,6 +60,8 @@ export type Institution = {
    * bırakmak, portalı kapatmak değil gizlemek olurdu.
    */
   vatandasBildirimi?: boolean;
+  /** Dinamik form portalı açık mı — şikâyet portalından AYRI bayrak. */
+  formPortali?: boolean;
 };
 
 /**

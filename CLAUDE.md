@@ -1395,6 +1395,34 @@ devralındı:
 | Tek yanıt | **Kısmi benzersiz indeks** (`WHERE kimlik_karmasi IS NOT NULL`) — `CountAsync`+`Insert` bir TOCTOU'ydu. Anahtar `HMAC(form tuzu, telefon)`: telefon anonim formda hiç saklanmıyor ve **tuz form başına**, yani iki anketteki aynı kişi eşleştirilemiyor |
 | Excel | Formül enjeksiyonu kapalı: `=`, `+`, `-`, `@` ile başlayan cevap metne kaçırılıyor |
 
+### Dosya alanı — AYRI UÇ, gizli alan
+
+Dosya seçilir seçilmez sunucuya gidiyor ve geriye bir kimlik dönüyor;
+cevapta o kimlik duruyor. Gönderimle birlikte yollamak, 12 MB'lık bir
+gövdenin doğrulamada düşmesi hâlinde her şeyi yeniden yükletirdi.
+
+> **Çiçek teslim akışındaki "tek çağrı" kararı burada geçerli değil** ve bu
+> yazıya geçmeli, çünkü ilk bakışta çelişki gibi duruyor: orada ayrı uç,
+> fotoğrafın **kodsuz** yüklenebilmesi demekti; burada kapı zaten adresteki
+> erişim anahtarı ve ayrı uç yeni bir kapı açmıyor.
+
+- İlk dosya bir **taslak yanıt satırı** açıyor (dosyanın bağlanacağı bir
+  kayıt gerekiyor). Nullable yabancı anahtar + ikinci bir durum makinesi
+  yerine zaten var olan `Taslak` durumu kullanılıyor — sürdürme özelliğini
+  de bedavaya veriyor. Taslak **yanıt sayacını artırmaz**: yoksa yüz dosya
+  yükleyen biri formu kotasından kapatırdı.
+- Dönen `surdurmeAnahtari` gönderimde geri gelmezse yeni bir yanıt açılır ve
+  dosya sahipsiz kalır — kullanıcının gördüğü "dosyayı ekledim ama kayıtta
+  yok".
+- Dosya **gizli alanda** (`StorageArea.Private` → `uploads/gonderim`);
+  `GonderimDosyaKorumasi` o klasörü tamamen kapatıyor. Tek giriş
+  `GET form/{id}/yanit/{yid}/dosya/{did}`, kimlik denetimli.
+
+> **Ölçüldü:** `.html` → 400 (*"İzin verilenler: .pdf, .png"*) · `.png` →
+> 200 + sürdürme anahtarı · gönderim dosyayı yanıta bağladı · indirme
+> jetonlu **200 image/png**, jetonsuz **401** · statik yol
+> `/uploads/gonderim/form/2/….png` → **404**.
+
 ### Bekçiler
 
 | Test | Neyi kilitler |

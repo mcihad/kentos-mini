@@ -78,6 +78,10 @@ public class AnonimUcTests
         "FormPortalController.TaslakAsync",
         "FormPortalController.TaslakGetirAsync",
 
+        // Dosya yükleme: kapı yine adresteki erişim anahtarı. Dosya GİZLİ
+        // alanda saklanıyor ve yalnızca kimlik denetimli uçtan iniyor.
+        "FormPortalController.DosyaAsync",
+
         // Çiçekçi kurumun kullanıcısı değil: hesabı, rolü, jetonu yok.
         // Yetki belirteci bağlantıdaki GUID; yanıt da ona göre daraltıldı.
         "CicekController.TeslimKartiAsync",
