@@ -1661,3 +1661,69 @@ hangi günün basıldığı çıktı elde edilene kadar görünmüyordu.
 > Ölçüm (uçtan uca, sürülen tarayıcı): "Yarın" + "Pano" seçilip Yazdır'a
 > basıldığında giden istek `…/gunluk-program/html?tarih=2026-08-20&tasarim=6`;
 > sunucu HTML'inde "20 Ağustos 2026" başlığı, PDF yolu 200 / 55 KB / 1 sayfa.
+
+## NATIVE HİS — üç temel taş
+
+Telefonda "web sayfası" ile "uygulama" hissini ayıran şey animasyon değil,
+**hareketlere karşılık vermek**. Üçü de `components/` altında ve her ekranda
+aynı davranır:
+
+| Bileşen | Ne yapar |
+|---|---|
+| `data/haptics.ts` → `haptic(desen)` | Dokunsal geri bildirim: `secim` · `basari` · `uyari` · `hata` · `esik` |
+| `components/PullToRefresh.tsx` | Listeyi aşağı çekip bırakınca yeniler |
+| `components/SwipeRow.tsx` | Satırı yana kaydırınca hızlı eylem paneli açar |
+
+**Haptik bir EK'tir, bilgi taşımaz.** `navigator.vibrate` iOS Safari'de yok ve
+muhtemelen olmayacak; her titreşimin yanında görsel bir karşılık da olmalı.
+`prefers-reduced-motion` açıkken hiç titremez — o tercihi açan kullanıcı
+duyusal uyarıyı da azaltmak istiyor.
+
+**İkisi de her karede `setState` ÇAĞIRMAZ.** Sürükleme mesafesi doğrudan
+`transform`a yazılıp `requestAnimationFrame`e bağlanıyor. Her `pointermove`da
+durum güncellemek uzun listede bütün satırları yeniden çizdiriyor ve hareket
+takılıyordu — aynı tuzağa alt tabakanın sürükleme kodunda (`kaydirmaKapat.ts`)
+daha önce düşülmüştü.
+
+### Kaydırarak eylem kuralları
+
+- **Tam kaydırma yıkıcı işlemi TETİKLEMEZ** (şartname §6.14). Panel açılır,
+  eylem ancak düğmeye dokununca çalışır; silme ayrıca onay penceresi açar.
+  Parmağın hızlanıp ekranı geçmesi kaza değil, sık.
+- Panel hücresi **84px**, en fazla **iki** eylem — üçüncüsü telefonda
+  okunmuyor.
+- Fare ile hiç bağlanmaz: masaüstünde satır eylemleri zaten görünür.
+- Dikey hareket baskınsa kaydırma iptal edilir (listede gezinmeyi çalmaz),
+  yatay baskınsa pull-to-refresh iptal edilir (çip şeridi yenilemez).
+- Panel düğmeleri kapalıyken `tabIndex={-1}`: klavye sırası satırdan satıra
+  atlamaz, panel açılınca eylemler odaklanabilir olur.
+
+### Nerede kullanılıyor
+
+| Ekran | Ne var |
+|---|---|
+| Görevler | Pull-to-refresh · satırda **Bitirdim** (onaya gönder) ve **Sil** |
+| Projeler | Pull-to-refresh · kartlarda basış geri bildirimi |
+| Görev detayı | Durum değişimi, onaya gönderme ve **aşama kapatmada** haptik |
+| Kabuk | FAB menüsü ve sekme değişiminde `secim` deseni |
+
+> Aşama kapatmak görevin en sık tekrarlanan eylemi ve saha personeli çoğu
+> zaman ekrana bakmadan çalışıyor — dokunsal onayın en çok işe yaradığı yer.
+
+## Çıktı penceresi TEK KARAR AKIŞI
+
+Program çıktısı penceresi ilk sürümde **beş düğme** taşıyordu (Excel · PDF ·
+Vazgeç · PDF indir · Yazdır) ve mobilde üçü alt çubuğa sıkışıyordu: kullanıcı
+hangisinin asıl eylem olduğunu ayırt edemiyordu. Şartname §6.5 alt bara en
+fazla **iki** eylem veriyor.
+
+Çözüm düğme kaldırmak değil, **soruyu bölmek**:
+
+1. **Ne basılacak?** — `Günlük program` / `Liste` segmenti
+2. **Hangi düzende?** — altı tasarım (yalnızca program kapsamında)
+3. **Nasıl alınsın?** — `Yazdır` / `PDF indir` (listede `Excel` / `PDF`)
+4. Alt çubuk: **Vazgeç + tek birincil düğme**, etiketi seçime göre değişiyor
+   (`Yazdır` · `PDF indir` · `Excel indir`)
+
+> Düğmenin ne yapacağını kendisi söylüyor; basmadan önce özet satırı da
+> ("20.08.2026 günü, standart düzeninde yazdırılacak") aynı şeyi yazıyor.

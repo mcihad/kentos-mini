@@ -5,6 +5,7 @@ import {
 import { useState } from 'react';
 import { Button } from '../../components/Button';
 import { FieldWrapper } from '../../components/Field';
+import { Segment } from '../../components/FilterSheet';
 import { FormModal } from '../../components/FormModal';
 import { DatePicker } from '../../components/DatePicker';
 import { useToast } from '../../components/Toast';
@@ -12,6 +13,7 @@ import { cn } from '../../components/utils';
 import { download } from '../../data/download';
 import { tokenStore, queryString } from '../../data/client';
 import { dayName, shortDate } from '../../data/format';
+import { haptic } from '../../data/haptics';
 
 /**
  * Günlük program çıktı tasarımları.
@@ -119,6 +121,22 @@ export function ProgramExport({
   const { bildir } = useToast();
   const [tarih, setTarih] = useState(() => onerilenTarih || bugun());
   const [tasarim, setTasarim] = useState<number>(1);
+  /*
+    TEK KARAR AKIŞI: kapsam → seçenekler → TEK eylem.
+
+    İlk sürümde pencerede beş düğme vardı (Excel · PDF · Vazgeç · PDF indir ·
+    Yazdır) ve mobilde üçü alt çubuğa sıkışıyordu: kullanıcı hangisinin asıl
+    eylem olduğunu ayırt edemiyordu. Şartname §6.5 alt bara en fazla İKİ
+    eylem veriyor — biri birincil, biri vazgeç.
+
+    Çözüm düğme kaldırmak değil, SORUYU BÖLMEK: önce ne basılacak
+    (günlük program mı liste mi), sonra nasıl (yazdır/PDF/Excel). Alt çubukta
+    tek birincil düğme kalıyor ve etiketi seçime göre değişiyor, yani düğme
+    ne yapacağını kendisi söylüyor.
+  */
+  const [kapsam, setKapsam] = useState<'program' | 'liste'>('program');
+  const [bicim, setBicim] = useState<'yazdir' | 'pdf'>('yazdir');
+  const [listeBicimi, setListeBicimi] = useState<'excel' | 'pdf'>('excel');
   const [calisiyor, setCalisiyor] = useState<'html' | 'pdf' | null>(null);
 
   /*
@@ -135,6 +153,9 @@ export function ProgramExport({
     if (acik) {
       setTarih(onerilenTarih || bugun());
       setTasarim(1);
+      setKapsam('program');
+      setBicim('yazdir');
+      setListeBicimi('excel');
     }
   }
 
@@ -163,8 +184,10 @@ export function ProgramExport({
       }
       pencere.document.write(html);
       pencere.document.close();
+      haptic('basari');
       kapat();
     } catch (h) {
+      haptic('hata');
       bildir('hata', 'Program açılamadı', (h as Error).message);
     } finally {
       setCalisiyor(null);
@@ -175,8 +198,10 @@ export function ProgramExport({
     setCalisiyor('pdf');
     try {
       await download('/disa-aktar/gunluk-program', { tarih, tasarim });
+      haptic('basari');
       kapat();
     } catch (h) {
+      haptic('hata');
       bildir('hata', 'PDF indirilemedi', (h as Error).message);
     } finally {
       setCalisiyor(null);
@@ -185,12 +210,40 @@ export function ProgramExport({
 
   const secili = TASARIMLAR.find((t) => t.deger === tasarim) ?? TASARIMLAR[0];
 
+  /*
+    TEK GİRİŞ NOKTASI. Dört çıktı yolu (program yazdır/PDF, liste
+    Excel/PDF) tek düğmeye bağlı; hangisinin çalışacağını kapsam ve biçim
+    seçimi belirliyor. Düğmenin etiketi de buradan türüyor — kullanıcı
+    basmadan önce ne olacağını okuyor.
+  */
+  async function uygula() {
+    if (kapsam === 'liste') {
+      const calistir = listeBicimi === 'excel' ? excel : pdf;
+      calistir?.();
+      haptic('basari');
+      kapat();
+      return;
+    }
+    if (bicim === 'yazdir') await yazdir();
+    else await pdfIndir();
+  }
+
+  const eylemEtiketi =
+    kapsam === 'liste'
+      ? (listeBicimi === 'excel' ? 'Excel indir' : 'PDF indir')
+      : (bicim === 'yazdir' ? 'Yazdır' : 'PDF indir');
+
+  const eylemIkonu =
+    kapsam === 'liste'
+      ? (listeBicimi === 'excel' ? <FileSpreadsheet size={15} /> : <FileText size={15} />)
+      : (bicim === 'yazdir' ? <Printer size={15} /> : <FileText size={15} />);
+
   return (
     <FormModal
       acik={acik}
       kapat={kapat}
       baslik="Program çıktısı"
-      aciklama="Hangi günün programı, hangi düzende basılacak?"
+      aciklama="Ne basılacak, hangi düzende ve nasıl alınacak?"
       ikon={<Printer size={15} />}
       genislik="genis"
       eylemler={
@@ -198,155 +251,201 @@ export function ProgramExport({
           <Button varyant="ikincil" onClick={kapat}>
             Vazgeç
           </Button>
-          <Button
-            varyant="ikincil"
-            onClick={() => void pdfIndir()}
-            disabled={calisiyor !== null}
-          >
-            <FileText size={15} />
-            {calisiyor === 'pdf' ? 'Hazırlanıyor…' : 'PDF indir'}
-          </Button>
-          <Button onClick={() => void yazdir()} disabled={calisiyor !== null}>
-            <Printer size={15} />
-            {calisiyor === 'html' ? 'Açılıyor…' : 'Yazdır'}
+          {/*
+            TEK BİRİNCİL EYLEM — etiketi ne yapacağını söylüyor.
+
+            Şartname §6.5: alt bar bir birincil + bir ikincil eylem taşır.
+            Önce burada üç düğme vardı (Vazgeç · PDF indir · Yazdır) ve
+            mobilde hangisinin asıl eylem olduğu ayırt edilemiyordu.
+          */}
+          <Button onClick={() => void uygula()} disabled={calisiyor !== null}>
+            {eylemIkonu}
+            {calisiyor ? 'Hazırlanıyor…' : eylemEtiketi}
           </Button>
         </>
       }
     >
       <div className="space-y-5">
-        {/* ── Tarih ── */}
-        <FieldWrapper etiket="Gün" id="cikti-tarih">
-          <DatePicker id="cikti-tarih" deger={tarih} degistir={setTarih} />
-          {/*
-            HIZLI GÜNLER — takvimi açmadan.
+        {/*
+          ÖNCE NE BASILACAK. İki ayrı iş tek pencerede toplandı: günlük
+          program (tek gün, kâğıda) ve liste dışa aktarımı (ekrandaki
+          süzgeçli liste, dosyaya). İkisinin alanları ve çıktı biçimleri
+          farklı; aynı anda göstermek pencereyi düğme yığınına çeviriyordu.
+        */}
+        {(excel || pdf) && (
+          <Segment
+            deger={kapsam}
+            degistir={(d) => {
+              setKapsam(d);
+              haptic('secim');
+            }}
+            secenekler={[
+              { deger: 'program' as const, etiket: 'Günlük program' },
+              { deger: 'liste' as const, etiket: 'Liste' },
+            ]}
+          />
+        )}
 
-            Basılan program neredeyse her zaman bugün ya da yarın; takvimi
-            açıp gün seçmek iki dokunuş fazla. "Dün" de duruyor çünkü geçmiş
-            günün programı toplantı tutanağına ek olarak isteniyor.
-          */}
-          <div className="mt-2 flex flex-wrap gap-1.5">
-            {[
-              { etiket: 'Dün', deger: gunEkle(bugun(), -1) },
-              { etiket: 'Bugün', deger: bugun() },
-              { etiket: 'Yarın', deger: gunEkle(bugun(), 1) },
-            ].map((k) => (
-              <button
-                key={k.etiket}
-                type="button"
-                onClick={() => setTarih(k.deger)}
-                aria-pressed={tarih === k.deger}
-                className={cn(
-                  'bas-yay h-9 rounded-full border px-3.5 text-sm font-semibold transition-colors',
-                  tarih === k.deger
-                    ? 'border-brand bg-brand text-on-brand'
-                    : 'border-border bg-surface text-text-2 hover:bg-surface-2 hover:text-text',
-                )}
+        {kapsam === 'program' ? (
+          <>
+            {/* ── Gün ── */}
+            <FieldWrapper etiket="Gün" id="cikti-tarih">
+              <DatePicker id="cikti-tarih" deger={tarih} degistir={setTarih} />
+              {/*
+                HIZLI GÜNLER — takvimi açmadan.
+
+                Basılan program neredeyse her zaman bugün ya da yarın; takvimi
+                açıp gün seçmek iki dokunuş fazla. "Dün" de duruyor çünkü geçmiş
+                günün programı toplantı tutanağına ek olarak isteniyor.
+              */}
+              <div className="mt-2 flex flex-wrap gap-1.5">
+                {[
+                  { etiket: 'Dün', deger: gunEkle(bugun(), -1) },
+                  { etiket: 'Bugün', deger: bugun() },
+                  { etiket: 'Yarın', deger: gunEkle(bugun(), 1) },
+                ].map((k) => (
+                  <button
+                    key={k.etiket}
+                    type="button"
+                    onClick={() => {
+                      setTarih(k.deger);
+                      haptic('secim');
+                    }}
+                    aria-pressed={tarih === k.deger}
+                    className={cn(
+                      'bas-yay h-9 rounded-full border px-3.5 text-sm font-semibold transition-colors',
+                      tarih === k.deger
+                        ? 'border-brand bg-brand text-on-brand'
+                        : 'border-border bg-surface text-text-2 hover:bg-surface-2 hover:text-text',
+                    )}
+                  >
+                    {k.etiket}
+                  </button>
+                ))}
+              </div>
+
+              {/*
+                SEÇİLEN GÜN YAZIYLA DA YAZILI: "12.09.2026" ile "Cumartesi" ayrı
+                şeyler söylüyor ve hafta sonuna program basıldığını fark etmek
+                ancak gün adıyla mümkün.
+              */}
+              <p className="mt-2 flex items-center gap-1.5 text-2xs text-text-3">
+                <CalendarDays size={12} aria-hidden />
+                {shortDate(tarih)} · {dayName(tarih)}
+              </p>
+            </FieldWrapper>
+
+            {/* ── Sayfa düzeni ── */}
+            <FieldWrapper etiket="Sayfa düzeni" id="cikti-tasarim">
+              <div
+                id="cikti-tasarim"
+                role="radiogroup"
+                aria-label="Sayfa düzeni"
+                className="grid grid-cols-2 gap-2 lg:grid-cols-3"
               >
-                {k.etiket}
-              </button>
-            ))}
-          </div>
-
-          {/*
-            SEÇİLEN GÜN YAZIYLA DA YAZILI: "12.09.2026" ile "Cumartesi" ayrı
-            şeyler söylüyor ve hafta sonuna program basıldığını fark etmek
-            ancak gün adıyla mümkün.
-          */}
-          <p className="mt-2 flex items-center gap-1.5 text-2xs text-text-3">
-            <CalendarDays size={12} aria-hidden />
-            {shortDate(tarih)} · {dayName(tarih)}
-          </p>
-        </FieldWrapper>
-
-        {/* ── Tasarım ── */}
-        <FieldWrapper etiket="Sayfa düzeni" id="cikti-tasarim">
-          <div
-            id="cikti-tasarim"
-            role="radiogroup"
-            aria-label="Sayfa düzeni"
-            className="grid grid-cols-2 gap-2 lg:grid-cols-3"
-          >
-            {TASARIMLAR.map((t) => {
-              const aktif = t.deger === tasarim;
-              return (
-                <button
-                  key={t.deger}
-                  type="button"
-                  role="radio"
-                  aria-checked={aktif}
-                  onClick={() => setTasarim(t.deger)}
-                  className={cn(
-                    'bas-yay flex items-start gap-2.5 rounded-md border p-2.5 text-left transition-colors',
-                    aktif
-                      ? 'border-brand bg-brand-soft'
-                      : 'border-border bg-surface hover:bg-surface-2',
-                  )}
-                >
-                  <SayfaSemasi sema={t.sema} aktif={aktif} />
-                  <span className="min-w-0 flex-1">
-                    <span
+                {TASARIMLAR.map((t) => {
+                  const aktif = t.deger === tasarim;
+                  return (
+                    <button
+                      key={t.deger}
+                      type="button"
+                      role="radio"
+                      aria-checked={aktif}
+                      onClick={() => {
+                        setTasarim(t.deger);
+                        haptic('secim');
+                      }}
                       className={cn(
-                        'block truncate text-sm font-bold',
-                        aktif ? 'text-brand' : 'text-ink',
+                        'bas-yay flex items-start gap-2.5 rounded-md border p-2.5 text-left transition-colors',
+                        aktif
+                          ? 'border-brand bg-brand-soft'
+                          : 'border-border bg-surface hover:bg-surface-2',
                       )}
                     >
-                      {t.ad}
-                    </span>
-                    <span className="mt-0.5 block text-2xs leading-[1.35] text-text-3">
-                      {t.aciklama}
-                    </span>
-                  </span>
-                </button>
-              );
-            })}
-          </div>
-        </FieldWrapper>
+                      <SayfaSemasi sema={t.sema} aktif={aktif} />
+                      <span className="min-w-0 flex-1">
+                        <span
+                          className={cn(
+                            'block truncate text-sm font-bold',
+                            aktif ? 'text-brand' : 'text-ink',
+                          )}
+                        >
+                          {t.ad}
+                        </span>
+                        <span className="mt-0.5 block text-2xs leading-[1.35] text-text-3">
+                          {t.aciklama}
+                        </span>
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
+            </FieldWrapper>
 
-        {/* ── Liste dışa aktarımı ── */}
-        {(excel || pdf) && (
-          <FieldWrapper etiket="Liste çıktısı" id="cikti-liste">
-            <p className="mb-2 text-2xs text-text-3">
-              Ekrandaki listeyi süzgeçleriyle birlikte dışa aktarır — günlük
-              programdan bağımsızdır.
+            {/* ── Biçim ── */}
+            <FieldWrapper etiket="Nasıl alınsın?" id="cikti-bicim">
+              <Segment
+                deger={bicim}
+                degistir={(d) => {
+                  setBicim(d);
+                  haptic('secim');
+                }}
+                secenekler={[
+                  { deger: 'yazdir' as const, etiket: 'Yazdır' },
+                  { deger: 'pdf' as const, etiket: 'PDF indir' },
+                ]}
+              />
+              <p className="mt-2 text-2xs text-text-3">
+                {bicim === 'yazdir'
+                  ? 'Tarayıcıda önizleme açılır; yazıcı ayarları sizin.'
+                  : 'Dosya olarak iner — e-postayla göndermek için.'}
+              </p>
+            </FieldWrapper>
+          </>
+        ) : (
+          /* ── Liste dışa aktarımı ── */
+          <FieldWrapper etiket="Nasıl alınsın?" id="cikti-liste-bicim">
+            <Segment
+              deger={listeBicimi}
+              degistir={(d) => {
+                setListeBicimi(d);
+                haptic('secim');
+              }}
+              secenekler={[
+                { deger: 'excel' as const, etiket: 'Excel' },
+                { deger: 'pdf' as const, etiket: 'PDF' },
+              ]}
+            />
+            <p className="mt-2 text-2xs text-text-3">
+              Ekranda görünen listeyi süzgeçleriyle birlikte dışa aktarır —
+              günlük programdan bağımsızdır.
             </p>
-            <div className="flex flex-wrap gap-2">
-              {excel && (
-                <Button
-                  varyant="ikincil"
-                  onClick={() => {
-                    excel();
-                    kapat();
-                  }}
-                >
-                  <FileSpreadsheet size={15} />
-                  Excel
-                </Button>
-              )}
-              {pdf && (
-                <Button
-                  varyant="ikincil"
-                  onClick={() => {
-                    pdf();
-                    kapat();
-                  }}
-                >
-                  <FileText size={15} />
-                  PDF
-                </Button>
-              )}
-            </div>
           </FieldWrapper>
         )}
 
         {/*
           SEÇİMİN ÖZETİ ALT ÇUBUĞUN HEMEN ÜSTÜNDE. Uzun bir pencerede
-          "Yazdır"a basarken hangi günün ve düzenin seçili olduğu ekranın
-          yukarısında kalıyordu.
+          birincil düğmeye basarken hangi günün ve düzenin seçili olduğu
+          ekranın yukarısında kalıyordu.
         */}
         <p className="rounded-sm bg-sunken px-3 py-2 text-2xs text-text-2">
-          <span className="font-semibold text-ink">{shortDate(tarih)}</span> günü,{' '}
-          <span className="font-semibold text-ink">{secili.ad.toLocaleLowerCase('tr-TR')}</span>{' '}
-          düzeninde basılacak.
+          {kapsam === 'program' ? (
+            <>
+              <span className="font-semibold text-ink">{shortDate(tarih)}</span> günü,{' '}
+              <span className="font-semibold text-ink">
+                {secili.ad.toLocaleLowerCase('tr-TR')}
+              </span>{' '}
+              düzeninde {bicim === 'yazdir' ? 'yazdırılacak' : 'PDF olarak inecek'}.
+            </>
+          ) : (
+            <>
+              Ekrandaki liste{' '}
+              <span className="font-semibold text-ink">
+                {listeBicimi === 'excel' ? 'Excel' : 'PDF'}
+              </span>{' '}
+              olarak inecek.
+            </>
+          )}
         </p>
       </div>
     </FormModal>

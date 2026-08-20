@@ -18,6 +18,7 @@ import { PERMISSION } from '../components/permissions';
 import { useSession } from '../auth/SessionProvider';
 import { shortDate } from '../data/format';
 import { useProjects } from '../data/projects';
+import { PullToRefresh } from '../components/PullToRefresh';
 import { PROJECT_STATUS_LABELS, type ProjectSummary } from '../data/types';
 import { UnitScopePicker } from './task/UnitScopePicker';
 
@@ -54,7 +55,7 @@ export default function Projects() {
     return () => clearTimeout(z);
   }, [aramaGirdisi]);
 
-  const { data, isLoading, isError, error, isPlaceholderData } = useProjects({
+  const { data, isLoading, isError, error, isPlaceholderData, refetch, isFetching } = useProjects({
     sayfa,
     boyut: 24,
     ara: arama,
@@ -218,11 +219,20 @@ export default function Projects() {
         />
       ) : (
         <div className={isPlaceholderData ? 'opacity-60 transition-opacity' : undefined}>
-          <div className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3">
-            {projeler.map((p) => (
-              <ProjeKarti key={p.id} proje={p} />
-            ))}
-          </div>
+          {/*
+            AŞAĞI ÇEKİP BIRAK — görev listesiyle aynı hareket.
+
+            Proje kartları ızgarada duruyor, satır yok; buraya kaydırarak
+            eylem uymaz ama yenileme hareketi iki ekranda da aynı olmalı:
+            kullanıcı bir kez öğrendiğini her listede deniyor.
+          */}
+          <PullToRefresh yenile={() => refetch()} yenileniyor={isFetching}>
+            <div className="grid gap-2.5 md:grid-cols-2 xl:grid-cols-3">
+              {projeler.map((p) => (
+                <ProjeKarti key={p.id} proje={p} />
+              ))}
+            </div>
+          </PullToRefresh>
 
           <Pagination sonuc={data} sayfaDegistir={setSayfa} birim="proje" className="mt-3" />
         </div>
@@ -246,7 +256,7 @@ function ProjeKarti({ proje: p }: { proje: ProjectSummary }) {
   const oran = p.ilerleme ?? 0;
 
   return (
-    <Link to={`/projeler/${p.id}`} className="block">
+    <Link to={`/projeler/${p.id}`} className="bas-yay block">
       <Card className="h-full p-3.5 transition-colors hover:border-brand">
         <div className="flex items-start gap-2">
           <span

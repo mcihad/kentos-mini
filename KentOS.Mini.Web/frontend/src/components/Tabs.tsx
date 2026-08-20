@@ -2,6 +2,7 @@ import * as RadixTabs from '@radix-ui/react-tabs';
 import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
 import type { ReactNode } from 'react';
 import { cn } from './utils';
+import { haptic } from '../data/haptics';
 
 export type TabItem<T extends string> = {
   deger: T;
@@ -83,7 +84,11 @@ export function Tabs<T extends string>({
             role="tab"
             aria-selected={aktif}
             data-aktif={aktif || undefined}
-            onClick={() => degistir(s.deger)}
+            onClick={() => {
+              // Sekme değişimi bir SEÇİM: en hafif desen (8ms).
+              haptic('secim');
+              degistir(s.deger);
+            }}
             className={sekmeSinifi(aktif)}
           >
             {s.ikon}

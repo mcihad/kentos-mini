@@ -19,6 +19,7 @@ import { cn } from '../components/utils';
 import { useSession } from '../auth/SessionProvider';
 import { BottomSheet, SheetRow } from '../shell/mobile/BottomSheet';
 import { Fab } from '../shell/mobile/Fab';
+import { haptic } from '../data/haptics';
 import { dateTime, shortDate } from '../data/format';
 import { useTask, useTaskEvents, useTaskMutations } from '../data/tasks';
 import { TASK_STAGE_STATUS, TASK_STATUS, type TaskDetail as Gorev } from '../data/types';
@@ -171,8 +172,10 @@ export default function TaskDetail() {
         await m.durum.mutateAsync({ durum: durum as never, gerekce });
       }
       setDurumIstegi(null);
+      haptic('basari');
       bildir('basari', 'Görev güncellendi');
     } catch (h) {
+      haptic('hata');
       bildir('hata', 'Durum değiştirilemedi', (h as Error).message);
     }
   }
@@ -180,8 +183,10 @@ export default function TaskDetail() {
   async function onayaGonder() {
     try {
       await m.tamamlanmayaGonder.mutateAsync();
+      haptic('basari');
       bildir('basari', 'Görev onaya gönderildi');
     } catch (h) {
+      haptic('hata');
       bildir('hata', 'Onaya gönderilemedi', (h as Error).message);
     }
   }

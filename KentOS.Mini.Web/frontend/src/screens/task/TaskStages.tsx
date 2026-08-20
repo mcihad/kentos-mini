@@ -11,6 +11,7 @@ import { useSession } from '../../auth/SessionProvider';
 import { dateTime } from '../../data/format';
 import { taskKeys, uploadTaskFile, useTaskMutations } from '../../data/tasks';
 import { TASK_STAGE_STATUS, type TaskDetail, type TaskStage } from '../../data/types';
+import { haptic } from '../../data/haptics';
 
 /**
  * AŞAMALAR — işin kanıt zinciri.
@@ -99,8 +100,12 @@ function AsamaSatiri({ gorevId, asama }: { gorevId: number; asama: TaskStage }) 
         govde: { not: not.trim() || null, atla },
       });
       setNot('');
+      // Aşama kapatmak görevin en sık tekrarlanan eylemi: dokunsal onay
+      // burada en çok işe yarıyor (saha personeli ekrana bakmadan çalışıyor).
+      haptic('basari');
       bildir('basari', atla ? 'Aşama atlandı' : 'Aşama tamamlandı');
     } catch (h) {
+      haptic('hata');
       bildir('hata', 'Aşama kapatılamadı', (h as Error).message);
     }
   }
