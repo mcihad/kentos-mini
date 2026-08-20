@@ -107,6 +107,7 @@ export const PERMISSION = {
 
   sistemHata: 'sistem.hata',
   sistemKurum: 'sistem.kurum',
+  sistemOpenid: 'sistem.openid',
 } as const;
 
 export type PermissionName = (typeof PERMISSION)[keyof typeof PERMISSION];

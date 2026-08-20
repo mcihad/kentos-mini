@@ -33,8 +33,8 @@ ayrıntısında açılır.
 
 ## Başka birim adına çalışma
 
-Yetkiniz varsa üstteki birim seçicisinden kendinize bağlı bir müdürlüğü
-seçebilirsiniz. Seçim yapıldığında bütün iş takip ekranları o müdürlüğün
+Yetkiniz varsa üstteki birim seçicisinden kendinize bağlı bir birimi
+seçebilirsiniz. Seçim yapıldığında bütün iş takip ekranları o birimin
 kayıtlarını gösterir. Yalnızca **kendi altınızdaki** birimler listelenir;
 yan ya da üst birimler açılmaz.
 

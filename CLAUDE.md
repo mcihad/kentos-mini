@@ -798,6 +798,81 @@ PDF dört türde (`DavetCiktiTuru`): takip · telefon listesi · boş katılım
 > başarısız olsa bile çıktı üretilir — font eksikliği yüzünden 500 vermek,
 > kartın biraz farklı görünmesinden kötü.
 
+### Çiçek teslim akışı — çiçekçinin HESABI YOK
+
+Akış baştan sona kırıktı ve üç ayrı yerden kırıktı:
+
+| Kırık | Belirti |
+|---|---|
+| SMS'teki adres koda yazılıydı ve karşılığı olan MVC sayfası kaldırılmıştı | Çiçekçinin eline **ölü bağlantı** gidiyordu |
+| Uçlar `[Izin(CicekGoruntule)]` + JWT arkasındaydı | Bağlantı açılsa bile **401** |
+| Etkinlik detayı `Cicek`i Include etmiyordu | Rozet, çiçek teslim edilse bile hep **"bekliyor"** |
+
+**Çiçekçi kurumun kullanıcısı değil**: hesabı, rolü, jetonu yok. Bu yüzden
+teslim yüzeyi anonim (`GET/POST api/v2/cicek/teslim-karti/{guid}`) ve yetki
+belirteci **bağlantıdaki GUID**. Yanıt ayrı bir DTO ile daraltıldı
+(`CicekTeslimKartiDto`): etkinlik, adres, alıcı ve not var — **doğrulama kodu
+yok**. Kod kartta gösterilseydi teslim kapısı hiçbir şeyi korumazdı; kod
+yalnızca SMS'te geçiyor. Kaba kuvvete karşı **beş deneme**, sayaç
+veritabanında (`cicekler.dogrulama_denemesi`) — bellekte olsaydı istek başka
+bir sunucu örneğine gönderilerek aşılabilirdi. Kod artık
+`RandomNumberGenerator` ile üretiliyor.
+
+> Gizli etkinlikler çiçek talimatı üretmiyor, dolayısıyla bu anonim uçtan
+> gizli bir kaydın bilgisi sızamaz.
+
+#### `[AllowAnonymous]` ARTIK GERÇEKTEN ANONİM
+
+`IzinAttribute` elle yazılmış bir `IAsyncAuthorizationFilter` ve
+`[AllowAnonymous]`'u **hiç okumuyordu**. Çerçeve bunu `[Authorize]` için
+kendisi yapıyor; kendi filtren kendi kapısını kuruyorsa istisnayı da kendin
+yazmak zorundasın. Sınıf düzeyinde `[Izin(...)]` taşıyan bir controller'da
+metoda anonim demek işe yaramıyordu.
+
+Düzeltme sistem geneli, o yüzden bedeli de sistem genelinde ölçüldü: değişiklik
+**yalnızca** `[AllowAnonymous]` VE `[Izin]` birlikte taşıyan uçları etkiliyor —
+kod tabanında bunlar sadece iki yeni çiçek ucu. `oturum/giris`,
+`institution`, `manifest.webmanifest` ve vatandaş portalı sınıf düzeyinde
+`[Izin]` taşımıyor, yani zaten anonimdiler.
+
+Bekçi `AnonimUcTests`: anonim yüzeyin tamamı **ad ad** kilitli (7 uç,
+her biri gerekçesiyle). Yeni bir `[AllowAnonymous]` testi düşürür — artık o
+işaret gerçekten kapıyı açtığı için bilinçli bir karar olmak zorunda. Test
+ayrıca filtrenin **erken çıktığını** kanıtlıyor: servis sağlayıcı bilerek boş,
+filtre kapıya uğrarsa istisna ile düşer.
+`IzinUcKapsamiTests` ("her yazma ucu kendi iznini ilan eder") anonim uçları
+bu listeye devrediyor — boşluk kalmıyor, kapı değişiyor.
+
+#### Etkinlik detayında üç durum
+
+`GetAsync(long id)` artık `Cicek`i de Include ediyor. Liste ucu ediyordu,
+detay etmiyordu: yanıtta `cicekId` dolu, `cicek` **null**. Sessiz bir hata —
+eksik `Include` istisna atmaz, sorgu çalışır, alan boş kalır. İstemcinin
+elinde yalnızca "talimat verilmiş mi" bilgisi vardı.
+
+| Rozet | Anlamı |
+|---|---|
+| Sarı üçgen | Talimat verildi, teslim edilmedi |
+| Yeşil onay | Teslim edildi |
+| Yok | Talimat verilmemiş |
+
+Bekçi `CicekAkisTests` (kaynak taraması — hata davranışta sessiz olduğu için).
+**Ateş ettiği ölçüldü:** `Include(a => a.Cicek)` silindiğinde test düştü,
+geri konunca yeşile döndü.
+
+> Kurum içi `CicekDto` doğrulama kodunu taşımaya **devam ediyor** (v1
+> sözleşmesi ve personel teslimi elle işaretleyebilmeli). Anonim DTO'nun
+> ondan ayrı tutulmasının tek sebebi bu; `AnonimUcTests` kod taşımadığını
+> kilitliyor.
+
+**Ölçüm (uçtan uca, jetonsuz):** anonim kart 200 · yanıtta kod yok · yanlış
+kod 400 ("kalan deneme") · doğru kod 200 · teslim ve tarih işaretlendi ·
+etkinlik detayı `gonderildi: true` · görsel tur 218 görüntü, taşma 0, JS
+hatası 0 · 579 sunucu testi yeşil.
+
+Sözleşme anlık görüntüleri +1 kolon (`dogrulama_denemesi`) ve +10 JSON alanı
+aldı; **hiçbir ad silinmedi ya da değişmedi** — v1 mobil sözleşmesi bozulmadı.
+
 ### Halk Günü
 
 Vatandaşın makamda sırayla dinlendiği günler. Akış: **havuz → gün → dilim →
@@ -1212,6 +1287,236 @@ dokunulmadan geçer.
   karşılayamayan worker'la tarayıcı uygulamayı kurulabilir saymıyor.
 
 Ayrıntı ve bütün arayüz kuralları: `KentOS.Mini.Web/frontend/CLAUDE.md`.
+
+## KURUMSAL KİMLİK SAĞLAYICI (OpenID Connect)
+
+Personel kurum hesabıyla girebiliyor; şifreyle giriş **kapanmıyor**.
+
+### Ayar VERİTABANINDA, `.env`'de değil
+
+Kurulum kuralının ikinci yarısı: okumak için zaten veritabanına bağlanmak
+gereken şeyler `.env`'de, **yetkilinin arayüzden değiştirmesi gerekenler**
+veritabanında. Kimlik sağlayıcı ikincisi — kurum sağlayıcı değiştirdiğinde
+ya da istemci sırrı döndüğünde sunucuya girip dosya düzenlemek ve
+uygulamayı yeniden başlatmak gerekmemeli.
+
+`openid_ayarlari` tek satır, `Institution` deseninin aynısı. Ekran
+`/kimlik-saglayici`, izin **`sistem.openid`** — kurum bilgilerinden ayrı,
+çünkü yanlış girildiğinde giriş ekranı etkileniyor.
+
+### Handler değil, elle akış
+
+`AddOpenIdConnect` açılışta yapılandırılıyor; buradaki ayar çalışma anında
+değişiyor. Handler'ı çalışırken yeniden yapılandırmak, ayarı `.env`'e
+taşımaktan daha kırılgan olurdu. Akış üç HTTP çağrısı (keşif →
+yetkilendirme → jeton); kütüphane getirisi düşük.
+
+| Karar | Neden |
+|---|---|
+| **PKCE (S256) zorunlu** | Gizli istemci olsak da tek satırlık maliyeti var; Azure AD ve yeni Keycloak zaten şart koşuyor |
+| **`state` sunucuda, 10 dk ömürlü** | CSRF koruması; süresi geçmiş ya da uydurulmuş `state` reddediliyor |
+| **Keşif belgesi 10 dk önbellekli** | Her girişte indirmek, sağlayıcı yavaşladığında giriş ekranını da yavaşlatıyor. "Sına" düğmesi önbelleği ATLAR — o kişi ŞU ANKİ durumu soruyor |
+| **`id_token` imzası doğrulanmıyor** | Jeton, sağlayıcının jeton ucundan **doğrudan bize**, TLS üzerinden ve istemci sırrıyla kimlik kanıtlayarak geldi. İmza, jeton güvenilmeyen bir taraftan (ör. tarayıcıdan) gelseydi şart olurdu |
+| **Jeton uygulamanın KENDİ jetonu** | Sağlayıcının kimlik jetonu yalnızca kimliği kanıtlıyor, sonra atılıyor: yetkiler bu sistemde |
+
+### Jeton üretimi TEK YERDE
+
+`OturumServisi.JetonUretAsync` — parola girişi de sağlayıcı girişi de onu
+çağırıyor. Talep listesi (rol, birim, kullanıcı kimliği, `jti`) ve oturum
+kaydı kopyalansaydı, sisteme yeni bir talep eklendiğinde yalnızca bir yola
+eklenir ve **sağlayıcıyla giren kullanıcı sessizce eksik yetkiyle**
+dolaşırdı.
+
+Kilitli hesap sağlayıcıyla da giremiyor: kilit bu sistemin kararı, sağlayıcı
+onu bilmiyor. Denetlenmeseydi parolayla kilitlenen hesap sağlayıcı
+düğmesiyle girmeye devam eder, yani kilit hiçbir şey ifade etmezdi.
+
+### Düğme İKİ şartla çıkar
+
+Kullanıcının istediği buydu: *"eğer openid ayarları yapılmış **ve
+erişilebilir** ise"*.
+
+```
+ayar açık? ─── hayır ──▶ düğme yok
+   │ evet
+   ▼
+sağlayıcıya ulaşılıyor? ─── hayır ──▶ düğme yok
+   │ evet
+   ▼
+"<Düğme metni> ile giriş yap"
+```
+
+> **Ölçüldü:** sahte bir OIDC sağlayıcı ayağa kaldırıldı. Sağlayıcı
+> ayaktayken `giris-durumu` → `{kullanilabilir:true}` ve düğme hem 390px
+> hem 1280px'te çıktı; sağlayıcı kapatılıp sunucu yeniden başlatılınca
+> `{kullanilabilir:false}` ve düğme **kayboldu**. Giriş ekranının kendisi
+> etkilenmedi — şifreyle giriş sağlayıcıya bağımlı değil.
+
+`GET openid/giris-durumu` **anonim** (çağıran henüz giriş yapmamış) ve
+yalnızca iki alan döner: `kullanilabilir` + `gorunenAd`. Yetkili adres,
+istemci kimliği ve kapsamlar oradan sızmaz — `OpenIdTests` bunu alan alan
+kilitliyor.
+
+### Sızdırmayan üç yer
+
+| Ne | Nasıl |
+|---|---|
+| **İstemci sırrı** | Okuma ucu döndürmüyor; DTO'da alan bile yok, yalnızca `sirTanimli` bayrağı. Yazmada **boş = değiştirme** — aksi hâlde ayarı açıp kaydeden herkes girişi bozardı |
+| **Jeton** | Dönüşte adres **parçasında** (`#`) taşınıyor, sorgu dizesinde değil: sorgu dizesi sunucu günlüklerine, ters vekil kayıtlarına ve `Referer` başlığına düşüyor. SPA okuyup hemen adres çubuğundan siliyor |
+| **Sağlayıcı hatası** | Jeton ucunun gövdesi kullanıcıya verilmiyor (istemci kimliği ve yapılandırma ayrıntısı içerebiliyor); günlüğe tam hâli, kullanıcıya anlaşılır bir cümle |
+
+### AÇIK YÖNLENDİRME kapalı
+
+Dönüş yolu sorgu dizesinden geliyor. Süzülmeseydi
+`?donus=https://saldirgan.example` ile kullanıcı giriş yaptıktan **hemen
+sonra** saldırganın sayfasına gönderilirdi — üstelik jeton adres parçasında,
+yani saldırganın eline geçerek. Yalnızca `/` ile başlayan ve `//`
+içermeyen yollar kabul ediliyor (`OpenIdTests`, 8 vaka).
+
+### Eksik yapılandırmayla AÇILAMAZ
+
+Sağlayıcı adresi, istemci kimliği ve sır dolu değilken `etkin=true`
+kaydedilemiyor (400). Yarım yapılandırmayla açmak, giriş ekranına çalışmayan
+bir düğme koymak demek: kullanıcı basıyor, sağlayıcıya gidiyor ve geri
+dönemeyeceği bir sayfada kalıyor.
+
+### Ekranın iki kritik parçası
+
+Yapılandırmanın en sık yanlış giren yerleri:
+
+1. **Kopyalanabilir dönüş adresi** — sağlayıcı tarafında birebir eşleşmeli.
+   Elle yazıldığında bir harf kayması yetiyor ve alınan hata **sağlayıcının
+   sayfasında** çıkıyor, yani kullanıcı neyi düzelteceğini bu ekranda
+   göremiyor.
+2. **"Bağlantıyı sına"** — kaydetmeden önce denenebiliyor.
+
+**Otomatik kullanıcı oluşturma varsayılan KAPALI** ve açıldığında uyarı
+tonuyla çiziliyor: açıkken sağlayıcıda hesabı olan **herkes** girebilir.
+Kurumsal dizinde binlerce hesap var, uygulamayı kullanması gereken kişi
+sayısı onlarca.
+
+## GİRİŞ EKRANI
+
+- **Büyük harf kilidi uyarısı.** Şifre alanı yazılanı göstermiyor; kilit
+  açıkken kullanıcı doğru şifreyi yazdığını sanıp üst üste reddediliyor ve
+  **hesap kilidine (10 deneme) kadar** gidebiliyor. `getModifierState`
+  tuşa basıldığı anda okunuyor.
+- **Sağlayıcı düğmesi şifreli girişin ALTINDA**, "ya da" ayracıyla. Şifreyle
+  giriş üstte ve dolgulu kalıyor: sağlayıcı kapandığında ekranın düzeni
+  değişmesin, kas hafızası bozulmasın.
+- Sağlayıcı sorgusu **düşerse hiçbir şey olmuyor** — giriş ekranının kendisi
+  sağlayıcıya bağımlı değil.
+
+## GÜVENLİK — kapatılan açıklar
+
+### Yüklenen dosya tarayıcıda ÇALIŞIYORDU (depolanmış XSS)
+
+En ciddi bulgu ve **ölçülerek** bulundu, tahminle değil:
+
+```
+talebe zararli.html eklendi
+  → /uploads/randevu/{guid}.html
+  → JETONSUZ istek: HTTP 200 · Content-Type: text/html
+  → script çalıştı
+```
+
+Sayfa uygulamayla **aynı kaynakta** olduğu için
+`localStorage['sv-jetonu']`'na erişebiliyordu. Jeton 15 saat geçerli ve
+**iptal listesi yok** — yani tam hesap devri, dosya eklemeye yetkili
+herhangi bir kullanıcıdan başlayarak.
+
+Kök neden iki şeyin birleşimi: yükleme uçları uzantıyı **kullanıcıdan**
+alıp diske olduğu gibi yazıyordu (`Guid + Path.GetExtension(gelenAd)`) ve
+`wwwroot/uploads` altındaki her şey **kimlik doğrulanmadan** servis
+ediliyor.
+
+**Çözüm servis anında, yükleme anında değil.** `Middleware/
+YuklemeGuvenligi.cs`: `/uploads` altındaki çalışabilir uzantılar
+`application/octet-stream` + `Content-Disposition: attachment` ile
+dönüyor, yani tarayıcı belge olarak açmıyor, indiriyor.
+
+| Neden servis anında | |
+|---|---|
+| Yükleme yolu tek değil | Etkinlik fotoğrafı, talep dosyası, özgeçmiş, görev eki, portal fotoğrafı — her birine ayrı denetim koymak birini unutmayı davet eder |
+| Diskte zaten duran dosyalar | Yükleme denetimi onları kurtarmaz |
+| Dosya silinmiyor | 404 vermek meşru bir `.xml` ekini de kaybettirirdi; indirilebilir kalıyor, yalnızca çalışmıyor |
+
+Liste "zararlı dosyalar" değil, **tarayıcının script çalıştırdığı
+bağlamlar**: `.svg` de içinde (`<img>`de zararsız, adrese doğrudan
+gidilince çalışır), `.xml` de (XSLT). Sunucuda işlenebilecekler
+(`.cshtml`, `.php`, `.aspx`) da var — bugün işlenmiyorlar ama uygulama
+başka kurumlarda başka bir yapılandırmayla yayınlanacak.
+
+Yükleme tarafına da denetim eklendi ama o **kullanıcıya anlaşılır hata**
+vermek için; güvenlik sınırı ara katman.
+
+> **Ölçüm — düzeltmeden sonra:** aynı dosya, aynı adres, jetonsuz →
+> `200 · application/octet-stream · attachment · nosniff`. Gerçek
+> yüklemelerde regresyon yok: `.png` hâlâ `200 · image/png · inline`.
+
+> **Sıra tuzağı:** ara katman `UseStaticFiles`'tan ÖNCE bağlanmalı; sonra
+> bağlanırsa statik dosya ara katmanı yanıtı çoktan yazmıştır ve kural
+> **sessizce** etkisiz kalır. `YuklemeGuvenligiTests` sırayı da denetliyor
+> ve ateş ettiği ölçüldü.
+
+### Girişte hız sınırı — hesap kilidi YETMİYOR
+
+Hesap kilidi (10 hatalı deneme / 5 dk) tek bir hesabı koruyor ama **kimlik
+doldurmayı** (credential stuffing) durdurmuyor: saldırgan her kullanıcı
+adını bir kez dener, hiçbir hesap kilitlenmez, binlerce deneme tek bir
+IP'den sorunsuz geçer.
+
+`POST oturum/giris` artık IP başına **30 deneme/dakika**. Sınır bilerek
+cömert: kurumun tamamı tek bir NAT adresinin arkasında olabiliyor ve sabah
+mesai başında herkes aynı anda giriyor. Jeton 15 saat geçerli olduğu için
+bir kişi günde bir kez giriyor — 30/dk meşru kullanımın çok üstünde, ama
+otomatik bir denemeyi ilk dakikada kesiyor.
+
+### JWT anahtar gücü AÇILIŞTA zorlanıyor
+
+`JwtOptions` belgesi "en az 32 karakter" diyordu ama **hiçbir yer
+denetlemiyordu**: 4 karakterlik bir anahtarla uygulama sorunsuz açılıyor,
+jetonlar üretiliyor ve her şey çalışıyor görünüyordu. HMAC-SHA256'nın
+güvenliği doğrudan anahtarın entropisine bağlı; kısa ya da tahmin
+edilebilir anahtar, saldırganın **kendi jetonunu imzalayıp istediği
+kullanıcı olması** demek. Sessiz kalınacak en kötü ayar bu.
+
+Açılış artık iki durumda duruyor: 32 karakterden kısa anahtar, ve
+`.env.example`'daki şablon değerini taşıyan anahtar (şablon depoda duruyor
+— değiştirilmemiş bir anahtarı herkes biliyor; uzunluk denetimi bunu
+yakalamaz).
+
+> Ölçüldü: `Jwt__Secret="kisa"` → *"JWT imza anahtarı çok kısa (4
+> karakter)"* ile açılış durdu. Şablon değeriyle de durdu.
+
+### Swagger üretimde KAPALI
+
+217 v2 ucunun tamamını, parametrelerini ve DTO şemalarını kimlik
+doğrulamadan yayınlıyordu. Uçların kendisi yetkili; sızan şey verinin değil
+**yapının** kendisi ve onu gizlemek ücretsiz. `App:SwaggerAcik=true` ile
+bilerek açılabilir.
+
+> **Ölçüm tuzağı:** ilk denemede üretim kipinde swagger 200 döndü ve
+> "kapı çalışmıyor" sanıldı. Sebep koddaki kapı değil, ölçümün kendisiydi:
+> `dotnet run` `launchSettings.json`'daki `ASPNETCORE_ENVIRONMENT=Development`
+> değerini uyguluyor ve uygulama Production sanılırken Development'ta
+> koşuyordu. `--no-launch-profile` ile gerçek ölçüm: swagger JSON **404**,
+> uygulama 200. (`/swagger` yolu 200 dönüyor ama o SPA'nın kendi sayfası,
+> Swagger UI değil.)
+
+### Temiz çıkanlar
+
+Aranıp **sorun bulunmayan** yerler de kayda değer; bir sonraki inceleme
+aynı yolu yeniden yürümesin:
+
+| Alan | Durum |
+|---|---|
+| Sırlar depoda | `appsettings*.json` temiz; her şey `.env`'den |
+| SQL enjeksiyonu | Tek ham SQL var, o da `FromSqlInterpolated` (parametreli) |
+| XSS (ön yüz) | `dangerouslySetInnerHTML` hiç kullanılmıyor; markdown çizici de kullanmıyor |
+| JWT doğrulama | Issuer/audience/lifetime/signing key hepsi açık, 2 dk sapma toleransı |
+| Güvenlik başlıkları | `nosniff`, `SAMEORIGIN`, `strict-origin-when-cross-origin`, üretimde HSTS |
+| CORS | Yapılandırma yok — aynı kaynaktan servis ediliyor, gerekmiyor |
 
 ## Bilinen pürüzler
 

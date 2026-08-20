@@ -9,6 +9,7 @@ import {
   Check,
   SquarePen, Scissors,
 } from 'lucide-react';
+import { OverlayShell } from '../components/OverlayShell';
 import { useState } from 'react';
 import { Link, useNavigate, useParams } from 'react-router-dom';
 import { SearchInput, Textarea } from '../components/Field';
@@ -705,27 +706,15 @@ function KisiEkleDiyalogu({
   );
 
   return (
-    <Dialog.Root open={acik} onOpenChange={(a) => !a && kapat()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="anim-perde fixed inset-0 z-50 bg-perde" />
-        <Dialog.Content
-          className="katman anim-tabaka fixed inset-x-0 bottom-0 z-50 flex max-h-[88dvh] flex-col rounded-t-win bg-surface shadow-3
-            md:inset-x-auto md:bottom-auto md:left-1/2 md:top-1/2 md:max-h-[82dvh] md:w-[min(600px,calc(100vw-48px))]
-            md:-translate-x-1/2 md:-translate-y-1/2 md:rounded-win"
-        >
-          <div className="flex items-center gap-2.5 border-b border-border px-4 py-3">
-            <span className="grid h-8 w-8 shrink-0 place-items-center rounded-md bg-brand-tint text-brand-2">
-              <UserPlus size={15} />
-            </span>
-            <Dialog.Title className="flex-1 font-display text-lg font-bold">
-              Protokolden kişi ekle
-            </Dialog.Title>
-            <Dialog.Close asChild>
-              <IconButton etiket="Kapat">
-                <X size={16} />
-              </IconButton>
-            </Dialog.Close>
-          </div>
+    // Kabuk elle kurulmuyordu ve mobilde parmakla kapanmıyordu; artık
+    // `OverlayShell` (mobilde `vaul`, masaüstünde ortalanmış pencere).
+    <OverlayShell
+      acik={acik}
+      kapat={kapat}
+      baslik="Protokolden kişi ekle"
+      ikon={<UserPlus size={15} />}
+      genislik="orta"
+    >
 
           <Dialog.Description className="sr-only">
             Davet listesine eklenecek kişileri seçin.
@@ -817,9 +806,7 @@ function KisiEkleDiyalogu({
               Ekle
             </Button>
           </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+    </OverlayShell>
   );
 }
 

@@ -517,6 +517,16 @@ DTO KentOS.Mini.Application.Dto.UserSettingDto
   taskOnAssigned
   taskOnOverdue
   taskOnStatusChange
+DTO KentOS.Mini.Application.Dto.V2.Cicek.CicekTeslimKartiDto
+  adres
+  alici
+  etkinlikBasligi
+  etkinlikKonumu
+  etkinlikTarihi
+  kurumAdi
+  not
+  teslimEdildi
+  teslimTarihi
 DTO KentOS.Mini.Application.Dto.V2.Etkinlik.AralikIstegi
   arama
   baslangic
@@ -1052,6 +1062,32 @@ DTO KentOS.Mini.Application.Dto.V2.IsTakip.VatandasBildirimiIstegiDto
 DTO KentOS.Mini.Application.Dto.V2.IsTakip.VatandasBildirimiSonucuDto
   takipNo
   yuklemeAnahtari
+DTO KentOS.Mini.Application.Dto.V2.OpenId.OpenIdAyarDto
+  donusAdresi
+  etkin
+  gorunenAd
+  istemciId
+  kapsamlar
+  kullaniciAdiTalebi
+  otomatikKullaniciOlustur
+  sirTanimli
+  yetkili
+DTO KentOS.Mini.Application.Dto.V2.OpenId.OpenIdAyarIstegi
+  etkin
+  gorunenAd
+  istemciId
+  istemciSirri
+  kapsamlar
+  kullaniciAdiTalebi
+  otomatikKullaniciOlustur
+  yetkili
+DTO KentOS.Mini.Application.Dto.V2.OpenId.OpenIdGirisDto
+  gorunenAd
+  kullanilabilir
+DTO KentOS.Mini.Application.Dto.V2.OpenId.OpenIdSinamaDto
+  basarili
+  mesaj
+  yetkilendirmeAdresi
 DTO KentOS.Mini.Application.Dto.V2.Ortak.HataDetayDto
   adet
   aiRaporu

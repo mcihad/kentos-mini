@@ -15,7 +15,7 @@ Tek bir talebin bütün hikâyesi: kim başvurdu, ne istedi, ne yapıldı.
 Bilgisayarda düğme sırası üstte, **telefonda sağ alttaki yuvarlak düğmede**.
 
 1. **Düzenle** — Yanlış girilen bilgiyi düzeltir.
-2. **Havale et** — İlgili müdürlüğe gönderir ve o birime bildirim gider.
+2. **Havale et** — İlgili birime gönderir ve o birime bildirim gider.
 3. **Ajandaya ekle** — Vatandaşla görüşme yapılacaksa makam programına
    işler; oluşan etkinliğe doğrudan gidersiniz.
 4. **Arşivle** — Kapanan talebi listeden kaldırır, kaydı silmez.

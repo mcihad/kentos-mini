@@ -25,7 +25,7 @@ edilir.
 
 Satıra tıklayıp ayrıntıya girin:
 
-1. **Havale et** — Talebi ilgili müdürlüğe gönderir; o birim bildirim alır.
+1. **Havale et** — Talebi ilgili birime gönderir; o birim bildirim alır.
 2. **Durum değiştir** — Onaylandı, devam ediyor, tamamlandı, reddedildi.
 3. **Ajandaya ekle** — Görüşme yapılacaksa tarih ve saat verilerek makam
    programına işlenir. Varsayılan olarak yarın 09:00 önerilir.

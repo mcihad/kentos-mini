@@ -46,6 +46,8 @@ export function OverlayShell({
   aciklama,
   ikon,
   genislik = 'orta',
+  masaustuYerlesim = 'orta',
+  basligaEk,
   children,
 }: {
   acik: boolean;
@@ -55,6 +57,23 @@ export function OverlayShell({
   aciklama?: string;
   ikon?: ReactNode;
   genislik?: OverlayWidth;
+  /**
+   * MASAÜSTÜ yerleşimi. Mobil dal her zaman alttan gelen tabakadır — bu
+   * prop oraya karışmaz.
+   *
+   * <p>
+   * <c>yan</c>: sağa yaslı, tam boy panel. Yardım ve tema tasarımcısı
+   * bunu istiyor: yardım okunurken arkadaki ekranın görünmesi gerekiyor
+   * (kullanıcı anlatılan düğmeyi aynı anda görebilsin) ve ortalanmış bir
+   * pencere tam da onu kapatıyor.
+   * </p>
+   */
+  masaustuYerlesim?: 'orta' | 'yan';
+  /**
+   * Başlık şeridine, kapat düğmesinin SOLUNA giren ek eylem (ör. tema
+   * panelindeki "varsayılana sıfırla").
+   */
+  basligaEk?: ReactNode;
   /**
    * Başlık şeridinin ALTINA gelen her şey. Kendi kaydırma kabını ve varsa
    * eylem çubuğunu içermeli; kap yalnızca dikey bir esnek sütun verir.
@@ -108,14 +127,19 @@ export function OverlayShell({
         )}
       </div>
       {/* Kapatma düğmesi sürükleme alanının DIŞINDA: aksi hâlde düğmeye
-          basmak tabakayı aşağı çekmeye başlıyor ve tık kaybediliyordu. */}
-      <span data-vaul-no-drag>
+          basmak tabakayı aşağı çekmeye başlıyor ve tık kaybediliyordu.
+
+          SIRA AÇIKÇA YATAY. Kap düz bir `span`ken tek düğmeyle sorun
+          yoktu; `basligaEk` ikinci bir düğme koyunca ikisi ALT ALTA
+          düşüyordu (tema panelinde sıfırla ve kapat böyle kaydı). */}
+      <span data-vaul-no-drag className="flex shrink-0 items-center gap-0.5">
         {/*
           Kenarlıksız ve YUVARLAK: başlığın yanındaki tek düğme çerçeveliyken
           tabakanın tepesine yapıştırılmış bir kutu gibi duruyordu. Çerçeve
           gidince görünür ağırlığı ikonun KENDİSİ taşımak zorunda — 16
           piksellik çarpı şeridin içinde kayboluyordu.
         */}
+        {basligaEk}
         <IconButton
           etiket="Kapat"
           varyant="sade"
@@ -195,16 +219,26 @@ export function OverlayShell({
           onInteractOutside={(e) => e.preventDefault()}
           aria-describedby={undefined}
           className={cn(
-            'katman anim-tabaka fixed left-1/2 top-1/2 z-50 flex max-h-[88dvh] flex-col rounded-win bg-surface shadow-3',
-            '-translate-x-1/2 -translate-y-1/2',
-            genislik === 'dar' && 'w-[min(460px,calc(100vw-48px))]',
-            genislik === 'orta' && 'w-[min(620px,calc(100vw-48px))]',
-            genislik === 'genis' && 'w-[min(860px,calc(100vw-48px))]',
+            'katman fixed z-50 flex flex-col bg-surface shadow-3',
+            masaustuYerlesim === 'yan'
+              // Sağdan kayarak gelir: panel kenara yapışık olduğu için
+              // ortadan büyüyen `anim-tabaka` yanlış yerden geliyormuş gibi
+              // duruyordu.
+              ? 'anim-panel anim-yan inset-y-0 right-0 rounded-l-win border-l border-line w-[min(460px,100vw)]'
+              : 'anim-tabaka left-1/2 top-1/2 max-h-[88dvh] -translate-x-1/2 -translate-y-1/2 rounded-win',
+            masaustuYerlesim === 'orta' && genislik === 'dar' && 'w-[min(460px,calc(100vw-48px))]',
+            masaustuYerlesim === 'orta' && genislik === 'orta' && 'w-[min(620px,calc(100vw-48px))]',
+            masaustuYerlesim === 'orta' && genislik === 'genis' && 'w-[min(860px,calc(100vw-48px))]',
           )}
         >
           {/* Masaüstünde tutamak yok; blok yalnızca şeridi taşıyor ama zemin
               ve köşe yine burada — iki dal aynı görünsün. */}
-          <div className="shrink-0 overflow-hidden rounded-t-win bg-brand-soft">
+          <div
+            className={cn(
+              'shrink-0 overflow-hidden bg-brand-soft',
+              masaustuYerlesim === 'yan' ? 'rounded-tl-win' : 'rounded-t-win',
+            )}
+          >
             {/* Masaüstünde açıklama şeritte duruyor: orada yer kıt değil. */}
             {baslikSeridi(Dialog.Title, true)}
           </div>

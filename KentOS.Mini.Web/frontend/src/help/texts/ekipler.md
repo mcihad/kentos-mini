@@ -30,5 +30,5 @@ kimsenin haberi olmayan bir atama, atanmamış görevle aynı şeydir.
 ## Kapsam
 
 **Birimim / Alt birimler** seçimi hangi birimlerin ekiplerinin listeleneceğini
-belirler. Yetkiniz varsa üstteki birim seçicisinden bağlı bir müdürlüğü
+belirler. Yetkiniz varsa üstteki birim seçicisinden bağlı bir birimi
 seçip onun ekiplerini yönetebilirsiniz.

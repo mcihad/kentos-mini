@@ -1075,6 +1075,67 @@ parmakla kapanmıyordu.
 > yarısını kullanıcı daha bakmadan kapatması kendi başına da yanlış.
 > Masaüstünde ilk alan odaklı kalır.
 
+## MOBİLDE HER TABAKA PARMAKLA KAPANIR
+
+Telefonda alttan açılan bir pencerenin aşağı kaydırılarak kapanması bir
+süs değil, **beklenen davranış**: kullanıcı kapat düğmesini aramadan önce
+parmağını aşağı çekiyor.
+
+Bunu `OverlayShell` sağlıyor (mobil dalı `vaul`). Ham Radix Dialog ile elle
+kurulan bir tabaka görünüş olarak aynı çıkıyor ama kaydırmaya **sağır**
+kalıyor — ve bu sessiz: hata yok, uyarı yok, tabaka açılıyor, yalnızca
+kapanmıyor.
+
+**Sahada beş tane vardı:**
+
+| Tabaka | Durum |
+|---|---|
+| Yardım paneli | Tepesinde **tutamak bile çiziliyordu** — çekilince hiçbir şey yapmayan bir şerit |
+| Tema Tasarımcısı | Mobilde de sağdan gelen tam boy panel; gramerin tamamen dışında |
+| Etkinlik not düzenleyici | Elle kurulmuş alt tabaka |
+| Davete kişi ekleme | Aynısı |
+| Katılımcı seçici | Aynısı |
+
+**Ölçüm (390px, gerçek dokunma olaylarıyla):**
+
+```
+ÖNCE   yardım paneli    → kaydırma sonrası AÇIK      ✗
+       tema tasarımcısı → kaydırma sonrası AÇIK      ✗
+       süzgeç (vaul)    → KAPANDI                    ✓  ← jest doğruydu
+SONRA  üçü de           → KAPANDI                    ✓
+```
+
+Referans ölçümü şart: aynı jestin vaul tabakasını kapattığını görmeden
+"tabaka bozuk" denemez — sorun jestte de olabilirdi.
+
+### Kap iki yerleşim tanıyor
+
+`masaustuYerlesim` prop'u eklendi; **mobil dala karışmaz**:
+
+- `orta` (varsayılan) — ortalanmış pencere.
+- `yan` — sağa yaslı, tam boy panel. Yardım ve tema tasarımcısı bunu
+  istiyor: yardım okunurken arkadaki ekranın görünmesi gerekiyor
+  (kullanıcı anlatılan düğmeyi aynı anda görebilsin) ve ortalanmış bir
+  pencere tam da onu kapatıyor.
+
+`basligaEk` prop'u başlık şeridine ikinci bir eylem koyar (tema panelindeki
+"varsayılana sıfırla"). Eylem kabı bu yüzden **açıkça yatay sıra** oldu:
+düz bir `span`ken tek düğmeyle sorun yoktu, ikincisi gelince ikisi **alt
+alta** düşüyordu.
+
+> **Bekçi: `test/sheets.test.ts`.** Kaynak taranıp `bottom-0` + `inset-x-0`
+> + `rounded-t-` + `Dialog.Content` dörtlüsünü birlikte taşıyan dosya
+> aranıyor — bu bir alt tabakanın imzası, ortalanmış pencere bu ikisini
+> birden taşımaz. Ayrıca `vaul`u yalnızca iki dosyanın (`OverlayShell`,
+> `BottomSheet`) kullandığı kilitli: üçüncü bir kopya, sürükleme
+> davranışının bir yerde düzeltilip diğerinde unutulması demek.
+> **Ateş ettiği ölçüldü:** yardım paneli elle kurulmuş hâline geri
+> alındığında test dosyayı adıyla söyleyerek düştü.
+
+> Yardım panelinin altbilgisinde **kurum adı koda yazılıydı**. Kural
+> yardım metinlerinde uygulanmıştı ama bu satır `.tsx` içinde olduğu için
+> `.md` taramasının dışında kalmıştı — "sistem yöneticiniz" oldu.
+
 ## Form diyalogları
 
 `bilesenler/FormModal.tsx` — `TabakaKabi`'na **form düzenini** ekler (kayan
@@ -1832,6 +1893,14 @@ Metinler "belediye" demez; program **kamu kurumları** için yazılmıştır ve
 il/ilçe müdürlükleri, kaymakamlıklar, üniversite ve hastane idareleri de
 kullanabilir. "Bilgi İşlem Müdürlüğü" gibi kuruma özgü birim adları
 "sistem yöneticiniz" oldu; "müdürlük" yerine kural olarak "birim" yazılır.
+
+> **Kural bir tur boyunca yazılıydı ama uygulanmamıştı.** Tarama dokuz
+> dosyada 10 "müdürlük" buldu ("başka bir müdürlüğün kayıtları", "ilgili
+> müdürlüğe havale"): kaymakamlıkta ya da üniversite idaresinde müdürlük
+> yok, metin sessizce belediyeye özel kalıyordu. Kör değiştirme yapılmadı —
+> her biri bağlamıyla okundu, "birim" tekrarına düşen cümleler ayrıca
+> düzeltildi. `program-nedir.md`'de "belediyeler" **örnek olarak** duruyor;
+> orada kurum türlerini saymak metnin işi.
 
 ### Başlık iki kez yazılmaz
 

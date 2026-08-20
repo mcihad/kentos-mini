@@ -18,7 +18,18 @@ namespace KentOS.Mini.Application.Services
         Task<int> GetCountAsync();
         Task<IEnumerable<CicekDto>> GetCiceklerAsync(long cicekciId);
         Task<CicekKartDto> GetCicekKartAsync(string guid);
-        Task<int> GetDogrulamaKoduAsync(string guid);
+
+        /// <summary>
+        /// Çiçekçinin SMS bağlantısından gördüğü kart — giriş gerektirmez.
+        /// </summary>
+        /// <remarks>
+        /// <see cref="GetCicekKartAsync"/> tam <c>CicekDto</c> döndürüyor ve
+        /// içinde <b>doğrulama kodu</b> var; anonim bir uçta o yanıt, kodu
+        /// bağlantıyı açan herkese verirdi. Bu metot yalnızca işi yapmaya
+        /// yetecek alanları döner.
+        /// </remarks>
+        Task<Dto.V2.Cicek.CicekTeslimKartiDto> TeslimKartiAsync(string guid);
+
         Task<bool> CicekKartGonderildiAsync(string guid,int dogrulamaKodu);
         Task<bool> AddCicekAsync(long cicekciId, CicekDto cicekDto);
     }

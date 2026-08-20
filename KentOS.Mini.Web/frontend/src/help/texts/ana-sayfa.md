@@ -19,5 +19,5 @@ Güne buradan başlarsınız. Ekran üç soruya cevap verir: **bugün ne var**,
 3. Bildirim izni sorulduğunda **İzin ver** derseniz yeni etkinlik ve size
    gelen dosyalar anında bilgisayarınıza düşer.
 
-> Sayılar biriminize göre hesaplanır. Başka bir müdürlüğün kayıtları burada
+> Sayılar biriminize göre hesaplanır. Başka bir birimin kayıtları burada
 > görünmez; ekranın üst köşesinde hangi birimde çalıştığınız yazılıdır.

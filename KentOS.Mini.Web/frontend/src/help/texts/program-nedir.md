@@ -37,7 +37,7 @@ Günlük programı kurar, ziyaret ve tören takvimini yönetir, halk günü
 listelerini hazırlar. Ajanda, Takvim, Halk Günü ve Protokol ekranları
 esas olarak bu ekip içindir.
 
-### Birimler ve müdürlükler
+### Birimler ve daireler
 Kendi birimine düşen talepleri karşılar, görev açar, personeline atar,
 biten işi kapatır. Görevler, Projeler, Ekipler ve Gecikme Panosu bu iş
 içindir.

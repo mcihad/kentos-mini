@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.RateLimiting;
 using KentOS.Mini.Web.Filters;
 using KentOS.Mini.Application.Dto.V2.Ortak;
 using KentOS.Mini.Application.Dto;
@@ -30,6 +31,7 @@ public class OturumController(
     /// <response code="200">Giriş başarılı.</response>
     /// <response code="401">Kimlik hatalı ya da hesap kilitli.</response>
     [AllowAnonymous]
+    [EnableRateLimiting(Filters.HizSiniri.Giris)]
     [HttpPost("giris")]
     [ProducesResponseType<GirisYaniti>(StatusCodes.Status200OK)]
     [ProducesResponseType<HataYaniti>(StatusCodes.Status401Unauthorized)]

@@ -35,4 +35,4 @@ taşına** da bağlayabilirsiniz; o zaman gantt çizelgesinde hedefin altında
 
 **Birimim / Alt birimler** seçimi hangi birimlerin projelerinin
 listeleneceğini belirler. Yetkiniz varsa üstteki birim seçicisinden bağlı
-bir müdürlüğü seçip onun projelerini görebilirsiniz.
+bir birimi seçip onun projelerini görebilirsiniz.

@@ -1,7 +1,8 @@
-import * as Dialog from '@radix-ui/react-dialog';
-import { Check, Copy, RotateCcw, X } from 'lucide-react';
+import { Check, Copy, RotateCcw } from 'lucide-react';
 import { useState } from 'react';
 import type { ReactNode } from 'react';
+import { IconButton } from '../components/Button';
+import { OverlayShell } from '../components/OverlayShell';
 import { cn } from '../components/utils';
 import { FONTS, BRAND_COLORS, NEUTRAL_COLORS, ACCENT_COLORS } from './palettes';
 import { RANGES, PRESETS, type PresetKey } from './presets';
@@ -35,37 +36,28 @@ export function ThemePanel({ acik, kapat }: { acik: boolean; kapat: () => void }
   };
 
   return (
-    <Dialog.Root open={acik} onOpenChange={(a) => !a && kapat()}>
-      <Dialog.Portal>
-        <Dialog.Overlay className="anim-perde fixed inset-0 z-[90] bg-perde-hafif" />
-        <Dialog.Content
-          aria-describedby={undefined}
-          className="anim-panel fixed inset-y-0 right-0 z-[90] flex w-[min(420px,100vw)] flex-col border-l border-line bg-surface shadow-3"
-        >
-          <header className="flex h-appbar flex-none items-center gap-2 border-b border-line px-4">
-            <div className="min-w-0 flex-1">
-              <Dialog.Title className="font-display text-base font-bold tracking-[var(--track-d)]">
-                Tema Tasarımcısı
-              </Dialog.Title>
-              <p className="truncate text-2xs text-ink-3">
-                {t.preset === 'ozel' ? 'Özel tema' : PRESETS[t.preset].ad}
-              </p>
-            </div>
-            <button
-              onClick={t.sifirla}
-              className="grid h-9 w-9 place-items-center rounded-sm text-ink-2 transition-colors hover:bg-surface-2"
-              aria-label="Varsayılana sıfırla"
-              title="Varsayılana sıfırla"
-            >
-              <RotateCcw size={16} strokeWidth={1.8} />
-            </button>
-            <Dialog.Close
-              className="grid h-9 w-9 place-items-center rounded-sm text-ink-2 transition-colors hover:bg-surface-2"
-              aria-label="Kapat"
-            >
-              <X size={17} strokeWidth={1.9} />
-            </Dialog.Close>
-          </header>
+    /*
+      KABUĞU KENDİ KURMUYOR.
+
+      Panel ham Radix Dialog ile çiziliyordu ve telefonda parmakla
+      kapanmıyordu; üstelik mobilde de sağdan gelen tam boy bir paneldi,
+      yani uygulamanın "mobilde her şey alttan gelir" gramerinin dışındaydı.
+      `OverlayShell` mobilde `vaul` kullanıyor (kaydırarak kapatma oradan
+      geliyor), masaüstünde `masaustuYerlesim="yan"` ile eski sağ panel
+      görünümü aynen duruyor.
+    */
+    <OverlayShell
+      acik={acik}
+      kapat={kapat}
+      baslik="Tema Tasarımcısı"
+      aciklama={t.preset === 'ozel' ? 'Özel tema' : PRESETS[t.preset].ad}
+      basligaEk={
+        <IconButton etiket="Varsayılana sıfırla" varyant="sade" onClick={t.sifirla}>
+          <RotateCcw size={16} strokeWidth={1.8} />
+        </IconButton>
+      }
+      masaustuYerlesim="yan"
+    >
 
           <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">
             <Bolum baslik="Hazır temalar">
@@ -157,9 +149,7 @@ export function ThemePanel({ acik, kapat }: { acik: boolean; kapat: () => void }
               </div>
             </Bolum>
           </div>
-        </Dialog.Content>
-      </Dialog.Portal>
-    </Dialog.Root>
+    </OverlayShell>
   );
 }
 

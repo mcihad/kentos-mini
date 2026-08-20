@@ -167,13 +167,25 @@ Yeni varlık **üç yerde** tanımlanır: `bildirim/BildirimMerkezi.tsx`,
 | Tema tasarımcısı | — (istemci) | palet simgesi | — | ✅ |
 | **Kurum bilgileri** | `GET/PUT api/v2/institution` | `/kurum` | `sistem.kurum` | ✅ |
 | **PWA manifesti (kuruma göre)** | `GET /manifest.webmanifest` | — | — | ✅ |
+| **Kimlik sağlayıcı ayarı** | `GET/PUT api/v2/openid` · `POST openid/sina` | `/kimlik-saglayici` | `sistem.openid` | ✅ |
+| **Kurum hesabıyla giriş** | `GET openid/giris-durumu · baslat · geri-donus` (anonim) | giriş ekranı | — | ✅ |
 
-**Bekçi:** `HataKaydiTests`, `YapilandirmaTests`, `frontend/test/yardim.test.tsx`,
-`tokenlar.test.ts`.
+**Bekçi:** `HataKaydiTests`, `YapilandirmaTests`, `OpenIdTests`,
+`AnonimUcTests`, `frontend/test/yardim.test.tsx`, `tokenlar.test.ts`.
 
 Kurum kaydı **tek satırlık** `kurum_bilgileri` tablosunda; `GET` anonim
 (giriş ekranı da okur), `PUT` izne bağlı. Tablo boşken ilk satır `.env`
 değerlerinden tohumlanır — sıfırdan kurulum hâlâ "sadece .env doldur".
+
+Kimlik sağlayıcı ayarı da **tek satırlık** (`openid_ayarlari`) ve aynı
+sebeple veritabanında: sağlayıcı değiştiğinde sunucuya girip dosya
+düzenlemek gerekmesin. Giriş ekranındaki düğme **iki şartla** çıkar — ayar
+açık **ve** sağlayıcıya ulaşılabiliyor; erişilemeyen bir sağlayıcıya
+yönlendirmek kullanıcıyı geri dönemeyeceği bir sayfada bırakıyor.
+
+**Güvenlik yüzeyi** (`YuklemeGuvenligiTests`, `AnonimUcTests`): yüklenen
+dosyalar tarayıcıda belge olarak açılmıyor, girişte IP başına hız sınırı
+var, JWT anahtar gücü açılışta zorlanıyor, Swagger üretimde kapalı.
 
 ---
 

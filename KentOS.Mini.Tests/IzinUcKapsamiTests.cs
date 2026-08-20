@@ -1,4 +1,5 @@
 using System.Reflection;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Routing;
 using KentOS.Mini.Application.Identity;
@@ -125,6 +126,12 @@ public class IzinUcKapsamiTests
             foreach (var uc in Uclar(c))
             {
                 if (BilerekAcik(uc)) continue;
+
+                // GİRİŞ İSTEMEYEN uç bu testin yetki alanı dışında: orada kapı
+                // izin değil (çağıranın hesabı yok). Boşluk kalmıyor — anonim
+                // yüzeyin tamamı `AnonimUcTests` içinde ad ad kilitli ve yeni
+                // bir anonim uç eklemek oradaki listeyi düşürüyor.
+                if (uc.GetCustomAttributes<AllowAnonymousAttribute>().Any()) continue;
 
                 var fiiller = uc.GetCustomAttributes<HttpMethodAttribute>()
                     .SelectMany(a => a.HttpMethods)

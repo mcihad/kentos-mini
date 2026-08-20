@@ -1,8 +1,5 @@
 import {
-  Bell, Bug, Building2, CalendarDays, ChartColumn, ClipboardCheck, ClipboardList,
-  FolderKanban, Flower2, Gauge, Inbox, Landmark, ListChecks, Map, Radio,
-  FileUser, LayoutDashboard, MailCheck, Paperclip, Settings, SlidersHorizontal, UserPlus, Users,
-  type LucideIcon,
+  Bell, Bug, Building2, CalendarDays, ChartColumn, ClipboardCheck, ClipboardList, FileUser, Flower2, FolderKanban, Gauge, Inbox, KeyRound, Landmark, LayoutDashboard, ListChecks, MailCheck, Map, Paperclip, Radio, Settings, SlidersHorizontal, UserPlus, Users, type LucideIcon,
 } from 'lucide-react';
 import { PERMISSION } from '../components/permissions';
 
@@ -237,6 +234,10 @@ export const NAVIGATION: NavigationGroup[] = [
         // `rol` YALNIZCA geri düşüş: sunucu izin listesi göndermezse devreye
         // girer. İzin listesi geldiğinde hiç bakılmaz.
         rol: 'Admin',
+      },
+      {
+        yol: '/kimlik-saglayici', etiket: 'Kimlik Sağlayıcı', ikon: KeyRound,
+        izin: PERMISSION.sistemOpenid, rol: 'Admin',
       },
       { yol: '/bildirimler', etiket: 'Bildirimler', ikon: Bell },
       { yol: '/ayarlar', etiket: 'Ayarlar', ikon: Settings },

@@ -163,6 +163,7 @@ public static class Izinler
     // ─────────────────────────────────────────────────────────── sistem
     public const string SistemHata = "sistem.hata";
     public const string SistemKurum = "sistem.kurum";
+    public const string SistemOpenid = "sistem.openid";
 
     /// <summary>Bir iznin katalog kaydı.</summary>
     /// <param name="Ad">Kod sabiti — veritabanındaki anahtar.</param>
@@ -354,6 +355,10 @@ public static class Izinler
         new(SistemKurum, "Sistem", "Kurum bilgileri",
             "Kurum adını, iletişim bilgilerini, uygulama adını, amblemi ve kurumsal renkleri düzenler. " +
             "Değişiklik BÜTÜN kullanıcıların gördüğü arayüzü etkiler."),
+        new(SistemOpenid, "Sistem", "Kimlik sağlayıcı",
+            "Kurumsal kimlik sağlayıcı (OpenID Connect) ayarlarını görür ve "
+            + "değiştirir. Bu ayar yanlış girildiğinde giriş ekranındaki "
+            + "sağlayıcı düğmesi çalışmaz; izin bu yüzden dar tutulur."),
     ];
 
     /// <summary>Katalogdaki tüm izin adları.</summary>

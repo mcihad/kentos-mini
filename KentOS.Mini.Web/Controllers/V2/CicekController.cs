@@ -6,6 +6,7 @@ using KentOS.Mini.Application.Dto;
 using KentOS.Mini.Application.Services;
 using KentOS.Mini.Web.AuthPolicies;
 using KentOS.Mini.Web.Services.V2;
+using KentOS.Mini.Application.Dto.V2.Cicek;
 
 namespace KentOS.Mini.Web.Controllers.V2;
 
@@ -105,13 +106,61 @@ public class CicekController(
     public async Task<IActionResult> TalimatEkleAsync(long id, [FromBody] CicekDto istek)
         => Ok(await _cicekciService.AddCicekAsync(id, istek));
 
-    /// <summary>Çiçek kartı (teslim fişi).</summary>
+    /// <summary>Çiçek kartı (teslim fişi) — kurum içi görünüm.</summary>
     [HttpGet("kart/{guid}")]
     [ProducesResponseType<CicekKartDto>(StatusCodes.Status200OK)]
     public async Task<IActionResult> KartAsync(string guid)
         => Ok(await _cicekciService.GetCicekKartAsync(guid));
 
-    /// <summary>Kartın teslim edildiğini doğrulama koduyla işaretler.</summary>
+    /// <summary>
+    /// ÇİÇEKÇİNİN GÖRDÜĞÜ KART — giriş gerektirmez.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Neden anonim:</b> çiçekçi kurumun kullanıcısı değil. Hesabı, rolü,
+    /// jetonu yok; kart bağlantısı ona SMS ile gidiyor. Uç önce sınıf
+    /// düzeyindeki <c>[Izin(CicekGoruntule)]</c> ve JWT kapısının arkasındaydı,
+    /// yani SMS'teki bağlantı çiçekçide <b>hiç açılmıyordu</b> — akış baştan
+    /// sona kırıktı.
+    /// </para>
+    /// <para>
+    /// <b>Yetki belirteci GUID'in kendisi:</b> tahmin edilemez ve yalnızca
+    /// talimatın SMS'inde geçiyor. Yanıt da buna göre daraltıldı — doğrulama
+    /// kodu ve etkinliğin geri kalanı dönmez (bkz. <c>CicekTeslimKartiDto</c>).
+    /// </para>
+    /// <para>
+    /// Gizli etkinlikler çiçek talimatı üretmiyor, dolayısıyla bu uçtan gizli
+    /// bir kaydın bilgisi sızamaz.
+    /// </para>
+    /// </remarks>
+    [AllowAnonymous]
+    [HttpGet("teslim-karti/{guid}")]
+    [ProducesResponseType<CicekTeslimKartiDto>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TeslimKartiAsync(string guid)
+        => Ok(await _cicekciService.TeslimKartiAsync(guid));
+
+    /// <summary>
+    /// Kartın teslim edildiğini doğrulama koduyla işaretler — giriş gerektirmez.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Uç <c>[Izin(CicekYonet)]</c> istiyordu; çiçeği teslim eden kişide o izin
+    /// hiç olmadığı için <b>teslim işaretlemesi yapılamıyordu</b>. Kapı artık
+    /// yetki değil <b>doğrulama kodu</b>: kod yalnızca talimat SMS'inde geçiyor
+    /// ve kartla birlikte gösterilmiyor.
+    /// </para>
+    /// <para>
+    /// Kaba kuvvete karşı beş deneme sınırı var (servis katmanında, sayaç
+    /// veritabanında).
+    /// </para>
+    /// </remarks>
+    [AllowAnonymous]
+    [HttpPost("teslim-karti/{guid}/teslim")]
+    [ProducesResponseType<bool>(StatusCodes.Status200OK)]
+    public async Task<IActionResult> TeslimEtAsync(string guid, [FromBody] TeslimIstegi istek)
+        => Ok(await _cicekciService.CicekKartGonderildiAsync(guid, istek.DogrulamaKodu));
+
+    /// <summary>Kurum içinden teslim işaretleme (yetkiyle).</summary>
     [Izin(Izinler.CicekYonet)]
     [HttpPost("kart/{guid}/teslim")]
     [ProducesResponseType<bool>(StatusCodes.Status200OK)]

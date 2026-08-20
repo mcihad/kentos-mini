@@ -3,6 +3,7 @@ using System;
 using KentOS.Mini.Web.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 
@@ -11,9 +12,11 @@ using Npgsql.EntityFrameworkCore.PostgreSQL.Metadata;
 namespace KentOS.Mini.Web.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    partial class AppDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260820174004_CicekDogrulamaDenemesi")]
+    partial class CicekDogrulamaDenemesi
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -1986,57 +1989,6 @@ namespace KentOS.Mini.Web.Migrations
                         .HasName("pk_oneriler");
 
                     b.ToTable("oneriler", (string)null);
-                });
-
-            modelBuilder.Entity("KentOS.Mini.Application.Models.OpenIdSettings", b =>
-                {
-                    b.Property<long>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("bigint")
-                        .HasColumnName("id");
-
-                    NpgsqlPropertyBuilderExtensions.UseSerialColumn(b.Property<long>("Id"));
-
-                    b.Property<bool>("Etkin")
-                        .HasColumnType("boolean")
-                        .HasColumnName("etkin");
-
-                    b.Property<string>("GorunenAd")
-                        .HasColumnType("text")
-                        .HasColumnName("gorunen_ad");
-
-                    b.Property<DateTime?>("GuncellemeTarihi")
-                        .HasColumnType("timestamp without time zone")
-                        .HasColumnName("guncelleme_tarihi");
-
-                    b.Property<string>("IstemciId")
-                        .HasColumnType("text")
-                        .HasColumnName("istemci_id");
-
-                    b.Property<string>("IstemciSirri")
-                        .HasColumnType("text")
-                        .HasColumnName("istemci_sirri");
-
-                    b.Property<string>("Kapsamlar")
-                        .HasColumnType("text")
-                        .HasColumnName("kapsamlar");
-
-                    b.Property<string>("KullaniciAdiTalebi")
-                        .HasColumnType("text")
-                        .HasColumnName("kullanici_adi_talebi");
-
-                    b.Property<bool>("OtomatikKullaniciOlustur")
-                        .HasColumnType("boolean")
-                        .HasColumnName("otomatik_kullanici_olustur");
-
-                    b.Property<string>("Yetkili")
-                        .HasColumnType("text")
-                        .HasColumnName("yetkili");
-
-                    b.HasKey("Id")
-                        .HasName("pk_openid_ayarlari");
-
-                    b.ToTable("openid_ayarlari", (string)null);
                 });
 
             modelBuilder.Entity("KentOS.Mini.Application.Models.Ozgecmis", b =>

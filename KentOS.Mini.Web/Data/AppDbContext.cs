@@ -47,6 +47,9 @@ namespace KentOS.Mini.Web.Data
         /// </summary>
         public DbSet<Institution> KurumBilgileri { get; set; }
 
+        /// <summary>Kurumsal kimlik sağlayıcı ayarı — tek satır.</summary>
+        public DbSet<OpenIdSettings> OpenIdAyarlari { get; set; }
+
         // ── İş takip: ORTAK ek ve yorum ──
         //
         // ÇOK BİÇİMLİ: bağ `(varlik_turu, varlik_id)` ikilisiyle kuruluyor,
