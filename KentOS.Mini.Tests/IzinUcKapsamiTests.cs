@@ -34,6 +34,15 @@ public class IzinUcKapsamiTests
         controller.GetMethods(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly)
             .Where(m => m.GetCustomAttributes<HttpMethodAttribute>().Any());
 
+    /// <summary>Uç (ya da controller'ı) anonim mi?</summary>
+    /// <remarks>
+    /// Sınıf düzeyi de bakılıyor: form portalı ve vatandaş portalı
+    /// controller'ın tamamını anonim ilan ediyor.
+    /// </remarks>
+    private static bool AnonimMi(MethodInfo uc) =>
+        uc.GetCustomAttributes<AllowAnonymousAttribute>().Any()
+        || uc.DeclaringType!.GetCustomAttributes<AllowAnonymousAttribute>().Any();
+
     private static bool IzinKapisiVar(MethodInfo uc) =>
         uc.GetCustomAttributes<IzinAttribute>().Any()
         || uc.DeclaringType!.GetCustomAttributes<IzinAttribute>().Any();
@@ -100,6 +109,12 @@ public class IzinUcKapsamiTests
         {
             foreach (var uc in Uclar(c))
             {
+                // GİRİŞ İSTEMEYEN uç bu testin yetki alanı dışında: orada
+                // kapı izin değil (çağıranın hesabı yok). Boşluk kalmıyor —
+                // anonim yüzeyin tamamı `AnonimUcTests` içinde ad ad kilitli
+                // ve yeni bir anonim uç oradaki listeyi düşürüyor.
+                if (AnonimMi(uc)) continue;
+
                 if (BilerekAcik(uc) || IzinKapisiVar(uc)) continue;
                 korumasiz.Add($"{c.Name}.{uc.Name}");
             }
@@ -131,7 +146,7 @@ public class IzinUcKapsamiTests
                 // izin değil (çağıranın hesabı yok). Boşluk kalmıyor — anonim
                 // yüzeyin tamamı `AnonimUcTests` içinde ad ad kilitli ve yeni
                 // bir anonim uç eklemek oradaki listeyi düşürüyor.
-                if (uc.GetCustomAttributes<AllowAnonymousAttribute>().Any()) continue;
+                if (AnonimMi(uc)) continue;
 
                 var fiiller = uc.GetCustomAttributes<HttpMethodAttribute>()
                     .SelectMany(a => a.HttpMethods)

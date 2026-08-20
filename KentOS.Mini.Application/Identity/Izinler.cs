@@ -165,6 +165,14 @@ public static class Izinler
     public const string SistemKurum = "sistem.kurum";
     public const string SistemOpenid = "sistem.openid";
 
+    // ─────────────────────────────────────────────────────────── form
+    public const string FormGoruntule = "form.goruntule";
+    public const string FormYonet = "form.yonet";
+    public const string FormYayinla = "form.yayinla";
+    public const string FormYanitGoruntule = "form.yanitGoruntule";
+    public const string FormYanitSil = "form.yanitSil";
+    public const string FormCiktiAl = "form.ciktiAl";
+
     /// <summary>Bir iznin katalog kaydı.</summary>
     /// <param name="Ad">Kod sabiti — veritabanındaki anahtar.</param>
     /// <param name="Grup">Yönetim ekranındaki başlık.</param>
@@ -360,6 +368,25 @@ public static class Izinler
             "Kurumsal kimlik sağlayıcı (OpenID Connect) ayarlarını görür ve "
             + "değiştirir. Bu ayar yanlış girildiğinde giriş ekranındaki "
             + "sağlayıcı düğmesi çalışmaz; izin bu yüzden dar tutulur."),
+
+        new(FormGoruntule, "Form ve Anket", "Formları görüntüle",
+            "Birimin formlarını ve anketlerini listeler, tanımlarını okur. "
+            + "Yanıtları GÖRMEZ — onun için ayrı izin gerekir."),
+        new(FormYonet, "Form ve Anket", "Form tasarla",
+            "Yeni form açar, soruları ve doğrulama kurallarını düzenler, kopyalar, siler. "
+            + "Tasarlamak yayınlamak DEĞİLDİR: vatandaşa açmak ayrı izne bağlı."),
+        new(FormYayinla, "Form ve Anket", "Formu yayınla",
+            "Formu vatandaşa açar, kapatır ve yanıt kabulünü durdurur. Dar tutulur: "
+            + "yayınlanan bağlantı kurum dışına çıkıyor ve geri alınması zor."),
+        new(FormYanitGoruntule, "Form ve Anket", "Yanıtları gör",
+            "Gelen yanıtları, özet dağılımları ve yanıt detaylarını okur. Yanıtlar "
+            + "kişisel veri içerebiliyor (ad, telefon, T.C.); izin bu yüzden ayrı."),
+        new(FormYanitSil, "Form ve Anket", "Yanıt geçersiz say",
+            "Yinelenen ya da kötüye kullanım amaçlı bir yanıtı geçersiz işaretler. "
+            + "Kayıt SİLİNMEZ, sayımdan düşer."),
+        new(FormCiktiAl, "Form ve Anket", "Yanıtları dışa aktar",
+            "Yanıtları Excel olarak indirir. Dışa aktarılan dosya kurum dışına "
+            + "taşınabildiği için görüntülemekten ayrı bir izin."),
     ];
 
     /// <summary>Katalogdaki tüm izin adları.</summary>

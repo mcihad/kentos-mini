@@ -67,6 +67,17 @@ public class AnonimUcTests
         "OpenIdController.BaslatAsync",
         "OpenIdController.GeriDonusAsync",
 
+        // FORM PORTALI — uygulamanın İKİNCİ anonim yazma yüzeyi.
+        // Vatandaş bildirim portalının kalıbını izliyor: ayrı controller,
+        // ayrı rota kökü (/api/v2/form-portal), kurum ayarındaki bayrak
+        // kapalıyken 404 (FormPortaliFiltresi, Order = -2001) ve okuma /
+        // yazma için ayrı hız sınırı. Yetki belirteci adresteki tahmin
+        // edilemez erişim anahtarı.
+        "FormPortalController.FormAsync",
+        "FormPortalController.GonderAsync",
+        "FormPortalController.TaslakAsync",
+        "FormPortalController.TaslakGetirAsync",
+
         // Çiçekçi kurumun kullanıcısı değil: hesabı, rolü, jetonu yok.
         // Yetki belirteci bağlantıdaki GUID; yanıt da ona göre daraltıldı.
         "CicekController.TeslimKartiAsync",

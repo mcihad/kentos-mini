@@ -50,6 +50,12 @@ namespace KentOS.Mini.Web.Data
         /// <summary>Kurumsal kimlik sağlayıcı ayarı — tek satır.</summary>
         public DbSet<OpenIdSettings> OpenIdAyarlari { get; set; }
 
+        // ── dinamik form / anket ───────────────────────────────────────
+        public DbSet<Form> Formlar { get; set; }
+        public DbSet<FormVersion> FormSurumleri { get; set; }
+        public DbSet<FormResponse> FormYanitlari { get; set; }
+        public DbSet<FormResponseFile> FormYanitDosyalari { get; set; }
+
         // ── İş takip: ORTAK ek ve yorum ──
         //
         // ÇOK BİÇİMLİ: bağ `(varlik_turu, varlik_id)` ikilisiyle kuruluyor,
@@ -131,6 +137,108 @@ namespace KentOS.Mini.Web.Data
               yazdırır hem de sonradan eklenen satırlarda aynı davranışı
               garanti eder.
             */
+            /*
+              DİNAMİK FORM — JSONB EŞLEMESİ.
+
+              `Tanim` ve `Cevaplar` C# tarafında `string`, veritabanında
+              `jsonb`. Neden `string`:
+
+              - `Application` katmanının NuGet bağımlılığı YOK; oraya
+                `JsonDocument`/`JsonElement` koymak `System.Text.Json`'ı
+                entity modeline sokardı ve o katmanın kuralı bunu yasaklıyor.
+              - Serileştirme tek yerde (servis) ve denetimli kalıyor:
+                gelen tanım önce doğrulanıp sonra yazılıyor, EF'in sessizce
+                serileştirdiği bir nesne grafiği değil.
+
+              Kolon tipi `jsonb` (metin değil) çünkü asıl kazanç orada:
+              GIN indeksi, yol sorgusu (`@>`, `jsonb_path_query`) ve
+              PostgreSQL 18'in `JSON_TABLE`'ı ile dinamik Excel sütunu.
+              `json` değil `jsonb`: `json` metni olduğu gibi saklıyor ve
+              indekslenemiyor.
+            */
+            builder.Entity<FormVersion>(entity =>
+            {
+                entity.Property(v => v.Tanim).HasColumnType("jsonb");
+
+                // Bir formun sürüm numarası benzersiz: yayın sırasında iki
+                // istek aynı numarayı üretirse ikincisi burada durur.
+                entity.HasIndex(v => new { v.FormId, v.SurumNo }).IsUnique();
+
+                entity.HasOne(v => v.Form)
+                    .WithMany(f => f.Surumler)
+                    .HasForeignKey(v => v.FormId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            builder.Entity<Form>(entity =>
+            {
+                // Vatandaş adresi bu alandan çözülüyor; her istekte aranıyor.
+                entity.HasIndex(f => f.ErisimAnahtari).IsUnique();
+
+                /*
+                  YAYIN SÜRÜMÜ İLİŞKİSİ `NoAction`.
+
+                  `Form → YayinSurum → Form` bir döngü. Cascade bırakılsaydı
+                  Postgres "çoklu cascade yolu" diye reddederdi; formu silmek
+                  zaten sürümleri cascade ile siliyor.
+                */
+                entity.HasOne(f => f.YayinSurumu)
+                    .WithMany()
+                    .HasForeignKey(f => f.YayinSurumId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<FormResponse>(entity =>
+            {
+                entity.Property(r => r.Cevaplar).HasColumnType("jsonb");
+
+                // "Şu soruya X diyenler" süzgeci bu indeksten geçiyor.
+                entity.HasIndex(r => r.Cevaplar).HasMethod("gin");
+
+                entity.HasIndex(r => r.TakipNo).IsUnique();
+                entity.HasIndex(r => new { r.FormId, r.Durum });
+
+                // Tek yanıt kuralı bu indeksle aranıyor (telefon kipinde).
+                entity.HasIndex(r => new { r.FormId, r.TelefonSade });
+
+                /*
+                  TEK YANIT KURALI VERİTABANINDA.
+
+                  `CountAsync` + `Insert` bir TOCTOU: iki eşzamanlı gönderim
+                  ikisi de "yok" okur, ikisi de yazar. Kısmi benzersiz
+                  indeks yarış koşulunu ortadan kaldırıyor; servis yine de
+                  önden bakıp anlaşılır bir Türkçe mesaj veriyor, ihlal
+                  gerçekleşirse `V2HataFiltresi` 23505'i zaten 400'e
+                  çeviriyor.
+
+                  KISMİ (`WHERE ... IS NOT NULL`): kimliksiz anonim
+                  yanıtlar birbirini engellememeli.
+                */
+                entity.HasIndex(r => new { r.FormId, r.KimlikKarmasi })
+                    .IsUnique()
+                    .HasFilter("kimlik_karmasi IS NOT NULL");
+
+                entity.HasOne(r => r.Form)
+                    .WithMany(f => f.Yanitlar)
+                    .HasForeignKey(r => r.FormId)
+                    .OnDelete(DeleteBehavior.Cascade);
+
+                // Sürüm silinmiyor (form silinince cascade ile gidiyor);
+                // yanıt sürümü işaret etmeye devam etmeli.
+                entity.HasOne(r => r.Surum)
+                    .WithMany()
+                    .HasForeignKey(r => r.SurumId)
+                    .OnDelete(DeleteBehavior.NoAction);
+            });
+
+            builder.Entity<FormResponseFile>(entity =>
+            {
+                entity.HasOne(d => d.Yanit)
+                    .WithMany(r => r.Dosyalar)
+                    .HasForeignKey(d => d.YanitId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
             builder.Entity<UserSetting>(entity =>
             {
                 foreach (var alan in entity.Metadata.GetProperties()

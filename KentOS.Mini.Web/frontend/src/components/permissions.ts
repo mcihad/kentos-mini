@@ -108,6 +108,21 @@ export const PERMISSION = {
   sistemHata: 'sistem.hata',
   sistemKurum: 'sistem.kurum',
   sistemOpenid: 'sistem.openid',
+  
+
+  // ── form ve anket ──
+
+  formGoruntule: 'form.goruntule',
+
+  formYonet: 'form.yonet',
+
+  formYayinla: 'form.yayinla',
+
+  formYanitGoruntule: 'form.yanitGoruntule',
+
+  formYanitSil: 'form.yanitSil',
+
+  formCiktiAl: 'form.ciktiAl',
 } as const;
 
 export type PermissionName = (typeof PERMISSION)[keyof typeof PERMISSION];

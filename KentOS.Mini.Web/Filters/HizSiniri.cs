@@ -31,6 +31,15 @@ public static class HizSiniri
     /// <summary>Giriş ucu politikasının adı.</summary>
     public const string Giris = "giris";
 
+    /// <summary>Form portalı — OKUMA (formu getir, taslağı sürdür).</summary>
+    public const string FormPortaliOkuma = "form-portali-okuma";
+
+    /// <summary>Form portalı — YAZMA (gönder, taslak kaydet, dosya).</summary>
+    public const string FormPortaliYazma = "form-portali-yazma";
+
+    private const int FormOkumaSiniri = 60;
+    private const int FormYazmaSiniri = 10;
+
     /// <summary>Bir IP'nin bir dakikada atabileceği istek.</summary>
     private const int DakikalikIstek = 12;
 
@@ -90,6 +99,39 @@ public static class HizSiniri
                         QueueLimit = 0,
                     }));
 
+            /*
+              FORM PORTALI — İKİ POLİTİKA ve bölüm anahtarı `ip|anahtar`.
+
+              Vatandaş portalının 12/dk sınırı burada YETMEZ: tek bir form
+              doldurma oturumu meşru olarak 1 tanım GET'i + N dosya + 1
+              gönderim. Okuma ve yazma ayrı tutuluyor çünkü ikisinin
+              maliyeti de riski de farklı.
+
+              Bölüm anahtarına FORM ANAHTARI da giriyor: aynı NAT'ın
+              arkasındaki 300 kişilik bir okul aynı ankete aynı teneffüste
+              girebiliyor. Saldırgan başka bir bölüme geçmek için o formun
+              anahtarını bilmek zorunda — yani zayıflama yok.
+            */
+            secenekler.AddPolicy(FormPortaliOkuma, baglam =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    FormBolumu(baglam),
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = FormOkumaSiniri,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0,
+                    }));
+
+            secenekler.AddPolicy(FormPortaliYazma, baglam =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    FormBolumu(baglam),
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = FormYazmaSiniri,
+                        Window = TimeSpan.FromMinutes(1),
+                        QueueLimit = 0,
+                    }));
+
             secenekler.AddPolicy(Giris, baglam =>
                 RateLimitPartition.GetFixedWindowLimiter(
                     baglam.Connection.RemoteIpAddress?.ToString() ?? "bilinmeyen",
@@ -102,5 +144,18 @@ public static class HizSiniri
         });
 
         return servisler;
+    }
+
+    /// <summary>Form portalı bölüm anahtarı: <c>ip|erisimAnahtari</c>.</summary>
+    private static string FormBolumu(HttpContext baglam)
+    {
+        var ip = baglam.Connection.RemoteIpAddress?.ToString() ?? "bilinmeyen";
+
+        // Anahtar rota değerinden okunuyor; yoksa yalnızca IP ile bölünüyor.
+        var anahtar = baglam.Request.RouteValues.TryGetValue("anahtar", out var a)
+            ? a?.ToString() ?? string.Empty
+            : string.Empty;
+
+        return $"{ip}|{anahtar}";
     }
 }

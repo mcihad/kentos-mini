@@ -268,6 +268,64 @@ TABLE ekipler
   kullanimda
   lider_id
   olusturma_tarihi
+TABLE form_surumleri
+  form_id
+  id
+  olusturan_id
+  olusturma_tarihi
+  surum_no
+  tanim
+TABLE form_yanit_dosyalari
+  ad
+  alan_kimligi
+  anahtar
+  boyut
+  icerik_tipi
+  id
+  olusturma_tarihi
+  yanit_id
+TABLE form_yanitlari
+  ad_soyad
+  baslama_tarihi
+  cevaplar
+  durum
+  eposta
+  form_id
+  gonderim_tarihi
+  id
+  ip_ozeti
+  kimlik_karmasi
+  kullanici_id
+  surdurme_anahtari
+  surum_id
+  takip_no
+  tarayici
+  telefon
+  telefon_sade
+TABLE formlar
+  aciklama
+  anonim_tuzu
+  baslangic_tarihi
+  baslik
+  birim_id
+  bitis_tarihi
+  durum
+  erisim
+  erisim_anahtari
+  guncelleme_tarihi
+  id
+  olusturan_id
+  olusturma_tarihi
+  silindi
+  sonuclar_herkese_acik
+  tek_yanit
+  tesekkur_adresi
+  tesekkur_metni
+  yanit_ozeti_gorunur
+  yanit_sayisi
+  yanit_siniri
+  yayin_surum_id
+  yayin_tarihi
 TABLE gorev_asamalari
   aciklama_zorunlu
   ad
@@ -498,6 +556,7 @@ TABLE kurum_bilgileri
   cikti_amblemi
   eposta
   favicon
+  form_portali_acik
   gorunen_ad
   guncelleme_tarihi
   guncelleyen

@@ -166,6 +166,24 @@ public class Institution
     [Column("vatandas_bildirimi_acik")]
     public bool CitizenReportEnabled { get; set; }
 
+    /// <summary>
+    /// Dinamik form portalı (<c>/form/{anahtar}</c>) açık mı.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// <b>Vatandaş bildirim bayrağı YENİDEN KULLANILMADI</b> ve bu bilinçli:
+    /// şikâyet portalını açmanın form portalını da açması, tek kararla iki
+    /// ayrı maruziyet demekti. İkisi farklı yüzeyler — biri serbest metin
+    /// alıyor, öteki kurumun tasarladığı her formu.
+    /// </para>
+    /// <para>
+    /// Varsayılan <b>kapalı</b>: uçlar 404 döner. Ekranı gizlemek yetmez,
+    /// uçlar açık kaldığı sürece portal açıktır.
+    /// </para>
+    /// </remarks>
+    [Column("form_portali_acik")]
+    public bool FormPortalEnabled { get; set; }
+
     // ── Denetim ────────────────────────────────────────────────────────
 
     [Column("olusturma_tarihi")]

@@ -372,6 +372,14 @@ builder.Services.AddScoped<IInstitutionService, InstitutionService>();
 // HttpClient()` her çağrıda yeni bağlantı açar ve TIME_WAIT birikir.
 builder.Services.AddHttpClient();
 builder.Services.AddScoped<IOpenIdService, OpenIdServisi>();
+
+// ── dinamik form / anket ───────────────────────────────────────────────
+builder.Services.AddScoped<IFormServisi, FormServisi>();
+builder.Services.AddScoped<IFormYanitServisi, FormYanitServisi>();
+builder.Services.AddScoped<IFormCiktiServisi, FormCiktiServisi>();
+
+// Portal kapısı: kurum bayrağı kapalıysa anonim uçlar 404 döner.
+builder.Services.AddScoped<KentOS.Mini.Web.Filters.FormPortaliFiltresi>();
 // İŞ TAKİP — ortak altyapı.
 //
 // `IBirimAgaci` özyinelemeli CTE ile alt ağacı TEK sorguda okur (eski
