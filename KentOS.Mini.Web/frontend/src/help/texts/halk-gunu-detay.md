@@ -1,5 +1,3 @@
-# Halk Günü Ayrıntısı
-
 Günün listesini burada kurarsınız: saat dilimleri, kimin kaçta gireceği ve
 toplu SMS.
 
@@ -13,7 +11,8 @@ toplu SMS.
 
 ## Kişi atama
 
-Dilimin sağındaki **kişi ekle** düğmesi havuzdaki bekleyenleri açar. Seçtiğiniz
+Dilimin sağındaki **kişi ekle** düğmesi havuzdaki bekleyenleri açar.
+Seçtiğiniz
 kişiler o saate sırayla yerleşir.
 
 - **Yukarı / aşağı** okları sırayı değiştirir.
@@ -52,8 +51,10 @@ sonuna `-yatay` eklenir.
 ## Vatandaş dosyası
 
 Görüşme ekranındaki geçmiş kartı "3 talep · 2 halk günü" gibi bir özet verir.
-**Vatandaş dosyasını aç** bağlantısı, o kişinin kurumla bütün geçmişini tek bir
-zaman çizgisinde döker: hangi tarihte ne istemişti, hangi birim baktı, talep ne
+**Vatandaş dosyasını aç** bağlantısı, o kişinin kurumla bütün geçmişini tek
+bir
+zaman çizgisinde döker: hangi tarihte ne istemişti, hangi birim baktı, talep
+ne
 duruma geldi, halk gününde ne konuşuldu.
 
 Liste **kurum genelidir** — vatandaş geçen sefer başka bir müdürlüğe gitmiş

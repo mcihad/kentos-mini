@@ -1,5 +1,3 @@
-# Kurum Bilgileri
-
 Kurumun adı, iletişim bilgileri, uygulama adı, amblemi ve kurumsal renkleri
 buradan düzenlenir. Kaydettiğiniz an **bütün kullanıcılara** yansır — giriş
 ekranı, menü, sekme başlığı, telefon ana ekranındaki kısayol ve PDF/Excel
@@ -21,8 +19,8 @@ Bu ekrana girebilmek için **Kurum bilgileri** yetkisi gerekir.
 
 ### İletişim
 
-Ağ sitesi, e-posta, telefon ve adres. Bu alanlar API künyesinde ve
-çıktılarda kullanılır; boş bırakılabilir.
+Ağ sitesi, e-posta, telefon ve adres. Bu bilgiler yazdırılan belgelerin
+künyesinde görünür; boş bırakılabilir.
 
 ### Uygulama
 
@@ -46,9 +44,9 @@ kimlik kılavuzundaki kodu doğrudan yapıştırmak için ikincisi gerekli.
 
 ### Görseller
 
-Sunucudaki dosya yolları yazılır (örn. `/amblem.png`). Dosyaları sunucuda
-`wwwroot` klasörüne koyup yolunu buraya yazın; yanındaki küçük kutu
-önizlemeyi gösterir, boş kalıyorsa yol yanlıştır.
+Amblem ve simge dosyalarının adresi yazılır (örn. `/amblem.png`). Dosyaları
+sisteme yüklemek sistem yöneticisinin işidir; siz yalnızca adresi girersiniz.
+Yanındaki küçük kutu önizlemeyi gösterir — boş kalıyorsa adres yanlıştır.
 
 **Çıktı amblemi** boş bırakılırsa amblem kullanılır — çoğu kurumda ikisi
 aynıdır.
@@ -56,15 +54,15 @@ aynıdır.
 ## Sık sorulanlar
 
 **Değişiklik neden hemen görünmedi?**
-Sekme başlığı ve renkler anında değişir. Telefondaki kurulu uygulamanın adı
-ve simgesi ise işletim sisteminde önbelleklenir; onun güncellenmesi için
+Sekme başlığı ve renkler anında değişir. Telefona kurulu uygulamanın adı ve
+simgesi ise telefonun kendi hafızasında kalır; onun yenilenmesi için
 uygulamayı kaldırıp yeniden kurmak gerekir.
 
 **Veritabanı, SMS ve bildirim ayarları nerede?**
-Onlar burada değil, sunucudaki `.env` dosyasında. Sebebi basit: bu ekranı
-açabilmek için önce veritabanına bağlanmak gerekiyor, dolayısıyla bağlantı
-bilgisi veritabanında tutulamaz. Sırların yedeklere düşmemesi de tercih
-sebebi. O ayarlar için sistem yöneticinize başvurun.
+Onlar bu ekranda değil, sistemin kurulum dosyasında tutulur ve yalnızca
+sistem yöneticisi değiştirebilir. Bu ayrım güvenlik içindir: şifre ve
+erişim anahtarları arayüzden görülemez. İhtiyaç hâlinde sistem
+yöneticinize başvurun.
 
 **Yanlış bir şey kaydettim.**
 Kaydetmeden önce **Geri al** düğmesi son kayıtlı hâle döner. Kaydettikten

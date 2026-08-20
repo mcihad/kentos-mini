@@ -1801,3 +1801,59 @@ Kural artık şu:
 - **İpucusuz alanda** satır yalnızca hata varken çıkar. O an kullanıcı zaten
   o alana odaklanmış durumda; tek seferlik 16px'lik kayma, her formda taşınan
   yüzlerce boş pikselden ucuz.
+
+## Yardım metinleri SON KULLANICI içindir
+
+36 metin (`help/texts/*.md`) baştan sona elden geçirildi. Kural tek cümle:
+**yardım, ekranı kullanan memura yazılır — yazılımcıya değil.**
+
+### Kaldırılanlar
+
+| Ne | Nereye döndü |
+|---|---|
+| `SLA` | "süre hedefi" / "hedeflenen süre" |
+| "tabaka" (tasarım terimi) | "alttan açılan pencere" |
+| "çip" | "etiket" / "renk işareti" |
+| `FAB` | "yuvarlak düğme" |
+| "kök görev" | "ana görev" |
+| "enlem ve boylam" | "konum" |
+| `POST /api/v2/etkinlik` | "hangi işlemde oluştu" |
+| "sunucudaki `.env` dosyası", "`wwwroot` klasörü" | "sistem yöneticiniz" |
+| "56 piksellik satırlar" | ölçü hiç yazılmıyor |
+
+Ayrıca **tasarım gerekçeleri** kullanıcı bilgisine çevrildi: "Ayrım olmasaydı
+kutu kullanılamaz hâle gelirdi" yerine "Bu ayrım kutunun birikmesini önler".
+Kullanıcı kararın *neden* verildiğini değil, *kendisi için ne anlama
+geldiğini* okumak istiyor.
+
+### Kurum adı geçmez, kurum TÜRÜ de dayatılmaz
+
+Metinler "belediye" demez; program **kamu kurumları** için yazılmıştır ve
+il/ilçe müdürlükleri, kaymakamlıklar, üniversite ve hastane idareleri de
+kullanabilir. "Bilgi İşlem Müdürlüğü" gibi kuruma özgü birim adları
+"sistem yöneticiniz" oldu; "müdürlük" yerine kural olarak "birim" yazılır.
+
+### Başlık iki kez yazılmaz
+
+Her metin `# Ekran Adı` ile başlıyordu ve panel başlık şeridi zaten aynı adı
+gösteriyordu — telefonda tekrar ~60px yer yiyordu. 36 dosyadan da H1
+kaldırıldı; metinler doğrudan bir giriş cümlesiyle başlıyor.
+
+### YENİ: "Bu Program Nedir?"
+
+`help/texts/program-nedir.md` — Yardım Merkezi'nin **ilk sırasında**, hiçbir
+ekrana bağlı değil (`kalip: ''`). Yeni bir kullanıcının ilk sorusu "bu program
+ne işe yarıyor" oluyor ve ekran yardımları buna cevap vermiyordu; her biri
+kendi ekranını anlatıyor.
+
+İçerik: ne olduğu · hangi sorunu çözdüğü (eski hâli / bu programla tablosu) ·
+kimler için uygun olduğu (rol rol) · ne iş yaptığı (modül modül) · ne faydası
+olduğu · verinin nasıl korunduğu · nereden başlanacağı.
+
+> **Yardım, arayüzle birlikte güncellenir.** Bu turda üç metin arayüzün
+> gerisinde kalmıştı: `ayarlar.md` Tema Tasarımcısı'nı hâlâ mobil üst
+> çubukta gösteriyordu (oradan kaldırılmıştı), `mobil.md` üst şeritte artık
+> olmayan iki simgeyi sayıyordu ve çıkışın nereye taşındığını hiçbir metin
+> yazmıyordu, `ajanda.md` çıktı penceresinin eski akışını anlatıyordu. Yeni
+> eklenen iki jest (aşağı çekip yenile, satırı kaydırarak işlem) de yardımda
+> yoktu — hepsi bu turda yazıldı.

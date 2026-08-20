@@ -1,5 +1,3 @@
-# Çiçek Gönderi
-
 Makam adına gönderilen çiçek siparişlerinin takibi.
 
 ## Sipariş nasıl açılır

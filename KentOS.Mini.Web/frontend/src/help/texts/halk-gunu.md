@@ -1,5 +1,3 @@
-# Halk Günleri
-
 Vatandaşın makamda sırayla dinlendiği günler burada planlanır.
 
 ## İşin sırası
@@ -13,7 +11,8 @@ Vatandaşın makamda sırayla dinlendiği günler burada planlanır.
 
 ## Yeni halk günü
 
-**Yeni halk günü** düğmesine (telefonda sağ alttaki **+**) basın, tarihi seçin. Başlık boş bırakılırsa
+**Yeni halk günü** düğmesine (telefonda sağ alttaki **+**) basın, tarihi
+seçin. Başlık boş bırakılırsa
 tarih başlık olur. Kaydedince doğrudan günün ayrıntısına gidersiniz — sonraki
 adım her zaman zaman dilimlerini tanımlamaktır.
 

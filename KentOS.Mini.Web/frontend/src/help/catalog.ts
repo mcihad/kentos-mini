@@ -1,3 +1,4 @@
+import programNedir from './texts/program-nedir.md?raw';
 import anaSayfa from './texts/ana-sayfa.md?raw';
 import ajanda from './texts/ajanda.md?raw';
 import etkinlikDetay from './texts/etkinlik-detay.md?raw';
@@ -79,12 +80,29 @@ const KATALOG: { kalip: string; kayit: HelpEntry }[] = [
     yerleşim ve kurulum/bildirim akışı. Bunları her ekranın metnine tekrar
     yazmak, yirmi bir dosyayı aynı anda güncel tutmayı gerektirirdi.
   */
+  /*
+    PROGRAMIN KENDİSİNİ ANLATAN SAYFA — listenin en başında.
+
+    Yardım Merkezi'ne giren yeni bir kullanıcının ilk sorusu "bu program ne
+    işe yarıyor" oluyor; ekranların yardımı bu soruya cevap vermiyor, her
+    biri kendi ekranını anlatıyor. Sayfa hiçbir yola bağlı değil (`kalip: ''`)
+    çünkü tek bir ekranı değil, sistemin bütününü tarif ediyor.
+  */
+  {
+    kalip: '',
+    kayit: {
+      grup: 'Genel',
+      baslik: 'Bu Program Nedir?',
+      ozet: 'Ne işe yarar, kimler kullanır, hangi sorunu çözer',
+      metin: programNedir,
+    },
+  },
   {
     kalip: '',
     kayit: {
       grup: 'Genel',
       baslik: 'Telefonda Kullanım',
-      ozet: 'Yuvarlak düğme, alt tabakalar ve arama/süzgeç düzeni',
+      ozet: 'Yuvarlak düğme, alttan açılan pencereler ve süzgeç düzeni',
       metin: mobil,
     },
   },
@@ -138,7 +156,7 @@ const KATALOG: { kalip: string; kayit: HelpEntry }[] = [
     kayit: {
       grup: 'İş Takip',
       baslik: 'Görev Tipleri',
-      ozet: 'Aşama, hizmet standardı ve SLA tanımları',
+      ozet: 'Aşama, hizmet standardı ve süre hedefi tanımları',
       metin: gorevTipleri,
     },
   },

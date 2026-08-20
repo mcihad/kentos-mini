@@ -1,5 +1,3 @@
-# Etkinlik Detayı
-
 Bir etkinliğin bütün bilgisi bu ekranda toplanır.
 
 ## Üstteki blok
@@ -19,7 +17,7 @@ görünür. Kayıt tekrar eden bir etkinlikse tekrar kuralı da burada yazar.
 
 ## Sağ sütun
 
-- **Katılımcı birimler** — Toplantıya çağrılan müdürlükler. `+` düğmesiyle
+- **Katılımcı birimler** — Toplantıya çağrılan birimler. `+` düğmesiyle
   yenisini ekleyebilirsiniz.
 - **Görebilecek kişiler** — Yalnızca gizli etkinliklerde çıkar; kaydı kimin
   görebildiğini söyler.
@@ -29,7 +27,7 @@ görünür. Kayıt tekrar eden bir etkinlikse tekrar kuralı da burada yazar.
 
 Bilgisayarda başlığın altında bir düğme sırası, **telefonda sağ alttaki
 yuvarlak düğme** vardır; ikisi de aynı işlemleri açar. Telefonda işlemler
-56 piksellik satırlardan oluşan bir tabaka hâlinde gelir.
+alttan açılan bir pencere hâlinde gelir.
 
 1. **Düzenle** — Bilgileri değiştirir. Tekrar eden bir etkinlikte hangi
    tekrarların etkileneceği sorulur.
@@ -42,7 +40,7 @@ yuvarlak düğme** vardır; ikisi de aynı işlemleri açar. Telefonda işlemler
 > hemen altında yazar ("Gizli etkinlik havale edilemez"). Olmayan bir düğmeyi
 > aramak, çalışmayan bir düğmeden daha yorucuydu.
 
-> **Not eklemek** telefonda ayrı bir tabakada açılır: yazarken çıkan klavye,
+> **Not eklemek** telefonda ayrı bir pencerede açılır: yazarken çıkan klavye,
 > sayfanın içindeki bir kutuyu kullanırken altındaki notları tamamen
 > örtüyordu.
 

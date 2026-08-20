@@ -1,5 +1,3 @@
-# Görevler
-
 Biriminizin yaptığı işin listesi. Vatandaştan gelen şikâyet, sahada tespit
 edilen sorun ve birimin kendi planı — üçü de burada aynı kayıt olarak
 görünür; farkı yalnızca **kaynak** alanı söyler.
@@ -15,21 +13,22 @@ Görev tipi seçtiğinizde aşamalar, hizmet standardı ve süre hedefi tipten
 kendiliğinden gelir. Tipsiz de görev açabilirsiniz ama o zaman aşama ve
 süre ölçümü olmaz.
 
-Bazı tiplerde **konum zorunludur**; o tiplerde enlem ve boylam girmeden
+Bazı tiplerde **konum zorunludur**; o tiplerde konum işaretlenmeden
 kayıt tamamlanmaz.
 
 ## Listeyi okuma
 
-- Üstteki renkli çipler durumu süzer: yeni, atandı, başladı, devam ediyor,
+- Üstteki renkli etiketler durumu süzer: yeni, atandı, başladı, devam ediyor,
   beklemede, onay bekliyor, tamamlandı.
 - **İlerleme çubuğu** kaç aşamanın kapandığını gösterir.
-- **Süre** sütunu SLA'ya kalan zamanı yazar. 24 saatin altı sarı, süresi
+- **Süre** sütunu hedeflenen süreden kalan zamanı yazar. 24 saatin altı sarı,
+  süresi
   aşılmış olan kırmızıdır. Kapanmış görevlerde bu sütun boş kalır — ölçüm
   bitmiştir.
 - **Gecikenler** düğmesi listeyi yalnızca süresi aşılmış işlere indirir.
 - **Birimim / Alt birimler** kapsamı belirler.
 
-Liste yalnızca **kök görevleri** gösterir; alt görevler üst görevin
+Liste yalnızca **ana görevleri** gösterir; alt görevler üst görevin
 ayrıntısında açılır.
 
 ## Başka birim adına çalışma
@@ -41,5 +40,5 @@ yan ya da üst birimler açılmaz.
 
 ## Telefonda
 
-Bütün süzgeçler sağ alttaki **+** → **Ara ve süz** tabakasındadır: birim,
+Bütün süzgeçler sağ alttaki **+** → **Ara ve süz** penceresindedir: birim,
 arama, durum, öncelik ve süre. Açık süzgeç sayısı düğmenin üstünde görünür.

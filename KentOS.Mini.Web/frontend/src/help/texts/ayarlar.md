@@ -1,5 +1,3 @@
-# Ayarlar
-
 Kişisel tercihleriniz.
 
 ## Uygulamayı kurma
@@ -9,11 +7,13 @@ için **Kurulum ve Bildirimler** yardım konusuna bakın.
 
 ## Görünüm
 
-**Açık** ve **koyu** tema arasında geçiş yapabilirsiniz. Üst çubuktaki palet
-simgesi **Tema Tasarımcısı**'nı açar: kurumsal kimliği bozmadan renk,
-yoğunluk ve köşe yuvarlaklığı gibi ayarları değiştirir. Seçiminiz tarayıcıda
-saklanır; bir dahaki girişte aynı temayla açılır. Üst çubuktaki ay/güneş
-düğmesi de aynı işi yapar.
+**Açık** ve **koyu** tema arasında geçiş yapabilirsiniz; üst çubuktaki
+ay/güneş düğmesi de aynı işi yapar.
+
+**Tema Tasarımcısı** renk, yazı boyutu, yoğunluk ve köşe yuvarlaklığı gibi
+ayarları değiştirir. Bilgisayarda üst çubuktaki palet simgesinden,
+telefonda **Menü → Tema Tasarımcısı** satırından açılır. Seçiminiz bu
+tarayıcıda saklanır; bir dahaki girişte aynı görünümle açılır.
 
 ## Bildirim tercihleri
 
@@ -25,5 +25,5 @@ havale, dosya gönderimi.
 Ad, soyad ve iletişim bilgileriniz görünür. **Şifre değiştir** bölümünden
 şifrenizi yenileyebilirsiniz; yeni şifre en az sekiz karakter olmalıdır.
 
-> Kullanıcı adınızı ve biriminizi kendiniz değiştiremezsiniz; bunlar Bilgi
-> İşlem Müdürlüğü tarafından tanımlanır.
+> Kullanıcı adınızı ve biriminizi kendiniz değiştiremezsiniz; bunları
+> sistem yöneticiniz tanımlar.

@@ -1,5 +1,3 @@
-# Uygulamayı Kurmak ve Bildirimler
-
 Uygulama telefona **kurulabilir**. Kurulunca ana ekranınızda kendi simgesiyle
 durur, adres çubuğu olmadan tam ekran açılır ve bildirimler doğrudan telefona
 düşer.
@@ -75,5 +73,5 @@ size gönderilen dosya, özgeçmiş yönlendirmesi.
 ## Çevrimdışı
 
 Kurulu uygulama, ağ olmadığında da açılır ve giriş ekranını gösterir. Kayıtlar
-sunucudan geldiği için **veri görüntülenemez**; bağlantı gelince her şey
+internetten geldiği için **veri görüntülenemez**; bağlantı gelince her şey
 yerine döner.

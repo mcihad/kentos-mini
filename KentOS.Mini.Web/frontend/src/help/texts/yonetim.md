@@ -1,5 +1,3 @@
-# Yönetim
-
 Kullanıcılar, birimler, roller ve oturum kayıtları.
 
 ## Kullanıcılar
@@ -13,15 +11,16 @@ Kullanıcılar, birimler, roller ve oturum kayıtları.
 
 ## Birimler
 
-Müdürlük ve başkan yardımcılıkları burada tanımlanır. Birim adının yanında
-**yetkilisi** yazar — kurumda altı ayrı "Başkan Yardımcısı" birimi olduğu için
+Kurumun birimleri burada tanımlanır. Birim adının yanında **yetkilisi**
+yazar — aynı adı taşıyan birden çok birim olabildiği için
 listelerde hangisi olduğu ancak böyle anlaşılıyor.
 
 Birime tıklayınca o birimdeki kullanıcılar ve sayılar görünür.
 
 ## Roller
 
-Rol, bir kullanıcının hangi ekranı açabileceğini belirler. **Rol ayrıntısında**
+Rol, bir kullanıcının hangi ekranı açabileceğini belirler. **Rol
+ayrıntısında**
 izinler tek tek açılıp kapatılır; değişiklik o roldeki herkesi etkiler.
 
 - Bir kullanıcının **son rolü** çıkarılamaz: rolsüz kullanıcı giriş yapar ama

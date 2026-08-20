@@ -1,5 +1,3 @@
-# Özgeçmiş Havuzu
-
 "Elimizde bu işi yapacak biri var mı?" sorusunun cevabı burada.
 
 ## Havuza ne düşer
@@ -19,7 +17,7 @@ Satırın sağındaki indirme düğmesi dosyayı doğrudan indirir.
 
 ## Kişi kartı
 
-**Satıra dokununca kişinin kendi tabakası açılır.** İçinde:
+**Satıra dokununca kişinin kendi penceresi açılır.** İçinde:
 
 - **Dosya** en üstte, yanında **İndir** düğmesiyle.
 - **İletişim** — Telefon ve e‑posta; yanlarındaki **Ara** ve **Yaz** düğmeleri
@@ -50,7 +48,7 @@ dosya yerinde kalır.
 - **Süzgeç** düğmesi (telefonda **+** → **Süzgeç**) meslek, mahalle, tarih
   aralığı ve "bana yönlendirilenler" seçeneklerini açar.
 - **Kaynak** seçimi — Tümü · Havuz · Talepten. Bilgisayarda arama kutusunun
-  yanında, telefonda süzgeç tabakasının en üstünde.
+  yanında, telefonda süzgeç penceresinin en üstünde.
 - Seçtikleriniz listenin üstünde etiket olarak kalır; kapatmak için
   etiketteki çarpıya, hepsini birden kaldırmak için **Hepsini temizle**
   bağlantısına basın.
@@ -65,5 +63,5 @@ bildirim alır ve kaydı havuzda açabilir. Aramadan kişi seçebilir, altına
 gönderdiği kayıt altında kalır.
 
 > Havuz **birimden bağımsızdır**: yetkisi olan herkes bütün kayıtları görür.
-> Bir müdürlüğün elindeki özgeçmişi, işe alacak olan başka müdürlük de
+> Bir birimin elindeki özgeçmişi, işe alacak olan başka birim de
 > görebilsin diye böyle yapıldı.

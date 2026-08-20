@@ -1,16 +1,15 @@
-# Bildirimler
-
 Size gelen bütün haberler burada birikir: yeni etkinlik, havale edilen talep,
 gönderilen dosya.
 
 ## Kullanımı
 
 - Bildirime dokununca ilgili kayda gidersiniz.
-- Okunmamışlar kalın görünür; telefonda ayrıca soldaki çipin rengi belli eder.
+- Okunmamışlar kalın görünür; telefonda ayrıca soldaki renk işareti belli
+  eder.
 - **Tümünü okundu işaretle** listeyi temizler; kayıtlar silinmez.
 
 Üst çubuktaki **zil** simgesi son bildirimleri hızlıca gösterir: bilgisayarda
-zile bağlı bir pencere, telefonda alttan açılan bir tabaka olarak. Zilin
+zile bağlı bir pencere, telefonda alttan açılan bir pencere olarak. Zilin
 üstündeki kırmızı sayı okunmamışları söyler.
 
 ## Bilgisayara anlık bildirim

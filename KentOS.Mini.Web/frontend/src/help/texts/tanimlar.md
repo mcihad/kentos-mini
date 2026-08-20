@@ -1,5 +1,3 @@
-# Tanımlar
-
 Uygulamanın açılır listelerini besleyen referans veriler burada yönetilir.
 
 ## Neler tanımlanır

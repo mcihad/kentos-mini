@@ -1,5 +1,3 @@
-# Harita
-
 Biriminizin işini coğrafi olarak gösterir: görevler ve (isterseniz)
 bekleyen vatandaş bildirimleri.
 

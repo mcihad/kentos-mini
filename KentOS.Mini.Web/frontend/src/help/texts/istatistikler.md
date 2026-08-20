@@ -1,5 +1,3 @@
-# İstatistikler
-
 Birimin işini sayılarla gösterir: ne kadar iş geldi, ne kadarı kapandı,
 nereden geldi.
 

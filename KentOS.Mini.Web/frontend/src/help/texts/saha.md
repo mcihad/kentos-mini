@@ -1,5 +1,3 @@
-# Saha
-
 Sahada çalışan personel için ayrı bir ekran düzeni. Kenar çubuğu, alt sekme
 çubuğu ve bildirim ikonu **yoktur**: telefonu tek elle, güneş altında,
 eldivenle kullanan biri için ekranın tamamı işe ayrılmalıdır.

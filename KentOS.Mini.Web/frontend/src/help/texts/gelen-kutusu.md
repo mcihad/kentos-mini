@@ -1,5 +1,3 @@
-# Gelen Kutusu
-
 Başka birimlerden gelen iş talepleri ve bilgilendirmeler burada birikir.
 
 ## Kayıtlar buraya nasıl düşüyor?
@@ -19,8 +17,8 @@ edilmemiş bir iş için başka birimi meşgul etmek doğru olmazdı.
 - **İş talebi** — kabul ya da ret gerekir.
 - **Bilgilendirme** — karar istemez; okuduğunuzu işaretleyip kapatırsınız.
 
-Ayrım olmasaydı her bilgilendirme için de karar vermek gerekir ve kutu
-hızla kullanılamaz hâle gelirdi.
+Bu ayrım kutunun birikmesini önler: yalnızca karar bekleyen kayıtlar
+sizden işlem ister, gerisi okununca kapanır.
 
 ## Karar
 
