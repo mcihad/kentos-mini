@@ -28,8 +28,31 @@ public static class HizSiniri
     /// <summary>Vatandaş portalı politikasının adı.</summary>
     public const string VatandasPortali = "vatandas-portali";
 
+    /// <summary>Giriş ucu politikasının adı.</summary>
+    public const string Giris = "giris";
+
     /// <summary>Bir IP'nin bir dakikada atabileceği istek.</summary>
     private const int DakikalikIstek = 12;
+
+    /// <summary>
+    /// Bir IP'nin bir dakikada deneyebileceği GİRİŞ.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Hesap kilidi (10 hatalı deneme / 5 dk) tek bir hesabı koruyor ama
+    /// <b>kimlik doldurmayı</b> (credential stuffing) durdurmuyor: saldırgan
+    /// her kullanıcı adını bir kez dener, hiçbir hesap kilitlenmez ve
+    /// binlerce deneme tek bir IP'den sorunsuz geçer.
+    /// </para>
+    /// <para>
+    /// Sınır <b>cömert</b>: kurumun tamamı tek bir NAT adresinin arkasında
+    /// olabiliyor ve sabah mesai başında herkes aynı anda giriyor. 30/dakika,
+    /// saatte 1800 giriş demek — jeton 15 saat geçerli olduğu için bir kişi
+    /// günde bir kez giriyor, yani meşru kullanımın çok üstünde. Otomatik
+    /// bir denemeyi ise ilk dakikada kesiyor.
+    /// </para>
+    /// </remarks>
+    private const int DakikalikGirisDenemesi = 30;
 
     public static IServiceCollection AddVatandasHizSiniri(this IServiceCollection servisler)
     {
@@ -64,6 +87,16 @@ public static class HizSiniri
                         // Kuyruk YOK: sınıra takılan istek beklemek yerine
                         // hemen 429 almalı. Kuyrukta bekleyen istek, portalı
                         // yavaş sanan kullanıcıya formu yeniden gönderttirir.
+                        QueueLimit = 0,
+                    }));
+
+            secenekler.AddPolicy(Giris, baglam =>
+                RateLimitPartition.GetFixedWindowLimiter(
+                    baglam.Connection.RemoteIpAddress?.ToString() ?? "bilinmeyen",
+                    _ => new FixedWindowRateLimiterOptions
+                    {
+                        PermitLimit = DakikalikGirisDenemesi,
+                        Window = TimeSpan.FromMinutes(1),
                         QueueLimit = 0,
                     }));
         });

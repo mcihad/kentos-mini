@@ -74,6 +74,46 @@ if (string.IsNullOrWhiteSpace(jwtAyari.Secret))
         "JWT imza anahtarı tanımsız. .env dosyasına JWT__SECRET yazın (en az 32 karakter).");
 }
 
+/*
+  ANAHTAR GÜCÜ AÇILIŞTA ZORLANIR.
+
+  Belge "en az 32 karakter" diyordu ama hiçbir yer denetlemiyordu: 8
+  karakterlik bir anahtarla uygulama sorunsuz açılıyor, jetonlar üretiliyor
+  ve HER ŞEY ÇALIŞIYOR gibi görünüyordu. HMAC-SHA256'nın güvenliği doğrudan
+  anahtarın entropisine bağlı — kısa ya da tahmin edilebilir bir anahtar,
+  saldırganın KENDİ jetonunu imzalayıp istediği kullanıcı olması demek.
+  Sessiz kalınacak en kötü ayar bu: kimse fark etmez.
+
+  Kurulum sırasında yakalanabilmesi için açılışta durur; yanlış bir anahtarla
+  aylarca çalışıp sonra fark etmektense ilk saniyede durmak daha ucuz.
+*/
+const int AsgariAnahtarUzunlugu = 32;
+
+if (jwtAyari.Secret.Trim().Length < AsgariAnahtarUzunlugu)
+{
+    throw new InvalidOperationException(
+        $"JWT imza anahtarı çok kısa ({jwtAyari.Secret.Trim().Length} karakter). "
+        + $"HMAC-SHA256 için en az {AsgariAnahtarUzunlugu} karakter gerekir. "
+        + "Rastgele bir değer üretin: openssl rand -base64 48");
+}
+
+// Şablondan kopyalanıp değiştirilmemiş anahtarlar. `.env.example` depoda
+// duruyor ve oradaki değeri olduğu gibi bırakmak, anahtarı HERKESİN bilmesi
+// demek — uzunluk denetimi bunu yakalamaz.
+string[] yasakliAnahtarlar =
+[
+    "degistirin", "change-me", "changeme", "secret", "password",
+    "your-secret-key", "buraya-rastgele-bir-deger-yazin",
+];
+
+if (yasakliAnahtarlar.Any(y =>
+        jwtAyari.Secret.Contains(y, StringComparison.OrdinalIgnoreCase)))
+{
+    throw new InvalidOperationException(
+        "JWT imza anahtarı şablon değerini taşıyor. Kuruma özel rastgele bir "
+        + "anahtar üretin: openssl rand -base64 48");
+}
+
 // Configure Turkish culture support
 builder.Services.Configure<RequestLocalizationOptions>(options =>
 {
@@ -599,14 +639,31 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-app.UseSwagger();
-app.UseSwaggerUI(c =>
+/*
+  SWAGGER ÜRETİMDE KAPALI.
+
+  Açık bırakıldığında 217 v2 ucunun tamamını, parametrelerini ve DTO
+  şemalarını kimlik doğrulamadan yayınlıyordu — saldırgan için hazır bir
+  yüzey haritası. Uçların kendisi yetkili; sızan şey verinin değil, YAPININ
+  kendisi ve onu gizlemek ücretsiz.
+
+  `App:SwaggerAcik=true` ile bilerek açılabilir: bir yayın sorununu
+  incelerken gerekebiliyor ve o kararın açıkça verilmesi gerekiyor.
+*/
+var swaggerAcik = app.Environment.IsDevelopment()
+    || app.Configuration.GetValue("App:SwaggerAcik", false);
+
+if (swaggerAcik)
 {
-    c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
-    // İki döküman: v1 (mobil sözleşmesi) ve v2 (yeni web arayüzü).
-    c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1 — mobil");
-    c.SwaggerEndpoint("/swagger/v2/swagger.json", "v2 — web");
-});
+    app.UseSwagger();
+    app.UseSwaggerUI(c =>
+    {
+        c.DocExpansion(Swashbuckle.AspNetCore.SwaggerUI.DocExpansion.None);
+        // İki döküman: v1 (mobil sözleşmesi) ve v2 (yeni web arayüzü).
+        c.SwaggerEndpoint("/swagger/v1/swagger.json", "v1 — mobil");
+        c.SwaggerEndpoint("/swagger/v2/swagger.json", "v2 — web");
+    });
+}
 app.UseHttpsRedirection();
 
 // SIRA ÖNEMLİ: gönderilen belgeler wwwroot altında duruyor (izin sebebiyle);
@@ -628,6 +685,11 @@ app.UseGonderimDosyaKorumasi();
 // Nesne deposu seçiliyse eski `/uploads/...` adresleri buradan karşılanır —
 // yayındaki mobil uygulama o adresleri kullanıyor. Yerel depoda hiç devreye
 // girmez.
+// Yüklenen dosyalar tarayıcıda BELGE olarak açılamaz: uzantı kullanıcıdan
+// geliyor ve `wwwroot/uploads` kimlik doğrulanmadan servis ediliyor —
+// yüklenen bir .html uygulamayla aynı kaynakta çalışıp jetonu okuyabiliyordu.
+// UseStaticFiles'tan ÖNCE. Bkz. Middleware/YuklemeGuvenligi.cs.
+app.UseYuklemeGuvenligi();
 app.UseUzakDepoKopruSu();
 app.UseStaticFiles();
 app.UseCookiePolicy();

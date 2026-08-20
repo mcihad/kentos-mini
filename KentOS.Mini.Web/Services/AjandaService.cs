@@ -964,7 +964,24 @@ namespace KentOS.Mini.Web.Services
             if (fileContent is StreamContent streamContent)
             {
                 var fileBytes = await streamContent.ReadAsByteArrayAsync();
-                var fileName = $"{Guid.NewGuid()}{Path.GetExtension(fileContent.Headers.ContentDisposition?.FileName?.Trim('"'))}";
+                var uzanti = Path.GetExtension(fileContent.Headers.ContentDisposition?.FileName?.Trim('"'));
+
+                /*
+                  ÇALIŞABİLİR UZANTI REDDEDİLİR.
+
+                  Güvenlik sınırı `Middleware/YuklemeGuvenligi` (servis anında
+                  etkisizleştirme); burası kullanıcıya ANLAŞILIR bir hata
+                  vermek için. İkisi ayrı iş: ara katman diskte zaten duran
+                  dosyaları da kapsıyor, bu satır ise dosyanın hiç
+                  yüklenmemesini sağlıyor.
+                */
+                if (Middleware.YuklemeGuvenligi.Calisabilir(uzanti))
+                {
+                    throw new BusinessRuleException(
+                        $"'{uzanti}' uzantılı dosyalar yüklenemez. Belgeyi PDF ya da resim olarak gönderin.");
+                }
+
+                var fileName = $"{Guid.NewGuid()}{uzanti}";
                 var contentType = fileContent.Headers.ContentType?.MediaType ?? "application/octet-stream";
 
                 // Depo soyutlaması üzerinden yazılır: yerel diskte yol

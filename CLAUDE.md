@@ -1288,6 +1288,117 @@ dokunulmadan geçer.
 
 Ayrıntı ve bütün arayüz kuralları: `KentOS.Mini.Web/frontend/CLAUDE.md`.
 
+## GÜVENLİK — kapatılan açıklar
+
+### Yüklenen dosya tarayıcıda ÇALIŞIYORDU (depolanmış XSS)
+
+En ciddi bulgu ve **ölçülerek** bulundu, tahminle değil:
+
+```
+talebe zararli.html eklendi
+  → /uploads/randevu/{guid}.html
+  → JETONSUZ istek: HTTP 200 · Content-Type: text/html
+  → script çalıştı
+```
+
+Sayfa uygulamayla **aynı kaynakta** olduğu için
+`localStorage['sv-jetonu']`'na erişebiliyordu. Jeton 15 saat geçerli ve
+**iptal listesi yok** — yani tam hesap devri, dosya eklemeye yetkili
+herhangi bir kullanıcıdan başlayarak.
+
+Kök neden iki şeyin birleşimi: yükleme uçları uzantıyı **kullanıcıdan**
+alıp diske olduğu gibi yazıyordu (`Guid + Path.GetExtension(gelenAd)`) ve
+`wwwroot/uploads` altındaki her şey **kimlik doğrulanmadan** servis
+ediliyor.
+
+**Çözüm servis anında, yükleme anında değil.** `Middleware/
+YuklemeGuvenligi.cs`: `/uploads` altındaki çalışabilir uzantılar
+`application/octet-stream` + `Content-Disposition: attachment` ile
+dönüyor, yani tarayıcı belge olarak açmıyor, indiriyor.
+
+| Neden servis anında | |
+|---|---|
+| Yükleme yolu tek değil | Etkinlik fotoğrafı, talep dosyası, özgeçmiş, görev eki, portal fotoğrafı — her birine ayrı denetim koymak birini unutmayı davet eder |
+| Diskte zaten duran dosyalar | Yükleme denetimi onları kurtarmaz |
+| Dosya silinmiyor | 404 vermek meşru bir `.xml` ekini de kaybettirirdi; indirilebilir kalıyor, yalnızca çalışmıyor |
+
+Liste "zararlı dosyalar" değil, **tarayıcının script çalıştırdığı
+bağlamlar**: `.svg` de içinde (`<img>`de zararsız, adrese doğrudan
+gidilince çalışır), `.xml` de (XSLT). Sunucuda işlenebilecekler
+(`.cshtml`, `.php`, `.aspx`) da var — bugün işlenmiyorlar ama uygulama
+başka kurumlarda başka bir yapılandırmayla yayınlanacak.
+
+Yükleme tarafına da denetim eklendi ama o **kullanıcıya anlaşılır hata**
+vermek için; güvenlik sınırı ara katman.
+
+> **Ölçüm — düzeltmeden sonra:** aynı dosya, aynı adres, jetonsuz →
+> `200 · application/octet-stream · attachment · nosniff`. Gerçek
+> yüklemelerde regresyon yok: `.png` hâlâ `200 · image/png · inline`.
+
+> **Sıra tuzağı:** ara katman `UseStaticFiles`'tan ÖNCE bağlanmalı; sonra
+> bağlanırsa statik dosya ara katmanı yanıtı çoktan yazmıştır ve kural
+> **sessizce** etkisiz kalır. `YuklemeGuvenligiTests` sırayı da denetliyor
+> ve ateş ettiği ölçüldü.
+
+### Girişte hız sınırı — hesap kilidi YETMİYOR
+
+Hesap kilidi (10 hatalı deneme / 5 dk) tek bir hesabı koruyor ama **kimlik
+doldurmayı** (credential stuffing) durdurmuyor: saldırgan her kullanıcı
+adını bir kez dener, hiçbir hesap kilitlenmez, binlerce deneme tek bir
+IP'den sorunsuz geçer.
+
+`POST oturum/giris` artık IP başına **30 deneme/dakika**. Sınır bilerek
+cömert: kurumun tamamı tek bir NAT adresinin arkasında olabiliyor ve sabah
+mesai başında herkes aynı anda giriyor. Jeton 15 saat geçerli olduğu için
+bir kişi günde bir kez giriyor — 30/dk meşru kullanımın çok üstünde, ama
+otomatik bir denemeyi ilk dakikada kesiyor.
+
+### JWT anahtar gücü AÇILIŞTA zorlanıyor
+
+`JwtOptions` belgesi "en az 32 karakter" diyordu ama **hiçbir yer
+denetlemiyordu**: 4 karakterlik bir anahtarla uygulama sorunsuz açılıyor,
+jetonlar üretiliyor ve her şey çalışıyor görünüyordu. HMAC-SHA256'nın
+güvenliği doğrudan anahtarın entropisine bağlı; kısa ya da tahmin
+edilebilir anahtar, saldırganın **kendi jetonunu imzalayıp istediği
+kullanıcı olması** demek. Sessiz kalınacak en kötü ayar bu.
+
+Açılış artık iki durumda duruyor: 32 karakterden kısa anahtar, ve
+`.env.example`'daki şablon değerini taşıyan anahtar (şablon depoda duruyor
+— değiştirilmemiş bir anahtarı herkes biliyor; uzunluk denetimi bunu
+yakalamaz).
+
+> Ölçüldü: `Jwt__Secret="kisa"` → *"JWT imza anahtarı çok kısa (4
+> karakter)"* ile açılış durdu. Şablon değeriyle de durdu.
+
+### Swagger üretimde KAPALI
+
+217 v2 ucunun tamamını, parametrelerini ve DTO şemalarını kimlik
+doğrulamadan yayınlıyordu. Uçların kendisi yetkili; sızan şey verinin değil
+**yapının** kendisi ve onu gizlemek ücretsiz. `App:SwaggerAcik=true` ile
+bilerek açılabilir.
+
+> **Ölçüm tuzağı:** ilk denemede üretim kipinde swagger 200 döndü ve
+> "kapı çalışmıyor" sanıldı. Sebep koddaki kapı değil, ölçümün kendisiydi:
+> `dotnet run` `launchSettings.json`'daki `ASPNETCORE_ENVIRONMENT=Development`
+> değerini uyguluyor ve uygulama Production sanılırken Development'ta
+> koşuyordu. `--no-launch-profile` ile gerçek ölçüm: swagger JSON **404**,
+> uygulama 200. (`/swagger` yolu 200 dönüyor ama o SPA'nın kendi sayfası,
+> Swagger UI değil.)
+
+### Temiz çıkanlar
+
+Aranıp **sorun bulunmayan** yerler de kayda değer; bir sonraki inceleme
+aynı yolu yeniden yürümesin:
+
+| Alan | Durum |
+|---|---|
+| Sırlar depoda | `appsettings*.json` temiz; her şey `.env`'den |
+| SQL enjeksiyonu | Tek ham SQL var, o da `FromSqlInterpolated` (parametreli) |
+| XSS (ön yüz) | `dangerouslySetInnerHTML` hiç kullanılmıyor; markdown çizici de kullanmıyor |
+| JWT doğrulama | Issuer/audience/lifetime/signing key hepsi açık, 2 dk sapma toleransı |
+| Güvenlik başlıkları | `nosniff`, `SAMEORIGIN`, `strict-origin-when-cross-origin`, üretimde HSTS |
+| CORS | Yapılandırma yok — aynı kaynaktan servis ediliyor, gerekmiyor |
+
 ## Bilinen pürüzler
 
 - Swagger UI üretimde de açık.
