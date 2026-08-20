@@ -1,5 +1,5 @@
 import {
-  Bell, Bug, Building2, CalendarDays, ChartColumn, ClipboardCheck, ClipboardList, FileUser, Flower2, FolderKanban, Gauge, Inbox, KeyRound, Landmark, LayoutDashboard, ListChecks, MailCheck, Map, Paperclip, Radio, Settings, SlidersHorizontal, UserPlus, Users, type LucideIcon,
+  Bell, Bug, Building2, CalendarDays, ChartColumn, ClipboardCheck, ClipboardList, FileText, FileUser, Flower2, FolderKanban, Gauge, Inbox, KeyRound, Landmark, LayoutDashboard, ListChecks, MailCheck, Map, Paperclip, Radio, Settings, SlidersHorizontal, UserPlus, Users, type LucideIcon,
 } from 'lucide-react';
 import { PERMISSION } from '../components/permissions';
 
@@ -168,6 +168,17 @@ export const NAVIGATION: NavigationGroup[] = [
       {
         yol: '/ozgecmisler', etiket: 'Özgeçmiş Havuzu', ikon: FileUser,
         izin: PERMISSION.ozgecmisGoruntule, politika: 'Ajanda',
+      },
+    ],
+  },
+  {
+    // Form ve anket kendi grubunda: vatandaştan geri bildirim toplamak,
+    // makamın programından da iş takibinden de ayrı bir iş.
+    baslik: 'Form ve Anket',
+    ogeler: [
+      {
+        yol: '/formlar', etiket: 'Formlar', ikon: FileText,
+        izin: PERMISSION.formGoruntule, altYollar: ['/formlar/'],
       },
     ],
   },

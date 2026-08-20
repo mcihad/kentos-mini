@@ -351,3 +351,26 @@ export const EVENT_ACTIVITY_LABELS: Record<number, string> = {
   17: 'Seri oluşturuldu',
   18: 'Seri güncellendi',
 };
+
+// ─────────────────────────────────────────────────── form ve anket
+export type FormSummary = S['FormOzetDto'];
+export type FormDetail = S['FormDetayDto'];
+export type FormSave = S['FormKayitDto'];
+export type FormDefinition = S['FormTanimiDto'];
+export type FormStep = S['FormAdimiDto'];
+export type FormGroup = S['FormGrubuDto'];
+export type FormField = S['FormAlaniDto'];
+export type FormOption = S['FormSecenegiDto'];
+export type FormCondition = S['FormKosuluDto'];
+export type FormConditionRule = S['FormKosulKuraliDto'];
+export type FormFieldValidation = S['FormDogrulamaDto'];
+export type FormFieldSettings = S['FormAlanAyarlariDto'];
+
+export type FormResponseSummary = S['FormYanitOzetDto'];
+export type FormResponseDetail = S['FormYanitDetayDto'];
+export type FormReport = S['FormOzetRaporuDto'];
+export type FormFieldReport = S['FormAlanOzetiDto'];
+
+export type FormPublic = S['FormPortalDto'];
+export type FormAnswerRequest = S['FormYanitIstegiDto'];
+export type FormAnswerResult = S['FormYanitSonucuDto'];

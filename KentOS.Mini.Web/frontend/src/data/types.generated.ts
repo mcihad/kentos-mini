@@ -2014,9 +2014,12 @@ export interface paths {
             };
             requestBody?: {
                 content: {
-                    "application/json": components["schemas"]["TeslimIstegi"];
-                    "text/json": components["schemas"]["TeslimIstegi"];
-                    "application/*+json": components["schemas"]["TeslimIstegi"];
+                    "multipart/form-data": {
+                        /** Format: int32 */
+                        dogrulamaKodu?: number;
+                        /** Format: binary */
+                        fotograf?: string;
+                    };
                 };
             };
             responses: {
@@ -2026,7 +2029,7 @@ export interface paths {
                         [name: string]: unknown;
                     };
                     content: {
-                        "application/json": boolean;
+                        "application/json": components["schemas"]["CicekTeslimKartiDto"];
                     };
                 };
             };
@@ -4126,6 +4129,680 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Birimin formları — sayfalı. */
+        get: {
+            parameters: {
+                query?: {
+                    Arama?: string;
+                    Durum?: components["schemas"]["FormDurumu"];
+                    BirimId?: number;
+                    Sayfa?: number;
+                    Boyut?: number;
+                    Ara?: string;
+                    Sirala?: string;
+                    Azalan?: boolean;
+                    Atla?: number;
+                    TemizArama?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormOzetDtoSayfaliSonuc"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["FormKayitDto"];
+                    "text/json": components["schemas"]["FormKayitDto"];
+                    "application/*+json": components["schemas"]["FormKayitDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormDetayDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form/{id}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Form detayı — çalışılan tanımıyla. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormDetayDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["FormKayitDto"];
+                    "text/json": components["schemas"]["FormKayitDto"];
+                    "application/*+json": components["schemas"]["FormKayitDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormDetayDto"];
+                    };
+                };
+            };
+        };
+        post?: never;
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form/{id}/yayinla": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Çalışılan tanımı dondurup vatandaşa açar.
+         * @description <b>Tasarlamak ile yayınlamak ayrı izin.</b> Yayınlanan bağlantı kurum
+         *                 dışına çıkıyor ve geri alınması zor; formu kuran herkesin onu
+         *                 yayınlayabilmesi gerekmiyor.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormDetayDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form/{id}/durum": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Yanıt kabulünü açar/kapatır. */
+        post: {
+            parameters: {
+                query?: {
+                    durum?: components["schemas"]["FormDurumu"];
+                };
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormDetayDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form/{id}/kopyala": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormDetayDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form/{id}/yanit": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Gelen yanıtlar — sayfalı, JSONB süzgeciyle. */
+        get: {
+            parameters: {
+                query?: {
+                    Arama?: string;
+                    Durum?: components["schemas"]["FormYanitDurumu"];
+                    Baslangic?: string;
+                    Bitis?: string;
+                    AlanKimligi?: string;
+                    AlanDegeri?: string;
+                    Sayfa?: number;
+                    Boyut?: number;
+                    Ara?: string;
+                    Sirala?: string;
+                    Azalan?: boolean;
+                    Atla?: number;
+                    TemizArama?: string;
+                };
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormYanitOzetDtoSayfaliSonuc"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form/{id}/yanit/{yanitId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Tek yanıtın detayı — verildiği SÜRÜMÜN tanımıyla. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    yanitId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormYanitDetayDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        /** Yanıtı geçersiz sayar (kayıt silinmez). */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    yanitId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form/{id}/ozet": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yanıt dağılımları — grafikler bu uçtan besleniyor. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormOzetRaporuDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form/{id}/excel": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yanıtları Excel olarak indirir — sütunlar TANIMDAN türetilir. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form-portal/{anahtar}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yayındaki formu getirir. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    anahtar: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormPortalDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        /**
+         * Yanıtı gönderir.
+         * @description Yanıt olarak yalnızca <b>takip numarası</b> ve teşekkür içeriği
+         *     dönüyor: iç kimlikler, birim ve form kimliği vatandaşa verilmiyor.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    anahtar: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["FormYanitIstegiDto"];
+                    "text/json": components["schemas"]["FormYanitIstegiDto"];
+                    "application/*+json": components["schemas"]["FormYanitIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormYanitSonucuDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+                /** @description Too Many Requests */
+                429: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form-portal/{anahtar}/taslak": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Yarım kalan yanıtı sunucuda saklar.
+         * @description Yalnızca formun `kaydetDevamEt` ayarı açıkken anlamlı; kapalıyken
+         *     istemci zaten çağırmıyor. Taslak satırı <b>yanıt sayacını
+         *     ARTIRMAZ</b> — yoksa yüz taslak açan biri formu kotasından kapatırdı.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    anahtar: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["FormYanitIstegiDto"];
+                    "text/json": components["schemas"]["FormYanitIstegiDto"];
+                    "application/*+json": components["schemas"]["FormYanitIstegiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormTaslakSonucuDto"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form-portal/{anahtar}/taslak/{surdurme}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Yarım kalan yanıtı sürdürme anahtarıyla geri getirir. */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    anahtar: string;
+                    surdurme: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormYanitIstegiDto"];
+                    };
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/gelen-kutusu": {
         parameters: {
             query?: never;
@@ -5153,7 +5830,15 @@ export interface paths {
         };
         get?: never;
         put?: never;
-        /** Sıradaki aşamayı tamamlar ya da (zorunlu değilse) atlar. */
+        /**
+         * Sıradaki aşamayı tamamlar ya da (zorunlu değilse) atlar.
+         * @description <b>Aşama kaydetmek saha işine özgü değil.</b> Uç bir dönem yalnızca
+         *                 `gorev.asama` istiyordu ve o izin katalogda "saha personelinin
+         *                 izni" diye tarif ediliyordu; sonuç, masa başında biten bir işin
+         *                 adımlarını görevi düzenleyebilen kişinin bile işaretleyememesiydi.
+         *                 Kural artık tamamlama beyanıyla (`/tamamla`) aynı: aşama
+         *                 ilerlemesi ile "bitirdim" demek aynı sınıf iş.
+         */
         post: {
             parameters: {
                 query?: never;
@@ -7475,7 +8160,13 @@ export interface paths {
                 };
             };
         };
-        /** Ayarı kaydeder. Boş istemci sırrı "değiştirme" demektir. */
+        /**
+         * Ayarı kaydeder. Boş istemci sırrı "değiştirme" demektir.
+         * @description İzin sınıf düzeyinde de var; burada AÇIKÇA tekrarlanıyor. Okuma ve
+         *     yazma aynı izinle korunuyor — bu ayarda "görebilen ama
+         *     değiştiremeyen" diye bir kullanıcı yok: istemci kimliğini görebilen
+         *     kişi zaten sağlayıcı yapılandırmasının tamamını biliyor.
+         */
         put: {
             parameters: {
                 query?: never;
@@ -8653,6 +9344,67 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/proje/{id}/kilometre-tasi": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Projeye tek bir kilometre taşı ekler.
+         * @description <b>Neden ayrı bir uç.</b> Ara hedef eklemenin tek yolu projenin
+         *                 TAMAMINI düzenleme formuna girmekti: bütçe, tarih, ekip ve pano
+         *                 sütunlarıyla açılan bir form, tek satırlık bir iş için fazla. Üstelik
+         *                 o formu kaydetmek projenin geri kalanını da yeniden yazıyor, yani
+         *                 yalnızca hedef eklemek isteyen kişi farkında olmadan başka alanları
+         *                 da kaydetmiş oluyordu.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "application/json": components["schemas"]["KilometreTasiDto"];
+                    "text/json": components["schemas"]["KilometreTasiDto"];
+                    "application/*+json": components["schemas"]["KilometreTasiDto"];
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KilometreTasiDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/proje/{id}/kilometre-tasi/{tasId}": {
         parameters: {
             query?: never;
@@ -8702,7 +9454,37 @@ export interface paths {
                 };
             };
         };
-        delete?: never;
+        /** Kilometre taşını siler; bağlı görevlerin yalnızca bağı kopar. */
+        delete: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    tasId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description No Content */
+                204: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         options?: never;
         head?: never;
         patch?: never;
@@ -12601,6 +13383,7 @@ export interface components {
             not?: string | null;
             kurumAdi?: string | null;
             teslimEdildi?: boolean;
+            fotograf?: string | null;
             /** Format: date-time */
             teslimTarihi?: string | null;
         };
@@ -12904,6 +13687,352 @@ export interface components {
             readonly toplamSayfa?: number;
             readonly oncekiVar?: boolean;
             readonly sonrakiVar?: boolean;
+        };
+        FormAdimiDto: {
+            kimlik?: string | null;
+            baslik?: string | null;
+            aciklama?: string | null;
+            gruplar?: components["schemas"]["FormGrubuDto"][] | null;
+        };
+        FormAlanAyarlariDto: {
+            /** Format: int32 */
+            enAz?: number | null;
+            /** Format: int32 */
+            enCok?: number | null;
+            altEtiket?: string | null;
+            ustEtiket?: string | null;
+            /** Format: int32 */
+            ondalik?: number | null;
+            karistir?: boolean;
+            /** Format: int32 */
+            satir?: number | null;
+            gorselAdresi?: string | null;
+        };
+        FormAlanOzetiDto: {
+            alanKimligi?: string | null;
+            etiket?: string | null;
+            tip?: components["schemas"]["FormAlanTipi"];
+            /** Format: int32 */
+            yanitSayisi?: number;
+            dagilim?: components["schemas"]["FormDagilimDto"][] | null;
+            /** Format: double */
+            ortalama?: number | null;
+            ornekler?: string[] | null;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        FormAlanTipi: 0 | 1 | 2 | 3 | 4 | 5 | 10 | 11 | 12 | 13 | 14 | 20 | 21 | 22 | 23 | 24 | 30 | 31 | 32 | 40 | 41 | 42 | 50 | 51 | 52 | 60 | 61 | 62 | 63;
+        FormAlaniDto: {
+            kimlik?: string | null;
+            tip?: components["schemas"]["FormAlanTipi"];
+            etiket?: string | null;
+            aciklama?: string | null;
+            yerTutucu?: string | null;
+            /** Format: int32 */
+            genislik?: number;
+            zorunlu?: boolean;
+            kosul?: components["schemas"]["FormKosuluDto"];
+            secenekler?: components["schemas"]["FormSecenegiDto"][] | null;
+            satirlar?: components["schemas"]["FormSecenegiDto"][] | null;
+            sutunlar?: components["schemas"]["FormSecenegiDto"][] | null;
+            dogrulama?: components["schemas"]["FormDogrulamaDto"];
+            ayarlar?: components["schemas"]["FormAlanAyarlariDto"];
+        };
+        FormAyarlariDto: {
+            /** Format: int32 */
+            kolonSayisi?: number;
+            ilerlemeCubugu?: boolean;
+            numaralandir?: boolean;
+            kaydetDevamEt?: boolean;
+        };
+        FormCevapOzetiDto: {
+            etiket?: string | null;
+            deger?: string | null;
+        };
+        FormDagilimDto: {
+            etiket?: string | null;
+            /** Format: int32 */
+            adet?: number;
+            /** Format: double */
+            yuzde?: number;
+        };
+        FormDetayDto: {
+            /** Format: int64 */
+            id?: number;
+            erisimAnahtari?: string | null;
+            baslik?: string | null;
+            aciklama?: string | null;
+            durum?: components["schemas"]["FormDurumu"];
+            durumAd?: string | null;
+            erisim?: components["schemas"]["FormErisimi"];
+            erisimAd?: string | null;
+            /** Format: int32 */
+            yanitSayisi?: number;
+            /** Format: int32 */
+            yanitSiniri?: number | null;
+            /** Format: date-time */
+            baslangicTarihi?: string | null;
+            /** Format: date-time */
+            bitisTarihi?: string | null;
+            yanitAliyor?: boolean;
+            kapaliSebebi?: string | null;
+            /** Format: int32 */
+            surumNo?: number | null;
+            /** Format: int64 */
+            birimId?: number | null;
+            birimAd?: string | null;
+            /** Format: date-time */
+            olusturmaTarihi?: string;
+            /** Format: date-time */
+            yayinTarihi?: string | null;
+            paylasimAdresi?: string | null;
+            tanim?: components["schemas"]["FormTanimiDto"];
+            yayinlanmamisDegisiklik?: boolean;
+            tesekkurMetni?: string | null;
+            tesekkurAdresi?: string | null;
+            yanitOzetiGorunur?: boolean;
+            sonuclarHerkeseAcik?: boolean;
+            tekYanit?: boolean;
+        };
+        FormDogrulamaDto: {
+            /** Format: int32 */
+            enAzUzunluk?: number | null;
+            /** Format: int32 */
+            enCokUzunluk?: number | null;
+            /** Format: double */
+            enAzDeger?: number | null;
+            /** Format: double */
+            enCokDeger?: number | null;
+            /** Format: date-time */
+            enAzTarih?: string | null;
+            /** Format: date-time */
+            enCokTarih?: string | null;
+            /** Format: int32 */
+            enAzSecim?: number | null;
+            /** Format: int32 */
+            enCokSecim?: number | null;
+            desen?: string | null;
+            desenMesaji?: string | null;
+            dosyaUzantilari?: string[] | null;
+            /** Format: int32 */
+            enCokDosyaMb?: number | null;
+            /** Format: int32 */
+            enCokDosyaSayisi?: number | null;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        FormDurumu: 0 | 1 | 2 | 3;
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        FormErisimi: 0 | 1 | 2;
+        FormGrubuDto: {
+            kimlik?: string | null;
+            baslik?: string | null;
+            aciklama?: string | null;
+            /** Format: int32 */
+            kolonSayisi?: number | null;
+            kosul?: components["schemas"]["FormKosuluDto"];
+            alanlar?: components["schemas"]["FormAlaniDto"][] | null;
+        };
+        FormKayitDto: {
+            baslik: string;
+            aciklama?: string | null;
+            erisim?: components["schemas"]["FormErisimi"];
+            /** Format: date-time */
+            baslangicTarihi?: string | null;
+            /** Format: date-time */
+            bitisTarihi?: string | null;
+            /** Format: int32 */
+            yanitSiniri?: number | null;
+            tekYanit?: boolean;
+            tesekkurMetni?: string | null;
+            tesekkurAdresi?: string | null;
+            yanitOzetiGorunur?: boolean;
+            sonuclarHerkeseAcik?: boolean;
+            tanim?: components["schemas"]["FormTanimiDto"];
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        FormKosulBaglaci: 0 | 1;
+        FormKosulKuraliDto: {
+            alanKimligi?: string | null;
+            operator?: components["schemas"]["FormKosulOperatoru"];
+            deger?: string | null;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        FormKosulOperatoru: 0 | 1 | 2 | 3 | 4 | 5 | 6 | 7;
+        FormKosuluDto: {
+            baglac?: components["schemas"]["FormKosulBaglaci"];
+            kurallar?: components["schemas"]["FormKosulKuraliDto"][] | null;
+        };
+        FormOzetDto: {
+            /** Format: int64 */
+            id?: number;
+            erisimAnahtari?: string | null;
+            baslik?: string | null;
+            aciklama?: string | null;
+            durum?: components["schemas"]["FormDurumu"];
+            durumAd?: string | null;
+            erisim?: components["schemas"]["FormErisimi"];
+            erisimAd?: string | null;
+            /** Format: int32 */
+            yanitSayisi?: number;
+            /** Format: int32 */
+            yanitSiniri?: number | null;
+            /** Format: date-time */
+            baslangicTarihi?: string | null;
+            /** Format: date-time */
+            bitisTarihi?: string | null;
+            yanitAliyor?: boolean;
+            kapaliSebebi?: string | null;
+            /** Format: int32 */
+            surumNo?: number | null;
+            /** Format: int64 */
+            birimId?: number | null;
+            birimAd?: string | null;
+            /** Format: date-time */
+            olusturmaTarihi?: string;
+            /** Format: date-time */
+            yayinTarihi?: string | null;
+            paylasimAdresi?: string | null;
+        };
+        FormOzetDtoSayfaliSonuc: {
+            veriler?: components["schemas"]["FormOzetDto"][] | null;
+            /** Format: int32 */
+            sayfa?: number;
+            /** Format: int32 */
+            boyut?: number;
+            /** Format: int64 */
+            toplam?: number;
+            /** Format: int32 */
+            readonly toplamSayfa?: number;
+            readonly oncekiVar?: boolean;
+            readonly sonrakiVar?: boolean;
+        };
+        FormOzetRaporuDto: {
+            /** Format: int64 */
+            formId?: number;
+            baslik?: string | null;
+            /** Format: int32 */
+            toplamYanit?: number;
+            /** Format: date-time */
+            ilkYanit?: string | null;
+            /** Format: date-time */
+            sonYanit?: string | null;
+            alanlar?: components["schemas"]["FormAlanOzetiDto"][] | null;
+        };
+        FormPortalDto: {
+            baslik?: string | null;
+            aciklama?: string | null;
+            kurumAdi?: string | null;
+            erisim?: components["schemas"]["FormErisimi"];
+            tanim?: components["schemas"]["FormTanimiDto"];
+            /** Format: int32 */
+            surumNo?: number;
+            yanitAliyor?: boolean;
+            kapaliSebebi?: string | null;
+            kaydetDevamEt?: boolean;
+        };
+        FormSecenegiDto: {
+            kimlik?: string | null;
+            etiket?: string | null;
+            digerMi?: boolean;
+        };
+        FormTanimiDto: {
+            /** Format: int32 */
+            semaSurumu?: number;
+            adimlar?: components["schemas"]["FormAdimiDto"][] | null;
+            ayarlar?: components["schemas"]["FormAyarlariDto"];
+        };
+        FormTaslakSonucuDto: {
+            surdurmeAnahtari?: string | null;
+        };
+        FormYanitDetayDto: {
+            /** Format: int64 */
+            id?: number;
+            takipNo?: string | null;
+            durum?: components["schemas"]["FormYanitDurumu"];
+            adSoyad?: string | null;
+            telefon?: string | null;
+            eposta?: string | null;
+            /** Format: date-time */
+            gonderimTarihi?: string | null;
+            /** Format: int32 */
+            surumNo?: number;
+            onizleme?: string | null;
+            tanim?: components["schemas"]["FormTanimiDto"];
+            cevaplar?: {
+                [key: string]: unknown;
+            } | null;
+            dosyalar?: components["schemas"]["FormYanitDosyasiDto"][] | null;
+        };
+        FormYanitDosyasiDto: {
+            /** Format: int64 */
+            id?: number;
+            alanKimligi?: string | null;
+            ad?: string | null;
+            /** Format: int64 */
+            boyut?: number;
+            icerikTipi?: string | null;
+        };
+        /**
+         * Format: int32
+         * @enum {integer}
+         */
+        FormYanitDurumu: 0 | 1 | 2;
+        FormYanitIstegiDto: {
+            cevaplar?: {
+                [key: string]: unknown;
+            } | null;
+            adSoyad?: string | null;
+            telefon?: string | null;
+            eposta?: string | null;
+            surdurmeAnahtari?: string | null;
+            website?: string | null;
+        };
+        FormYanitOzetDto: {
+            /** Format: int64 */
+            id?: number;
+            takipNo?: string | null;
+            durum?: components["schemas"]["FormYanitDurumu"];
+            adSoyad?: string | null;
+            telefon?: string | null;
+            eposta?: string | null;
+            /** Format: date-time */
+            gonderimTarihi?: string | null;
+            /** Format: int32 */
+            surumNo?: number;
+            onizleme?: string | null;
+        };
+        FormYanitOzetDtoSayfaliSonuc: {
+            veriler?: components["schemas"]["FormYanitOzetDto"][] | null;
+            /** Format: int32 */
+            sayfa?: number;
+            /** Format: int32 */
+            boyut?: number;
+            /** Format: int64 */
+            toplam?: number;
+            /** Format: int32 */
+            readonly toplamSayfa?: number;
+            readonly oncekiVar?: boolean;
+            readonly sonrakiVar?: boolean;
+        };
+        FormYanitSonucuDto: {
+            takipNo?: string | null;
+            tesekkurMetni?: string | null;
+            tesekkurAdresi?: string | null;
+            ozet?: components["schemas"]["FormCevapOzetiDto"][] | null;
         };
         GanttSatiriDto: {
             /** Format: int64 */

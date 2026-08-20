@@ -30,6 +30,7 @@ import yonetim from './texts/yonetim.md?raw';
 import tanimlar from './texts/tanimlar.md?raw';
 import kurum from './texts/kurum.md?raw';
 import kimlikSaglayici from './texts/kimlik-saglayici.md?raw';
+import formlar from './texts/formlar.md?raw';
 import hatalar from './texts/hatalar.md?raw';
 import bildirimler from './texts/bildirimler.md?raw';
 import ayarlar from './texts/ayarlar.md?raw';
@@ -41,6 +42,7 @@ export type HelpGroup =
   | 'Genel'
   | 'İş Takip'
   | 'Halk Günü'
+  | 'Form ve Anket'
   | 'Özgeçmişler'
   | 'Program'
   | 'Yönetim';
@@ -393,6 +395,15 @@ const KATALOG: { kalip: string; kayit: HelpEntry }[] = [
       baslik: 'Kimlik Sağlayıcı',
       ozet: 'Personel kurum hesabıyla giriş yapsın',
       metin: kimlikSaglayici,
+    },
+  },
+  {
+    kalip: '/formlar',
+    kayit: {
+      grup: 'Form ve Anket',
+      baslik: 'Formlar ve Anketler',
+      ozet: 'Vatandaştan yapılandırılmış geri bildirim toplayın',
+      metin: formlar,
     },
   },
   {

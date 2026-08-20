@@ -156,7 +156,42 @@ Yeni varlık **üç yerde** tanımlanır: `bildirim/BildirimMerkezi.tsx`,
 
 > QuestPDF lisansı **her PDF sınıfının kendi statik kurucusunda** ayarlanır.
 
-## 11. Sistem yönetimi
+## 11. Form ve anket
+
+| Yetenek | Uç | Ekran | İzin | Durum |
+|---|---|---|---|---|
+| Form listesi | `GET api/v2/form` | `/formlar` | `form.goruntule` | ✅ |
+| **Form tasarımcısı** | `POST/PUT api/v2/form` | `/formlar/:id` | `form.yonet` | ✅ |
+| Yayınlama / kapatma | `POST form/{id}/yayinla` · `/durum` | tasarımcı | `form.yayinla` | ✅ |
+| Kopyalama | `POST form/{id}/kopyala` | liste | `form.yonet` | ✅ |
+| **Vatandaş formu** | `GET/POST api/v2/form-portal/{anahtar}` (anonim) | `/form/:anahtar` | — | ✅ |
+| Yarım yanıtı sürdürme | `POST form-portal/{a}/taslak` | vatandaş formu | — | ✅ |
+| Yanıt listesi | `GET form/{id}/yanit` | `/formlar/:id/yanitlar` | `form.yanitGoruntule` | ✅ |
+| Yanıt detayı | `GET form/{id}/yanit/{yid}` | yanıt tabakası | `form.yanitGoruntule` | ✅ |
+| Özet dağılımlar | `GET form/{id}/ozet` | Özet sekmesi | `form.yanitGoruntule` | ✅ |
+| Yanıt geçersiz sayma | `DELETE form/{id}/yanit/{yid}` | yanıt listesi | `form.yanitSil` | ✅ |
+| Excel (dinamik sütun) | `GET form/{id}/excel` | yanıt ekranı | `form.ciktiAl` | ✅ |
+
+**Alan tipleri:** 29 tanımlı, **19'u paletten** çıkıyor — metin, e-posta,
+telefon, T.C. kimlik, sayı, tarih, saat, tek/çok seçim, açılır liste,
+evet/hayır, ölçek, yıldız, matris, dosya, başlık, açıklama, ayırıcı.
+
+**Yetenekler:** adımlı (stepper) kip · koşullu görünürlük (VE/VEYA, yalnızca
+geriye referans) · grup ve form bazında kolon düzeni · sürümleme · üç erişim
+kipi · açık/kapalı/tarih/kota · tek yanıt kuralı · sonuç sayfası ·
+`localStorage` taslağı.
+
+**Bekçi:** `FormDogrulamaTests`, `FormSemaTests`, `AnonimUcTests`,
+`frontend/test/forms.test.ts`.
+
+Tanım ve cevaplar **jsonb** (bu depoda ilk); `cevaplar` üzerinde GIN
+indeksi, tek yanıt kuralında **kısmi benzersiz indeks**. Vatandaş yüzeyi
+kurum ayarındaki `form_portali_acik` bayrağına bağlı ve kapalıyken uçlar
+404 döner.
+
+---
+
+## 12. Sistem yönetimi
 
 | Yetenek | Uç | Ekran | İzin | Durum |
 |---|---|---|---|---|

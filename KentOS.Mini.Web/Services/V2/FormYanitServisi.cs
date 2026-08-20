@@ -357,6 +357,24 @@ public sealed class FormYanitServisi(
             })
             .ToListAsync(iptal);
 
+        /*
+          TANIM BİR KEZ yükleniyor, yanıt başına değil.
+
+          Önizlemede seçenek KİMLİĞİ ("hiz: orta") yazmak kullanıcıya hiçbir
+          şey söylemiyor; etikete çevirmek için tanım gerekiyor. Yanıt başına
+          yüklemek 25 satırlık bir sayfada 25 sorgu demekti.
+        */
+        var form = await _context.Formlar.AsNoTracking()
+            .FirstOrDefaultAsync(f => f.Id == formId, iptal);
+
+        var surumId = form?.YayinSurumId;
+        var tanimJson = surumId is { } sid
+            ? await _context.FormSurumleri.AsNoTracking()
+                .Where(v => v.Id == sid).Select(v => v.Tanim).FirstOrDefaultAsync(iptal)
+            : null;
+
+        var tanim = FormServisi.TanimiCoz(tanimJson);
+
         var veriler = kayitlar.Select(y => new FormYanitOzetDto
         {
             Id = y.Id,
@@ -367,7 +385,7 @@ public sealed class FormYanitServisi(
             Eposta = y.Eposta,
             GonderimTarihi = y.GonderimTarihi,
             SurumNo = y.SurumNo,
-            Onizleme = Onizleme(y.Cevaplar),
+            Onizleme = Onizleme(y.Cevaplar, tanim),
         }).ToList();
 
         return SayfaliSonuc<FormYanitOzetDto>.Olustur(veriler, toplam, suzgec);
@@ -524,20 +542,41 @@ public sealed class FormYanitServisi(
         }
     }
 
-    private static string? Onizleme(string json)
+    /// <summary>
+    /// Liste satırındaki tek satırlık özet — ETİKETLİ.
+    /// </summary>
+    /// <remarks>
+    /// Alan sırası tanımdan geliyor, JSONB'nin anahtar sırasından değil:
+    /// önizlemede görünen ilk üç cevap, formun ilk üç sorusu olmalı.
+    /// </remarks>
+    private static string? Onizleme(string json, FormTanimiDto tanim)
     {
         var c = CevaplariCoz(json);
         if (c.Count == 0) return null;
 
-        var parcalar = c.Values
-            .Select(v => FormDogrulayici.Normalize(FormDogrulayici.Deger(v)))
-            .Where(v => v is not null)
-            .Select(MetneCevir)
-            .Where(s => s.Length > 0)
-            .Take(3);
+        var parcalar = new List<string>();
 
-        var metin = string.Join(" · ", parcalar);
-        return metin.Length > 120 ? metin[..120] + "…" : metin;
+        foreach (var alan in FormDogrulayici.TumAlanlar(tanim))
+        {
+            if (parcalar.Count >= 3) break;
+            if (FormDogrulayici.BlokMu(alan.Tip)) continue;
+            if (!c.TryGetValue(alan.Kimlik, out var sarmal)) continue;
+
+            var metin = EtiketliDeger(alan, sarmal);
+            if (metin.Length > 0) parcalar.Add(metin);
+        }
+
+        // Tanım boşsa (bozuk sürüm) ham değerlere düş: boş bir satır
+        // göstermektense okunabilir olmayan bir şey göstermek yeğ.
+        if (parcalar.Count == 0)
+        {
+            parcalar.AddRange(c.Values
+                .Select(v => MetneCevir(FormDogrulayici.Normalize(FormDogrulayici.Deger(v))))
+                .Where(x => x.Length > 0).Take(3));
+        }
+
+        var birlesik = string.Join(" · ", parcalar);
+        return birlesik.Length > 120 ? birlesik[..120] + "…" : birlesik;
     }
 
     private static string MetneCevir(object? d) => d switch

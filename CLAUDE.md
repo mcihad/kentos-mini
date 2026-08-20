@@ -1288,6 +1288,145 @@ dokunulmadan geçer.
 
 Ayrıntı ve bütün arayüz kuralları: `KentOS.Mini.Web/frontend/CLAUDE.md`.
 
+## DİNAMİK FORM VE ANKET
+
+Kurumun kendi tasarladığı formu vatandaşa benzersiz bir adresle sunması ve
+yanıtları toplaması. Google Forms sınıfı bir tasarımcı + anonim bir portal.
+
+### Veri modeli MELEZ — tanım ve yanıt JSONB, iskelet ilişkisel
+
+| Tablo | Ne tutar |
+|---|---|
+| `formlar` | Başlık, durum, erişim kipi, tarih/kota, **erişim anahtarı** |
+| `form_surumleri` | **Donmuş tanım** (`tanim jsonb`) — her yayın bir sürüm |
+| `form_yanitlari` | Cevaplar (`cevaplar jsonb`) + takip no + kimlik |
+| `form_yanit_dosyalari` | Yüklenen belgeler (gizli alanda) |
+
+- **Tanım JSONB** çünkü bir ağaç: adım → grup → alan, üstüne koşul, kolon
+  düzeni ve tipe göre değişen ayarlar. İlişkisel modellenseydi altı tablo,
+  her sıralamada toplu güncelleme ve tip başına ayar tablosu gerekirdi.
+  Tanım **bir bütün** okunup **bir bütün** yazılıyor.
+- **Yanıt JSONB** çünkü soru başına satır her okumada pivot demek.
+  PostgreSQL 18 + GIN indeksi `"şu soruya X diyenler"` sorgusunu doğrudan
+  karşılıyor. **Ölçüldü:** `puan=4` → 2 yanıt, `puan=1` → 0.
+- **Sürümleme şart.** Yayınlanmış form düzenlenebiliyor; tanım form
+  kaydında dursaydı düzenleme eski yanıtların şemasını da değiştirir ve
+  "3. soruya ne cevap verilmişti" sessizce bozulurdu.
+
+> Bu depoda ilk `jsonb` kullanımı. Kolon tipi `AppDbContext`'te açıkça
+> `jsonb` (metin değil): asıl kazanç GIN indeksi ve yol sorgusu.
+> C# tarafı `string` çünkü `Application` katmanının NuGet bağımlılığı yok
+> ve serileştirme tek yerde, denetimli kalmalı.
+
+### Cevap belgesi SARMALAYICI
+
+```json
+{ "a_7f3a": { "deger": "diger", "metin": "Belediye afişi" } }
+```
+
+Düz değer "Diğer" seçeneğinin yanındaki serbest metni taşıyamıyor; yan bir
+`a_7f3a__diger` anahtarı ise **"tanımda olmayan anahtar reddedilir"**
+kuralıyla çatışırdı. Containment sorgusu bozulmuyor:
+`cevaplar @> '{"a_7f3a":{"deger":"evet"}}'`.
+
+### ERİŞİM ANAHTARINDA BAŞLATICI YOK
+
+```csharp
+public string ErisimAnahtari { get; set; } = string.Empty;   // ✓
+// = Guid.NewGuid().ToString("N")                            // ✗ ÖLÜMCÜL
+```
+
+Başlatıcı yazılsaydı `_mapper.Map(dto, entity)` her güncellemede alanı
+varsayılana çeker ve **vatandaşın adresi sessizce dönerdi**: dağıtılmış QR
+kodları, SMS bağlantıları ve afişler ölür, hiçbir istisna atılmaz. Depoda
+adı konmuş `Ajanda.KullaniciId` hatasının birebir aynısı. Değer servis
+katmanında, kayıt YARATILIRKEN bir kez üretiliyor.
+
+### Koşullar YALNIZCA GERİYE bakar
+
+Bir alanın koşulu, kendisinden **önce** gelen bir alana bağlanmak zorunda
+(`FormServisi.TanimiDogrula` zorluyor, tasarımcı da yalnızca onları
+listeliyor). İki kazancı var:
+
+- **Döngü tespiti hiç yazılmıyor.** Mapster döngüsü bu depoda bir kez
+  `StackOverflowException` ile bütün API sürecini düşürdü; aynı sınıf
+  hatayı yapı gereği imkânsız kılmak testle yakalamaktan ucuz.
+- **Tek geçişte oynatma.** Sunucunun "bu soru zorunlu muydu" kararını
+  yeniden üretebilmesi gerekiyor; sıra garantisi olmadan tanımsız.
+
+Koşul **bağlaçlı liste** (VE/VEYA, en çok 8 kural). Tek koşul "işyeri VEYA
+inşaat ise" gibi sıradan bir isteği karşılamıyordu. İç içe ifade ağacı
+elendi: `A ve (B veya C)` zaten **grup koşulu ∧ alan koşulu** ile
+yazılabiliyor.
+
+### Kolon düzeni: 12'lik ızgara
+
+Masaüstünde ızgara **daima 12 kolon**; `kolonSayisi` DOM'a hiç inmiyor,
+yalnızca tasarımcıda yeni alanın varsayılan genişliğini belirliyor
+(`12 / kolonSayisi`). Böylece 3 kolonlu bir grupta bir alan "iki kolon
+kapla" diyebiliyor — 1–4 modelinde bu ifade edilemiyordu.
+
+**Mobilde her alan tam genişlik.** 390px'te iki kolon, alan başına 171px
+demek; etiket sığmıyor ve 44px dokunma kuralı genişliği kurtarmıyor.
+`minmax(0,1fr)` pazarlıksız: `1fr` aslında `minmax(auto,1fr)` ve uzun bir
+seçenek metni ızgarayı taşırıyor (bu depoda ölçülmüş 628px'lik hata).
+
+### Matris MOBİLDE TABLO DEĞİL
+
+390px'te altı sütunlu bir tablo okunmuyor: sütun 55px'e düşüyor, başlıklar
+dikey yazıya dönüyor. Yatay kaydırma da çözüm değil — kullanıcı satır
+etiketini kaybediyor. Mobilde her satır **kendi başlığıyla bir kart**,
+seçenekler sarılan düğmeler.
+
+### Güvenlik — vatandaş portalı kalıbı
+
+Uygulamanın **ikinci anonim yazma yüzeyi**. Kararlar bildirim portalından
+devralındı:
+
+| Savunma | Nasıl |
+|---|---|
+| Kapalı portal | `kurum_bilgileri.form_portali_acik` + `FormPortaliFiltresi`, **`Order = -2001`** (ölçülmüş sayı: `[ApiController]`'ın kendi filtresi `-2000`'de) → **404**, 403 değil |
+| Ayrı yüzey | `/api/v2/form-portal`, ayrı controller; `V2ControllerBase`'den türemiyor (o JWT zorunlu kılıyor) |
+| Hız sınırı | Okuma 60/dk, yazma 10/dk; bölüm anahtarı **`ip\|erisimAnahtari`** — aynı NAT'tan 300 kişilik bir okul aynı ankete girebiliyor |
+| Bot | **Honeypot**: dolu gelen gizli alan sessizce başarılı görünüp atılıyor. Hata dönseydi bot tuzağı öğrenirdi |
+| Doğrulama | Tanımda olmayan alan **reddedilir**; seçenek listesinde olmayan değer, uydurma matris satırı/sütunu da |
+| Desen | Kullanıcı regex'i **50 ms zaman aşımıyla**; zaman aşımı alanı geçerli SAYMAZ |
+| IP | Ham değil **tuzlanmış özet** (tuz: JWT anahtarı) |
+| Tek yanıt | **Kısmi benzersiz indeks** (`WHERE kimlik_karmasi IS NOT NULL`) — `CountAsync`+`Insert` bir TOCTOU'ydu. Anahtar `HMAC(form tuzu, telefon)`: telefon anonim formda hiç saklanmıyor ve **tuz form başına**, yani iki anketteki aynı kişi eşleştirilemiyor |
+| Excel | Formül enjeksiyonu kapalı: `=`, `+`, `-`, `@` ile başlayan cevap metne kaçırılıyor |
+
+### Bekçiler
+
+| Test | Neyi kilitler |
+|---|---|
+| `FormDogrulamaTests` | Bilinmeyen alan, geçersiz seçim, matris bütünlüğü, koşullu zorunluluk, T.C. algoritması, desen zaman aşımı, `JsonElement` çözümü |
+| `FormSemaTests` | **Alan tipi sayıları** (29 üye tek tek) — bir üyeyi taşımak canlıdaki bütün soruları başka tiplere çevirirdi; ayrıca veri taşıyan her tipin doğrulayıcısı var mı |
+| `AnonimUcTests` | Dört yeni anonim uç ad ad kilitli |
+| `frontend/test/forms.test.ts` | Kimlik benzersizliği, silinen alanın koşullarının temizlenmesi, kopyada kimliklerin yenilenmesi, koşul adaylarının yalnızca geriye bakması, taşımada ileri koşulun düşürülmesi |
+
+> **`FormSemaTests` yayına çıkmadan GERÇEK bir açık yakaladı:** matris
+> alanına düz metin göndermek sessizce geçiyordu (`Sozluk()` boş sözlük
+> döndürünce döngü hiç çalışmıyor). Düzeltildi.
+
+### Ölçümler
+
+```
+uçtan uca (jetonsuz)  form aç → yayınla → vatandaş doldur → sonuç
+  koşullu zorunlu boş → 400 "detay: Bu alan zorunlu"
+  listede olmayan seçim → 400 "kanal: Geçersiz seçim"
+  honeypot dolu → 200, KAYIT AÇILMADI
+  geçerli → takip no + 7 satırlık sonuç özeti
+tarayıcı (390px)      zorunlu uyarısı ✓ · koşullu alan açıldı ✓ ·
+                      adım 2/2 ✓ · gönderim ✓ · sonuç sayfası 5 satır ✓
+ekranlar              taşma 0 · iç içe etkileşim 0 · JS hatası 0
+testler               672 sunucu + 228 ön yüz · görsel tur 218 görüntü
+```
+
+> **Tasarımcı tuvali kolonları GÖSTERMEZ**, önizleme gösterir. Tuval dikey
+> bir sıralama listesi (sürükle-bırak orada çalışıyor); "form neye
+> benziyor" sorusunun cevabı Önizleme sekmesinde ve o **gerçek oynatıcı** —
+> tasarımcıda görülenle vatandaşın gördüğü aynı bileşen.
+
 ## DIŞARIYA VERİLEN ADRES İSTEKTEN GELİR
 
 `App:BaseUrl` **tek bir alan adı**. Uygulama başka bir adresten

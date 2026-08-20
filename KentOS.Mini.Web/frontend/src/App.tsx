@@ -13,6 +13,10 @@ import Home from './screens/Home';
 import Settings from './screens/Settings';
 import InstitutionSettings from './screens/InstitutionSettings';
 import OpenIdSettings from './screens/OpenIdSettings';
+import PublicForm from './screens/form/PublicForm';
+import Forms from './screens/Forms';
+import FormDesigner from './screens/form/FormDesigner';
+import FormResponses from './screens/form/FormResponses';
 import NotFound from './screens/NotFound';
 import Flowers from './screens/Flowers';
 import FloristDetail from './screens/flower/FloristDetail';
@@ -103,6 +107,15 @@ export default function App() {
         bağlantılar hâlâ gelen kutularında duruyor.
       */}
       <Route path="/cicek-teslim/:kimlik" element={<FlowerDelivery />} />
+
+      {/*
+        VATANDAŞ FORMU — uygulama kabuğunun DIŞINDA.
+
+        Bağlantıyı açan kişi kurumun personeli değil; ona menü, sekme çubuğu
+        ve bildirim zili göstermek "yanlış yere geldim" hissi veriyor.
+        Çiçek teslim ekranıyla aynı gerekçe.
+      */}
+      <Route path="/form/:anahtar" element={<PublicForm />} />
 
       {/*
         SAHA — KENDİ KABUĞUNDA ve KİMLİK DOĞRULAMALI.
@@ -388,6 +401,30 @@ export default function App() {
         <Route
           path="kurum"
           element={<ProtectedRoute permission={PERMISSION.sistemKurum} role="Admin"><InstitutionSettings /></ProtectedRoute>}
+        />
+
+        {/*
+          FORM VE ANKET.
+
+          Rota sırası: `yeni` ve `:id/yanitlar` DETAYDAN ÖNCE. Aksi hâlde
+          `yeni` bir kimlik sanılır ve tasarımcı 404 gösterir — bu depoda
+          adı konmuş bir tuzak.
+        */}
+        <Route
+          path="formlar"
+          element={<ProtectedRoute permission={PERMISSION.formGoruntule}><Forms /></ProtectedRoute>}
+        />
+        <Route
+          path="formlar/yeni"
+          element={<ProtectedRoute permission={PERMISSION.formYonet}><FormDesigner /></ProtectedRoute>}
+        />
+        <Route
+          path="formlar/:id/yanitlar"
+          element={<ProtectedRoute permission={PERMISSION.formYanitGoruntule}><FormResponses /></ProtectedRoute>}
+        />
+        <Route
+          path="formlar/:id"
+          element={<ProtectedRoute permission={PERMISSION.formGoruntule}><FormDesigner /></ProtectedRoute>}
         />
 
         {/* Kimlik sağlayıcı ayrı bir izinle korunuyor (`sistem.openid`):
