@@ -2111,3 +2111,35 @@ davranış olarak "bildirim yok"tan ayırt edilemediği için tek ucuz yol bu
 `database-contract.txt` +13 kolon, `json-contract.txt` +14 alan. **Hiçbir ad
 silinmedi ya da değişmedi** (diff'te `<` satırı yok) — yalnızca ekleme, yani
 v1 mobil sözleşmesi bozulmadı: bilinmeyen alanı istemci yok sayar.
+
+## İSTATİSTİK MERKEZİ: tek sayfa değil, gruplu ızgara
+
+`/istatistikler` bir **merkez**, altındaki her konu ayrı bir ekran.
+
+- Kart bir **bağlantı** ve içinde ikinci bir etkileşimli öğe YOK — bütün kart
+  tıklanabilir olduğu için düğme konsaydı iç içe bağlantı olurdu
+  (bkz. *İÇ İÇE BAĞLANTI OLMAZ*). Ölçüldü: iç içe etkileşim 0.
+- Izgara `sm:grid-cols-2 xl:grid-cols-3`; **mobilde tek kolon**. 390px'te iki
+  kolon, kart başına ~171px demek ve iki satırlık açıklama okunmuyor.
+- Açıklama **sarılır, kırpılmaz**: kartın işi neyi bulacağını söylemek ve
+  yarım cümle bunu yapmıyor. Kartlar `h-full` ile satır yüksekliğine uzuyor.
+- Grup başlığı ince bir çizgiyle sağa uzuyor; kartlar arasındaki boşluk tek
+  başına gruplamayı taşımıyordu.
+- Konu sayfasında **geri bağlantısı başlığın ÜSTÜNDE**: merkez bir ekran
+  değil bir menü, kullanıcı oraya sık dönüyor.
+
+> **Aralık hesabı ORTAK** (`screens/statistics/range.ts`). Merkez ayrı
+> ekranlara bölününce hesap kopyalanacaktı; iki kopya, "bu yıl"ın bir panoda
+> 1 Ocak'tan bir başkasında 365 gün öncesinden başlaması demekti.
+
+> **Katalog TEK kaynak** (`screens/statistics/catalog.ts`): ızgara, rota ve uç
+> adresi oradan türüyor. `konu` alanı hem rota parçası hem uç adı — ayrışsa
+> kart doğru sayfayı açar ama sayfa 404 alır. Üç ayrı yerde yazılsaydı yeni
+> bir konu eklemek üç dosyaya dokunmak olurdu ve biri unutulduğunda belirti
+> sessiz olurdu: kart görünür, tıklanır, boş sayfa açılır.
+
+> **Görsel tur iki konu geziyor**: `istatistik-etkinlik` (kendi ekranı olan)
+> ve `istatistik-sistem` (genel çiziciyi kullanan). İkisi farklı kod yolları;
+> yalnızca birini gezmek ötekini ölçüsüz bırakırdı. Tur ayrıca **iki seviyeli
+> derin bağlantıyı** da doğruluyor — `MapFallbackToFile` tek seviyede
+> çalışıp ikide çalışmasaydı belirti yalnızca YENİLEMEDE görünürdü.

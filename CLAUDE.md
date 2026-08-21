@@ -1580,6 +1580,126 @@ testler               672 sunucu + 228 ön yüz · görsel tur 218 görüntü
 > benziyor" sorusunun cevabı Önizleme sekmesinde ve o **gerçek oynatıcı** —
 > tasarımcıda görülenle vatandaşın gördüğü aynı bileşen.
 
+## İSTATİSTİK MERKEZİ — dokuz konu, gruplu ızgara
+
+İstatistikler tek bir sayfada, iki segment düğmesinin arkasında duruyordu
+(**etkinlik** ve **talep**). Konu sayısı ikiden dokuza çıkınca o düzen
+taşıyor: segment şeridi mobilde satır kaydırmaya başlıyor ve kullanıcı
+hangi panoların VAR OLDUĞUNU ancak şeridi kaydırarak görebiliyor.
+
+`/istatistikler` artık bir **merkez**: gruplanmış kart ızgarası. Her kart bir
+konuya gidiyor (`/istatistikler/<konu>`).
+
+| Grup | Kartlar |
+|---|---|
+| Makam | Etkinlikler · Talepler |
+| İş Takip | Gecikme Panosu (mevcut `/is-panosu`'na gider) |
+| Vatandaş | Halk Günü · Form ve Anket |
+| Program | Protokol ve Davet · Çiçek Gönderi |
+| Kurum | Özgeçmiş Havuzu · Sistem Sağlığı |
+
+Gruplar **menüdeki gruplamayı izler**: kullanıcı "Halk Günü"nü menüde nerede
+arıyorsa merkezde de orada bulmalı. Ayrı bir sınıflandırma icat etmek, aynı
+kurumu iki farklı haritayla gezdirmek olurdu.
+
+### GENEL ŞEKİL — altı konu, tek çizici
+
+Yeni konuların hepsi aynı DTO'yu döndürüyor
+(`Application/Dto/Analiz/KonuIstatistigiDto.cs`): karolar + bölümler +
+aylık seyir. İstemcide karşılığı **tek** bir ekran
+(`screens/statistics/TopicDashboard.tsx`).
+
+Konu başına ayrı DTO ve ayrı ekran yazılsaydı altı neredeyse birebir kopya
+olurdu ve zamanla ayrışırlardı — bu depoda aynı hata etiket çevirisinde üç
+kopya olarak yaşandı.
+
+> **Etkinlik ve talep panoları TAŞINMADI.** İkisi çok daha zengin (ortalama
+> süre, tamamlanma oranı seyri, katılımcı kırılımı) ve çalışan iki ekranı
+> genel şekle sığdırmak için yeniden yazmanın karşılığı yok. Merkeze kart
+> olarak girdiler, şekilleri kendilerinde kaldı.
+
+- **Karo değeri METİN.** Sayı dönseydi "%73", "4,2 gün" ve "1.240"
+  biçimlerinin her biri için istemciye ayrı bir kural göndermek gerekirdi.
+  Biçim **açıkça `tr-TR`** — süreç kültürüne bırakılsaydı yayın makinesinde
+  "1.348" ekranda "1,348" diye okunabilirdi.
+- **Ton RENK KODU değil AD** (`iyi` · `uyari` · `kotu`). Sunucudan
+  `#RRGGBB` yollamak beyaz etiket sözleşmesini bozardı; karşılık ön yüzde
+  durum token'larına bağlanıyor (`--st-ok` · `--st-warn` · `--st-no`).
+- **Paydası sıfır olan oran yüzde YAZMAZ.** Hiç kayıt yokken "%0" yanlış bir
+  şey söylüyor: "hiçbiri teslim edilmedi" değil, "ölçecek bir şey yok".
+- **Boş aylar da doldurulur.** Yalnızca kaydı olan aylar dönseydi grafik boş
+  bir ayı atlar ve çizgi "kesintisiz devam ediyor" gibi okunurdu.
+
+### GÖRÜNÜRLÜK KAPILARI İSTATİSTİKTE DE GEÇERLİ
+
+**Sayı da bir bilgidir.** Listede göremediğin kaydı sayan bir uç, gizliliği
+sayı üzerinden deliyor ("bu birimde kaç gizli görüşme var"). Her metot kendi
+modülünün kapısını birebir tekrarlar:
+
+| Konu | Kapı | Neden |
+|---|---|---|
+| Halk günü, protokol daveti | `BirimId == etkin birim` | `HalkGunuServisi.GorunurGunler` / `DavetServisi.GorunurOlanlar` ile aynı; ayrışırlarsa listede 8, istatistikte 80 kayıt görünür |
+| Protokol **defteri** | kapı YOK | Defter kurum geneli; birime süzmek aynı vali yardımcısını her birimin ayrı sayması demekti |
+| Çiçek | kapı YOK | Çiçekçi hesabı kurum geneli; talimatı veren birim ile ödemeyi yapan birim aynı olmayabiliyor. Gizli etkinlik zaten çiçek talimatı üretmiyor |
+| Özgeçmiş | kapı YOK — **kasıtlı istisna** | Havuzun varlık sebebi kaydın birimler arasında dolaşabilmesi (`OzgecmisHavuzuTests.Havuz_birim_suzgecinden_gecmez`). Birim yalnızca **dağılım** olarak gösteriliyor |
+| Sistem | `sistem.hata` | Hata ekranıyla aynı kapı: Admin bile göremez. Pano yığın izi ve istek gövdesi DÖNDÜRMEZ ama "hangi uç patlıyor" da saldırı yüzeyini tarif ediyor |
+
+**İzin İKİ KATLI:** sınıf düzeyindeki `istatistik.goruntule` MERKEZİ, metot
+düzeyindeki modül izni o KARTI açıyor. Yalnızca modül iznine bakılsaydı
+istatistik yetkisi olmayan biri kartların bir kısmını görürdü; yalnızca
+merkez iznine bakılsaydı halk gününü hiç görmeyen biri halk günü sayılarını
+okurdu.
+
+> **Merkez ekranının kendisi izin İSTEMEZ** ve bu bilinçli: kartlar zaten tek
+> tek süzülüyor. `istatistik.goruntule` konsaydı, halk günü sayılarını
+> görmeye yetkili ama makam istatistiğine yetkisiz bir kullanıcı kapıda
+> kalırdı. Menü öğesi de bu yüzden **çoklu izin (VEYA)** taşıyor — yeni bir
+> konu eklenirken izni `navigation.ts`'e de yazılmalı.
+
+### ÇIKTI: pano, liste DEĞİL
+
+`GET /api/v2/istatistik/<konu>/excel` — özet bir sayfada, her dağılım ayrı
+sayfada, aylık seyir sonda. Altı konu **tek üreticiden** geçiyor
+(`IstatistikCiktiServisi`), çünkü hepsi aynı şekli döndürüyor.
+
+- Dosyanın başına **dönem yazılır**: sayı tek başına anlamsız ve iki farklı
+  dönemin sayıları rapora yapıştırıldığında karışıyor.
+- Her dağılım **ayrı sayfa**: hepsi alt alta konsaydı süzgeç ve grafik
+  kurulamazdı, oysa Excel'e aktarmanın amacı orada işlem yapmak.
+- Yüzde **sayı olarak** yazılır (0–1 + `0.0%` biçimi); metin olsaydı sütunda
+  toplam alınamazdı.
+- Sayfa adı 31 karakter, `[]:*?/\` yasak ve **benzersiz** olmak zorunda —
+  aynı adı ikinci kez eklemek `ArgumentException` atıp çıktıyı 500'e
+  düşürürdü ve iki bölümün aynı başlığı taşıması olağan.
+
+> Kayıt listesi isteyen modülün kendi ucunu kullanır (`disa-aktar/*`, çiçekçi
+> dosyası, halk günü çizelgesi). Pano çıktısı onların yerine geçmez.
+
+### "SON 12 AY" 12 TAKVİM AYIDIR
+
+İlk ölçümde grafik **13 sütun** çiziyordu: hem sunucu varsayılanı hem
+istemcinin aralık hesabı bugünden 12 ay geriye gidiyor, aylık gruplama da
+baştaki ve sondaki YARIM ayları ayrı kova sayıyordu. İkisi de ayın 1'inden
+başlayacak şekilde düzeltildi.
+
+> Ölçüm: `Ağu 25 … Ağu 26` (13) → `Eyl 25 … Ağu 26` (12).
+
+### Ölçümler
+
+```
+uçlar          6 konu × (pano + excel) = 12 uç, hepsi 200
+excel          8,7–10,9 KB · sayfalar: Özet + dağılımlar + Aylık seyir
+merkez         9 kart · 5 grup · masaüstü 3 kolon (315px) · mobil 1 kolon
+               yatay taşma 0 · iç içe etkileşim 0
+testler        684 sunucu + 235 ön yüz · görsel tur 226 görüntü, TEMİZ
+sözleşme       +3 DTO, sıfır kayıp — v1 mobil sözleşmesi bozulmadı
+```
+
+> **`tokens.test.ts` ateş etti.** Karo tonu ilk yazımda depoda BULUNMAYAN bir
+> token adına bağlanmıştı; renk sessizce hiç uygulanmıyordu. Bekçi kaynağı
+> ham tarıyor — **yorum satırları dahil**, yani belgede örnek olarak yazılan
+> tanımsız bir token adı da testi düşürüyor.
+
 ## DIŞARIYA VERİLEN ADRES İSTEKTEN GELİR
 
 `App:BaseUrl` **tek bir alan adı**. Uygulama başka bir adresten

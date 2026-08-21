@@ -122,11 +122,21 @@ DTO KentOS.Mini.Application.Dto.Analiz.AjandaIstatistikDto
   tumGunDurumu
   uretilmeZamani
   yillaraGore
+DTO KentOS.Mini.Application.Dto.Analiz.IstatistikBolumuDto
+  aciklama
+  baslik
+  dilimler
+  gorunum
 DTO KentOS.Mini.Application.Dto.Analiz.IstatistikDilimDto
   deger
   etiket
   renk
   yuzde
+DTO KentOS.Mini.Application.Dto.Analiz.IstatistikKarosuDto
+  altMetin
+  deger
+  etiket
+  ton
 DTO KentOS.Mini.Application.Dto.Analiz.IstatistikOzetDto
   aktifEtkinlik
   bekleyenEtkinlik
@@ -149,6 +159,14 @@ DTO KentOS.Mini.Application.Dto.Analiz.IstatistikSeriNoktasiDto
   deger
   etiket
   tarih
+DTO KentOS.Mini.Application.Dto.Analiz.KonuIstatistigiDto
+  baslik
+  bolumler
+  karolar
+  konu
+  not
+  seyir
+  seyirEtiketi
 DTO KentOS.Mini.Application.Dto.Analiz.RandevuArchivedCountDtoByBirim
   archivedCount
   birimAdi

@@ -343,6 +343,8 @@ builder.Services.AddScoped<IAjandaSeriService, AjandaSeriService>();
 // akışlara dokunmaz, yazma/bildirim yapmaz.
 builder.Services.AddScoped<IAjandaIstatistikService, AjandaIstatistikService>();
 builder.Services.AddScoped<ITalepIstatistikServisi, TalepIstatistikServisi>();
+builder.Services.AddScoped<IIstatistikMerkeziServisi, IstatistikMerkeziServisi>();
+builder.Services.AddScoped<IIstatistikCiktiServisi, IstatistikCiktiServisi>();
 // Etkinlik zaman çizelgesi. Yazma hataları yutulur; mevcut akışları etkilemez.
 builder.Services.AddScoped<IAjandaOlayService, AjandaOlayService>();
 builder.Services.AddScoped<ISettingsService, SettingsService>();

@@ -199,12 +199,33 @@ export const NAVIGATION: NavigationGroup[] = [
   {
     baslik: 'Yönetim',
     ogeler: [
-      // İstatistikler birim geneli sayıları gösteriyor (kim kaç etkinlik
-      // açtı, kaçı iptal oldu); bu bir yönetim görünümü, günlük kullanım
-      // ekranı değil. Yalnızca Admin.
+      /*
+        İSTATİSTİK MERKEZİ — kapı ÇOKLU izin (VEYA).
+
+        Merkez artık dokuz konuya açılan bir ızgara ve her kart kendi modül
+        iznine bağlı. Menü yalnızca `istatistik.goruntule`ye bakmaya devam
+        etseydi, halk günü ya da form sayılarını görmeye yetkili ama makam
+        istatistiğine yetkisiz bir kullanıcı menüde hiçbir şey görmezdi —
+        oysa açtığında kendi kartları onu bekliyor.
+
+        Liste, katalogdaki izinlerin BİRLEŞİMİ. Yeni bir konu eklenirken
+        izni buraya da yazılmalı; yazılmazsa kart merkezde durur ama menüsü
+        olmayan kullanıcı oraya hiç gidemez.
+      */
       {
         yol: '/istatistikler', etiket: 'İstatistikler', ikon: ChartColumn,
-        izin: PERMISSION.istatistikGoruntule,
+        izin: [
+          PERMISSION.istatistikGoruntule,
+          PERMISSION.isIstatistik,
+          PERMISSION.halkgunuGoruntule,
+          PERMISSION.formGoruntule,
+          PERMISSION.protokolGoruntule,
+          PERMISSION.cicekGoruntule,
+          PERMISSION.ozgecmisGoruntule,
+          PERMISSION.sistemHata,
+        ],
+        // Alt konu sayfaları da bu öğeyi aktif tutar.
+        altYollar: ['/istatistikler'],
         // `rol` YALNIZCA geri düşüş: sunucu izin listesi göndermezse
         // (v1 yüzeyi / eski sürüm) devreye girer. İzin listesi geldiğinde
         // hiç bakılmaz — canlı karar her zaman izne dayanır. Kaldırılırsa o

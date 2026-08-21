@@ -224,6 +224,19 @@ export type InboxAccept = S['GelenKutusuKabulDto'];
 export type UnitScorecard = S['BirimKarnesiDto'];
 export type WorkStatistics = S['IsIstatistikDto'];
 
+// ── istatistik merkezi ──
+/**
+ * Konu panosunun GENEL şekli.
+ *
+ * Halk günü, form, protokol, çiçek, özgeçmiş ve sistem panoları aynı tipi
+ * döndürüyor; ekran tarafında da tek bir çizici var (`TopicDashboard`).
+ * Etkinlik ve talep panoları KENDİ şekillerinde kaldı — ikisi çok daha
+ * zengin ve çalışan iki ekranı yeniden yazmanın karşılığı yok.
+ */
+export type TopicStatistics = S['KonuIstatistigiDto'];
+export type StatTileData = S['IstatistikKarosuDto'];
+export type StatSection = S['IstatistikBolumuDto'];
+
 /** Gelen kutusu durumları — `GelenKutusuDurumu`. */
 export const INBOX_STATUS = {
   bekliyor: 0,

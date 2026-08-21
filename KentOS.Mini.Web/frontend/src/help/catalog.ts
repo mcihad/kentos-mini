@@ -348,7 +348,7 @@ const KATALOG: { kalip: string; kayit: HelpEntry }[] = [
     kayit: {
       grup: 'Yönetim',
       baslik: 'İstatistikler',
-      ozet: 'Birimin işi sayılarla',
+      ozet: 'Dokuz konunun sayıları ve çıktıları',
       metin: istatistikler,
     },
   },

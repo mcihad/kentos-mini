@@ -96,7 +96,12 @@ const EKRANLAR = [
   // NOT: bölüm başlıkları CSS ile büyük harfe çevriliyor ve `innerText` de
   // dönüşmüş hâli veriyor; dönüşümden etkilenmeyen bir metin beklenir.
   { ad: 'talep-form', yol: '/talepler/yeni', bekle: 'Vazgeç' },
-  { ad: 'istatistikler', yol: '/istatistikler', bekle: 'Toplam etkinlik' },
+  { ad: 'istatistikler', yol: '/istatistikler', bekle: 'İstatistikler ve Raporlar' },
+  // Merkez artık dokuz konuya açılıyor; tur ikisini örnekliyor: biri KENDİ
+  // ekranı olan (etkinlik), biri genel çiziciyi kullanan (sistem). İkisi
+  // farklı kod yolları — yalnızca birini gezmek ötekini ölçüsüz bırakırdı.
+  { ad: 'istatistik-etkinlik', yol: '/istatistikler/etkinlik', bekle: 'Toplam etkinlik' },
+  { ad: 'istatistik-sistem', yol: '/istatistikler/sistem', bekle: 'Sistem Sağlığı' },
   { ad: 'yonetim', yol: '/yonetim', bekle: 'Kullanıcılar' },
   { ad: 'yonetim-kullanici-form', yol: '/yonetim?bolum=kullanicilar&kullanici=yeni',
     bekle: 'Birim' },
@@ -251,8 +256,21 @@ try {
   // ── 6. Derin bağlantı (sayfa yenilemeli) ──
   console.log('\n▸ Derin bağlantı');
   await tarayici.git(`${TABAN}/istatistikler`);
-  await tarayici.bekleMetin('Toplam etkinlik');
+  await tarayici.bekleMetin('İstatistikler ve Raporlar');
   bildir('ok', '/istatistikler doğrudan açılıyor (MapFallbackToFile)');
+
+  /*
+    İKİ SEVİYELİ derin bağlantı da denenir.
+
+    `MapFallbackToFile` kalıbı `{*yol:nonfile}`; tek seviyeli bir yolun
+    çalışması iki seviyelinin çalıştığını GÖSTERMEZ ve istatistik merkezi
+    artık bütün konularını ikinci seviyede tutuyor. Bozulsaydı belirti
+    yalnızca YENİLEMEDE görünürdü — uygulama içinden tıklayan hiç fark
+    etmezdi.
+  */
+  await tarayici.git(`${TABAN}/istatistikler/etkinlik`);
+  await tarayici.bekleMetin('Toplam etkinlik');
+  bildir('ok', '/istatistikler/etkinlik (iki seviyeli) doğrudan açılıyor');
 
   // ── 7. Konsol hataları ──
   console.log('\n▸ Konsol');

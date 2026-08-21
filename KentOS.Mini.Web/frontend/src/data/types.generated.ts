@@ -7905,6 +7905,245 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/istatistik/halk-gunu": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Halk günü panosu. */
+        get: {
+            parameters: {
+                query?: {
+                    baslangic?: string;
+                    bitis?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KonuIstatistigiDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/istatistik/form": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Form ve anket panosu. */
+        get: {
+            parameters: {
+                query?: {
+                    baslangic?: string;
+                    bitis?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KonuIstatistigiDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/istatistik/protokol": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Protokol ve davet panosu. */
+        get: {
+            parameters: {
+                query?: {
+                    baslangic?: string;
+                    bitis?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KonuIstatistigiDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/istatistik/cicek": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Çiçek gönderi panosu. */
+        get: {
+            parameters: {
+                query?: {
+                    baslangic?: string;
+                    bitis?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KonuIstatistigiDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/istatistik/ozgecmis": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Özgeçmiş havuzu panosu. */
+        get: {
+            parameters: {
+                query?: {
+                    baslangic?: string;
+                    bitis?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KonuIstatistigiDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/istatistik/sistem": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Sistem sağlığı panosu — YALNIZCA `Sistem`.
+         * @description Hata ekranının kapısıyla aynı (`sistem.hata`): Admin bile
+         *     göremez. Pano yığın izi ya da istek gövdesi döndürmüyor ama "hangi uç
+         *     patlıyor" bilgisi de saldırı yüzeyini tarif ediyor.
+         */
+        get: {
+            parameters: {
+                query?: {
+                    baslangic?: string;
+                    bitis?: string;
+                };
+                header?: never;
+                path?: never;
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["KonuIstatistigiDto"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/oneri": {
         parameters: {
             query?: never;
@@ -15061,6 +15300,12 @@ export interface components {
             duzenlendi?: boolean;
             yanitlar?: components["schemas"]["IsYorumDto"][] | null;
         };
+        IstatistikBolumuDto: {
+            baslik?: string | null;
+            aciklama?: string | null;
+            gorunum?: string | null;
+            dilimler?: components["schemas"]["IstatistikDilimDto"][] | null;
+        };
         IstatistikDilimDto: {
             etiket?: string | null;
             /** Format: int32 */
@@ -15068,6 +15313,12 @@ export interface components {
             /** Format: double */
             yuzde?: number;
             renk?: string | null;
+        };
+        IstatistikKarosuDto: {
+            etiket?: string | null;
+            deger?: string | null;
+            altMetin?: string | null;
+            ton?: string | null;
         };
         IstatistikOzetDto: {
             /** Format: int32 */
@@ -15292,6 +15543,15 @@ export interface components {
             birimAd?: string | null;
             ajandayaEklendi?: boolean;
             arsivlendi?: boolean;
+        };
+        KonuIstatistigiDto: {
+            konu?: string | null;
+            baslik?: string | null;
+            karolar?: components["schemas"]["IstatistikKarosuDto"][] | null;
+            bolumler?: components["schemas"]["IstatistikBolumuDto"][] | null;
+            seyir?: components["schemas"]["IstatistikSeriNoktasiDto"][] | null;
+            seyirEtiketi?: string | null;
+            not?: string | null;
         };
         KullaniciGuncelleIstegi: {
             kullaniciAdi?: string | null;

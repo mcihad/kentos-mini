@@ -3,7 +3,7 @@ import { queryKeys } from './queryKeys';
 import { api, queryString, type PagedResult, type PageParams } from './client';
 import type {
   NameRecord, Unit, Florist, StatusCount, EventStatus, EventType,
-  EventStatistics, Participant, Definition, RequestStatus, RequestStatistics, RequestSummary,
+  EventStatistics, Participant, Definition, RequestStatus, RequestStatistics, RequestSummary, TopicStatistics,
   PublicDaySummary,
   PublicDayDetail,
   PublicDayApplication,
@@ -225,6 +225,23 @@ export function useRequestStatusCounts(
 }
 
 // ════════════════════════════════════════════════════════ istatistik
+
+/**
+ * Konu panosu — merkezdeki her kartın arkasındaki uç.
+ *
+ * Konu adı ROTA PARÇASIYLA aynı (`/istatistikler/form` → `/istatistik/form`);
+ * ikisi ayrışırsa kart doğru sayfayı açar ama sayfa boş gelir.
+ */
+export function useTopicStatistics(
+  konu: string, start?: string, end?: string,
+) {
+  return useQuery({
+    queryKey: ['istatistik-konu', konu, start ?? '', end ?? ''] as const,
+    queryFn: () => api.get<TopicStatistics>(
+      `/istatistik/${konu}${queryString({ baslangic: start, bitis: end })}`),
+    staleTime: 60_000,
+  });
+}
 
 export function useEventStatistics(start?: string, end?: string, enabled = true) {
   return useQuery({

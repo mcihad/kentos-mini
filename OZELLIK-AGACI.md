@@ -148,11 +148,25 @@ Yeni varlık **üç yerde** tanımlanır: `bildirim/BildirimMerkezi.tsx`,
 
 ## 10. Raporlama ve çıktı
 
-| Yetenek | Uç | Ekran | Durum |
-|---|---|---|---|
-| İstatistik dağılımları | `api/v2/istatistik` | `/istatistikler` | ✅ |
-| Excel üretimi (ClosedXML) | `DisaAktarmaServisi` | çıktı düğmeleri | ✅ |
-| PDF üretimi (QuestPDF) | modül servisleri | çıktı düğmeleri | ✅ |
+| Yetenek | Uç | Ekran | İzin | Durum |
+|---|---|---|---|---|
+| **İstatistik merkezi** (9 kart, 5 grup) | — | `/istatistikler` | kartlar tek tek süzülür | ✅ |
+| Etkinlik panosu | `api/v2/istatistik` | `/istatistikler/etkinlik` | `istatistik.goruntule` | ✅ |
+| Talep panosu | `api/v2/istatistik/talep` | `/istatistikler/talep` | `istatistik.goruntule` | ✅ |
+| Gecikme panosu | `api/v2/is-istatistik` | `/is-panosu` | `isistatistik.goruntule` | ✅ |
+| Halk günü panosu | `api/v2/istatistik/halk-gunu` | `/istatistikler/halk-gunu` | `halkgunu.goruntule` | ✅ |
+| Form panosu | `api/v2/istatistik/form` | `/istatistikler/form` | `form.goruntule` | ✅ |
+| Protokol ve davet panosu | `api/v2/istatistik/protokol` | `/istatistikler/protokol` | `protokol.goruntule` | ✅ |
+| Çiçek panosu | `api/v2/istatistik/cicek` | `/istatistikler/cicek` | `cicek.goruntule` | ✅ |
+| Özgeçmiş panosu | `api/v2/istatistik/ozgecmis` | `/istatistikler/ozgecmis` | `ozgecmis.goruntule` | ✅ |
+| Sistem sağlığı panosu | `api/v2/istatistik/sistem` | `/istatistikler/sistem` | `sistem.hata` | ✅ |
+| Pano Excel çıktısı (6 konu) | `api/v2/istatistik/<konu>/excel` | konu sayfası | pano ile aynı | ✅ |
+| Excel üretimi (ClosedXML) | `DisaAktarmaServisi` | çıktı düğmeleri | `ajanda.ciktiAl` | ✅ |
+| PDF üretimi (QuestPDF) | modül servisleri | çıktı düğmeleri | modül izni | ✅ |
+
+> Yeni konular **genel şekli** (`KonuIstatistigiDto`) kullanır; etkinlik ve
+> talep panoları kendi zengin şekillerinde kaldı. Ayrıntı ve görünürlük
+> kapıları: kök `CLAUDE.md` → *İSTATİSTİK MERKEZİ*.
 
 > QuestPDF lisansı **her PDF sınıfının kendi statik kurucusunda** ayarlanır.
 

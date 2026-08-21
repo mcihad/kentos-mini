@@ -1,25 +1,19 @@
 import * as Tabs from '@radix-ui/react-tabs';
-import { SekmeListesi, SekmeTetigi } from '../components/Tabs';
+import { ArrowLeft } from 'lucide-react';
+import { Link } from 'react-router-dom';
+import { SekmeListesi, SekmeTetigi } from '../../components/Tabs';
 import { BarChart3, CalendarCheck, CalendarX, Camera, Clock, FileText, TrendingUp } from 'lucide-react';
 import { useState } from 'react';
-import { EmptyState } from '../components/EmptyState';
-import { DonutChart } from '../components/Chart';
-import { DistributionBar, TimeSeries } from '../components/StatisticsCharts';
-import { Skeleton } from '../components/Skeleton';
-import { Card, CardHeader, StatTile } from '../components/Card';
-import { SegmentedSelect } from '../components/Filters';
-import { number, duration, date } from '../data/format';
-import { useEventStatistics } from '../data/hooks';
-import { RequestDashboard } from './statistics/RequestDashboard';
-import { startOfDay, localToServer } from '../data/time';
+import { EmptyState } from '../../components/EmptyState';
+import { DonutChart } from '../../components/Chart';
+import { DistributionBar, TimeSeries } from '../../components/StatisticsCharts';
+import { Skeleton } from '../../components/Skeleton';
+import { Card, CardHeader, StatTile } from '../../components/Card';
+import { SegmentedSelect } from '../../components/Filters';
+import { number, duration, date } from '../../data/format';
+import { useEventStatistics } from '../../data/hooks';
+import { aralikHesapla, ARALIK_ETIKETLERI, type Aralik } from './range';
 
-type Aralik = 'buYil' | 'son12Ay' | 'tumZamanlar';
-
-const ARALIK_ETIKETLERI: Record<Aralik, string> = {
-  buYil: 'Bu yıl',
-  son12Ay: 'Son 12 ay',
-  tumZamanlar: 'Tümü',
-};
 
 /**
  * İstatistikler.
@@ -28,33 +22,12 @@ const ARALIK_ETIKETLERI: Record<Aralik, string> = {
  * yerleştirme. Hesaplama İSTEMCİDE TEKRARLANMAZ — aksi hâlde ekrandaki sayı
  * ile rapordaki sayı zamanla ayrışırdı.
  */
-/**
- * İki pano: **Etkinlikler** ve **Talepler**.
- *
- * Ayrı ekranlar değil, aynı ekranın iki panosu: zaman aralığı seçimi ikisi
- * için de geçerli ve kullanıcı "bu yıl" derken iki panoyu da kastediyor. Ayrı
- * ekran olsaydı aralık iki yerde ayrı ayrı seçilirdi.
- */
-type Pano = 'etkinlik' | 'talep';
 
-export default function Statistics() {
+export default function EventDashboard() {
   const [aralik, setAralik] = useState<Aralik>('buYil');
-  const [pano, setPano] = useState<Pano>('etkinlik');
 
   const [bas, bit] = aralikHesapla(aralik);
-  const { data, isLoading, isError, error } = useEventStatistics(bas, bit, pano === 'etkinlik');
-
-  const panoSecimi = (
-    <SegmentedSelect<Pano>
-      deger={pano}
-      degistir={setPano}
-      etiket="Pano"
-      secenekler={[
-        { deger: 'etkinlik', etiket: 'Etkinlikler' },
-        { deger: 'talep', etiket: 'Talepler' },
-      ]}
-    />
-  );
+  const { data, isLoading, isError, error } = useEventStatistics(bas, bit);
 
   const aralikSecimi = (
     <SegmentedSelect<Aralik>
@@ -69,20 +42,23 @@ export default function Statistics() {
   );
 
   const baslik = (
-    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-      {panoSecimi}
+    <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+      <div className="min-w-0">
+        <Link
+          to="/istatistikler"
+          className="inline-flex items-center gap-1 text-xs font-semibold text-text-3
+                     transition-colors hover:text-brand"
+        >
+          <ArrowLeft size={13} />
+          İstatistikler
+        </Link>
+        <h1 className="mt-0.5 font-display text-xl font-extrabold tracking-[-0.02em]">
+          Etkinlikler
+        </h1>
+      </div>
       {aralikSecimi}
     </div>
   );
-
-  if (pano === 'talep') {
-    return (
-      <div className="space-y-4 md:space-y-5">
-        {baslik}
-        <RequestDashboard bas={bas} bit={bit} />
-      </div>
-    );
-  }
 
   if (isLoading) {
     return (
@@ -320,21 +296,3 @@ function Bolum({
  * devreye girer. Buradan uydurma bir "1900" tarihi göndermek, sorgunun
  * indeks kullanımını bozardı.
  */
-function aralikHesapla(a: Aralik): [string | undefined, string | undefined] {
-  const bugun = startOfDay(new Date());
-
-  if (a === 'buYil') {
-    return [
-      localToServer(new Date(bugun.getFullYear(), 0, 1)),
-      localToServer(new Date(bugun.getFullYear(), 11, 31, 23, 59, 59)),
-    ];
-  }
-
-  if (a === 'son12Ay') {
-    const bas = new Date(bugun);
-    bas.setFullYear(bas.getFullYear() - 1);
-    return [localToServer(bas), localToServer(bugun)];
-  }
-
-  return [undefined, undefined];
-}

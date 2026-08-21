@@ -42,7 +42,10 @@ import FieldReport from './screens/field/FieldReport';
 import FieldTask from './screens/field/FieldTask';
 import { PortalLayout } from './shell/PortalLayout';
 import { SahaLayout } from './shell/SahaLayout';
-import Statistics from './screens/Statistics';
+import StatisticsHub from './screens/statistics/StatisticsHub';
+import EventDashboard from './screens/statistics/EventDashboard';
+import RequestScreen from './screens/statistics/RequestScreen';
+import TopicDashboard from './screens/statistics/TopicDashboard';
 import CalendarScreen from './screens/CalendarPage';
 import RequestDetail from './screens/RequestDetail';
 import Requests from './screens/Requests';
@@ -353,10 +356,28 @@ export default function App() {
             yetkisi ekranın içinde ve sunucuda denetleniyor. */}
         <Route path="gonderim" element={<FileTransfer />} />
         <Route path="gonderim/:id" element={<FileTransferDetail />} />
+        {/*
+          İSTATİSTİK MERKEZİ — merkez + konu sayfaları.
+
+          Merkezin kendisi İZİN İSTEMEZ: kartlar zaten tek tek süzülüyor ve
+          hiçbiri kalmazsa ekran bunu söylüyor. Merkeze `istatistik.goruntule`
+          konsaydı, halk günü sayılarını görmeye yetkili ama makam
+          istatistiğine yetkisiz bir kullanıcı kapıda kalırdı.
+
+          Konu sayfalarının kapısı KENDİ modül izni; asıl kapı sunucuda.
+        */}
+        <Route path="istatistikler" element={<StatisticsHub />} />
         <Route
-          path="istatistikler"
-          element={<ProtectedRoute permission={PERMISSION.istatistikGoruntule} role="Admin"><Statistics /></ProtectedRoute>}
+          path="istatistikler/etkinlik"
+          element={<ProtectedRoute permission={PERMISSION.istatistikGoruntule} role="Admin"><EventDashboard /></ProtectedRoute>}
         />
+        <Route
+          path="istatistikler/talep"
+          element={<ProtectedRoute permission={PERMISSION.istatistikGoruntule} role="Admin"><RequestScreen /></ProtectedRoute>}
+        />
+        {/* Genel şekli kullanan konular TEK rotadan geçer; `konu` parametresi
+            hem uç adresini hem katalogdaki kaydı seçiyor. */}
+        <Route path="istatistikler/:konu" element={<TopicDashboard />} />
         <Route
           path="cicek"
           element={<ProtectedRoute permission={PERMISSION.cicekGoruntule} policy="Cicek"><Flowers /></ProtectedRoute>}

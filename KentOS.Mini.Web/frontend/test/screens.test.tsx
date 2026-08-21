@@ -3,7 +3,7 @@ import userEvent from '@testing-library/user-event';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 import Agenda from '../src/screens/Agenda';
 import EventDetail from '../src/screens/EventDetail';
-import Statistics from '../src/screens/Statistics';
+import EventDashboard from '../src/screens/statistics/EventDashboard';
 import RequestDetail from '../src/screens/RequestDetail';
 import Requests from '../src/screens/Requests';
 import Administration from '../src/screens/Administration';
@@ -443,7 +443,7 @@ describe('İstatistikler', () => {
 
   it('özet sayıları gösterir', async () => {
     vi.stubGlobal('fetch', fetchTaklit({ '/istatistik': istatistik }));
-    kur(<Statistics />);
+    kur(<EventDashboard />);
 
     expect(await screen.findByText('412')).toBeInTheDocument();
     expect(screen.getByText('280')).toBeInTheDocument();
@@ -452,7 +452,7 @@ describe('İstatistikler', () => {
 
   it('ortalama süreyi okunur biçimde yazar', async () => {
     vi.stubGlobal('fetch', fetchTaklit({ '/istatistik': istatistik }));
-    kur(<Statistics />);
+    kur(<EventDashboard />);
 
     // 75 dakika → "1 sa 15 dk"; ham sayı kullanıcıya bir şey söylemez.
     expect(await screen.findByText('1 sa 15 dk')).toBeInTheDocument();
@@ -460,7 +460,7 @@ describe('İstatistikler', () => {
 
   it('boş dağılımda çökmez', async () => {
     vi.stubGlobal('fetch', fetchTaklit({ '/istatistik': istatistik }));
-    kur(<Statistics />);
+    kur(<EventDashboard />);
 
     await screen.findByText('412');
     expect(screen.getAllByText('Veri yok').length).toBeGreaterThan(0);
