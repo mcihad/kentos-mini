@@ -1423,6 +1423,22 @@ gövdenin doğrulamada düşmesi hâlinde her şeyi yeniden yükletirdi.
 > jetonlu **200 image/png**, jetonsuz **401** · statik yol
 > `/uploads/gonderim/form/2/….png` → **404**.
 
+### Vatandaş sayfasında AMBLEM solda
+
+Vatandaş bu sayfayı bir SMS ya da QR koddan açıyor; karşısına çıkan ilk şey
+formun hangi kuruma ait olduğu olmalı. Kurum adını yazıya bırakmak
+yetmiyor — amblem tanınırlığı metinden hızlı taşıyor ve sayfanın "resmî"
+olduğunu tek bakışta söylüyor.
+
+Amblem `useInstitution()`'dan geliyor, **form yanıtından değil**: SPA marka
+bilgisini açılışta bir kez yüklüyor ve son yanıtı `localStorage`'da
+tutuyor. Forma özel bir amblem alanı eklemek, aynı kurumun her formunda
+aynı dosyayı yeniden yönetmek demekti.
+
+> Ölçüm: mobil 48px, masaüstü 56px, sol kenardan 16px, yatay taşma 0.
+> `object-contain` — kurum amblemleri kare olmak zorunda değil ve kırpmak
+> logoyu bozar.
+
 ### Portal kapalıyken SEBEBİ YAZILI
 
 Bayrak kapalıyken vatandaş ucu 404 dönüyor. Yönetim ekranı bunu

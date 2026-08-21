@@ -128,6 +128,9 @@ gösterebilirsiniz.
 
 ## Vatandaşın deneyimi
 
+- Sayfanın tepesinde **kurumunuzun amblemi ve adı** durur; vatandaş formun
+  kime ait olduğunu tek bakışta görür. Amblem Kurum Bilgileri ekranından
+  gelir, her form için ayrı yüklemek gerekmez.
 - Form **giriş gerektirmez**; menü ve program ekranları görünmez.
 - Yarım bırakılan form tarayıcıda saklanır; geri döndüğünde kaldığı yerden
   devam etmek isteyip istemediği sorulur.

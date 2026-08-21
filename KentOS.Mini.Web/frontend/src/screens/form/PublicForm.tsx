@@ -7,6 +7,7 @@ import { FieldWrapper, Input } from '../../components/Field';
 import { Skeleton } from '../../components/Skeleton';
 import { cn } from '../../components/utils';
 import { usePublicForm, usePublicFormSubmit } from '../../data/forms';
+import { useInstitution } from '../../institution/institution';
 import type { FormAnswerResult } from '../../data/types';
 import { FormRenderer } from '../../forms/FormRenderer';
 import { FORM_ACCESS } from '../../forms/fieldTypes';
@@ -376,7 +377,24 @@ export default function PublicForm() {
   );
 }
 
-/** Formun kabuğu — uygulama gezinmesi YOK. */
+/**
+ * Formun kabuğu — uygulama gezinmesi YOK.
+ *
+ * <p>
+ * <b>Amblem solda.</b> Vatandaş bu sayfayı bir SMS ya da QR koddan
+ * açıyor; karşısına çıkan ilk şey formun hangi kuruma ait olduğu olmalı.
+ * Kurum adını yazıya bırakmak yetmiyor — amblem tanınırlığı metinden
+ * hızlı taşıyor ve sayfanın "resmî" olduğunu tek bakışta söylüyor.
+ * </p>
+ *
+ * <p>
+ * Amblem <c>useInstitution()</c>'dan geliyor, form yanıtından değil:
+ * SPA marka bilgisini açılışta bir kez yüklüyor ve son yanıtı
+ * <c>localStorage</c>'da tutuyor, yani çevrimdışı açılışta bile
+ * kayboluyor değil. Forma özel bir amblem alanı eklemek, aynı kurumun
+ * her formunda aynı dosyayı yeniden yönetmek demekti.
+ * </p>
+ */
 function Kabuk({
   children, baslik, kurum, aciklama,
 }: {
@@ -385,17 +403,35 @@ function Kabuk({
   kurum?: string | null;
   aciklama?: string | null;
 }) {
+  const marka = useInstitution();
+  const amblem = marka.marka.amblem ?? '/amblem.png';
+
   return (
     <div className={cn(
       'mx-auto flex min-h-dvh max-w-[720px] flex-col gap-4 p-4 pb-10',
     )}>
       {baslik && (
-        <header className="pt-2">
-          {kurum && <p className="text-xs font-semibold text-ink-3">{kurum}</p>}
-          <h1 className="mt-0.5 font-display text-2xl font-bold tracking-[-0.02em]">{baslik}</h1>
-          {aciklama && (
-            <p className="mt-1.5 text-sm leading-[1.6] text-ink-2 metin-guzel">{aciklama}</p>
-          )}
+        <header className="flex items-start gap-3 pt-2">
+          {/*
+            Amblem `shrink-0`: uzun bir form başlığı onu ezmemeli.
+            `object-contain` — kurum amblemleri kare olmak zorunda değil ve
+            kırpmak logoyu bozar.
+          */}
+          <img
+            src={amblem}
+            alt=""
+            className="size-12 shrink-0 rounded-lg object-contain md:size-14"
+          />
+
+          <div className="min-w-0 flex-1">
+            {kurum && <p className="text-xs font-semibold text-ink-3">{kurum}</p>}
+            <h1 className="mt-0.5 font-display text-2xl font-bold tracking-[-0.02em] wrap-anywhere">
+              {baslik}
+            </h1>
+            {aciklama && (
+              <p className="mt-1.5 text-sm leading-[1.6] text-ink-2 metin-guzel">{aciklama}</p>
+            )}
+          </div>
         </header>
       )}
 
