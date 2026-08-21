@@ -1075,6 +1075,35 @@ parmakla kapanmıyordu.
 > yarısını kullanıcı daha bakmadan kapatması kendi başına da yanlış.
 > Masaüstünde ilk alan odaklı kalır.
 
+## STATİK ROTADA `useParams` BOŞ GELİR
+
+Form tasarımcısı "yeni mi düzenleme mi" kararını `id === 'yeni'` diye
+veriyordu. Bu **sessizce yanlıştı**: `formlar/yeni` STATİK bir rota, `:id`
+parametresi taşımıyor. `useParams().id` `undefined` geliyor,
+karşılaştırma `false` çıkıyor ve `Number(undefined)` **`NaN`** oluyordu.
+
+```
+ÖNCE   Kaydet → PUT /api/v2/form/NaN → 404 → ekranda yalnızca "Kaydedilemedi"
+SONRA  Kaydet → POST /api/v2/form → GET /api/v2/form/4 → /formlar/4
+```
+
+Yani **form oluşturmak hiç çalışmıyordu** ve tek iz konsoldaki bir 404'tü:
+istisna yok, uyarı yok, kullanıcıya gerekçe yok.
+
+Karar artık rotadan geliyor (`<FormDesigner yeni />`) ve prop
+**zorunlu — varsayılanı yok**. Varsayılan verilseydi rotalardan birinde
+unutmak yine sessiz bir hataya dönerdi; zorunlu olduğu için derleyici her
+rota bildirimini karar vermeye zorluyor.
+
+> **Ateş ettiği ölçüldü:** prop kaldırıldığında
+> `error TS2741: Property 'yeni' is missing`. Bu bir test değil, **derleme
+> hatası** — bu depoda tercih edilen sıra: hatayı yapı gereği imkânsız
+> kılmak, testle yakalamaktan ucuz.
+
+> Aynı tuzak `/formlar/:id` gibi parametreli rotalarda YOK; yalnızca
+> statik bir segmentin parametre sanıldığı yerde çıkıyor. Yeni bir ekranda
+> "şu yol yeni kayıt demek" kuralı yazarken parametreye değil rotaya bak.
+
 ## BİRİM SEÇİMİ HER EKRANDA AYNI
 
 İki ayrı tutarsızlık vardı, ikisi de "düzensiz duruyor" diye bildirildi.

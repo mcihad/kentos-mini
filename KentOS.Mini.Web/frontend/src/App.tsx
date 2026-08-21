@@ -416,7 +416,7 @@ export default function App() {
         />
         <Route
           path="formlar/yeni"
-          element={<ProtectedRoute permission={PERMISSION.formYonet}><FormDesigner /></ProtectedRoute>}
+          element={<ProtectedRoute permission={PERMISSION.formYonet}><FormDesigner yeni /></ProtectedRoute>}
         />
         <Route
           path="formlar/:id/yanitlar"
@@ -424,7 +424,7 @@ export default function App() {
         />
         <Route
           path="formlar/:id"
-          element={<ProtectedRoute permission={PERMISSION.formGoruntule}><FormDesigner /></ProtectedRoute>}
+          element={<ProtectedRoute permission={PERMISSION.formGoruntule}><FormDesigner yeni={false} /></ProtectedRoute>}
         />
 
         {/* Kimlik sağlayıcı ayrı bir izinle korunuyor (`sistem.openid`):

@@ -45,9 +45,34 @@ type Sekme = 'tasarim' | 'onizleme' | 'ayarlar';
  * yarım kalan değişiklikler vatandaşa gitmiyor.
  * </p>
  */
-export default function FormDesigner() {
+export default function FormDesigner({ yeni }: {
+  /**
+   * Yeni form mu kuruluyor — <b>ZORUNLU prop, varsayılanı yok</b>.
+   *
+   * Varsayılan verilseydi rotalardan birinde unutmak yine sessiz bir hataya
+   * dönerdi; zorunlu olduğu için derleyici her rota bildirimini karar
+   * vermeye zorluyor.
+   */
+  yeni: boolean;
+}) {
   const { id } = useParams<{ id: string }>();
-  const yeniMi = id === 'yeni';
+
+  /*
+    "YENİ Mİ" KARARI ROTADAN GELİR, PARAMETREDEN DEĞİL.
+
+    Önce `id === 'yeni'` diye bakılıyordu ve bu SESSİZCE yanlıştı:
+    `formlar/yeni` STATİK bir rota, `:id` parametresi taşımıyor. Dolayısıyla
+    `useParams().id` `undefined` geliyor, karşılaştırma `false` çıkıyor ve
+    `Number(undefined)` = `NaN` oluyordu.
+
+    Sonuç ölçüldü: yeni form kaydetmek `PUT /api/v2/form/NaN` atıyor, 404
+    alıyor ve ekranda yalnızca "Kaydedilemedi" yazıyordu — yani form
+    oluşturmak HİÇ çalışmıyordu. Hiçbir istisna yok, konsolda tek satır 404.
+
+    Artık rota kendi bildiğini söylüyor (`<FormDesigner yeni />`) ve
+    parametre yokluğu bir varsayıma bırakılmıyor.
+  */
+  const yeniMi = yeni;
   const formId = yeniMi ? undefined : Number(id);
 
   const gezin = useNavigate();
