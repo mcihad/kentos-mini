@@ -49,6 +49,15 @@ public class FormOzetDto
 
     /// <summary>Vatandaşa verilecek tam adres.</summary>
     [JsonPropertyName("paylasimAdresi")] public string? PaylasimAdresi { get; set; }
+
+    /// <summary>
+    /// Kurum genelindeki form portalı açık mı.
+    /// </summary>
+    /// <remarks>
+    /// Kapalıyken HİÇBİR form yanıt almıyor; ekranın bunu tek seferde
+    /// söyleyebilmesi için form başına değil ama her yanıtta taşınıyor.
+    /// </remarks>
+    [JsonPropertyName("portalAcik")] public bool PortalAcik { get; set; }
 }
 
 /// <summary>Form detayı — tanımıyla birlikte.</summary>

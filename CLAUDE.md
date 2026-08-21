@@ -1423,6 +1423,30 @@ gövdenin doğrulamada düşmesi hâlinde her şeyi yeniden yükletirdi.
 > jetonlu **200 image/png**, jetonsuz **401** · statik yol
 > `/uploads/gonderim/form/2/….png` → **404**.
 
+### Portal kapalıyken SEBEBİ YAZILI
+
+Bayrak kapalıyken vatandaş ucu 404 dönüyor. Yönetim ekranı bunu
+bilmiyordu: yayınlanmış bir formun paylaşım adresi veriliyor,
+kopyalanıyor, açılıyor ve *"Form bulunamadı"* çıkıyordu — sebebi hiçbir
+yerde yazmıyordu.
+
+```
+ÖNCE   yayında form · adres verildi · açınca 404 · ekranda hiçbir açıklama
+SONRA  liste üstünde uyarı + Kurum Bilgileri bağlantısı,
+       satırda "Form portalı kapalı. Kurum Bilgileri ekranından açın."
+```
+
+`YanitDurumu` artık portal bayrağını da tartıyor, yani sebep tek yerden
+üretilip listeye, detaya ve vatandaş sayfasına birden gidiyor. Bayrak
+istek başına **bir kez** okunuyor: 25 satırlık liste satır başına
+sorsaydı 25 sorgu olurdu.
+
+**Adres kapalıyken de veriliyor** — gizlemek "adres yok" gibi okunurdu;
+`kapaliSebebi` neden çalışmadığını zaten söylüyor.
+
+> Vatandaş ucunda bayrak İKİNCİ KEZ sorulmuyor: isteğin oraya gelebilmiş
+> olması `FormPortaliFiltresi`den geçtiği anlamına geliyor.
+
 ### Bekçiler
 
 | Test | Neyi kilitler |

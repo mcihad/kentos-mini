@@ -93,7 +93,10 @@ public sealed class FormYanitServisi(
             .FirstOrDefaultAsync(s => s.Id == form.YayinSurumId, iptal)
             ?? throw new EntityNotFoundException("Form bulunamadı.");
 
-        var (aliyor, sebep) = FormServisi.YanitDurumu(form);
+        // Portal bayrağı BURADA sorulmuyor: isteğin buraya gelebilmiş olması
+        // `FormPortaliFiltresi`den geçtiği anlamına geliyor. İkinci kez
+        // sormak her vatandaş isteğine bir kurum okuması eklerdi.
+        var (aliyor, sebep) = FormServisi.YanitDurumu(form, portalAcik: true);
         var tanim = FormServisi.TanimiCoz(surum.Tanim);
         var kurum = await _kurum.GetAsync(iptal);
 
@@ -133,7 +136,10 @@ public sealed class FormYanitServisi(
             };
         }
 
-        var (aliyor, sebep) = FormServisi.YanitDurumu(form);
+        // Portal bayrağı BURADA sorulmuyor: isteğin buraya gelebilmiş olması
+        // `FormPortaliFiltresi`den geçtiği anlamına geliyor. İkinci kez
+        // sormak her vatandaş isteğine bir kurum okuması eklerdi.
+        var (aliyor, sebep) = FormServisi.YanitDurumu(form, portalAcik: true);
         if (!aliyor) throw new BusinessRuleException(sebep ?? "Bu form yanıt kabul etmiyor.");
 
         var surum = await _context.FormSurumleri.AsNoTracking()
@@ -239,7 +245,10 @@ public sealed class FormYanitServisi(
     {
         var form = await FormuBulAsync(guid, iptal);
 
-        var (aliyor, sebep) = FormServisi.YanitDurumu(form);
+        // Portal bayrağı BURADA sorulmuyor: isteğin buraya gelebilmiş olması
+        // `FormPortaliFiltresi`den geçtiği anlamına geliyor. İkinci kez
+        // sormak her vatandaş isteğine bir kurum okuması eklerdi.
+        var (aliyor, sebep) = FormServisi.YanitDurumu(form, portalAcik: true);
         if (!aliyor) throw new BusinessRuleException(sebep ?? "Bu form yanıt kabul etmiyor.");
 
         var surum = await _context.FormSurumleri.AsNoTracking()
@@ -323,7 +332,10 @@ public sealed class FormYanitServisi(
     {
         var form = await FormuBulAsync(guid, iptal);
 
-        var (aliyor, sebep) = FormServisi.YanitDurumu(form);
+        // Portal bayrağı BURADA sorulmuyor: isteğin buraya gelebilmiş olması
+        // `FormPortaliFiltresi`den geçtiği anlamına geliyor. İkinci kez
+        // sormak her vatandaş isteğine bir kurum okuması eklerdi.
+        var (aliyor, sebep) = FormServisi.YanitDurumu(form, portalAcik: true);
         if (!aliyor) throw new BusinessRuleException(sebep ?? "Bu form yanıt kabul etmiyor.");
 
         var surum = await _context.FormSurumleri.AsNoTracking()

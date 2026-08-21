@@ -1,5 +1,5 @@
 import {
-  BarChart3, Copy, ExternalLink, FileText, Link2, Plus, Trash2,
+  AlertTriangle, BarChart3, Copy, ExternalLink, FileText, Link2, Plus, Trash2,
 } from 'lucide-react';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
@@ -69,6 +69,32 @@ export default function Forms() {
           </Link>
         )}
       </div>
+
+      {/*
+        PORTAL KAPALIYSA EN ÜSTTE SÖYLENİR.
+
+        Bayrak kapalıyken vatandaş ucu 404 dönüyor ama ekran bunu
+        bilmiyordu: yayınlanmış bir formun bağlantısı kopyalanıyor,
+        açılıyor ve "Form bulunamadı" çıkıyordu — sebebi hiçbir yerde
+        yazmıyordu. Uyarı listenin ÜSTÜNDE, çünkü tek bir formun sorunu
+        değil, hepsinin.
+      */}
+      {liste.data?.veriler.some((f) => f.portalAcik === false) && (
+        <div
+          role="alert"
+          className="flex items-start gap-2.5 rounded-md bg-(--st-wait-bg) px-3.5 py-3 text-sm text-(--st-wait)"
+        >
+          <AlertTriangle size={17} className="mt-0.5 shrink-0" />
+          <span className="min-w-0 flex-1">
+            <b>Form portalı kapalı.</b> Yayınladığınız formlar vatandaş
+            adresinden açılmıyor.{' '}
+            <Link to="/kurum" className="underline underline-offset-2">
+              Kurum Bilgileri
+            </Link>{' '}
+            ekranından açabilirsiniz.
+          </span>
+        </div>
+      )}
 
       <Tabs<string>
         deger={sekme}

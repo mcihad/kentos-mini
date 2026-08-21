@@ -4535,6 +4535,58 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v2/form/{id}/yanit/{yanitId}/dosya/{dosyaId}": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /**
+         * Yanıta eklenen dosyayı indirir — KİMLİK DENETİMLİ.
+         * @description Dosyalar gizli alanda; statik bir yol yok. Vatandaşın yüklediği belge
+         *     kimlik fotokopisi olabiliyor ve `wwwroot/uploads` kimlik
+         *     doğrulanmadan servis ediliyor.
+         */
+        get: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    id: number;
+                    yanitId: number;
+                    dosyaId: number;
+                };
+                cookie?: never;
+            };
+            requestBody?: never;
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content?: never;
+                };
+                /** @description Not Found */
+                404: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
     "/api/v2/form/{id}/ozet": {
         parameters: {
             query?: never;
@@ -4797,6 +4849,68 @@ export interface paths {
         };
         put?: never;
         post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v2/form-portal/{anahtar}/dosya": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /**
+         * Form alanına dosya yükler.
+         * @description <b>Ayrı uç, gönderimle birlikte değil:</b> zorunlu bir dosya alanı
+         *                 doğrulamaya giriyor ve 12 MB'lık gövde doğrulamada düşerse her şey
+         *                 yeniden yüklenirdi. Dönen `surdurmeAnahtari` gönderimde geri
+         *                 gelmeli — gelmezse dosya sahipsiz kalır.
+         */
+        post: {
+            parameters: {
+                query?: never;
+                header?: never;
+                path: {
+                    anahtar: string;
+                };
+                cookie?: never;
+            };
+            requestBody?: {
+                content: {
+                    "multipart/form-data": {
+                        alanKimligi?: string;
+                        surdurmeAnahtari?: string;
+                        /** Format: binary */
+                        dosya?: string;
+                    };
+                };
+            };
+            responses: {
+                /** @description OK */
+                200: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["FormDosyaSonucuDto"];
+                    };
+                };
+                /** @description Bad Request */
+                400: {
+                    headers: {
+                        [name: string]: unknown;
+                    };
+                    content: {
+                        "application/json": components["schemas"]["ProblemDetails"];
+                    };
+                };
+            };
+        };
         delete?: never;
         options?: never;
         head?: never;
@@ -13788,6 +13902,7 @@ export interface components {
             /** Format: date-time */
             yayinTarihi?: string | null;
             paylasimAdresi?: string | null;
+            portalAcik?: boolean;
             tanim?: components["schemas"]["FormTanimiDto"];
             yayinlanmamisDegisiklik?: boolean;
             tesekkurMetni?: string | null;
@@ -13820,6 +13935,14 @@ export interface components {
             enCokDosyaMb?: number | null;
             /** Format: int32 */
             enCokDosyaSayisi?: number | null;
+        };
+        FormDosyaSonucuDto: {
+            /** Format: int64 */
+            dosyaId?: number;
+            ad?: string | null;
+            /** Format: int64 */
+            boyut?: number;
+            surdurmeAnahtari?: string | null;
         };
         /**
          * Format: int32
@@ -13906,6 +14029,7 @@ export interface components {
             /** Format: date-time */
             yayinTarihi?: string | null;
             paylasimAdresi?: string | null;
+            portalAcik?: boolean;
         };
         FormOzetDtoSayfaliSonuc: {
             veriler?: components["schemas"]["FormOzetDto"][] | null;
@@ -15247,6 +15371,8 @@ export interface components {
             bildirim?: components["schemas"]["BildirimYapilandirmasiDto"];
             /** @description Vatandaş şikayet portalı açık mı. */
             vatandasBildirimi?: boolean;
+            /** @description Dinamik form portalı açık mı. */
+            formPortali?: boolean;
         };
         /** @description Kurum bilgisi düzenleme isteği. */
         KurumGuncellemeIstegi: {
@@ -15272,6 +15398,8 @@ export interface components {
             ciktiAmblemi?: string | null;
             /** @description Vatandaş şikayet portalını aç/kapat. */
             vatandasBildirimi?: boolean;
+            /** @description Dinamik form portalı açık mı. */
+            formPortali?: boolean;
         };
         MahalleDto: {
             /** Format: int64 */

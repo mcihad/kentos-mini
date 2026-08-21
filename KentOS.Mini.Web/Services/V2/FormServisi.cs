@@ -37,8 +37,22 @@ public sealed class FormServisi(
     AppDbContext _context,
     ICurrentUserService _kullanici,
     IEtkinBirim _etkinBirim,
-    IAdresCozucu _adresCozucu) : IFormServisi
+    IAdresCozucu _adresCozucu,
+    IInstitutionService _kurum) : IFormServisi
 {
+    /// <summary>
+    /// Portal bayrağı — istek başına BİR KEZ okunur.
+    /// </summary>
+    /// <remarks>
+    /// Liste 25 satır dönüyor ve her satırın "yanıt alıyor mu" kararı bu
+    /// bayrağa bakıyor; satır başına sormak 25 sorgu demekti. Kurum kaydı
+    /// zaten önbellekli ama alan yine de tek yerde tutuluyor.
+    /// </remarks>
+    private bool? _portalAcik;
+
+    private async Task<bool> PortalAcikAsync(CancellationToken iptal)
+        => _portalAcik ??= (await _kurum.GetAsync(iptal)).FormPortalEnabled;
+
     /// <summary>
     /// Tanımın JSON serileştirme ayarı — TEK YERDE.
     /// </summary>
@@ -88,7 +102,8 @@ public sealed class FormServisi(
             .Select(f => new { Form = f, SurumNo = (int?)f.YayinSurumu!.SurumNo })
             .ToListAsync(iptal);
 
-        var veriler = kayitlar.Select(x => Ozet(x.Form, x.SurumNo)).ToList();
+        var portalAcik = await PortalAcikAsync(iptal);
+        var veriler = kayitlar.Select(x => Ozet(x.Form, x.SurumNo, portalAcik)).ToList();
         return SayfaliSonuc<FormOzetDto>.Olustur(veriler, toplam, suzgec);
     }
 
@@ -119,7 +134,7 @@ public sealed class FormServisi(
             TekYanit = form.TekYanit,
         };
 
-        Doldur(detay, form, yayin?.SurumNo);
+        Doldur(detay, form, yayin?.SurumNo, await PortalAcikAsync(iptal));
         return detay;
     }
 
@@ -506,16 +521,16 @@ public sealed class FormServisi(
 
     // ── eşleme ─────────────────────────────────────────────────────────
 
-    private FormOzetDto Ozet(Form f, int? surumNo)
+    private FormOzetDto Ozet(Form f, int? surumNo, bool portalAcik)
     {
         var d = new FormOzetDto();
-        Doldur(d, f, surumNo);
+        Doldur(d, f, surumNo, portalAcik);
         return d;
     }
 
-    private void Doldur(FormOzetDto d, Form f, int? surumNo)
+    private void Doldur(FormOzetDto d, Form f, int? surumNo, bool portalAcik)
     {
-        var (aliyor, sebep) = YanitDurumu(f);
+        var (aliyor, sebep) = YanitDurumu(f, portalAcik);
 
         d.Id = f.Id;
         d.ErisimAnahtari = f.ErisimAnahtari;
@@ -538,9 +553,14 @@ public sealed class FormServisi(
 
         // Adres İSTEKTEN türetiliyor: uygulama birden çok alan adından
         // yayınlanabiliyor ve sabit bir taban yanlış bağlantı üretirdi.
+        //
+        // Portal kapalıyken de veriliyor — gizlemek "adres yok" gibi
+        // okunurdu; `kapaliSebebi` neden çalışmadığını zaten söylüyor.
         d.PaylasimAdresi = f.Durum == FormDurumu.Taslak
             ? null
             : _adresCozucu.Mutlak($"/form/{f.ErisimAnahtari}");
+
+        d.PortalAcik = portalAcik;
     }
 
     /// <summary>
@@ -551,8 +571,21 @@ public sealed class FormServisi(
     /// ayrı ayrı yazar, biri unutulduğunda ekran "açık" derken sunucu
     /// reddederdi.
     /// </remarks>
-    internal static (bool Aliyor, string? Sebep) YanitDurumu(Form f)
+    internal static (bool Aliyor, string? Sebep) YanitDurumu(Form f, bool portalAcik = true)
     {
+        /*
+          PORTAL KAPALIYSA HİÇBİR FORM YANIT ALMAZ.
+
+          Bayrak kapalıyken vatandaş ucu 404 dönüyor ama yönetim ekranı
+          bunu bilmiyordu: yayınlanmış bir formun paylaşım adresi
+          veriliyor, kopyalanıyor, açılıyor ve "Form bulunamadı" çıkıyordu.
+          Sebebi hiçbir yerde yazmıyordu — ölçülmüş bir çıkmaz.
+        */
+        if (!portalAcik)
+        {
+            return (false, "Form portalı kapalı. Kurum Bilgileri ekranından açın.");
+        }
+
         if (f.Durum == FormDurumu.Taslak) return (false, "Form henüz yayınlanmadı.");
         if (f.Durum == FormDurumu.Kapali) return (false, "Bu form yanıt kabul etmiyor.");
         if (f.Durum == FormDurumu.Arsiv) return (false, "Bu form arşivlendi.");
