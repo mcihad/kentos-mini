@@ -203,6 +203,16 @@ public sealed class FormAlanOzetiDto
 /// <summary>Tek bir seçeneğin payı.</summary>
 public sealed class FormDagilimDto
 {
+    /// <summary>
+    /// MATRİSTE satır etiketi; diğer tiplerde <c>null</c>.
+    /// </summary>
+    /// <remarks>
+    /// Matrisin dağılımı satır satır üretiliyor ve hepsi tek listede
+    /// dönüyor. Satır adı etikete gömülseydi ("Temizlik → İyi") istemci
+    /// gruplayamaz, uzun satır adları da her çubukta tekrarlanırdı.
+    /// </remarks>
+    [JsonPropertyName("satir")] public string? Satir { get; set; }
+
     [JsonPropertyName("etiket")] public string Etiket { get; set; } = string.Empty;
     [JsonPropertyName("adet")] public int Adet { get; set; }
     [JsonPropertyName("yuzde")] public double Yuzde { get; set; }
@@ -266,8 +276,24 @@ public sealed class FormYanitIstegiDto
     [JsonPropertyName("telefon")] public string? Telefon { get; set; }
     [JsonPropertyName("eposta")] public string? Eposta { get; set; }
 
-    /// <summary>Yarım kalan yanıtı sürdürmek için.</summary>
+    /// <summary>Yarım kalan yanıtı sürdürmek için; aynı zamanda idempotans anahtarı.</summary>
     [JsonPropertyName("surdurmeAnahtari")] public string? SurdurmeAnahtari { get; set; }
+
+    /// <summary>
+    /// TEK YANIT için tarayıcı kimliği — telefon sorulmayan formlarda.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Anonim bir formda "aynı kişi mi" sorusunun başka cevabı yok. Yumuşak
+    /// bir kapı: tarayıcı verisi temizlenince ya da başka bir cihazdan
+    /// girilince aşılır — ama vatandaşın gönderip sayfayı yenileyerek
+    /// yeniden doldurmasını engelliyor, ki şikâyet edilen davranış buydu.
+    /// </para>
+    /// <para>
+    /// Sunucuda ham saklanmaz; <c>HMAC(form tuzu, …)</c> özeti yazılır.
+    /// </para>
+    /// </remarks>
+    [JsonPropertyName("cihazAnahtari")] public string? CihazAnahtari { get; set; }
 
     /// <summary>
     /// BOT TUZAĞI — insan bunu doldurmaz.

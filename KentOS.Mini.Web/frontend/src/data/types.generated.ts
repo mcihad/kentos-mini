@@ -13866,6 +13866,7 @@ export interface components {
             deger?: string | null;
         };
         FormDagilimDto: {
+            satir?: string | null;
             etiket?: string | null;
             /** Format: int32 */
             adet?: number;
@@ -14123,6 +14124,7 @@ export interface components {
             telefon?: string | null;
             eposta?: string | null;
             surdurmeAnahtari?: string | null;
+            cihazAnahtari?: string | null;
             website?: string | null;
         };
         FormYanitOzetDto: {

@@ -1463,6 +1463,89 @@ sorsaydı 25 sorgu olurdu.
 > Vatandaş ucunda bayrak İKİNCİ KEZ sorulmuyor: isteğin oraya gelebilmiş
 > olması `FormPortaliFiltresi`den geçtiği anlamına geliyor.
 
+### CEVAP EKRANDA ETİKETLE OKUNUR
+
+JSONB'de seçenek **kimliği** duruyor (`o_afis`, `r_temiz`). Çeviri üç ayrı
+yerde kopyalanmıştı ve üçü ayrışmıştı:
+
+| Nerede | Ne yazıyordu |
+|---|---|
+| Vatandaşın sonuç sayfası, Excel | doğru — etiket |
+| **Özet raporu** | `satir_1: sutun_2` — kopyası etiketlere hiç bakmıyordu |
+| **Yanıt detayı (ön yüz)** | `o_afis`, `r_temiz: c_iyi` — çeviri hiç yoktu |
+
+Tek yer artık `Services/V2/FormDegerMetni.cs`; ön yüzdeki karşılığı
+`formEngine.etiketliDeger`. İkisi aynı kuralı uygular — ayrışırlarsa aynı
+cevap ekranda ve Excel'de farklı görünür.
+
+- **Matris özeti SATIR SATIR dağılım.** Eskiden "örnek cevap" bölümüne
+  düşüyordu: hem anahtar hem sayılmayacak bir şey. Merak edilen "kim ne
+  yazdı" değil, "Temizlik'e kaç kişi İyi dedi". Yüzde **satırın kendi
+  toplamına** göre — o satırı boş bırakanlar diğer satırların yüzdesini
+  bozmamalı. `FormDagilimDto.Satir` bunun için eklendi; satır adı etikete
+  gömülseydi ("Temizlik → İyi") istemci gruplayamazdı.
+- **Kimlik → etiket çözümü `GroupBy`, `ToDictionary` DEĞİL.** Tasarımcıda
+  alan tipi seçimden matrise çevrildiğinde eski `Secenekler` listesi
+  tanımda kalıyor ve kimlikleri `Sutunlar` ile çakışabiliyor;
+  `ToDictionary` orada `ArgumentException` atıp yanıt ekranını düşürürdü.
+- **Çözülemeyen kimlik ham hâliyle kalır.** Seçenek sonradan silinmişse
+  boş göstermek "bu soruya cevap verilmemiş" demek olurdu.
+
+> Ölçüm: `Diğer (Belediye afişi)` · `Spor, Kültür` · `Evet` ·
+> `Temizlik: İyi · Ulaşım: Orta`; Excel'de 23 hücrenin hiçbirinde ham
+> anahtar yok. Bekçi `FormEtiketTests` (7) + `forms.test.ts` (7); çevirici
+> devre dışı bırakılınca 5 ve 4 test düştü, geri alınınca yeşile döndü.
+
+### AYNI KİŞİ FORMU İKİ KEZ GÖNDEREMEZ
+
+İki **ayrı** kapı; karıştırılırsa biri ötekinin işini yapıyor sanılıyor:
+
+| Kapı | Neyi karşılar | Anahtar |
+|---|---|---|
+| **İdempotans** | Aynı gönderimin iki kez ulaşması — ağ yeniden denemesi, "geri" tuşu, sekme geri yüklemesi | `surdurmeAnahtari` |
+| **Tek yanıt** | Kişinin bilerek ikinci kez doldurması | `kimlik_karmasi` |
+
+**Tek yanıt ayarı yayında hiç çalışmıyordu.** Kapı
+`form.TekYanit && telefonSade is not null` diyordu: telefon sormayan bir
+formda ayar açık görünüyor ama **hiçbir şey yapmıyordu**. Vatandaş
+gönderiyor, sayfayı yeniliyor, yeniden dolduruyordu.
+
+`kimlik_karmasi` kolonu ve kısmi benzersiz indeksi **baştan beri vardı ama
+hiçbir yer yazmıyordu** — belgelenmiş TOCTOU koruması ölü koddu.
+
+- Kimlik sırası **telefon > cihaz anahtarı**. Telefon gerçek bir kimlik
+  (`Telefon.Duzelt` sayesinde `0541 298 34 50` ile `+90 541 298 34 50` aynı
+  kişi). Cihaz anahtarı **yumuşak** bir kapı: tarayıcı verisi temizlenince
+  ya da başka cihazdan girilince aşılır — anonim bir formda bundan fazlası
+  mümkün değil, kimliği olmayan birini "aynı kişi" diye tanımanın yolu yok.
+  Telefon önce geliyor, yoksa aynı kişi numarasını yazıp bir de tarayıcı
+  temizleyerek iki kez gönderebilirdi.
+- Ham telefon/cihaz anahtarı **saklanmaz**: `HMAC(form.AnonimTuzu, kimlik)`.
+  Tuz **form başına**, yani iki ayrı anketi dolduran aynı kişi
+  eşleştirilemiyor.
+- `AnyAsync` bir TOCTOU; asıl kapı benzersiz indeks. `AnyAsync` yalnızca
+  anlaşılır mesaj için duruyor, ihlal `DbUpdateException` → aynı cümle.
+
+> **KAPI SIRASI ÖLÇÜLDÜ.** İdempotans denetimi "tek yanıt"tan ÖNCE olmak
+> zorunda. Ters sırada, kaydedilmiş bir gönderimin ağ yeniden denemesi
+> *"Bu forma zaten yanıt verdiniz."* alıyordu — vatandaş cevabı gitmiş
+> olmasına rağmen gitmemiş sanardı. İlk ölçümde tam bu çıktı (2. istek
+> 400); sıra düzeltilince aynı takip numarası döndü.
+
+> `surdurmeAnahtari` gönderimde `null`'a çekiliyordu; artık saklanıyor.
+> Sayaç da bir kez artıyor — iki kez artsaydı yanıt sınırı olan bir form
+> ağ yeniden denemeleriyle vaktinden önce kapanırdı.
+
+```
+ölçüm (uçtan uca, jetonsuz)
+  1. gönderim                      200 · takip no
+  aynı cihaz, ikinci gönderim      400 "Bu forma zaten yanıt verdiniz."
+  başka cihaz                      200
+  aynı anahtar iki kez             200 · AYNI takip no · sayaç 1
+  aynı numara başka yazım+cihaz    400
+tarayıcı (375px)  gönder → sonuç sayfası · yenile → doldur → hata görünür
+```
+
 ### Bekçiler
 
 | Test | Neyi kilitler |
@@ -1470,6 +1553,8 @@ sorsaydı 25 sorgu olurdu.
 | `FormDogrulamaTests` | Bilinmeyen alan, geçersiz seçim, matris bütünlüğü, koşullu zorunluluk, T.C. algoritması, desen zaman aşımı, `JsonElement` çözümü |
 | `FormSemaTests` | **Alan tipi sayıları** (29 üye tek tek) — bir üyeyi taşımak canlıdaki bütün soruları başka tiplere çevirirdi; ayrıca veri taşıyan her tipin doğrulayıcısı var mı |
 | `AnonimUcTests` | Dört yeni anonim uç ad ad kilitli |
+| `FormEtiketTests` | Seçenek/matris kimliğinin etikete çevrilmesi; yinelenen kimlikte 500 vermemesi |
+| `FormTekYanitTests` | Telefonsuz formda ikinci gönderimin reddi, telefonun cihazı ezmesi, idempotans, sayacın bir kez artması |
 | `frontend/test/forms.test.ts` | Kimlik benzersizliği, silinen alanın koşullarının temizlenmesi, kopyada kimliklerin yenilenmesi, koşul adaylarının yalnızca geriye bakması, taşımada ileri koşulun düşürülmesi |
 
 > **`FormSemaTests` yayına çıkmadan GERÇEK bir açık yakaladı:** matris

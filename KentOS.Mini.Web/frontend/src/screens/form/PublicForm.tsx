@@ -30,6 +30,29 @@ import { adimHatalari, gonderilecek, tumHatalar, type Answers } from '../../form
  * başkasının yarım formunu görmek en hafifinden şaşırtıcı.
  * </p>
  */
+/**
+ * Kalıcı rastgele anahtar — yoksa üretir, varsa aynısını döner.
+ *
+ * <p>
+ * Gizli bir değer değil, bir ayırt edici: sunucu bunu ham saklamıyor,
+ * form başına tuzlanmış özetini yazıyor.
+ * </p>
+ */
+function kalici(depoAnahtari: string): string {
+  try {
+    const varOlan = localStorage.getItem(depoAnahtari);
+    if (varOlan) return varOlan;
+
+    const yeni = crypto.randomUUID();
+    localStorage.setItem(depoAnahtari, yeni);
+    return yeni;
+  } catch {
+    // Gizli sekmede depo kapalı olabilir; anahtar yalnızca o sekme boyunca
+    // yaşar. Tekrar gönderimi engellemez ama formu da kırmaz.
+    return crypto.randomUUID();
+  }
+}
+
 export default function PublicForm() {
   const { anahtar } = useParams<{ anahtar: string }>();
   const form = usePublicForm(anahtar);
@@ -43,14 +66,32 @@ export default function PublicForm() {
   const [taslakSoruldu, setTaslakSoruldu] = useState(false);
 
   /*
-    SÜRDÜRME ANAHTARI dosya yüklemesinden geliyor.
+    SÜRDÜRME ANAHTARI — hem dosya bağı hem İDEMPOTANS anahtarı.
 
     Sunucu ilk dosyada bir TASLAK yanıt açıyor ve anahtarını dönüyor;
     gönderimde bu anahtar geri gitmezse yeni bir yanıt açılır ve yüklenen
     dosya sahipsiz kalır — kullanıcının gördüğü "dosyayı ekledim ama
     kayıtta yok".
+
+    Artık dosya beklenmeden ÜRETİLİYOR ve saklanıyor: aynı gövde ikinci kez
+    ulaşırsa (ağ koptuğunda tarayıcının yeniden denemesi, "geri" tuşu,
+    mobilde sekme geri yüklemesi) sunucu ikinci bir yanıt açmak yerine
+    ilkinin sonucunu döndürüyor. Başarıdan sonra silinir — yeni bir doldurma
+    yeni bir anahtar alır.
   */
-  const [surdurmeAnahtari, setSurdurmeAnahtari] = useState<string | null>(null);
+  const [surdurmeAnahtari, setSurdurmeAnahtari] = useState<string | null>(
+    () => kalici(`sv-form-gonderim-${anahtar}`),
+  );
+
+  /*
+    CİHAZ ANAHTARI — "tek yanıt" ayarının telefonsuz formlardaki karşılığı.
+
+    Başarıdan sonra SİLİNMEZ; silinseydi vatandaş sayfayı yenileyip formu
+    yeniden doldurabilirdi — şikâyet edilen davranış tam olarak buydu.
+    Yumuşak bir kapı (tarayıcı verisi temizlenirse aşılır) ama anonim bir
+    formda kimliğin başka kaynağı yok.
+  */
+  const cihazAnahtari = useState(() => kalici(`sv-form-cihaz-${anahtar}`))[0];
 
   const tanim = form.data?.tanim;
   const adimlar = tanim?.adimlar ?? [];
@@ -237,6 +278,7 @@ export default function PublicForm() {
     try {
       const s = await gonder.mutateAsync({
         surdurmeAnahtari: surdurmeAnahtari ?? undefined,
+        cihazAnahtari,
         cevaplar: gonderilecek(f.tanim!, cevaplar) as Record<string, unknown>,
         adSoyad: kimlik.adSoyad || undefined,
         telefon: kimlik.telefon || undefined,
@@ -244,6 +286,9 @@ export default function PublicForm() {
       });
 
       localStorage.removeItem(depoAnahtari);
+      // Gönderim anahtarı düşer, CİHAZ anahtarı kalır: biri "bu doldurmayı
+      // bir kez kaydet", öteki "bu kişi bu formu yanıtladı" demek.
+      localStorage.removeItem(`sv-form-gonderim-${anahtar}`);
       setSonuc(s);
       window.scrollTo({ top: 0 });
     } catch {

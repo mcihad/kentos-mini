@@ -4,10 +4,11 @@ import {
   kosulAdaylari, tumAlanlarSirali, yeniAlan, yeniKimlik,
 } from '../src/forms/definitionOps';
 import { FIELD_TYPE } from '../src/forms/fieldTypes';
+import { etiketliDeger } from '../src/forms/formEngine';
 import {
   adimHatalari, alaniDogrula, gonderilecek, kosulSaglandi, tcGecerli, type Answers,
 } from '../src/forms/formEngine';
-import type { FormDefinition } from '../src/data/types';
+import type { FormDefinition, FormField } from '../src/data/types';
 
 /**
  * FORM TASARIMCISI VE MOTORU.
@@ -164,5 +165,75 @@ describe('form motoru', () => {
     expect(alaniDogrula(alan, { deger: ['a'] })).toBeTruthy();
     expect(alaniDogrula(alan, { deger: ['a', 'b'] })).toBeNull();
     expect(alaniDogrula(alan, { deger: ['a', 'b', 'c'] })).toBeTruthy();
+  });
+});
+
+/**
+ * CEVAP → OKUNUR METİN (ekran tarafı).
+ *
+ * <p>
+ * Sunucudaki karşılığı `FormDegerMetni`; ikisi aynı kuralı uygular.
+ * Ayrışırlarsa aynı cevap yanıt ekranında ve Excel'de farklı görünür ve
+ * hangisinin doğru olduğu anlaşılmaz.
+ * </p>
+ */
+describe('etiketli değer', () => {
+  const secimli: FormField = {
+    kimlik: 'a_kanal',
+    tip: FIELD_TYPE.tekSecim,
+    etiket: 'Nereden duydunuz?',
+    secenekler: [
+      { kimlik: 'o_afis', etiket: 'Afiş' },
+      { kimlik: 'o_diger', etiket: 'Diğer', digerMi: true },
+    ],
+  } as FormField;
+
+  const matris: FormField = {
+    kimlik: 'a_mat',
+    tip: FIELD_TYPE.matrisTekSecim,
+    etiket: 'Puanlayın',
+    satirlar: [
+      { kimlik: 'r_temiz', etiket: 'Temizlik' },
+      { kimlik: 'r_ulasim', etiket: 'Ulaşım' },
+    ],
+    sutunlar: [
+      { kimlik: 'c_iyi', etiket: 'İyi' },
+      { kimlik: 'c_orta', etiket: 'Orta' },
+    ],
+  } as FormField;
+
+  it('seçenek kimliğini değil etiketini yazar', () => {
+    expect(etiketliDeger(secimli, { deger: 'o_afis' })).toBe('Afiş');
+  });
+
+  it('çoklu seçimde her kimliği ayrı çevirir', () => {
+    const alan = { ...secimli, tip: FIELD_TYPE.cokSecim } as FormField;
+    expect(etiketliDeger(alan, { deger: ['o_afis', 'o_diger'] })).toBe('Afiş, Diğer');
+  });
+
+  it('matriste satır ve sütunu birlikte çevirir', () => {
+    expect(etiketliDeger(matris, { deger: { r_temiz: 'c_iyi', r_ulasim: 'c_orta' } }))
+      .toBe('Temizlik: İyi · Ulaşım: Orta');
+  });
+
+  it('"Diğer" serbest metnini parantez içinde gösterir', () => {
+    expect(etiketliDeger(secimli, { deger: 'o_diger', metin: 'Belediye afişi' }))
+      .toBe('Diğer (Belediye afişi)');
+  });
+
+  it('evet/hayır Türkçe yazılır', () => {
+    const alan = { kimlik: 'a', tip: FIELD_TYPE.evetHayir } as FormField;
+    expect(etiketliDeger(alan, { deger: true })).toBe('Evet');
+    expect(etiketliDeger(alan, { deger: false })).toBe('Hayır');
+  });
+
+  // Silinen seçeneğin kimliği kalır: boş göstermek "cevap verilmemiş"
+  // demek olurdu, ham kimlik en azından bir iz.
+  it('çözülemeyen kimliği olduğu gibi bırakır', () => {
+    expect(etiketliDeger(secimli, { deger: 'o_kayip' })).toBe('o_kayip');
+  });
+
+  it('cevapsız alanı tire ile gösterir', () => {
+    expect(etiketliDeger(secimli, undefined)).toBe('—');
   });
 });

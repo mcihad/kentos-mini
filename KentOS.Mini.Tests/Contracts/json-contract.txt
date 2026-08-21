@@ -611,6 +611,7 @@ DTO KentOS.Mini.Application.Dto.V2.Form.FormCevapOzetiDto
 DTO KentOS.Mini.Application.Dto.V2.Form.FormDagilimDto
   adet
   etiket
+  satir
   yuzde
 DTO KentOS.Mini.Application.Dto.V2.Form.FormDetayDto
   aciklama
@@ -767,6 +768,7 @@ DTO KentOS.Mini.Application.Dto.V2.Form.FormYanitDosyasiDto
 DTO KentOS.Mini.Application.Dto.V2.Form.FormYanitIstegiDto
   adSoyad
   cevaplar
+  cihazAnahtari
   eposta
   surdurmeAnahtari
   telefon

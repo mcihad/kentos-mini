@@ -20,7 +20,7 @@ import {
 import { dateTime } from '../../data/format';
 import { tokenStore } from '../../data/client';
 import { isBlock } from '../../forms/fieldTypes';
-import { deger, type Answers } from '../../forms/formEngine';
+import { etiketliDeger, type Answers } from '../../forms/formEngine';
 
 type Sekme = 'liste' | 'ozet';
 
@@ -181,6 +181,15 @@ export default function FormResponses() {
                   <ul className="space-y-1.5">
                     {a.dagilim.map((d, i) => (
                       <li key={i}>
+                        {/* MATRİS: satır adı yalnızca değiştiğinde yazılır.
+                            Her çubuğa tekrarlansaydı "Temizlik → İyi",
+                            "Temizlik → Orta" diye okunur ve asıl sayı
+                            satır adının arkasında kaybolurdu. */}
+                        {d.satir && d.satir !== a.dagilim![i - 1]?.satir && (
+                          <p className={`text-xs font-semibold text-ink-2 ${i > 0 ? 'mt-3' : ''}`}>
+                            {d.satir}
+                          </p>
+                        )}
                         <div className="flex items-baseline justify-between gap-2 text-sm">
                           <span className="min-w-0 truncate">{d.etiket}</span>
                           <span className="shrink-0 tabular-nums text-ink-3">
@@ -242,13 +251,12 @@ export default function FormResponses() {
                 .filter((alan) => !isBlock(alan.tip))
                 .map((alan) => {
                   const c = (detay.data!.cevaplar as Answers)[alan.kimlik ?? ''];
-                  const d = deger(c);
 
                   return (
                     <div key={alan.kimlik} className="py-2.5">
                       <dt className="text-xs text-ink-3">{alan.etiket}</dt>
                       <dd className="mt-0.5 text-sm wrap-anywhere">
-                        {bicimlendir(d, c?.metin)}
+                        {etiketliDeger(alan, c)}
                       </dd>
                     </div>
                   );
@@ -276,21 +284,4 @@ export default function FormResponses() {
       />
     </div>
   );
-}
-
-/** Ham cevabı okunur metne çevirir. */
-function bicimlendir(d: unknown, serbest?: string): string {
-  const temel = (() => {
-    if (d === null || d === undefined) return '—';
-    if (typeof d === 'boolean') return d ? 'Evet' : 'Hayır';
-    if (Array.isArray(d)) return d.join(', ');
-    if (typeof d === 'object') {
-      return Object.entries(d as Record<string, unknown>)
-        .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : String(v)}`)
-        .join(' · ');
-    }
-    return String(d);
-  })();
-
-  return serbest ? `${temel} (${serbest})` : temel;
 }

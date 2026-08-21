@@ -138,3 +138,24 @@ gösterebilirsiniz.
 
 > Formu yayınlamadan önce **Önizleme** sekmesinden vatandaşın göreceği hâli
 > deneyin. Önizleme gerçek formun aynısıdır.
+
+## Aynı kişi formu iki kez gönderemez
+
+Form ayarlarındaki **Tek yanıt** işareti açıkken bir kişi formu yalnızca
+bir kez gönderebilir.
+
+- Form **telefon soruyorsa** kimlik telefon numarasıdır; numara farklı
+  yazılmış olsa da (`0541 298 34 50`, `+90 541 298 34 50`) aynı kişi
+  sayılır.
+- Telefon sorulmuyorsa kimlik **tarayıcıdır**. Bu yumuşak bir engel:
+  vatandaş tarayıcı verisini temizler ya da başka bir cihazdan girerse
+  yeniden gönderebilir. Anonim bir formda kimliğin başka kaynağı yok —
+  kesin bir sınır isteniyorsa forma telefon alanı ekleyin.
+- Ayar kapalıyken kimse engellenmez.
+
+İkinci gönderimde vatandaş *"Bu forma zaten yanıt verdiniz."* uyarısını
+görür.
+
+Bağlantı koptuğunda ya da vatandaş geri tuşuna bastığında aynı gönderim
+sunucuya iki kez ulaşabilir; bu durumda **ikinci bir yanıt açılmaz**, ilk
+gönderimin takip numarası döner. Yanıt sayısı da bir artar.

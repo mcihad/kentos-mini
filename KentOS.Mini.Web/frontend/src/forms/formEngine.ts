@@ -248,3 +248,50 @@ export function gonderilecek(tanim: FormDefinition, cevaplar: Answers): Answers 
 
   return govde;
 }
+
+/**
+ * Ham cevabı kullanıcının gördüğü metne çevirir.
+ *
+ * <p>
+ * JSONB'de seçenek KİMLİĞİ duruyor (`o_3`, `r_1`); yanıt detayı bir dönem
+ * onu olduğu gibi basıyor ve matris cevabı `r_1: c_2` diye okunuyordu.
+ * Sunucudaki karşılığı `FormDegerMetni`; ikisi aynı kuralı uygular —
+ * ayrışırlarsa aynı cevap ekranda ve Excel'de farklı görünür.
+ * </p>
+ */
+export function etiketliDeger(alan: FormField, cevap: Answer | undefined): string {
+  const d = deger(cevap);
+  const serbest = cevap?.metin;
+  if (d === null || d === undefined || d === '') return serbest || '—';
+
+  // Seçenek ve sütun kimlikleri tek sözlükte: matriste iç değerler sütun
+  // kimliği, seçim alanlarında seçenek kimliği — çözücü ikisini de bilmeli.
+  const sozluk = new Map<string, string>();
+  for (const s of [...(alan.secenekler ?? []), ...(alan.sutunlar ?? [])]) {
+    if (s.kimlik) sozluk.set(s.kimlik, s.etiket ?? s.kimlik);
+  }
+  const cevir = (k: string) => sozluk.get(k) ?? k;
+
+  const temel = (() => {
+    if (typeof d === 'boolean') return d ? 'Evet' : 'Hayır';
+    if (Array.isArray(d)) return d.map((x) => cevir(String(x))).join(', ');
+
+    if (typeof d === 'object') {
+      return Object.entries(d as Record<string, unknown>)
+        .map(([satirKimligi, ic]) => {
+          const satir = (alan.satirlar ?? []).find((s) => s.kimlik === satirKimligi);
+          const icMetin = Array.isArray(ic)
+            ? ic.map((x) => cevir(String(x))).join(', ')
+            : cevir(String(ic ?? ''));
+          return `${satir?.etiket ?? satirKimligi}: ${icMetin}`;
+        })
+        .join(' · ');
+    }
+
+    return cevir(String(d));
+  })();
+
+  // "Diğer"in serbest metni parantez içinde: ne seçtiği de ne yazdığı da
+  // tek satırda görünmeli.
+  return serbest ? `${temel} (${serbest})` : temel;
+}

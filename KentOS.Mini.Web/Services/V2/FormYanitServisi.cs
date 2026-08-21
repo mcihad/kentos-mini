@@ -148,6 +148,50 @@ public sealed class FormYanitServisi(
 
         var tanim = FormServisi.TanimiCoz(surum.Tanim);
 
+        /*
+          AYNI GÖNDERİM İKİ KEZ — anahtar aynıysa aynı kayıt döner.
+
+          İstemci düğmeyi kilitliyor ama ağ koptuğunda tarayıcının kendi
+          yeniden denemesi, "geri" tuşu ve mobilde sekme geri yüklemesi
+          aynı gövdeyi ikinci kez gönderebiliyor. Anahtar gönderimde
+          `null`'a çekildiği için ikinci istek yarım kaydı bulamıyor ve
+          İKİNCİ BİR YANIT açıyordu; sayaç da iki artıyordu.
+
+          Anahtar artık saklanıyor: gönderilmiş bir kayıt bulunduğunda yeni
+          kayıt açılmıyor, ilk gönderimin sonucu aynen dönüyor (idempotent).
+          Taslak sürdürme bundan etkilenmiyor — o sorgu `Taslak` durumuna
+          bakıyor.
+
+          KAPI SIRASI ÖNEMLİ: bu denetim "tek yanıt" denetiminden ÖNCE.
+          Sonra dursaydı, kaydedilmiş bir gönderimin ağ yeniden denemesi
+          "Bu forma zaten yanıt verdiniz." hatası alırdı — vatandaş cevabı
+          gitmiş olmasına rağmen gitmemiş sanırdı. Ölçüldü: sıra ters iken
+          ikinci istek 400 dönüyordu.
+        */
+        var anahtar = istek.SurdurmeAnahtari is { Length: > 0 } a ? a : null;
+
+        if (anahtar is not null)
+        {
+            var gonderilmis = await _context.FormYanitlari.AsNoTracking()
+                .FirstOrDefaultAsync(
+                    y => y.FormId == form.Id
+                        && y.SurdurmeAnahtari == anahtar
+                        && y.Durum == FormYanitDurumu.Gonderildi, iptal);
+
+            if (gonderilmis is not null)
+            {
+                return new FormYanitSonucuDto
+                {
+                    TakipNo = gonderilmis.TakipNo,
+                    TesekkurMetni = form.TesekkurMetni,
+                    TesekkurAdresi = form.TesekkurAdresi,
+                    Ozet = form.YanitOzetiGorunur
+                        ? OzetCikar(tanim, CevaplariCoz(gonderilmis.Cevaplar))
+                        : null,
+                };
+            }
+        }
+
         // ── kimlik kuralları ──
         var telefonSade = Telefon.Duzelt(istek.Telefon) is { } t && t.Length > 0
             ? new string(t.Where(char.IsDigit).ToArray())
@@ -159,14 +203,32 @@ public sealed class FormYanitServisi(
             throw new BusinessRuleException("Bu form telefon numarası ister.");
         }
 
-        if (form.TekYanit && telefonSade is not null)
+        /*
+          TEK YANIT — kimlik telefon YOKSA da üretilir.
+
+          Kapı bir dönem `form.TekYanit && telefonSade is not null` diyordu:
+          telefon sormayan bir formda ayar açık görünüyor ama HİÇBİR ŞEY
+          yapmıyordu. Vatandaş gönderiyor, sayfayı yeniliyor, yeniden
+          dolduruyordu — ölçüldü, tek tarayıcıdan 5 yanıt.
+
+          Kimlik sırası: telefon > cihaz anahtarı. Telefon gerçek bir
+          kimlik; cihaz anahtarı YUMUŞAK bir kapı (tarayıcı verisi
+          temizlenince ya da başka bir cihazdan girilince aşılır). Anonim
+          bir formda bundan fazlası zaten mümkün değil — kimliği olmayan
+          birini "aynı kişi" diye tanımanın yolu yok.
+        */
+        var kimlikKarmasi = form.TekYanit
+            ? KimlikOzetle(form, telefonSade, istek.CihazAnahtari)
+            : null;
+
+        if (kimlikKarmasi is not null)
         {
             var varMi = await _context.FormYanitlari.AnyAsync(
                 y => y.FormId == form.Id
-                    && y.TelefonSade == telefonSade
+                    && y.KimlikKarmasi == kimlikKarmasi
                     && y.Durum == FormYanitDurumu.Gonderildi, iptal);
 
-            if (varMi) throw new BusinessRuleException("Bu forma zaten yanıt verdiniz.");
+            if (varMi) throw new BusinessRuleException(ZatenYanitladiniz);
         }
 
         // ── IP tavanı ──
@@ -189,7 +251,7 @@ public sealed class FormYanitServisi(
         if (!sonuc.Gecerli) throw AlanHatasi(sonuc.Hatalar);
 
         // Yarım kayıt varsa onu tamamla, yenisini açma.
-        var yanit = istek.SurdurmeAnahtari is { Length: > 0 } anahtar
+        var yanit = anahtar is not null
             ? await _context.FormYanitlari.FirstOrDefaultAsync(
                 y => y.FormId == form.Id
                     && y.SurdurmeAnahtari == anahtar
@@ -216,7 +278,11 @@ public sealed class FormYanitServisi(
         yanit.Eposta = istek.Eposta?.Trim();
         yanit.IpOzeti = ipOzeti;
         yanit.Tarayici = tarayici?[..Math.Min(tarayici.Length, 250)];
-        yanit.SurdurmeAnahtari = null;
+        yanit.KimlikKarmasi = kimlikKarmasi;
+
+        // ANAHTAR SAKLANIR (eskiden `null`'a çekiliyordu): aynı gönderimin
+        // ikinci kez gelmesi yukarıdaki idempotans kapısına takılsın.
+        yanit.SurdurmeAnahtari = anahtar;
 
         /*
           SAYAÇ ATOMİK ARTIRILIR.
@@ -225,7 +291,25 @@ public sealed class FormYanitServisi(
           aynı değeri okuyup aynı değeri yazar ve sayaç geride kalırdı —
           yanıt sınırı da bu yüzden aşılabilirdi.
         */
-        await _context.SaveChangesAsync(iptal);
+        /*
+          YARIŞ KOŞULU — asıl kapı BENZERSİZ İNDEKS.
+
+          Yukarıdaki `AnyAsync` bir TOCTOU: iki istek aynı anda geldiğinde
+          ikisi de "yok" görüp ikisi de yazar. Gerçek kapı
+          `ix_form_yanitlari_form_id_kimlik_karmasi` (kısmi benzersiz);
+          `AnyAsync` yalnızca anlaşılır bir mesaj vermek için duruyor.
+
+          `V2HataFiltresi` 23505'i zaten 400'e çeviriyor ama mesajı genel;
+          vatandaşın görmesi gereken cümle burada.
+        */
+        try
+        {
+            await _context.SaveChangesAsync(iptal);
+        }
+        catch (DbUpdateException h) when (BenzersizlikIhlali(h))
+        {
+            throw new BusinessRuleException(ZatenYanitladiniz);
+        }
 
         await _context.Formlar
             .Where(f => f.Id == form.Id)
@@ -694,6 +778,57 @@ public sealed class FormYanitServisi(
     /// gerektirmiyor. Tuzsuz bir özet, IPv4 uzayı küçük olduğu için kaba
     /// kuvvetle geri çevrilebilirdi.
     /// </remarks>
+    /// <summary>Vatandaşın gördüğü tek yanıt mesajı — iki yerden veriliyor.</summary>
+    private const string ZatenYanitladiniz = "Bu forma zaten yanıt verdiniz.";
+
+    /// <summary>
+    /// TEK YANIT ANAHTARI — <c>HMAC(form.AnonimTuzu, kimlik)</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Telefon numarası ham hâliyle SAKLANMIYOR: anonim bir formda vatandaş
+    /// numarasının tutulmasını beklemiyor. Özet, "aynı kişi mi" sorusunu
+    /// numarayı bilmeden cevaplıyor.
+    /// </para>
+    /// <para>
+    /// <b>Tuz form başına</b> (<c>Form.AnonimTuzu</c>): iki ayrı anketi
+    /// dolduran aynı kişi eşleştirilemesin. Ortak bir tuz kullanılsaydı
+    /// aynı özet iki tabloda çakışır ve anonimlik biterdi.
+    /// </para>
+    /// </remarks>
+    private static string? KimlikOzetle(Form form, string? telefonSade, string? cihazAnahtari)
+    {
+        // Telefon önce: gerçek kimlik. Cihaz anahtarı yalnızca telefon
+        // sorulmayan formlarda devreye girer, yoksa aynı kişi telefonunu
+        // yazıp bir de tarayıcı temizleyerek iki kez gönderebilirdi.
+        var kimlik = telefonSade is { Length: > 0 } t ? $"tel:{t}"
+            : cihazAnahtari is { Length: > 0 } c ? $"cihaz:{c[..Math.Min(c.Length, 128)]}"
+            : null;
+
+        if (kimlik is null) return null;
+
+        var tuz = Encoding.UTF8.GetBytes(form.AnonimTuzu);
+        return Convert.ToHexString(HMACSHA256.HashData(tuz, Encoding.UTF8.GetBytes(kimlik)));
+    }
+
+    /// <summary>
+    /// Postgres benzersizlik ihlali mi (<c>23505</c>)?
+    /// </summary>
+    /// <remarks>
+    /// Kod iç istisnadan <b>tip adıyla</b> okunuyor; servis Npgsql'e
+    /// derleme zamanı bağımlılık kurmuyor — `V2HataFiltresi` ile aynı kalıp.
+    /// </remarks>
+    private static bool BenzersizlikIhlali(DbUpdateException h)
+    {
+        for (Exception? i = h.InnerException; i is not null; i = i.InnerException)
+        {
+            var kod = i.GetType().GetProperty("SqlState")?.GetValue(i) as string;
+            if (kod == "23505") return true;
+        }
+
+        return false;
+    }
+
     private string? IpOzetle(string? ip)
     {
         if (string.IsNullOrWhiteSpace(ip)) return null;
@@ -787,52 +922,12 @@ public sealed class FormYanitServisi(
     /// Ham değeri kullanıcının gördüğü etikete çevirir.
     /// </summary>
     /// <remarks>
-    /// Seçim alanlarında JSONB'de seçenek KİMLİĞİ duruyor; sonuç sayfasında
-    /// "sec_3" yazmak vatandaşa hiçbir şey söylemez.
+    /// Çeviri <see cref="FormDegerMetni"/> içinde; Excel çıktısı ve özet
+    /// raporu da aynı yeri çağırıyor. Kopyalandığı dönemde özet raporu
+    /// etiketlere hiç bakmıyordu.
     /// </remarks>
     private static string EtiketliDeger(FormAlaniDto alan, object? sarmal)
-    {
-        /*
-          SARMALAYICI BURADA AÇILIR.
-
-          Cevap `{ "deger": …, "metin": … }` şeklinde saklanıyor.
-          Açılmasaydı sonuç sayfası "deger: Ayşe Yılmaz" yazardı — ölçüldü.
-        */
-        var d = FormDogrulayici.Normalize(FormDogrulayici.Deger(sarmal));
-        var serbest = FormDogrulayici.SerbestMetin(sarmal);
-
-        var sozlukler = (alan.Secenekler ?? []).Concat(alan.Sutunlar ?? [])
-            .ToDictionary(x => x.Kimlik, x => x.Etiket);
-
-        string Cevir(string k) => sozlukler.TryGetValue(k, out var e) ? e : k;
-
-        var metin = d switch
-        {
-            null => string.Empty,
-            List<string> l => string.Join(", ", l.Select(Cevir)),
-
-            // Matris: satır etiketleriyle. İç değerler sarmalı DEĞİL,
-            // doğrudan seçenek kimliği — bu yüzden `Cevir` ile çevriliyor.
-            Dictionary<string, object?> m => string.Join(" · ", m.Select(x =>
-            {
-                var satirEtiketi = (alan.Satirlar ?? [])
-                    .FirstOrDefault(s => s.Kimlik == x.Key)?.Etiket ?? x.Key;
-                var ic = FormDogrulayici.Normalize(x.Value);
-                var icMetin = ic is List<string> ll
-                    ? string.Join(", ", ll.Select(Cevir))
-                    : Cevir(ic?.ToString() ?? string.Empty);
-                return $"{satirEtiketi}: {icMetin}";
-            })),
-
-            bool b => b ? "Evet" : "Hayır",
-            string s => Cevir(s),
-            _ => d.ToString() ?? string.Empty,
-        };
-
-        // "Diğer" seçildiyse serbest metin PARANTEZ İÇİNDE: kullanıcı ne
-        // seçtiğini de ne yazdığını da tek satırda görmeli.
-        return serbest is { Length: > 0 } ? $"{metin} ({serbest})" : metin;
-    }
+        => FormDegerMetni.Metin(alan, sarmal);
 
     private static FormAlanOzetiDto AlanOzeti(
         FormAlaniDto alan, List<Dictionary<string, object?>> yanitlar)
@@ -844,10 +939,16 @@ public sealed class FormYanitServisi(
             Tip = alan.Tip,
         };
 
-        var degerler = yanitlar
+        // SARMALAYICI SAKLANIR: "Diğer"in serbest metni örneklerde
+        // görünmeli, `Normalize` onu düşürüyor.
+        var sarmallar = yanitlar
             .Where(y => y.ContainsKey(alan.Kimlik))
-            .Select(y => FormDogrulayici.Normalize(FormDogrulayici.Deger(y[alan.Kimlik])))
-            .Where(v => v is not null)
+            .Select(y => y[alan.Kimlik])
+            .Where(v => FormDogrulayici.Normalize(FormDogrulayici.Deger(v)) is not null)
+            .ToList();
+
+        var degerler = sarmallar
+            .Select(v => FormDogrulayici.Normalize(FormDogrulayici.Deger(v)))
             .ToList();
 
         ozet.YanitSayisi = degerler.Count;
@@ -863,24 +964,59 @@ public sealed class FormYanitServisi(
 
             foreach (var d in degerler)
             {
-                foreach (var k in d is List<string> l ? l : [MetneCevir(d)])
+                foreach (var k in d is List<string> l ? l : [Anahtar(d)])
                 {
-                    sayac[k] = sayac.GetValueOrDefault(k) + 1;
+                    if (k.Length > 0) sayac[k] = sayac.GetValueOrDefault(k) + 1;
                 }
             }
 
-            var etiketler = (alan.Secenekler ?? []).ToDictionary(x => x.Kimlik, x => x.Etiket);
+            ozet.Dagilim = Dagit(sayac, degerler.Count, Etiketleyici(alan.Secenekler));
+            return ozet;
+        }
 
-            ozet.Dagilim = sayac
-                .OrderByDescending(x => x.Value)
-                .Select(x => new FormDagilimDto
+        /*
+          MATRİS — SATIR SATIR dağılım.
+
+          Bir dönem matris son bölüme düşüyor ve "örnek cevap" olarak
+          `satir_1: sutun_2` yazıyordu: hem anahtar hem de özet sayılmayacak
+          bir şey. Merak edilen "kim ne yazdı" değil, "Temizlik'e kaç kişi
+          İyi dedi". Yüzde SATIRIN kendi toplamına göre — o satırı boş
+          bırakanlar diğer satırların yüzdesini bozmamalı.
+        */
+        if (alan.Tip is FormAlanTipi.MatrisTekSecim or FormAlanTipi.MatrisCokSecim)
+        {
+            var sutunEtiketi = Etiketleyici(alan.Sutunlar);
+            var dagilim = new List<FormDagilimDto>();
+
+            foreach (var satir in alan.Satirlar ?? [])
+            {
+                var sayac = new Dictionary<string, int>();
+                var satirToplam = 0;
+
+                foreach (var d in degerler.OfType<Dictionary<string, object?>>())
                 {
-                    Etiket = etiketler.TryGetValue(x.Key, out var e) ? e : x.Key,
-                    Adet = x.Value,
-                    Yuzde = Math.Round(x.Value * 100.0 / degerler.Count, 1),
-                })
-                .ToList();
+                    if (!d.TryGetValue(satir.Kimlik, out var ham)) continue;
 
+                    var ic = FormDogrulayici.Normalize(ham);
+                    var secimler = ic is List<string> ll ? ll : [Anahtar(ic)];
+                    var yazildi = false;
+
+                    foreach (var k in secimler.Where(k => k.Length > 0))
+                    {
+                        sayac[k] = sayac.GetValueOrDefault(k) + 1;
+                        yazildi = true;
+                    }
+
+                    if (yazildi) satirToplam++;
+                }
+
+                if (satirToplam == 0) continue;
+
+                dagilim.AddRange(Dagit(sayac, satirToplam, sutunEtiketi)
+                    .Select(x => { x.Satir = satir.Etiket; return x; }));
+            }
+
+            if (dagilim.Count > 0) ozet.Dagilim = dagilim;
             return ozet;
         }
 
@@ -901,9 +1037,54 @@ public sealed class FormYanitServisi(
         }
 
         // Metin tiplerinde son birkaç cevap: dağılım anlamsız, örnek yararlı.
-        ozet.Ornekler = degerler.TakeLast(5).Select(MetneCevir)
+        // ETİKETLİ: tarih/dosya dışı tiplerde de seçenek kimliği geçebiliyor.
+        ozet.Ornekler = sarmallar.TakeLast(5)
+            .Select(v => FormDegerMetni.Metin(alan, v))
             .Where(s => s.Length > 0).ToList();
 
         return ozet;
     }
+
+    /// <summary>Sayaçtan yüzdeli dağılım; etiketler tanımdan çözülür.</summary>
+    private static List<FormDagilimDto> Dagit(
+        Dictionary<string, int> sayac, int toplam, Func<string, string> etiket)
+        => sayac
+            .OrderByDescending(x => x.Value)
+            .Select(x => new FormDagilimDto
+            {
+                Etiket = etiket(x.Key),
+                Adet = x.Value,
+                Yuzde = toplam > 0 ? Math.Round(x.Value * 100.0 / toplam, 1) : 0,
+            })
+            .ToList();
+
+    /// <summary>
+    /// Kimlik → etiket çözücü.
+    /// </summary>
+    /// <remarks>
+    /// <c>GroupBy</c>, <c>ToDictionary</c> değil: tasarımcıda alan tipi
+    /// değiştirildiğinde tanımda yinelenen kimlik kalabiliyor ve
+    /// <c>ToDictionary</c> özet raporunu 500'e düşürürdü.
+    /// </remarks>
+    private static Func<string, string> Etiketleyici(List<FormSecenegiDto>? secenekler)
+    {
+        var sozluk = (secenekler ?? [])
+            .GroupBy(x => x.Kimlik)
+            .ToDictionary(g => g.Key, g => g.First().Etiket);
+
+        return k => sozluk.TryGetValue(k, out var e) ? e : k;
+    }
+
+    /// <summary>Skaler cevabın sayım anahtarı — ham seçenek kimliği.</summary>
+    /// <remarks>
+    /// Evet/Hayır alanının seçenek listesi YOK, yani etiket çözülemiyor;
+    /// anahtar doğrudan görünen metin olmalı. <c>"true"/"false"</c>
+    /// döndürülseydi özet raporunda İngilizce iki satır çıkardı.
+    /// </remarks>
+    private static string Anahtar(object? d) => d switch
+    {
+        null => string.Empty,
+        bool b => b ? "Evet" : "Hayır",
+        _ => d.ToString() ?? string.Empty,
+    };
 }

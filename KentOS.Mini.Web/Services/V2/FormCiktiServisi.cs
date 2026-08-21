@@ -150,38 +150,7 @@ public sealed class FormCiktiServisi(
     /// yazmak raporu okunamaz kılardı.
     /// </remarks>
     private static object HucreDegeri(FormAlaniDto alan, object? sarmal)
-    {
-        // Sarmalayıcı burada da açılır; ham hâliyle yazsaydık hücrede
-        // "System.Collections.Generic.Dictionary..." görünürdü.
-        var d = FormDogrulayici.Normalize(FormDogrulayici.Deger(sarmal));
-        var serbest = FormDogrulayici.SerbestMetin(sarmal);
-        if (d is null) return serbest ?? string.Empty;
-
-        var etiketler = (alan.Secenekler ?? []).Concat(alan.Sutunlar ?? [])
-            .GroupBy(x => x.Kimlik)
-            .ToDictionary(g => g.Key, g => g.First().Etiket);
-
-        string Cevir(string k) => etiketler.TryGetValue(k, out var e) ? e : k;
-
-        return d switch
-        {
-            decimal m => m,
-            bool b => b ? "Evet" : "Hayır",
-            List<string> l => string.Join(", ", l.Select(Cevir)),
-            Dictionary<string, object?> mat => string.Join(" | ", mat.Select(x =>
-            {
-                var satirEtiketi = (alan.Satirlar ?? [])
-                    .FirstOrDefault(s => s.Kimlik == x.Key)?.Etiket ?? x.Key;
-                var deger = FormDogrulayici.Normalize(x.Value);
-                var metin = deger is List<string> ll
-                    ? string.Join(", ", ll.Select(Cevir))
-                    : Cevir(deger?.ToString() ?? string.Empty);
-                return $"{satirEtiketi}: {metin}";
-            })),
-            string s => serbest is { Length: > 0 } ? $"{Cevir(s)} ({serbest})" : Cevir(s),
-            _ => d.ToString() ?? string.Empty,
-        };
-    }
+        => FormDegerMetni.Hucre(alan, sarmal);
 
     private static string Temizle(string ad)
     {
