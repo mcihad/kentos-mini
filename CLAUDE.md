@@ -1037,11 +1037,19 @@ bir bilgi taşımıyor — cevap için talepleri tek tek açmak gerekiyordu.
 `192.168.` bir ağ bloğunu süzer), `Baslangic`, `Bitis` ve `Basarili` alıyor;
 hepsi VE'lenir (`OturumKaydiTests`).
 
-### v1 → v2 geçişi
+### v1 → v2 geçişi — BİTTİ
 
-Mobil hâlâ v1'de; geçiş kademeli olacak. `../workcollab/test/e2e/v2_sozlesme_test.dart`
-her iki yüzeyi **çapraz** koşturur (bir yüzeyde yaz, diğerinde oku) ve geçişin
-ön koşulunu kilitler. Geçiş sırasında iki yüzey bir arada canlı olacak.
+**Mobil uygulama tamamen v2'de.** Ölçüldü: `workcollab/lib` altında
+`/api/XxxApi` biçiminde **tek bir çağrı yok**; mobil deposundaki
+`test/clients/v2_yuzeyi_test.dart` bunu kaynak tarayarak kilitliyor.
+
+`../workcollab/test/e2e/v2_sozlesme_test.dart` her iki yüzeyi **çapraz**
+koşturmaya devam ediyor (bir yüzeyde yaz, diğerinde oku) — v1 sözleşmesinin
+bozulmadığını kanıtlayan ölçüm bu.
+
+> **v1 KALDIRILMIYOR.** Sahadaki eski uygulama sürümleri hâlâ ona bağlı ve
+> güncelleme almamış bir telefon, uç kapatıldığı gün çalışmayı bırakır.
+> `Controllers/Api/*` dokunulmadan duruyor; kural değişmedi.
 
 **İyi haber:** v2 çekirdek uçlarda **v1'in DTO'larını yeniden kullanıyor** —
 `AjandaDto`, `RandevuDto`, `OneriDto`, `UserSettingDto`, `AjandaSeriDto`,
@@ -1067,9 +1075,12 @@ Eşdeğerlik çalışması sırasında kapatılan v2 boşlukları:
 > için **özet** model (`EtkinlikOzetDto`) döndürür; mobilin gün listesi tam
 > `AjandaDto` alanlarına (irtibat, bilgi notu, çiçek durumu) bakıyor.
 
-**Mobil artık v2'de.** Giriş dışında bütün istemciler taşındı; her yetenek
-kendi anahtarıyla (`workcollab/lib/consts/v2_gecisi.dart`) ve v1 yolu
-derlemede duruyor. Anahtarlar kapalıyken uçtan uca koşum yine geçiyor.
+> **Bu paragraf bir dönem YANLIŞTI ve yanlış yönlendirdi.** Önce "mobil hâlâ
+> v1'de", sonra "geçiş anahtarlarla yapılıyor, v1 yolu derlemede duruyor
+> (`v2_gecisi.dart`)" yazıyordu. İkisi de artık doğru değil: anahtarlar
+> sökülmüş, `v2_gecisi.dart` diye bir dosya YOK ve yerine kaynak tarayan bir
+> bekçi konmuş. Bayat kaldığı süre boyunca "mobil hangi yüzeyde" sorusuna
+> yanlış cevap verdi — **yanlış döküman, dökümansızlıktan kötüdür.**
 
 > **Talep dosyaları statik yoldan açık.** `wwwroot/uploads` altındaki her şey
 > kimlik doğrulanmadan servis ediliyor ve v1 ile eski MVC arayüzü buna bağlı;
