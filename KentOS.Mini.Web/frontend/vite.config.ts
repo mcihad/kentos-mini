@@ -1,6 +1,53 @@
-import { defineConfig } from 'vite';
+import { rmSync, readdirSync, existsSync } from 'node:fs';
+import { resolve } from 'node:path';
+import { defineConfig, type Plugin } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwind from '@tailwindcss/vite';
+
+/** Üretilmiş varlıkların TEK klasörü — `build.assetsDir` ile aynı olmalı. */
+const VARLIK_DIZINI = 'uygulama';
+
+/**
+ * ESKİ DERLEME ÇIKTILARINI SİLER.
+ *
+ * <p>
+ * `emptyOutDir` kapalı olmak ZORUNDA (çıktı doğrudan `wwwroot`a yazılıyor ve
+ * orada `uploads` altında gerçek belgeler var), ama bunun bedeli her
+ * derlemenin yeni karma adlı dosyalar bırakması ve eskilerin hiç
+ * temizlenmemesiydi.
+ * </p>
+ *
+ * <p>
+ * <b>Ölçüldü:</b> <c>wwwroot/uygulama</c> altında <b>176 dosya · 293 MB</b>
+ * birikmişti; güncel <c>index.html</c> bunlardan yalnızca <b>5</b>'ini
+ * kullanıyordu. Klasör <c>.gitignore</c>'da olduğu için depoya girmiyor ama
+ * <c>dotnet publish</c> onu olduğu gibi taşıyor — yayın paketi 293 MB ölü
+ * JavaScript taşıyordu.
+ * </p>
+ *
+ * <p>
+ * <b>Yalnızca varlık klasörü siliniyor</b>, <c>wwwroot</c>un kendisi değil:
+ * o klasörün içeriğinin tamamı üretilmiş çıktı. Yol beklenen sonla
+ * bitmiyorsa silme YAPILMAZ — yanlış bir yapılandırma yüzünden kullanıcı
+ * belgelerini silmek, biriken çöpten kat kat kötü.
+ * </p>
+ */
+function eskiVarliklariTemizle(): Plugin {
+  return {
+    name: 'eski-varliklari-temizle',
+    apply: 'build',
+    buildStart() {
+      const dizin = resolve(__dirname, '..', 'wwwroot', VARLIK_DIZINI);
+
+      // GÜVENLİK KAPISI: beklenen yol değilse hiçbir şey silme.
+      if (!dizin.endsWith(`wwwroot/${VARLIK_DIZINI}`) || !existsSync(dizin)) return;
+
+      const adet = readdirSync(dizin).length;
+      rmSync(dizin, { recursive: true, force: true });
+      if (adet > 0) console.log(`  eski varlıklar silindi: ${adet} dosya`);
+    },
+  };
+}
 
 /**
  * Uygulama `/yeni` altında yayınlanır ve çıktı doğrudan sunucunun
@@ -15,7 +62,7 @@ export default defineConfig({
   // Tailwind 4 VITE eklentisiyle. PostCSS boru hattı da çalışıyor ama Vite
   // eklentisi CSS'i doğrudan Vite'ın grafiğine bağlıyor: HMR'da tam yeniden
   // derleme yerine yalnızca değişen katman güncelleniyor.
-  plugins: [tailwind(), react()],
+  plugins: [eskiVarliklariTemizle(), tailwind(), react()],
   base: '/',
   build: {
     outDir: '../wwwroot',

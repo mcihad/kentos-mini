@@ -706,6 +706,29 @@ düzenlenmez.
 > ile kendi klasörüne gidiyor — `wwwroot/assets` eski MVC'nin dosyalarını
 > taşıyor, ikisini karıştırmak temizliği imkânsız kılardı.
 
+### ESKİ DERLEME ÇIKTILARI SİLİNİR
+
+`emptyOutDir` kapalı olmanın bedeli, her derlemenin yeni karma adlı dosyalar
+bırakması ve eskilerin hiç temizlenmemesiydi.
+
+```
+ÖNCE   wwwroot/uygulama → 176 dosya · 293 MB (index.html yalnızca 5'ini kullanıyor)
+SONRA  wwwroot/uygulama →   6 dosya ·  3,6 MB · uploads dokunulmadı
+```
+
+Klasör `.gitignore`'da olduğu için depoya girmiyordu, **ama `dotnet publish`
+onu olduğu gibi taşıyor** — yayın paketi 293 MB ölü JavaScript içeriyordu.
+
+Temizlik `vite.config.ts` içindeki `eskiVarliklariTemizle()` eklentisinde,
+yani `vite build`i kim çağırırsa çağırsın (npm, MSBuild, publish) çalışıyor.
+
+> **GÜVENLİK KAPISI ŞART.** Silinen yer `wwwroot/uygulama` — içeriğinin
+> tamamı üretilmiş çıktı. Yol beklenen sonla bitmiyorsa silme YAPILMAZ:
+> yanlış bir yapılandırma yüzünden kullanıcı belgelerini silmek, biriken
+> çöpten kat kat kötü. Bekçi `test/build.test.ts` kapının `rmSync`ten ÖNCE
+> geldiğini kaynakta doğruluyor (davranışı sınamak gerçekten dosya silmeyi
+> gerektirirdi) ve **ateş ettiği ölçüldü**.
+
 ## Web push
 
 `firebase-messaging-sw.js` `public/` içinde durur ve `wwwroot/` altına
