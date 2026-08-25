@@ -2002,8 +2002,20 @@ aynı yolu yeniden yürümesin:
 
 ## Bilinen pürüzler
 
-- Swagger UI üretimde de açık.
-- Üretim sırları depoya işlenmiş (DB parolası, SMS parolası, JWT secret, Firebase servis hesabı).
+> **Bu liste bayatlamıştı ve iki maddesi yanlıştı** — düzeltildi. "Swagger
+> üretimde açık" ve "üretim sırları depoya işlenmiş" maddeleri, aynı dosyanın
+> *GÜVENLİK* bölümünde çözüldüğü yazılı olduğu hâlde burada duruyordu.
+> Ölçüldü: `appsettings*.json` temiz, `appsettings.json`a dokunan tek commit
+> var ve içinde sır yok, depo geçmişinde Firebase servis hesabı hiç
+> bulunmuyor (o madde eski `workcollab` deposundan kalmış). Swagger
+> `App:SwaggerAcik` kapısının arkasında. **Yanlış döküman,
+> dökümansızlıktan kötüdür**: bu listeyi okuyan bir sonraki kişi çözülmüş
+> iki işi yeniden çözmeye kalkardı.
+
+- `wwwroot/uygulama/` altında **116 eski paket birikmiş**. `emptyOutDir`
+  bilerek kapalı (açık olsaydı `wwwroot/uploads` altındaki gerçek belgeleri
+  silerdi) ama kimse eski derleme çıktılarını temizlemiyor. Yayın öncesi elle
+  temizlenebilir; zararı disk ve yayın paketi boyutu.
 - `AjandaTekrar` tablosu ölü — hiçbir kod okumuyor/yazmıyor, `AjandaSeri` onun yerini aldı. Dokunma, kaldırma.
 - `AjandaHareketler` kullanılmıyor; zaman çizelgesi `AjandaOlaylar`'da.
 - `GET /api/SettingsApi/UpdateFcmToken` durum değiştiren bir GET — v1 sözleşmesi olduğu için düzeltilemez.

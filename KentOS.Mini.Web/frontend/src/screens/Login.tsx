@@ -8,11 +8,59 @@ import { ApiError, api, tokenStore } from '../data/client';
 import { buyukHarf, useInstitution } from '../institution/institution';
 
 /**
+ * KLAVYE AÇIKKEN GÖRÜNÜR YÜKSEKLİK.
+ *
+ * <p>
+ * Ölçüldü: 375×812'lik bir telefonda klavye açılınca görünür alan ~480px'e
+ * iniyor ve <b>"Giriş yap" düğmesi ekranın altında kalıyordu</b> (445–485px,
+ * görüş alanı 480). Kullanıcı şifreyi yazıyor, gönderecek düğmeyi
+ * göremiyordu; marka bloğu tek başına 185px yiyordu.
+ * </p>
+ *
+ * <p>
+ * <b>CSS <code>@media (max-height)</code> YETMİYOR.</b> iOS Safari klavye
+ * açılınca <i>görsel</i> görüş alanını küçültüyor ama <i>düzen</i> görüş
+ * alanına dokunmuyor — medya sorgusu hiç tetiklenmiyor. Tek güvenilir
+ * kaynak <code>visualViewport</code>.
+ * </p>
+ *
+ * <p>
+ * Eşik 620px: klavyeli telefonu (≈480–560) yakalıyor, klavyesiz en küçük
+ * telefonu (667) yakalamıyor — yani marka bloğu ilk karşılamada tam
+ * boyunda kalıyor.
+ * </p>
+ */
+function useKisaEkran(esik = 620) {
+  const [kisa, setKisa] = useState(false);
+
+  useEffect(() => {
+    const gg = window.visualViewport;
+    const olc = () => setKisa((gg?.height ?? window.innerHeight) < esik);
+
+    olc();
+    gg?.addEventListener('resize', olc);
+    window.addEventListener('resize', olc);
+
+    return () => {
+      gg?.removeEventListener('resize', olc);
+      window.removeEventListener('resize', olc);
+    };
+  }, [esik]);
+
+  return kisa;
+}
+
+/**
  * Giriş ekranı — design.md §8.1.
  *
  * Masaüstünde %45 lacivert marka paneli + ortalanmış 372px form; mobilde
- * panel gizlenir, amblem ortalanır ve dokunma hedefleri büyür (50px input,
- * 52px buton). Kabuk YOK — sidebar/tabbar burada gösterilmez.
+ * panel gizlenir, amblem ortalanır ve dokunma hedefleri büyür (50px girdi,
+ * 48px buton — `h-ctrl-lg`, şartnamedeki `touch.min`). Kabuk YOK.
+ *
+ * <p>
+ * <b>Marka bloğu KLAVYE AÇILINCA tek satıra iner</b>; gerekçesi ve ölçümü
+ * <see cref="useKisaEkran"/> üzerinde.
+ * </p>
  *
  * <p>
  * Belgedeki "Beni hatırla" ve "Şifremi unuttum" bağlantıları KONMADI:
@@ -28,6 +76,7 @@ import { buyukHarf, useInstitution } from '../institution/institution';
  * </p>
  */
 export default function Login() {
+  const kisaEkran = useKisaEkran();
   // Kurum kimliği KODA YAZILMAZ; sunucudan gelir (bkz. institution.ts).
   const kurum = useInstitution();
   const amblem = kurum.marka.amblem ?? '/amblem.png';
@@ -168,20 +217,41 @@ export default function Login() {
       </aside>
 
       {/* ── Form ── */}
-      <div className="flex flex-1 flex-col items-center justify-center px-5 py-10">
+      {/* `guvenli-alt`: çentikli telefonlarda ana çubuk telifi yiyordu. */}
+      <div className="guvenli-alt flex flex-1 flex-col items-center justify-center px-5 py-10">
         <form onSubmit={gonder} className="w-full max-w-[372px]">
-          {/* Mobil kimlik başlığı — masaüstünde panel bunu zaten söylüyor */}
-          <div className="mb-8 flex flex-col items-center text-center md:hidden">
-            <img src={amblem} alt="" className="h-[70px] w-[70px]" />
-            <p className="mt-3 font-display text-sm font-bold tracking-[0.06em] text-text-2">
-              {kurumAdi}
-            </p>
-            {kurum.birim && <p className="text-xs text-text-3">{kurum.birim}</p>}
-            <span className="mt-4 block h-[3px] w-9 bg-gold" aria-hidden />
-            <h1 className="mt-4 font-display text-2xl font-bold tracking-[-0.02em]">
-              {kurum.uygulamaAdi}
-            </h1>
-          </div>
+          {/*
+            Mobil kimlik başlığı — masaüstünde panel bunu zaten söylüyor.
+
+            KISA EKRANDA TEK SATIRA İNER: klavye açıkken yığılmış blok
+            185px yiyor ve gönder düğmesini ekranın dışına itiyordu.
+            Ölçüldü: 185px → 48px, düğme görünür.
+          */}
+          {kisaEkran ? (
+            <div className="mb-5 flex items-center gap-2.5 md:hidden">
+              <img src={amblem} alt="" className="size-10 shrink-0 object-contain" />
+              <div className="min-w-0">
+                <p className="truncate font-display text-xs font-bold tracking-[0.04em] text-text-3">
+                  {kurumAdi}
+                </p>
+                <h1 className="truncate font-display text-base font-bold tracking-[-0.01em]">
+                  {kurum.uygulamaAdi}
+                </h1>
+              </div>
+            </div>
+          ) : (
+            <div className="mb-8 flex flex-col items-center text-center md:hidden">
+              <img src={amblem} alt="" className="h-[70px] w-[70px] object-contain" />
+              <p className="mt-3 font-display text-sm font-bold tracking-[0.06em] text-text-2">
+                {kurumAdi}
+              </p>
+              {kurum.birim && <p className="text-xs text-text-3">{kurum.birim}</p>}
+              <span className="mt-4 block h-[3px] w-9 bg-gold" aria-hidden />
+              <h1 className="mt-4 font-display text-2xl font-bold tracking-[-0.02em]">
+                {kurum.uygulamaAdi}
+              </h1>
+            </div>
+          )}
 
           <h2 className="hidden font-display text-2xl font-bold tracking-[-0.02em] md:block">
             Giriş Yap
@@ -213,9 +283,20 @@ export default function Login() {
             kilidiYaz={setBuyukHarfKilidi}
           />
 
+          {/*
+            Boy `boyut` ile veriliyor, `className`de ham piksel ile DEĞİL.
+
+            Önceki hâli `h-[52px]` yazıyordu ama düğme 40px çiziliyordu:
+            `tailwind-merge` tema tabanlı `h-ctrl` sınıfını tanımadığı için
+            çakışmayı ayıklamıyor, ikisi de DOM'a düşüyor ve CSS'te özel
+            olan kazanıyordu. Kök neden `components/utils.ts` içinde
+            düzeltildi; burada da bileşenin kendi API'si kullanılıyor —
+            ham piksel vermek aynı tuzağa yeniden davetiye.
+          */}
           <Button
             type="submit"
-            className="mt-2 h-[52px] w-full rounded-md text-base shadow-2 md:h-12"
+            boyut="mobil"
+            className="mt-2 w-full shadow-2"
             disabled={gonderiliyor}
           >
             <LogIn size={17} strokeWidth={2} />
@@ -236,9 +317,9 @@ export default function Login() {
               <a
                 href={`/api/v2/openid/baslat?donus=${encodeURIComponent(
                   new URLSearchParams(konum.search).get('donus') || '/')}`}
-                className="flex h-[52px] w-full items-center justify-center gap-2 rounded-md
+                className="flex h-ctrl-lg w-full items-center justify-center gap-2 rounded-md
                   border border-border bg-surface text-base font-semibold text-text
-                  transition-colors hover:bg-surface-2 md:h-12"
+                  transition-colors hover:bg-surface-2"
               >
                 <Building2 size={17} strokeWidth={2} />
                 {saglayici.gorunenAd} ile giriş yap
@@ -246,7 +327,12 @@ export default function Login() {
             </>
           )}
 
-          <p className="mt-8 text-center text-xs leading-normal text-text-3 md:hidden">
+          {/* Telif kısa ekranda GİZLENİR: klavye açıkken ekrandaki en az
+              işe yarayan satır bu ve yeri gönder düğmesine lazım. */}
+          <p
+            className={`mt-8 text-center text-xs leading-normal text-text-3 md:hidden ${
+              kisaEkran ? 'hidden' : ''}`}
+          >
             © {new Date().getFullYear()} {kurum.gorunenAd || kurum.ad}
             {kurum.kunye && (
               <>
@@ -292,10 +378,31 @@ function Alan({
       <span className="mb-1.5 block text-xs font-semibold text-text-2">
         {etiket}
       </span>
+      {/*
+        MOBİL KLAVYE İPUÇLARI.
+
+        `autoCapitalize="none"`: iOS metin alanının ilk harfini
+        kendiliğinden büyütüyor ve kullanıcı "admin" yazdığını sanırken
+        "Admin" gönderiyor. Sunucu `FindByNameAsync` ile normalleştirdiği
+        için giriş yine oluyor — ama alanda yazan şey kullanıcının
+        yazdığından farklı ve bu, parolası da reddedildiğinde "acaba
+        kullanıcı adım mı yanlış" diye düşündürüyor.
+
+        `autoCorrect`/`spellCheck` kapalı: kullanıcı adı bir sözcük değil,
+        düzeltilecek bir şey yok; altı kırmızı çizili bir alan "hata var"
+        gibi okunuyor.
+
+        `enterKeyHint="next"`: klavyenin gönder tuşu "İleri" yazıyor —
+        alan zaten formun sonu değil.
+      */}
       <input
         name={ad}
         type="text"
         autoComplete={otomatikTamamla}
+        autoCapitalize="none"
+        autoCorrect="off"
+        spellCheck={false}
+        enterKeyHint="next"
         aria-invalid={hataliMi}
         className={`${alanSinifi} ${hataliMi ? 'border-(--st-no)' : ''}`}
       />
@@ -337,6 +444,11 @@ function ParolaAlani({
           name="parola"
           type={acik ? 'text' : 'password'}
           autoComplete="current-password"
+          autoCapitalize="none"
+          autoCorrect="off"
+          spellCheck={false}
+          /* Formun son alanı: klavyenin tuşu "Git" desin, "İleri" değil. */
+          enterKeyHint="go"
           aria-invalid={hataliMi}
           /*
             BÜYÜK HARF KİLİDİ UYARISI.

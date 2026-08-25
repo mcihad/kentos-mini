@@ -2143,3 +2143,76 @@ v1 mobil sözleşmesi bozulmadı: bilinmeyen alanı istemci yok sayar.
 > yalnızca birini gezmek ötekini ölçüsüz bırakırdı. Tur ayrıca **iki seviyeli
 > derin bağlantıyı** da doğruluyor — `MapFallbackToFile` tek seviyede
 > çalışıp ikide çalışmasaydı belirti yalnızca YENİLEMEDE görünürdü.
+
+## GİRİŞ EKRANI KLAVYEYE GÖRE DARALIR
+
+Telefonda klavye açılınca görünür alan ~480px'e iniyor ve **gönder düğmesi
+ekranın dışında kalıyordu**: kullanıcı şifreyi yazıyor, basacak düğmeyi
+göremiyordu.
+
+```
+375×480 (klavye açık)
+ÖNCE   marka bloğu 185px · düğme 445–485px → GÖRÜNMÜYOR · sayfa kayıyor (596>480)
+SONRA  marka bloğu  40px · düğme 360–408px → görünür     · kaydırma yok
+```
+
+Marka bloğu kısa ekranda **tek satıra iner** (amblem + kurum adı + uygulama
+adı yan yana), telif satırı gizlenir. Tam yükseklikte yığılmış hâli aynen
+duruyor — ilk karşılamada marka tam boyunda.
+
+- **CSS `@media (max-height)` YETMEZ.** iOS Safari klavye açılınca *görsel*
+  görüş alanını küçültüyor ama *düzen* görüş alanına dokunmuyor; medya
+  sorgusu hiç tetiklenmiyor. Tek güvenilir kaynak `visualViewport`.
+  Ölçüldü (klavye taklidiyle): marka bloğu **185 → 40 → 185px**.
+- Eşik **620px**: klavyeli telefonu (≈480–560) yakalıyor, klavyesiz en küçük
+  telefonu (667) yakalamıyor.
+
+### Klavye ipuçları
+
+`autoCapitalize="none"` · `autoCorrect="off"` · `spellCheck={false}` ·
+`enterKeyHint` (`next` / `go`). iOS metin alanının ilk harfini kendiliğinden
+büyütüyor: kullanıcı "admin" yazdığını sanırken "Admin" gönderiyor. Sunucu
+`FindByNameAsync` ile normalleştirdiği için giriş yine oluyor — ama alanda
+yazan şey yazdığından farklı ve parola da reddedilince "acaba kullanıcı adım
+mı yanlış" diye düşündürüyor.
+
+## `cn()` TEMA TABANLI ÖLÇÜLERİ TANIMALI
+
+`h-ctrl`, `h-field`, `h-row`… sınıfları `@theme` bloğundaki `--height-*`
+anahtarlarından üretiliyor ve **`tailwind-merge` onları tanımıyor**: kendi
+bildiği sınıf listesi çekirdek Tailwind'den geliyor, projenin temasından
+değil.
+
+Sonucu **sessiz**: `cn('h-ctrl', 'h-[52px]')` ikisini de bırakıyor, ikisi de
+DOM'a düşüyor ve CSS'te özel utility kazanıyor — yani çağıranın verdiği boy
+hiç uygulanmıyor.
+
+```
+ÖNCE   giriş düğmesi className="h-[52px]" · ekranda 40px · dokunma hedefi eksik
+SONRA  boyut="mobil" · 48px (--h-ctrl-lg, şartnamedeki touch.min)
+```
+
+`components/utils.ts` artık `extendTailwindMerge` ile bu anahtarları tanıtıyor.
+**Yeni bir `--height-*` / `--min-height-*` anahtarı eklenirse oraya da
+yazılmalı**; yazılmazsa aynı sessiz hata geri döner.
+
+> Bekçi: `test/utils.test.ts`. **Ateş ettiği ölçüldü** — yapılandırma
+> kaldırıldığında iki test düştü.
+
+> Ders: bileşenin boyunu `className`de ham pikselle ezmeye çalışma; bileşenin
+> kendi API'sini (`boyut`) kullan. Ham piksel aynı tuzağa yeniden davetiye.
+
+## GÖRSEL TURDA ÇAPA GİZLİ METNE DÜŞMEMELİ
+
+`bekleMetin` `document.body.innerText` okuyor ve **`display:none` içeriği
+görmez**. Masaüstüne özel bir metni (ör. `hidden md:flex` taşıyan sekme
+şeridindeki "Program") çapa yapmak, mobil geçişini hiçbir zaman doğru
+sebeple geçiremez.
+
+Aynı ders turda iki kez öğrenildi: önce "Yeni etkinlik" çapası ekranın
+kendisine değil bildirim izni kartına düşüyordu, sonra `/ajanda` satırı
+masaüstü sekme metnine. **İki görünümde de duran bir SEÇİCİ kullan** —
+liste ekranlarında `main input[type="search"]`.
+
+> Kural: çapa seçerken "bu metin 390px'te de görünüyor mu?" diye sor. Bir
+> tur adımının yeşil geçmesi, ekranın doğrulandığı anlamına gelmiyor.

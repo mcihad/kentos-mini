@@ -28,7 +28,16 @@ const EKRANLAR = [
   // etkilenmeyen bir başlık beklenir.
   { ad: 'ana-sayfa', yol: '/', bekle: 'Yaklaşan etkinlikler' },
   { ad: 'talepler', yol: '/talepler', secici: 'table tbody tr, ul li a' },
-  { ad: 'ajanda', yol: '/ajanda', bekle: 'Program' },
+  /*
+    ÇAPA "Program" DEĞİL — o metin MASAÜSTÜNE ait.
+
+    "Program/Liste/Silinmiş" sekme şeridi `hidden md:flex` taşıyor, yani
+    390px'te `display: none`. `bekleMetin` `innerText` okuyor ve gizli metni
+    GÖRMEZ, dolayısıyla mobil geçişi hiçbir zaman doğru sebeple geçemezdi.
+    Aynı ders bu satırın hemen altındaki iki kardeşinde zaten yazılıydı;
+    yalnızca bu satır düzeltilmeden kalmış.
+  */
+  { ad: 'ajanda', yol: '/ajanda', secici: 'main input[type="search"]' },
   // İŞ TAKİP. Liste boş açılabilir; çıpa iki görünümde de duran arama alanı.
   { ad: 'gorevler', yol: '/gorevler', secici: 'main input[type="search"]' },
   { ad: 'gorev-detay', yol: '/gorevler/5', bekle: 'Aşamalar' },
