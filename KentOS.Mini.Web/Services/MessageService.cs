@@ -91,7 +91,11 @@ namespace KentOS.Mini.Web.Services
                 yield return BuildMessage(kullanici.Id, jeton, title, content, type, notifyTip, data);
         }
 
-        public async Task CreateAsync(long userId, string token, string title, string content, SendMessageType type, NotifikasyonTip notifyTip, string? data)
+        /// <param name="hassas">
+        /// İçerik gönderildikten sonra SİLİNSİN mi (bkz. <see cref="Message.Hassas"/>).
+        /// Varsayılan <c>false</c>: mevcut çağrı yerleri değişmiyor.
+        /// </param>
+        public async Task CreateAsync(long userId, string token, string title, string content, SendMessageType type, NotifikasyonTip notifyTip, string? data, bool hassas = false)
         {
             try
             {
@@ -143,8 +147,9 @@ namespace KentOS.Mini.Web.Services
                         return;
                     }
 
-                    await _context.Messages.AddAsync(
-                        BuildMessage(userId, token, title, content, type, notifyTip, data));
+                    var satir = BuildMessage(userId, token, title, content, type, notifyTip, data);
+                    satir.Hassas = hassas;
+                    await _context.Messages.AddAsync(satir);
                 }
 
                 await _context.SaveChangesAsync();

@@ -2,6 +2,7 @@
 using KentOS.Mini.Application.Enums;
 using KentOS.Mini.Web.Data;
 using FirebaseAdmin;
+using KentOS.Mini.Application.Models;
 using KentOS.Mini.Application.Services;
 namespace KentOS.Mini.Web.Services
 {
@@ -126,6 +127,7 @@ namespace KentOS.Mini.Web.Services
                         {
                             message.RetryCount++;
                             message.FailMessage = "Bir hata oluştu.";
+                            HassasIcerigiTemizle(message);
                         }
                     }
                     catch (FirebaseAdmin.Messaging.FirebaseMessagingException fmex) when (
@@ -195,11 +197,13 @@ namespace KentOS.Mini.Web.Services
                         {
                             message.IsSuccess = true;
                             message.UpdatedAt = DateTime.Now;
+                            HassasIcerigiTemizle(message);
                         }
                         else
                         {
                             message.RetryCount++;
                             message.FailMessage = "Bir hata oluştu.";
+                            HassasIcerigiTemizle(message);
                         }
                     }
                     catch (InvalidOperationException ex)
@@ -234,6 +238,36 @@ namespace KentOS.Mini.Web.Services
 
                 }
             }
+        }
+
+        /// <summary>
+        /// HASSAS İÇERİĞİ TERMİNAL DURUMDA SİLER.
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Yönetici bir parolayı sıfırladığında yeni parola SMS gövdesinde
+        /// gidiyor ve o gövde <c>messages</c> tablosuna yazılıyordu — worker
+        /// gönderimden sonra yalnızca <c>IsSuccess</c> işaretleyip satırı
+        /// bırakıyor, hiçbir yer de silmiyor. Sonuç: <b>sıfırlanan her parola
+        /// veritabanında düz metin olarak süresiz duruyordu.</b>
+        /// <c>sistem_hatalari</c>'nda maskelenen bir bilgi burada maskesizdi.
+        /// </para>
+        /// <para>
+        /// Temizlik hem BAŞARIDA hem DENEMELER TÜKENİNCE yapılır: yalnızca
+        /// başarıda yapılsaydı gönderilemeyen bir parola tabloda kalırdı ve
+        /// gönderilemeyen mesaj tam da en uzun duran mesajdır.
+        /// </para>
+        /// <para>
+        /// Satır SİLİNMİYOR, yalnızca gövdesi boşaltılıyor: "şu tarihte bu
+        /// kullanıcıya parola SMS'i gitti" bilgisi bir denetim izi ve o kalmalı.
+        /// </para>
+        /// </remarks>
+        private static void HassasIcerigiTemizle(Message message)
+        {
+            if (!message.Hassas) return;
+            if (!message.IsSuccess && message.RetryCount < 3) return;
+
+            message.Content = "(içerik güvenlik gereği silindi)";
         }
     }
 }

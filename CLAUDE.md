@@ -1966,12 +1966,62 @@ tonuyla çiziliyor: açıkken sağlayıcıda hesabı olan **herkes** girebilir.
 Kurumsal dizinde binlerce hesap var, uygulamayı kullanması gereken kişi
 sayısı onlarca.
 
+## PAROLA SIFIRLAMA — kendi kendine sıfırlama YOK, sebebi ölçüldü
+
+Sıfırlamayı **yönetici** yapıyor (`POST yonetim/kullanicilar/{id}/parola`) ve
+öyle kalıyor. Kendi kendine sıfırlama akışı yazılmadı çünkü **gönderilecek
+bir kanal yok**:
+
+| Kanal | Durum (ölçüldü) |
+|---|---|
+| E-posta | Altyapı **hiç yok** — SMTP istemcisi de, NuGet paketi de, `.env` ayarı da |
+| SMS | Altyapı var ama **13 kullanıcıdan 1'inde** telefon numarası kayıtlı |
+
+Yani bugün yazılacak bir "şifremi unuttum" akışı 13 kişiden 1'i için
+çalışırdı. Önkoşul bir **kurulum kararı**: ya SMTP sunucusu tanımlanacak ya
+da her kullanıcıya doğrulanmış telefon numarası girilecek. İkisi de bu
+depodaki bir kod değişikliğinden büyük.
+
+### SIFIRLANAN PAROLA VERİTABANINDA DÜZ METİN KALMIYOR
+
+Yönetici sıfırlaması, isteğe bağlı olarak yeni parolayı SMS ile gönderiyor.
+Gövde `messages` tablosuna yazılıyor ve **hiçbir zaman silinmiyordu**:
+`FirebaseWorker` gönderimden sonra yalnızca `IsSuccess` işaretliyor, satırı
+bırakıyor; `MessageService.DeleteAsync` var ama bu yoldan hiç çağrılmıyor.
+
+Sonuç: **sıfırlanan her parola veritabanında düz metin olarak süresiz
+duruyordu.** `sistem_hatalari` tablosunda `parola` alanı maskeleniyor —
+burada maskesizdi.
+
+- `messages.hassas` (yeni kolon) işaretli mesajın gövdesi **terminal duruma
+  gelince** siliniyor: başarıyla gönderildiğinde de, üç deneme tükendiğinde
+  de. Yalnızca başarıda silinseydi gönderilemeyen bir parola tabloda kalırdı
+  — ve gönderilemeyen mesaj tam da en uzun duran mesajdır.
+- **Satır silinmiyor, gövdesi boşaltılıyor**: "şu tarihte bu kullanıcıya
+  parola SMS'i gitti" bilgisi bir denetim izi ve o kalmalı.
+- `CreateAsync`'in `hassas` parametresi **varsayılan `false`** — mevcut
+  çağrı yerlerinin hiçbiri değişmedi.
+
+> Bekçi `ParolaSmsTests` (3): zincir üç dosyada (istek işaretler → worker
+> temizler → alan modelde tanımlı) ve kopan halka SESSİZ — mesaj yine gider,
+> yalnızca gövdesi tabloda kalır. Kaynak taranarak doğrulanıyor; davranışı
+> sınamak arka plan servisini ve gerçek SMS sağlayıcısını çalıştırmayı
+> gerektirirdi. **Ateş ettiği ölçüldü:** `hassas: true` kaldırıldığında test
+> düştü.
+
+Sözleşme anlık görüntüsü **+1 kolon** (`hassas`), sıfır kayıp.
+
 ## GİRİŞ EKRANI
 
 - **Büyük harf kilidi uyarısı.** Şifre alanı yazılanı göstermiyor; kilit
   açıkken kullanıcı doğru şifreyi yazdığını sanıp üst üste reddediliyor ve
   **hesap kilidine (10 deneme) kadar** gidebiliyor. `getModifierState`
   tuşa basıldığı anda okunuyor.
+- **"Şifremi unuttum" bir bağlantı DEĞİL, açılır bir açıklama.** Kendi
+  kendine sıfırlama akışı yok (yukarıya bakın) ama ekran önceden şifresini
+  unutan kullanıcıya hiçbir şey söylemiyordu: kişi denemeye devam ediyor ve
+  10 denemede hesabını kilitliyordu. Metin kurum adı GEÇMEZ — "sistem
+  yöneticiniz".
 - **Sağlayıcı düğmesi şifreli girişin ALTINDA**, "ya da" ayracıyla. Şifreyle
   giriş üstte ve dolgulu kalıyor: sağlayıcı kapandığında ekranın düzeni
   değişmesin, kas hafızası bozulmasın.

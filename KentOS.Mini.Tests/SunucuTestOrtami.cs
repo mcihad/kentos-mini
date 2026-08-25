@@ -316,10 +316,14 @@ public class SahteMesajServisi : IMessageService
 
     public List<TekMesaj> TekKisiyeGidenMesajlar { get; } = [];
 
-    public Task CreateAsync(long userId, string token, string title, string content, SendMessageType type, NotifikasyonTip tip, string? data)
+    /// <summary>Hassas işaretiyle gönderilen mesajlar — parola SMS'i testi için.</summary>
+    public List<(long KullaniciId, bool Hassas)> HassaslikIsaretleri { get; } = [];
+
+    public Task CreateAsync(long userId, string token, string title, string content, SendMessageType type, NotifikasyonTip tip, string? data, bool hassas = false)
     {
         TekKisiyeGidenler.Add(userId);
         TekKisiyeGidenMesajlar.Add(new TekMesaj(userId, token, title, content));
+        HassaslikIsaretleri.Add((userId, hassas));
         return Task.CompletedTask;
     }
 

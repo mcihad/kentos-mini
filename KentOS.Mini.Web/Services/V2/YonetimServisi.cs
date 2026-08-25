@@ -169,7 +169,12 @@ public class YonetimServisi(
                 $"Randevu sisteminde kullanıcı kaydınız oluşturuldu. Kullanıcı adı: {kullanici.UserName} Şifre: {istek.Parola}",
                 SendMessageType.SMS,
                 NotifikasyonTip.Always,
-                null);
+                null,
+                // HASSAS: gövde yeni parolayı taşıyor. Gönderildikten (ya da
+                // denemeler tükendikten) sonra `messages` satırının içeriği
+                // boşaltılıyor; aksi hâlde her sıfırlanan parola
+                // veritabanında düz metin olarak süresiz kalırdı.
+                hassas: true);
         }
 
         _logger.LogInformation("Yeni kullanıcı oluşturuldu: {KullaniciAdi} ({Id})",
@@ -249,7 +254,12 @@ public class YonetimServisi(
                 $"Randevu sistemi şifreniz değiştirildi. Kullanıcı adı: {kullanici.UserName} Şifre: {istek.YeniParola}",
                 SendMessageType.SMS,
                 NotifikasyonTip.Always,
-                null);
+                null,
+                // HASSAS: gövde yeni parolayı taşıyor. Gönderildikten (ya da
+                // denemeler tükendikten) sonra `messages` satırının içeriği
+                // boşaltılıyor; aksi hâlde her sıfırlanan parola
+                // veritabanında düz metin olarak süresiz kalırdı.
+                hassas: true);
         }
 
         _logger.LogInformation("Kullanıcı parolası yöneticice sıfırlandı: {Id}", id);

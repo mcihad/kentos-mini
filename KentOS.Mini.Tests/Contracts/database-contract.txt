@@ -586,6 +586,7 @@ TABLE messages
   created_at
   data
   fail_message
+  hassas
   id
   is_success
   message_type

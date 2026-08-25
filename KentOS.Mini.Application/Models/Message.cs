@@ -50,6 +50,28 @@ namespace KentOS.Mini.Application.Models
         [Column("okundu")]
         public bool Okundu { get; set; } = false;
 
+        /// <summary>
+        /// İÇERİĞİ GÖNDERİLDİKTEN SONRA SİLİNMELİ Mİ?
+        /// </summary>
+        /// <remarks>
+        /// <para>
+        /// Yönetici bir parolayı sıfırladığında yeni parola SMS ile
+        /// gönderiliyor ve gövdesi bu tabloya yazılıyordu — <b>hiçbir zaman
+        /// da silinmiyordu</b>. <c>FirebaseWorker</c> gönderimden sonra
+        /// yalnızca <c>IsSuccess</c> işaretliyor, satırı bırakıyor. Yani her
+        /// sıfırlanan parola veritabanında düz metin olarak süresiz
+        /// duruyordu; <c>sistem_hatalari</c> tablosunda maskelenen bir bilgi,
+        /// burada maskesiz kalıyordu.
+        /// </para>
+        /// <para>
+        /// İşaretli mesajın gövdesi <b>terminal duruma gelince</b> siliniyor:
+        /// başarıyla gönderildiğinde de, denemeler tükendiğinde de. Yalnızca
+        /// başarıda silinseydi gönderilemeyen bir parola tabloda kalırdı.
+        /// </para>
+        /// </remarks>
+        [Column("hassas")]
+        public bool Hassas { get; set; }
+
         [Column("okunma_tarihi")]
         public DateTime? OkunmaTarihi { get; set; }
     }

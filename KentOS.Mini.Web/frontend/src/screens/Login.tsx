@@ -63,10 +63,18 @@ function useKisaEkran(esik = 620) {
  * </p>
  *
  * <p>
- * Belgedeki "Beni hatırla" ve "Şifremi unuttum" bağlantıları KONMADI:
- * sunucuda parola sıfırlama akışı yok (yönetici sıfırlıyor) ve oturum zaten
- * kalıcı saklanıyor. Hiçbir şey yapmayan bir onay kutusu, olmayan kutudan
- * daha kötü.
+ * "Beni hatırla" KONMADI: oturum zaten kalıcı saklanıyor ve hiçbir şey
+ * yapmayan bir onay kutusu, olmayan kutudan daha kötü.
+ * </p>
+ *
+ * <p>
+ * <b>"Şifremi unuttum" bir BAĞLANTI değil, bir AÇIKLAMA.</b> Kendi kendine
+ * sıfırlama akışı yok — sunucuda e-posta gönderme altyapısı hiç yok ve
+ * kullanıcıların çoğunda telefon numarası kayıtlı değil, yani gönderilecek
+ * bir kanal da yok. Ama şifresini unutan kullanıcı ÖNCEDEN hiçbir şey
+ * görmüyordu: ekran sessizdi, kişi denemeye devam ediyor ve 10 denemede
+ * hesabını kilitliyordu. Yapılacak şeyi yazmak, çalışmayan bir bağlantı
+ * koymaktan da sessiz kalmaktan da iyi.
  * </p>
  *
  * <p>
@@ -302,6 +310,31 @@ export default function Login() {
             <LogIn size={17} strokeWidth={2} />
             {gonderiliyor ? 'Giriş yapılıyor…' : 'Giriş yap'}
           </Button>
+
+          {/*
+            Şifre yardımı — AÇILIR AÇIKLAMA, bağlantı değil.
+
+            Varsayılan kapalı: giriş yapabilen kullanıcının ekranında yer
+            kaplamamalı. Açıldığında yapılacak şeyi söylüyor; kurum adı
+            KODA YAZILMAZ, "sistem yöneticiniz" deniyor.
+          */}
+          <details className="mt-3 text-xs">
+            <summary
+              className="cursor-pointer list-none text-center font-semibold text-text-3
+                         underline-offset-2 transition-colors hover:text-brand hover:underline"
+            >
+              Şifremi unuttum
+            </summary>
+            <p className="mt-2 rounded-md bg-sunken px-3 py-2.5 leading-relaxed text-text-2">
+              Şifrenizi <b>sistem yöneticiniz</b> sıfırlayabilir. Kullanıcı adınızı
+              belirterek başvurun; yeni şifreniz size iletilir.
+              <br />
+              <span className="mt-1.5 block text-text-3">
+                Art arda hatalı deneme hesabınızı geçici olarak kilitler — emin
+                değilseniz denemek yerine yöneticinize başvurun.
+              </span>
+            </p>
+          </details>
 
           {saglayici?.kullanilabilir && (
             <>
