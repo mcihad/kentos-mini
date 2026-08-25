@@ -45,4 +45,39 @@ public static class Telefon
 
         return rakamlar.Length == 0 ? ham.Trim() : rakamlar;
     }
+
+    /// <summary>
+    /// GÖSTERİLECEK biçim: <c>0532 111 22 33</c>.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Aynı numara veritabanında dört ayrı yazımla duruyor
+    /// (<c>05412983451</c>, <c>0541 298 34 50</c>, <c>+90 541 298 34 52</c>,
+    /// <c>541 298 34 50</c>) — eski MVC formu serbest metin alıyordu. Basılı
+    /// ya da süzülen bir listede alt alta dört biçim, telefonu çeviren kişiyi
+    /// her satırda yeniden okumaya zorluyor ve iki kaydın aynı kişi olup
+    /// olmadığı bakışta anlaşılmıyor.
+    /// </para>
+    /// <para>
+    /// <b>11 hane ve <c>0</c> ile başlamıyorsa DOKUNULMAZ</b> — yabancı
+    /// numarayı ya da kısa hattı bozmaktansa olduğu gibi göstermek doğru.
+    /// </para>
+    /// <para>
+    /// Kural bir dönem <c>HalkGunuCiktiServisi</c> içinde özel bir metottu ve
+    /// yalnızca halk günü çıktılarında uygulanıyordu; liste çıktıları
+    /// eklenirken kopyalanmak yerine buraya çıkarıldı. İstemcideki karşılığı
+    /// <c>data/format.ts → phone()</c>.
+    /// </para>
+    /// </remarks>
+    public static string Bicimle(string? ham)
+    {
+        var sade = Duzelt(ham);
+        if (sade is null) return string.Empty;
+
+        var rakam = new string(sade.Where(char.IsDigit).ToArray());
+
+        return rakam.Length == 11 && rakam.StartsWith('0')
+            ? $"{rakam[..4]} {rakam[4..7]} {rakam[7..9]} {rakam[9..]}"
+            : sade;
+    }
 }

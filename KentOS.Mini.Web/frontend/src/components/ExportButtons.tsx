@@ -31,7 +31,17 @@ export function ExportButtons({
   tetikleyici,
 }: {
   excel: () => void;
-  pdf: () => void;
+  /**
+   * PDF çıktısı — YOKSA tek düğme çizilir.
+   *
+   * <p>
+   * Görev, proje, özgeçmiş, protokol ve vatandaş havuzu listelerinin PDF'i
+   * yok ve bilinçli: onlar süzülmek ve sayılmak için dışa aktarılıyor,
+   * elden ele dolaşmak için değil. Boş bir "PDF" düğmesi çizmek, basıp
+   * hiçbir şey alamayan bir kullanıcı bırakırdı.
+   * </p>
+   */
+  pdf?: () => void;
   className?: string;
   /**
    * Verilirse ikili düğme yerine TEK düğme + açılır menü çizilir.
@@ -59,7 +69,7 @@ export function ExportButtons({
               Dışa aktar
             </DropdownMenu.Label>
             <MenuSatiri ikon={<FileSpreadsheet size={15} />} etiket="Excel" tikla={excel} />
-            <MenuSatiri ikon={<FileText size={15} />} etiket="PDF" tikla={pdf} />
+            {pdf && <MenuSatiri ikon={<FileText size={15} />} etiket="PDF" tikla={pdf} />}
           </DropdownMenu.Content>
         </DropdownMenu.Portal>
       </DropdownMenu.Root>
@@ -76,8 +86,12 @@ export function ExportButtons({
       )}
     >
       <Parca ikon={<FileSpreadsheet size={14} />} etiket="Excel" tikla={excel} />
-      <span className="w-px shrink-0 bg-border" aria-hidden />
-      <Parca ikon={<FileText size={14} />} etiket="PDF" tikla={pdf} />
+      {pdf && (
+        <>
+          <span className="w-px shrink-0 bg-border" aria-hidden />
+          <Parca ikon={<FileText size={14} />} etiket="PDF" tikla={pdf} />
+        </>
+      )}
     </div>
   );
 }

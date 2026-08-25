@@ -161,6 +161,11 @@ Yeni varlık **üç yerde** tanımlanır: `bildirim/BildirimMerkezi.tsx`,
 | Özgeçmiş panosu | `api/v2/istatistik/ozgecmis` | `/istatistikler/ozgecmis` | `ozgecmis.goruntule` | ✅ |
 | Sistem sağlığı panosu | `api/v2/istatistik/sistem` | `/istatistikler/sistem` | `sistem.hata` | ✅ |
 | Pano Excel çıktısı (6 konu) | `api/v2/istatistik/<konu>/excel` | konu sayfası | pano ile aynı | ✅ |
+| Liste çıktısı — görev | `api/v2/gorev/excel` | `/gorevler` | `gorev.ciktiAl` | ✅ |
+| Liste çıktısı — proje | `api/v2/proje/excel` | `/projeler` | `proje.ciktiAl` | ✅ |
+| Liste çıktısı — özgeçmiş | `api/v2/ozgecmis/excel` | `/ozgecmisler` | `ozgecmis.ciktiAl` | ✅ |
+| Liste çıktısı — protokol | `api/v2/protokol/excel` | `/protokol` | `protokol.ciktiAl` | ✅ |
+| Liste çıktısı — vatandaş havuzu | `api/v2/halk-gunu/basvuru/excel` | `/halk-gunu/basvurular` | `halkgunu.ciktiAl` | ✅ |
 | Excel üretimi (ClosedXML) | `DisaAktarmaServisi` | çıktı düğmeleri | `ajanda.ciktiAl` | ✅ |
 | PDF üretimi (QuestPDF) | modül servisleri | çıktı düğmeleri | modül izni | ✅ |
 

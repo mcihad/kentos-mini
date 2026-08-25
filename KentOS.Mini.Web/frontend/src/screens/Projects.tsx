@@ -21,6 +21,8 @@ import { useProjects } from '../data/projects';
 import { PullToRefresh } from '../components/PullToRefresh';
 import { PROJECT_STATUS_LABELS, type ProjectSummary } from '../data/types';
 import { UnitScopePicker } from '../components/UnitScopePicker';
+import { ExportButtons } from '../components/ExportButtons';
+import { download } from '../data/download';
 
 type Kapsam = 'kendi' | 'alt';
 
@@ -55,14 +57,16 @@ export default function Projects() {
     return () => clearTimeout(z);
   }, [aramaGirdisi]);
 
-  const { data, isLoading, isError, error, isPlaceholderData, refetch, isFetching } = useProjects({
-    sayfa,
-    boyut: 24,
+  // Süzgeç TEK nesnede: liste ve Excel aynı yerden okur (bkz. Tasks.tsx).
+  const suzgec = {
     ara: arama,
     durumlar: durum === null ? undefined : [durum],
     altBirimlerDahil: kapsam === 'alt',
     sirala: 'bitis',
-  });
+  };
+
+  const { data, isLoading, isError, error, isPlaceholderData, refetch, isFetching } =
+    useProjects({ sayfa, boyut: 24, ...suzgec });
 
   const projeler = data?.veriler ?? [];
   const masaustu = useIsDesktop();
@@ -91,10 +95,14 @@ export default function Projects() {
           placeholder={masaustu ? 'Proje adı veya kodu ara' : 'Ara'}
           aria-label="Projelerde ara"
           ikon={<Search size={15} />}
-          className="min-w-0 flex-1 md:max-w-[320px]"
+          className="min-w-[180px] flex-1 md:max-w-[320px]"
         />
 
-        <div className="hidden min-w-0 flex-wrap items-center gap-2 md:ml-auto md:flex md:flex-nowrap">
+        <div className="hidden min-w-0 flex-wrap items-center justify-end gap-2 md:ml-auto md:flex">
+          {hasPermission(PERMISSION.projeCiktiAl) && (
+            <ExportButtons excel={() => download('/proje/excel', suzgec)} />
+          )}
+
           <UnitScopePicker />
 
           <SegmentedSelect<Kapsam>

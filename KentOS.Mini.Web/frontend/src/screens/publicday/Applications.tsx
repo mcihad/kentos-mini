@@ -6,6 +6,8 @@ import {
 import { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { FieldWrapper, SearchInput, Textarea, Input } from '../../components/Field';
+import { ExportButtons } from '../../components/ExportButtons';
+import { download } from '../../data/download';
 import { EmptyState } from '../../components/EmptyState';
 import { Button, IconButton } from '../../components/Button';
 import { RowActions } from '../../components/RowActions';
@@ -58,16 +60,17 @@ export default function Applications() {
     return () => clearTimeout(z);
   }, [aramaGirdisi]);
 
-  const liste = usePublicDayApplications({
-    sayfa,
-    boyut: 25,
+  // Süzgeç TEK nesnede: liste ve Excel aynı yerden okur (bkz. Tasks.tsx).
+  const suzgec = {
     ara: arama,
     // "Bekleyen" = henüz hiçbir güne atanmamış VE reddedilmemiş. Atama
     // ekranının aradığı küme bu; "Reddedilenler" geri çevrilenleri, "Tümü"
     // geçmişi gösterir.
     atanmamis: kapsam === 'bekleyen' ? true : undefined,
     durum: kapsam === 'reddedilen' ? DURUM_REDDEDILDI : undefined,
-  });
+  };
+
+  const liste = usePublicDayApplications({ sayfa, boyut: 25, ...suzgec });
 
   const qc = useQueryClient();
   const { bildir } = useToast();
@@ -218,6 +221,13 @@ export default function Applications() {
           ikon={<Search size={15} />}
           className="md:max-w-[300px] md:flex-1"
         />
+
+        {hasPermission(PERMISSION.halkgunuCiktiAl) && (
+          <ExportButtons
+            className="hidden md:inline-flex"
+            excel={() => download('/halk-gunu/basvuru/excel', suzgec)}
+          />
+        )}
 
         {/*
           Üç bölümlü seçim + "Vatandaş ekle" 390px'e SIĞMIYOR (görsel tur 4px

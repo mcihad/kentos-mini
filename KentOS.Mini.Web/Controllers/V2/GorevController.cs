@@ -298,6 +298,26 @@ public class GorevController(
             new IsYuklenenDosya(dosya.FileName, dosya.ContentType, bellek.ToArray()),
             aciklama, iptal);
     }
+
+    /// <summary>
+    /// Liste Excel çıktısı — ekrandaki süzgeçlerle.
+    /// </summary>
+    /// <remarks>
+    /// Süzgeç nesnesi listedekiyle AYNI: kullanıcı ekranda ne görüyorsa
+    /// dosyada onu bulmalı. Ayrı bir süzgeç sınıfı olsaydı ikisi zamanla
+    /// ayrışır ve "Excel eksik geliyor" diye bir şikâyet doğardı. Dışa
+    /// aktarma görüntülemekten AYRI bir izin ister: dosya kurum dışına
+    /// taşınabiliyor.
+    /// </remarks>
+    [HttpGet("excel")]
+    [Izin(Izinler.GorevCiktiAl)]
+    [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+    public async Task<IActionResult> GorevExcelAsync(
+        [FromQuery] GorevSuzgecDto suzgec)
+        => Gonder(await _servis.ExcelAsync(suzgec));
+
+    private FileContentResult Gonder(DisaAktarmaDosyasi d)
+        => File(d.Icerik, d.IcerikTuru, d.DosyaAdi);
 }
 
 /// <summary>Yorum yazma/düzenleme isteği.</summary>

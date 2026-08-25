@@ -46,6 +46,7 @@ export const PERMISSION = {
 
   protokolGoruntule: 'protokol.goruntule',
   protokolYonet: 'protokol.yonet',
+  protokolCiktiAl: 'protokol.ciktiAl',
 
   davetGoruntule: 'davet.goruntule',
   davetYonet: 'davet.yonet',
@@ -67,6 +68,7 @@ export const PERMISSION = {
   ozgecmisDuzenle: 'ozgecmis.duzenle',
   ozgecmisSil: 'ozgecmis.sil',
   ozgecmisPaylas: 'ozgecmis.paylas',
+  ozgecmisCiktiAl: 'ozgecmis.ciktiAl',
 
   cicekGoruntule: 'cicek.goruntule',
   cicekYonet: 'cicek.yonet',
@@ -94,10 +96,12 @@ export const PERMISSION = {
   gorevAsama: 'gorev.asama',
   gorevOnayla: 'gorev.onayla',
   gorevTipYonet: 'gorev.tipYonet',
+  gorevCiktiAl: 'gorev.ciktiAl',
   ekipYonet: 'ekip.yonet',
   projeGoruntule: 'proje.goruntule',
   projeYonet: 'proje.yonet',
   projeUyeYonet: 'proje.uyeYonet',
+  projeCiktiAl: 'proje.ciktiAl',
   bildirimKarsila: 'bildirim.karsila',
   bildirimYonlendir: 'bildirim.yonlendir',
   sahaTespit: 'saha.tespit',

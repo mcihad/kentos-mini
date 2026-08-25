@@ -193,6 +193,9 @@ public interface IHalkGunuServisi
     Task<HalkGunuDetayDto> DilimSilAsync(long dilimId);
 
     Task<SayfaliSonuc<BasvuruDto>> BasvuruListeAsync(BasvuruSuzgeci suzgec);
+
+    /// <summary>Vatandaş havuzunun Excel çıktısı — ekrandaki süzgeçlerle.</summary>
+    Task<DisaAktarmaDosyasi> BasvuruExcelAsync(BasvuruSuzgeci suzgec);
     Task<BasvuruDto> BasvuruOlusturAsync(BasvuruIstegi istek);
     Task<BasvuruDto> BasvuruGuncelleAsync(long id, BasvuruIstegi istek);
     Task<BasvuruDto> BasvuruReddetAsync(long id, string? neden);
@@ -498,7 +501,15 @@ public class HalkGunuServisi(
 
     // ── başvuru havuzu ─────────────────────────────────────────────────
 
-    public Task<SayfaliSonuc<BasvuruDto>> BasvuruListeAsync(BasvuruSuzgeci suzgec)
+    /// <summary>
+    /// Görünürlük kapısı + süzgeçler — liste ve çıktı AYNI yerden okur.
+    /// </summary>
+    /// <remarks>
+    /// Gerekçesi <c>GorevServisi.SorguKurAsync</c> ile aynı: blok
+    /// kopyalansaydı bir süzgeç eklendiğinde biri unutulur ve Excel
+    /// ekrandakinden farklı bir küme döndürürdü.
+    /// </remarks>
+    private IQueryable<HalkGunuBasvuru> BasvuruSorguKur(BasvuruSuzgeci suzgec)
     {
         var sorgu = GorunurBasvurular();
 
@@ -521,6 +532,13 @@ public class HalkGunuServisi(
                 (b.Konu != null && EF.Functions.ILike(b.Konu, $"%{ara}%")) ||
                 (b.TelefonSade != null && sade != null && b.TelefonSade.Contains(sade)));
         }
+
+        return sorgu;
+    }
+
+    public Task<SayfaliSonuc<BasvuruDto>> BasvuruListeAsync(BasvuruSuzgeci suzgec)
+    {
+        var sorgu = BasvuruSorguKur(suzgec);
 
         return sorgu
             .OrderByDescending(b => b.OlusturmaTarihi)
@@ -992,6 +1010,44 @@ public class HalkGunuServisi(
         KatilimDurumu.Iptal => "İptal",
         _ => "Bilinmiyor",
     };
+
+    /// <summary>
+    /// LİSTE ÇIKTISI — ekrandaki süzgeçlerle, sayfalamasız.
+    /// </summary>
+    /// <remarks>
+    /// Sorgu liste ile AYNI kurucudan geliyor; görünürlük kapısı ve süzgeçler
+    /// birebir aynı. Üst sınır aşılırsa sessizce kırpılmaz, hata döner —
+    /// gerekçesi <see cref="ListeCikti"/> üzerinde.
+    /// </remarks>
+    public async Task<DisaAktarmaDosyasi> BasvuruExcelAsync(BasvuruSuzgeci suzgec)
+    {
+        var satirlar = await BasvuruSorguKur(suzgec)
+            .OrderByDescending(b => b.OlusturmaTarihi)
+            .Take(ListeCikti.UstSinir + 1)
+            .Select(b => new
+            {
+                b.Ad, b.Soyad, b.Telefon, b.Konu, b.Not, b.Durum, b.RedNedeni,
+                Mahalle = b.Mahalle != null ? b.Mahalle.Ad : null,
+                b.Meslek, b.OlusturmaTarihi,
+                GunSayisi = b.Katilimlar.Count,
+            })
+            .ToListAsync();
+
+        ListeCikti.SiniriDenetle(satirlar.Count, "başvuru");
+
+        return ExcelTablosu.Uret(
+            "Vatandaş Havuzu",
+            ["Ad", "Soyad", "Telefon", "Mahalle", "Meslek", "Konu", "Not", "Durum", "Ret nedeni", "Atandığı gün", "Kayıt"],
+            satirlar.Select(b => new string?[]
+            {
+                b.Ad, b.Soyad, Telefon.Bicimle(b.Telefon), b.Mahalle, b.Meslek,
+                b.Konu, b.Not, b.Durum.ToString(), b.RedNedeni,
+                b.GunSayisi.ToString(),
+                b.OlusturmaTarihi.ToString("dd.MM.yyyy"),
+            }),
+            "vatandas-havuzu");
+    }
+
 }
 
 /// <summary>Ret gerekçesi — gövdede tek alan.</summary>

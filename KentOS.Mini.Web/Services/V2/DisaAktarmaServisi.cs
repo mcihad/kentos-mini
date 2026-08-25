@@ -339,45 +339,15 @@ public class DisaAktarmaServisi(
         return $"{b} – {t}";
     }
 
+    /// <remarks>
+    /// Tablo kurulumu <see cref="ExcelTablosu"/> içinde: liste çıktıları
+    /// (görev, proje, özgeçmiş, protokol, halk günü havuzu) da aynı başlık
+    /// şeridini, donmuş satırı ve otomatik süzgecini kullanıyor. İkinci bir
+    /// kopya, birinde düzeltilen bir biçimin ötekinde kalması demekti.
+    /// </remarks>
     private static DisaAktarmaDosyasi ExcelUret(
         string sayfaAdi, string[] basliklar, IEnumerable<string?[]> satirlar, string dosyaOneki)
-    {
-        using var kitap = new XLWorkbook();
-        var sayfa = kitap.Worksheets.Add(sayfaAdi);
-
-        for (var s = 0; s < basliklar.Length; s++)
-        {
-            var hucre = sayfa.Cell(1, s + 1);
-            hucre.Value = basliklar[s];
-            hucre.Style.Font.Bold = true;
-            // Kurumsal lacivert başlık şeridi.
-            hucre.Style.Fill.BackgroundColor = XLColor.FromHtml("#002E6D");
-            hucre.Style.Font.FontColor = XLColor.White;
-        }
-
-        var satir = 2;
-        foreach (var s in satirlar)
-        {
-            for (var i = 0; i < s.Length; i++)
-            {
-                sayfa.Cell(satir, i + 1).Value = s[i] ?? string.Empty;
-            }
-            satir++;
-        }
-
-        sayfa.Columns().AdjustToContents();
-        // Başlık satırı kaydırırken sabit kalsın — uzun listelerde şart.
-        sayfa.SheetView.FreezeRows(1);
-        sayfa.Range(1, 1, Math.Max(1, satir - 1), basliklar.Length).SetAutoFilter();
-
-        using var bellek = new MemoryStream();
-        kitap.SaveAs(bellek);
-
-        return new DisaAktarmaDosyasi(
-            bellek.ToArray(),
-            $"{dosyaOneki}-{DateTime.Now:yyyyMMdd-HHmm}.xlsx",
-            ExcelTuru);
-    }
+        => ExcelTablosu.Uret(sayfaAdi, basliklar, satirlar, dosyaOneki);
 
     /// <param name="birim">
     /// Altbilgide yazan birim — ÇIKTIYI ALANIN birimi. Sabit "Başkanlık

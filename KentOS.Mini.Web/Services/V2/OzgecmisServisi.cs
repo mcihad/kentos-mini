@@ -127,6 +127,9 @@ public record YuklenenDosya(
 public interface IOzgecmisServisi
 {
     Task<SayfaliSonuc<OzgecmisOzetDto>> ListeAsync(OzgecmisSuzgeci suzgec);
+
+    /// <summary>Havuzun Excel çıktısı — ekrandaki süzgeçlerle.</summary>
+    Task<DisaAktarmaDosyasi> ExcelAsync(OzgecmisSuzgeci suzgec);
     Task<OzgecmisDetayDto> DetayAsync(long id);
     Task<OzgecmisDetayDto> OlusturAsync(OzgecmisIstegi istek, YuklenenDosya dosya);
     Task<OzgecmisDetayDto> GuncelleAsync(long id, OzgecmisIstegi istek, YuklenenDosya? dosya);
@@ -181,7 +184,15 @@ public class OzgecmisServisi(
 
     // ── liste ──────────────────────────────────────────────────────────
 
-    public async Task<SayfaliSonuc<OzgecmisOzetDto>> ListeAsync(OzgecmisSuzgeci suzgec)
+    /// <summary>
+    /// Görünürlük kapısı + süzgeçler — liste ve çıktı AYNI yerden okur.
+    /// </summary>
+    /// <remarks>
+    /// Gerekçesi <c>GorevServisi.SorguKurAsync</c> ile aynı: blok
+    /// kopyalansaydı bir süzgeç eklendiğinde biri unutulur ve Excel
+    /// ekrandakinden farklı bir küme döndürürdü.
+    /// </remarks>
+    private async Task<IQueryable<Ozgecmis>> SorguKurAsync(OzgecmisSuzgeci suzgec)
     {
         var kullaniciId = await _kullanici.GetUserIdAsync();
 
@@ -235,6 +246,13 @@ public class OzgecmisServisi(
 
         if (suzgec.BanaPaylasilan == true && kullaniciId is { } benim)
             sorgu = sorgu.Where(o => o.Paylasimlar.Any(p => p.AliciId == benim));
+
+        return sorgu;
+    }
+
+    public async Task<SayfaliSonuc<OzgecmisOzetDto>> ListeAsync(OzgecmisSuzgeci suzgec)
+    {
+        var sorgu = await SorguKurAsync(suzgec);
 
         return await sorgu
             .OrderByDescending(o => o.OlusturmaTarihi)
@@ -547,5 +565,50 @@ public class OzgecmisServisi(
         var diskAdi = $"{Guid.NewGuid()}{uzanti}";
         await _depo.SaveAsync(StorageArea.Public, Anahtar(diskAdi), dosya.Icerik, dosya.IcerikTuru);
         return diskAdi;
+    }
+
+
+    /// <summary>
+    /// LİSTE ÇIKTISI — ekrandaki süzgeçlerle, sayfalamasız.
+    /// </summary>
+    /// <remarks>
+    /// Sorgu liste ile AYNI kurucudan geliyor; görünürlük kapısı ve süzgeçler
+    /// birebir aynı. Üst sınır aşılırsa sessizce kırpılmaz, hata döner —
+    /// gerekçesi <see cref="ListeCikti"/> üzerinde.
+    /// </remarks>
+    public async Task<DisaAktarmaDosyasi> ExcelAsync(OzgecmisSuzgeci suzgec)
+    {
+        var sorgu = await SorguKurAsync(suzgec);
+
+        var satirlar = await sorgu
+            .OrderByDescending(o => o.OlusturmaTarihi)
+            .Take(ListeCikti.UstSinir + 1)
+            .Select(o => new
+            {
+                o.AdSoyad, o.Telefon, o.Eposta, o.MeslekAd,
+                Mahalle = o.Mahalle != null ? o.Mahalle.Ad : null,
+                Kaynak = o.RandevuId != null ? "Talepten" : "Havuz",
+                o.Olusturan, o.OlusturmaTarihi,
+                PaylasimSayisi = o.Paylasimlar.Count,
+            })
+            .ToListAsync();
+
+        ListeCikti.SiniriDenetle(satirlar.Count, "özgeçmiş");
+
+        return ExcelTablosu.Uret(
+            "Özgeçmişler",
+            ["Ad Soyad", "Telefon", "E-posta", "Meslek", "Mahalle", "Kaynak", "Ekleyen", "Eklenme", "Paylaşım"],
+            satirlar.Select(o => new string?[]
+            {
+                o.AdSoyad,
+                // Telefon TEK BİÇİME getirilir: aynı numara veritabanında dört
+                // ayrı yazımla duruyor ve süzülen bir sütunda bu, aynı kişiyi
+                // dört ayrı değer gibi gösteriyordu.
+                Telefon.Bicimle(o.Telefon),
+                o.Eposta, o.MeslekAd, o.Mahalle, o.Kaynak, o.Olusturan,
+                o.OlusturmaTarihi.ToString("dd.MM.yyyy"),
+                o.PaylasimSayisi.ToString(),
+            }),
+            "ozgecmisler");
     }
 }

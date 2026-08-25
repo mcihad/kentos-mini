@@ -188,6 +188,26 @@ public class ProjeController(IProjeServisi _servis) : V2ControllerBase
     public Task<KilometreTasiDto> KilometreTasiAsync(
         long id, long tasId, [FromQuery] bool tamamlandi, CancellationToken iptal) =>
         _servis.KilometreTasiTamamlaAsync(id, tasId, tamamlandi, iptal);
+
+    /// <summary>
+    /// Liste Excel çıktısı — ekrandaki süzgeçlerle.
+    /// </summary>
+    /// <remarks>
+    /// Süzgeç nesnesi listedekiyle AYNI: kullanıcı ekranda ne görüyorsa
+    /// dosyada onu bulmalı. Ayrı bir süzgeç sınıfı olsaydı ikisi zamanla
+    /// ayrışır ve "Excel eksik geliyor" diye bir şikâyet doğardı. Dışa
+    /// aktarma görüntülemekten AYRI bir izin ister: dosya kurum dışına
+    /// taşınabiliyor.
+    /// </remarks>
+    [HttpGet("excel")]
+    [Izin(Izinler.ProjeCiktiAl)]
+    [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+    public async Task<IActionResult> ProjeExcelAsync(
+        [FromQuery] ProjeSuzgecDto suzgec)
+        => Gonder(await _servis.ExcelAsync(suzgec));
+
+    private FileContentResult Gonder(DisaAktarmaDosyasi d)
+        => File(d.Icerik, d.IcerikTuru, d.DosyaAdi);
 }
 
 /// <summary>Proje ekibi yazma isteği.</summary>

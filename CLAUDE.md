@@ -1711,6 +1711,84 @@ sözleşme       +3 DTO, sıfır kayıp — v1 mobil sözleşmesi bozulmadı
 > ham tarıyor — **yorum satırları dahil**, yani belgede örnek olarak yazılan
 > tanımsız bir token adı da testi düşürüyor.
 
+## LİSTE ÇIKTISI — beş modül daha
+
+Görev, proje, özgeçmiş, protokol ve vatandaş havuzu listeleri artık Excel'e
+aktarılıyor (`GET <modül>/excel`). Ajanda ve talepte bu zaten vardı; yeni
+modüller eklenirken atlanmıştı ve kullanıcı "ötekinde var burada yok" diyordu.
+
+### SÜZGEÇ VE KAPI LİSTEYLE AYNI YERDEN
+
+Her modülde sorgu kurulumu bir metoda çıkarıldı (`SorguKurAsync` /
+`SorguKur`); liste de çıktı da onu çağırıyor.
+
+Kopyalansaydı belirti **sessiz** olurdu: bir süzgeç eklendiğinde biri
+unutulur ve Excel ekrandakinden farklı bir küme döndürürdü — iki listeyi yan
+yana koymadan anlaşılmıyor. Aynı gerekçe istatistik merkezinde de yazılı:
+listede göremediğin kaydı sayan ya da dışa aktaran bir uç, kapıyı deliyor.
+
+> **Ölçüldü:** liste `toplam` alanı ile Excel satır sayısı altı süzgeç
+> bileşiminde birebir eşleşti (görev 20/20 · görev+arama 0/0 · özgeçmiş 2/2 ·
+> protokol 8/8 · havuz+atanmamış 2/2).
+
+| Modül | Kapı |
+|---|---|
+| Görev · Proje | `kapsam.Contains(BirimId)` — `IEtkinBirim.KapsamAsync` |
+| Vatandaş havuzu | `BirimId == etkin birim` |
+| Özgeçmiş | kapı YOK — kasıtlı istisna (havuz birimler arası dolaşır) |
+| Protokol | kapı YOK — defter kurum geneli |
+
+### PDF YOK ve bilinçli
+
+Bu beş liste **süzülmek ve sayılmak** için dışa aktarılıyor, elden ele
+dolaşmak için değil. `ExportButtons`'ın `pdf` alanı isteğe bağlı yapıldı;
+verilmezse tek düğme çiziliyor. Boş bir "PDF" düğmesi, basıp hiçbir şey
+alamayan bir kullanıcı bırakırdı.
+
+### SESSİZ KIRPMA YOK
+
+`ListeCikti.UstSinir` = **20.000 satır**. Aşılırsa kırpılmıyor, iş kuralı
+hatası dönüyor ve kullanıcıdan süzgeç daraltması isteniyor: kırpmak "her şeyi
+indirdim" sanan bir kullanıcı bırakırdı ve eksik raporun yanlış olduğu ancak
+başka bir yerden sayılınca anlaşılırdı. Sorgu `UstSinir + 1` çekiyor, yani
+aşım tek bir satır fazlasından anlaşılıyor.
+
+### İzin: görüntülemekten AYRI
+
+Dört yeni izin (`gorev.ciktiAl` · `proje.ciktiAl` · `ozgecmis.ciktiAl` ·
+`protokol.ciktiAl`); havuz mevcut `halkgunu.ciktiAl`ı kullanıyor. Gerekçe
+`form.ciktiAl` ile aynı: dosya kurum dışına taşınabiliyor, 25 satır
+sayfalamak ile tüm veriyi indirmek aynı şey değil.
+
+`IzinTohumu` yeni izinleri `IlkDagilim`daki rollere kendiliğinden dağıtıyor —
+`Yonetici` ilk açılışta alıyor, elle SQL gerekmiyor.
+
+> **Bekçi ateş etti:** `IzinKataloguSenkronTests` ön yüzdeki
+> `permissions.ts`in geride kaldığını söyledi.
+
+### Telefon biçimi TEK YERE alındı
+
+`Telefon.Bicimle` — `0532 111 22 33`. Kural bir dönem
+`HalkGunuCiktiServisi` içinde özel bir metottu ve yalnızca halk günü
+çıktılarında uygulanıyordu; liste çıktıları eklenirken kopyalanmak yerine
+`Application/Dto/V2/Ortak/Telefon.cs`'e çıkarıldı. Aynı numara veritabanında
+dört ayrı yazımla duruyor ve süzülen bir sütunda bu, aynı kişiyi dört ayrı
+değer gibi gösteriyordu.
+
+### Yanında bulunan bir hata: EZİLEN ARAMA KUTUSU
+
+Görev araç çubuğu 1280px'te kapasitesini aşıyordu ve `flex-1` olan arama
+kutusu bütün taşmayı emiyordu.
+
+```
+ÖNCE   arama kutusu 52px — içine tek harf sığmıyor
+SONRA  180px (alt sınır) · denetim grubu sığmayınca SARILIYOR
+```
+
+> **Çıktı düğmesi bunun sebebi DEĞİL**: düğme gizlenip yeniden ölçüldü, arama
+> yine 52px çıktı. Kapasiteyi aşan bir satırı tek satırda tutmak, en çok
+> kullanılan denetimi kullanılamaz kılmak demek.
+
 ## DIŞARIYA VERİLEN ADRES İSTEKTEN GELİR
 
 `App:BaseUrl` **tek bir alan adı**. Uygulama başka bir adresten

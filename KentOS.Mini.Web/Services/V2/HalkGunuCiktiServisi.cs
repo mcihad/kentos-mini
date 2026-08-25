@@ -143,16 +143,7 @@ public class HalkGunuCiktiServisi(
     /// formlardan girildi). Basılı listede alt alta üç ayrı biçim, telefonu
     /// çeviren kişiyi her satırda yeniden okumaya zorluyor.
     /// </remarks>
-    private static string TelefonBicimi(string? ham)
-    {
-        var sade = Telefon.Duzelt(ham);
-        if (sade is null) return string.Empty;
-
-        var rakam = new string(sade.Where(char.IsDigit).ToArray());
-        return rakam.Length == 11 && rakam.StartsWith('0')
-            ? $"{rakam[..4]} {rakam[4..7]} {rakam[7..9]} {rakam[9..]}"
-            : sade;
-    }
+    private static string TelefonBicimi(string? ham) => Telefon.Bicimle(ham);
 
     private static string GunBasligi(HalkGunuDetayDto g) =>
         string.IsNullOrWhiteSpace(g.Baslik) ? $"Halk Günü {g.Tarih:dd.MM.yyyy}" : g.Baslik!;

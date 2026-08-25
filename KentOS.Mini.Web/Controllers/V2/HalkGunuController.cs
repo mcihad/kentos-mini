@@ -285,6 +285,24 @@ public class HalkGunuController(
     public async Task<TalepSonucuDto> TalebeDonusturAsync(
         long katilimId, [FromBody] TalepOlusturIstegi istek)
         => new() { TalepId = await _islem.TalebeDonusturAsync(katilimId, istek) };
+
+    /// <summary>
+    /// Vatandaş havuzunun Excel çıktısı — ekrandaki süzgeçlerle.
+    /// </summary>
+    /// <remarks>
+    /// Gün çıktıları (program · katılım çizelgesi · sonuç raporu) bir GÜNE
+    /// ait; bu ise HAVUZUN kendisi: "bu ay kaç kişi başvurdu, kaçı geri
+    /// çevrildi, hangi mahalleden geliyorlar" sorusunun cevabı gün
+    /// çizelgelerinde yok.
+    /// </remarks>
+    [HttpGet("basvuru/excel")]
+    [Izin(Izinler.HalkgunuCiktiAl)]
+    [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+    public async Task<IActionResult> BasvuruExcelAsync([FromQuery] BasvuruSuzgeci suzgec)
+    {
+        var d = await _halkGunu.BasvuruExcelAsync(suzgec);
+        return File(d.Icerik, d.IcerikTuru, d.DosyaAdi);
+    }
 }
 
 // ── controller'a özel küçük gövdeler ───────────────────────────────────

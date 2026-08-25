@@ -110,6 +110,9 @@ public class ProtokolGrubuDto
 public interface IProtokolServisi
 {
     Task<SayfaliSonuc<ProtokolDto>> ListeAsync(ProtokolSuzgeci suzgec);
+
+    /// <summary>Protokol defterinin Excel çıktısı — ekrandaki süzgeçlerle.</summary>
+    Task<DisaAktarmaDosyasi> ExcelAsync(ProtokolSuzgeci suzgec);
     Task<ProtokolDto> GetirAsync(long id);
     Task<ProtokolDto> OlusturAsync(ProtokolIstegi istek);
     Task<ProtokolDto> GuncelleAsync(long id, ProtokolIstegi istek);
@@ -143,7 +146,15 @@ public class ProtokolServisi(
     AppDbContext _context,
     ICurrentUserService _kullanici) : IProtokolServisi
 {
-    public Task<SayfaliSonuc<ProtokolDto>> ListeAsync(ProtokolSuzgeci suzgec)
+    /// <summary>
+    /// Görünürlük kapısı + süzgeçler — liste ve çıktı AYNI yerden okur.
+    /// </summary>
+    /// <remarks>
+    /// Gerekçesi <c>GorevServisi.SorguKurAsync</c> ile aynı: blok
+    /// kopyalansaydı bir süzgeç eklendiğinde biri unutulur ve Excel
+    /// ekrandakinden farklı bir küme döndürürdü.
+    /// </remarks>
+    private IQueryable<Protokol> SorguKur(ProtokolSuzgeci suzgec)
     {
         var sorgu = _context.Protokoller.AsNoTracking().AsQueryable();
 
@@ -163,6 +174,13 @@ public class ProtokolServisi(
                 (p.Telefon != null && EF.Functions.ILike(p.Telefon, k)) ||
                 (p.CepTelefon != null && EF.Functions.ILike(p.CepTelefon, k)));
         }
+
+        return sorgu;
+    }
+
+    public Task<SayfaliSonuc<ProtokolDto>> ListeAsync(ProtokolSuzgeci suzgec)
+    {
+        var sorgu = SorguKur(suzgec);
 
         // Protokol SIRASI birincil ölçüt. Aynı numara birden fazla kayıtta
         // olabilir (eş seviyeli makamlar); eşitlikte kategori ve ad ayırır.
@@ -461,4 +479,44 @@ public class ProtokolServisi(
         Aciklama = p.Aciklama,
         Aktif = p.Aktif,
     };
+
+
+    /// <summary>
+    /// LİSTE ÇIKTISI — ekrandaki süzgeçlerle, sayfalamasız.
+    /// </summary>
+    /// <remarks>
+    /// Sorgu liste ile AYNI kurucudan geliyor; görünürlük kapısı ve süzgeçler
+    /// birebir aynı. Üst sınır aşılırsa sessizce kırpılmaz, hata döner —
+    /// gerekçesi <see cref="ListeCikti"/> üzerinde.
+    /// </remarks>
+    public async Task<DisaAktarmaDosyasi> ExcelAsync(ProtokolSuzgeci suzgec)
+    {
+        var satirlar = await SorguKur(suzgec)
+            // Sıra defterin kendi sırası: kategori sırası, sonra protokol
+            // numarası. Alfabetik dizmek, teamüle bağlı sırayı bozardı.
+            .OrderBy(p => p.Kategori!.SiraNo)
+            .ThenBy(p => p.SiraNo)
+            .ThenBy(p => p.AdSoyad)
+            .Take(ListeCikti.UstSinir + 1)
+            .Select(p => new
+            {
+                Kategori = p.Kategori!.Ad,
+                p.SiraNo, p.AdSoyad, p.Unvan, p.Kurum,
+                p.Telefon, p.CepTelefon, p.Eposta, p.Adres, p.Aktif,
+            })
+            .ToListAsync();
+
+        ListeCikti.SiniriDenetle(satirlar.Count, "protokol");
+
+        return ExcelTablosu.Uret(
+            "Protokol",
+            ["Kategori", "Sıra", "Ad Soyad", "Unvan", "Kurum", "Telefon", "Cep", "E-posta", "Adres", "Aktif"],
+            satirlar.Select(p => new string?[]
+            {
+                p.Kategori, p.SiraNo.ToString(), p.AdSoyad, p.Unvan, p.Kurum,
+                Telefon.Bicimle(p.Telefon), Telefon.Bicimle(p.CepTelefon),
+                p.Eposta, p.Adres, p.Aktif ? "Evet" : "Hayır",
+            }),
+            "protokol");
+    }
 }

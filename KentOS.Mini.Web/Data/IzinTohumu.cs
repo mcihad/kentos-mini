@@ -100,8 +100,10 @@ public static class IzinTohumu
         Izinler.GorevGoruntule, Izinler.GorevEkle, Izinler.GorevDuzenle,
         Izinler.GorevAtama, Izinler.GorevAsama, Izinler.GorevOnayla,
         Izinler.GorevBirimKapsam, Izinler.GorevTipYonet, Izinler.EkipYonet,
+        Izinler.GorevCiktiAl,
 
         Izinler.ProjeGoruntule, Izinler.ProjeYonet, Izinler.ProjeUyeYonet,
+        Izinler.ProjeCiktiAl,
 
         Izinler.BildirimKarsila, Izinler.BildirimYonlendir, Izinler.SahaTespit,
 
@@ -121,7 +123,7 @@ public static class IzinTohumu
         Izinler.TalepAjandayaEkle, Izinler.TalepArsivle, Izinler.TalepNotEkle,
         Izinler.TalepDosyaYukle, Izinler.TalepCiktiAl,
 
-        Izinler.ProtokolGoruntule,
+        Izinler.ProtokolGoruntule, Izinler.ProtokolCiktiAl,
         Izinler.DavetGoruntule, Izinler.DavetYonet, Izinler.DavetCiktiAl,
 
         // Halk günü: `Ajanda` politikasındaki roller (Sekreter/Yönetici/Başkan)
@@ -134,7 +136,7 @@ public static class IzinTohumu
         // Özgeçmiş havuzu: iş talebini zaten bu roller karşılıyor ve
         // havuzun varlık sebebi kaydın birimler arasında dolaşabilmesi.
         Izinler.OzgecmisGoruntule, Izinler.OzgecmisEkle, Izinler.OzgecmisDuzenle,
-        Izinler.OzgecmisSil, Izinler.OzgecmisPaylas,
+        Izinler.OzgecmisSil, Izinler.OzgecmisPaylas, Izinler.OzgecmisCiktiAl,
 
         Izinler.OneriGoruntule, Izinler.OneriYanitla,
         Izinler.GonderimGoruntule,

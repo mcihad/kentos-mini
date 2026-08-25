@@ -129,4 +129,24 @@ public class ProtokolController(IProtokolServisi _protokol) : V2ControllerBase
     [ProducesResponseType<List<ProtokolDavetGecmisiDto>>(StatusCodes.Status200OK)]
     public Task<List<ProtokolDavetGecmisiDto>> DavetGecmisiAsync(long id)
         => _protokol.DavetGecmisiAsync(id);
+
+    /// <summary>
+    /// Liste Excel çıktısı — ekrandaki süzgeçlerle.
+    /// </summary>
+    /// <remarks>
+    /// Süzgeç nesnesi listedekiyle AYNI: kullanıcı ekranda ne görüyorsa
+    /// dosyada onu bulmalı. Ayrı bir süzgeç sınıfı olsaydı ikisi zamanla
+    /// ayrışır ve "Excel eksik geliyor" diye bir şikâyet doğardı. Dışa
+    /// aktarma görüntülemekten AYRI bir izin ister: dosya kurum dışına
+    /// taşınabiliyor.
+    /// </remarks>
+    [HttpGet("excel")]
+    [Izin(Izinler.ProtokolCiktiAl)]
+    [Produces("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet")]
+    public async Task<IActionResult> ProtokolExcelAsync(
+        [FromQuery] ProtokolSuzgeci suzgec)
+        => Gonder(await _protokol.ExcelAsync(suzgec));
+
+    private FileContentResult Gonder(DisaAktarmaDosyasi d)
+        => File(d.Icerik, d.IcerikTuru, d.DosyaAdi);
 }

@@ -20,6 +20,7 @@ import { useSession } from '../auth/SessionProvider';
 import { initials, fileSize as fileSizeText, shortDate } from '../data/format';
 import { parseDay } from '../components/DatePicker';
 import { download } from '../data/download';
+import { ExportButtons } from '../components/ExportButtons';
 import { api } from '../data/client';
 import { useResumes } from '../data/hooks';
 import type { ResumeSummary } from '../data/types';
@@ -254,6 +255,15 @@ export default function ResumePool() {
           ikon={<Search size={15} />}
           className="md:max-w-[320px] md:flex-1"
         />
+
+        {hasPermission(PERMISSION.ozgecmisCiktiAl) && (
+          <ExportButtons
+            className="hidden md:inline-flex"
+            /* Sayfa/boyut ÇIKARILIYOR: çıktı sayfalanmaz, ekrandaki
+               süzgeçlerin tamamını kapsar. */
+            excel={() => download('/ozgecmis/excel', { ...suzgec, sayfa: undefined, boyut: undefined })}
+          />
+        )}
 
         <SegmentedSelect<ResumeSource>
           deger={s.kaynak}

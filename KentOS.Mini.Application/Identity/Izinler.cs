@@ -77,6 +77,7 @@ public static class Izinler
     // ────────────────────────────────────────────────────────── protokol
     public const string ProtokolGoruntule = "protokol.goruntule";
     public const string ProtokolYonet = "protokol.yonet";
+    public const string ProtokolCiktiAl = "protokol.ciktiAl";
 
     // ──────────────────────────────────────────────────────────── davet
     public const string DavetGoruntule = "davet.goruntule";
@@ -104,6 +105,7 @@ public static class Izinler
     public const string OzgecmisDuzenle = "ozgecmis.duzenle";
     public const string OzgecmisSil = "ozgecmis.sil";
     public const string OzgecmisPaylas = "ozgecmis.paylas";
+    public const string OzgecmisCiktiAl = "ozgecmis.ciktiAl";
 
     // ──────────────────────────────────────────────────────────── çiçek
     public const string CicekGoruntule = "cicek.goruntule";
@@ -146,11 +148,13 @@ public static class Izinler
     public const string GorevOnayla = "gorev.onayla";
 
     public const string GorevTipYonet = "gorev.tipYonet";
+    public const string GorevCiktiAl = "gorev.ciktiAl";
     public const string EkipYonet = "ekip.yonet";
 
     public const string ProjeGoruntule = "proje.goruntule";
     public const string ProjeYonet = "proje.yonet";
     public const string ProjeUyeYonet = "proje.uyeYonet";
+    public const string ProjeCiktiAl = "proje.ciktiAl";
 
     public const string BildirimKarsila = "bildirim.karsila";
     public const string BildirimYonlendir = "bildirim.yonlendir";
@@ -249,6 +253,9 @@ public static class Izinler
             "Davet listesi oluşturur, kişi ekler/çıkarır ve cevapları işler."),
         new(DavetCiktiAl, "Davet", "Çıktı alma",
             "Takip, telefon ve imza listelerini PDF olarak indirir."),
+        new(ProtokolCiktiAl, "Protokol", "Çıktı alma",
+            "Listeyi Excel olarak indirir. Dışa aktarılan dosya kurum dışına "
+            + "taşınabildiği için görüntülemekten ayrı bir izin."),
 
         new(HalkgunuGoruntule, "Halk Günü", "Görüntüleme",
             "Halk günlerini, bekleyenler havuzunu ve görüşme kayıtlarını açar. Bu izin yoksa menüde hiç görünmez."),
@@ -384,6 +391,16 @@ public static class Izinler
         new(FormYanitSil, "Form ve Anket", "Yanıt geçersiz say",
             "Yinelenen ya da kötüye kullanım amaçlı bir yanıtı geçersiz işaretler. "
             + "Kayıt SİLİNMEZ, sayımdan düşer."),
+        new(GorevCiktiAl, "İş Takip", "Görev listesi çıktısı",
+            "Listeyi Excel olarak indirir. Dışa aktarılan dosya kurum dışına "
+            + "taşınabildiği için görüntülemekten ayrı bir izin."),
+        new(ProjeCiktiAl, "İş Takip", "Proje listesi çıktısı",
+            "Listeyi Excel olarak indirir. Dışa aktarılan dosya kurum dışına "
+            + "taşınabildiği için görüntülemekten ayrı bir izin."),
+        new(OzgecmisCiktiAl, "Özgeçmiş", "Çıktı alma",
+            "Listeyi Excel olarak indirir. Dışa aktarılan dosya kurum dışına "
+            + "taşınabildiği için görüntülemekten ayrı bir izin."),
+
         new(FormCiktiAl, "Form ve Anket", "Yanıtları dışa aktar",
             "Yanıtları Excel olarak indirir. Dışa aktarılan dosya kurum dışına "
             + "taşınabildiği için görüntülemekten ayrı bir izin."),

@@ -28,6 +28,9 @@ namespace KentOS.Mini.Web.Services.V2;
 public interface IProjeServisi
 {
     Task<SayfaliSonuc<ProjeOzetDto>> ListeAsync(ProjeSuzgecDto suzgec, CancellationToken iptal = default);
+
+    /// <summary>Listenin Excel çıktısı — ekrandaki süzgeçlerle.</summary>
+    Task<DisaAktarmaDosyasi> ExcelAsync(ProjeSuzgecDto suzgec, CancellationToken iptal = default);
     Task<ProjeDetayDto> GetirAsync(long id, CancellationToken iptal = default);
     Task<ProjeDetayDto> OlusturAsync(ProjeKayitDto istek, CancellationToken iptal = default);
     Task<ProjeDetayDto> GuncelleAsync(long id, ProjeKayitDto istek, CancellationToken iptal = default);
@@ -87,8 +90,15 @@ public class ProjeServisi(
 
     // ── liste ──────────────────────────────────────────────────────────
 
-    public async Task<SayfaliSonuc<ProjeOzetDto>> ListeAsync(
-        ProjeSuzgecDto suzgec, CancellationToken iptal = default)
+    /// <summary>
+    /// Görünürlük kapısı + süzgeçler — liste ve çıktı AYNI yerden okur.
+    /// </summary>
+    /// <remarks>
+    /// Gerekçesi <c>GorevServisi.SorguKurAsync</c> ile aynı: kopyalanan bir
+    /// süzgeç bloğu, Excel'in ekrandakinden farklı bir küme döndürmesi demek.
+    /// </remarks>
+    private async Task<IQueryable<Project>> SorguKurAsync(
+        ProjeSuzgecDto suzgec, CancellationToken iptal)
     {
         var kapsam = await _etkinBirim.KapsamAsync(suzgec.AltBirimlerDahil, iptal);
 
@@ -112,6 +122,13 @@ public class ProjeServisi(
                 (p.Kod != null && EF.Functions.ILike(p.Kod, $"%{ara}%")));
         }
 
+        return sorgu;
+    }
+
+    public async Task<SayfaliSonuc<ProjeOzetDto>> ListeAsync(
+        ProjeSuzgecDto suzgec, CancellationToken iptal = default)
+    {
+        var sorgu = await SorguKurAsync(suzgec, iptal);
         var toplam = await sorgu.LongCountAsync(iptal);
 
         sorgu = suzgec.Sirala?.ToLowerInvariant() switch
@@ -1154,4 +1171,53 @@ public class ProjeServisi(
         ProjeUyeRolu.Izleyici => "İzleyici",
         _ => rol.ToString(),
     };
+
+
+    /// <summary>
+    /// LİSTE ÇIKTISI — ekrandaki süzgeçlerle, sayfalamasız.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Sorgu <c>SorguKurAsync</c>'dan geliyor, yani görünürlük kapısı ve süzgeçler
+    /// listeyle birebir aynı. Sayfalama YOK: dışa aktarmanın amacı tam
+    /// listeyi tek dosyada vermek.
+    /// </para>
+    /// <para>
+    /// <b>Üst sınır aşılırsa SESSİZCE KIRPILMAZ, hata döner.</b> Kırpmak
+    /// "her şeyi indirdim" sanan bir kullanıcı bırakırdı; süzgeç eklemesini
+    /// istemek dürüst olan. Sınır bellek için de gerekli — çıktı satırların
+    /// tamamını belleğe alıyor.
+    /// </para>
+    /// </remarks>
+    public async Task<DisaAktarmaDosyasi> ExcelAsync(
+        ProjeSuzgecDto suzgec, CancellationToken iptal = default)
+    {
+        var sorgu = await SorguKurAsync(suzgec, iptal);
+
+        var satirlar = await sorgu
+            .OrderByDescending(p => p.OlusturmaTarihi)
+            .Take(ListeCikti.UstSinir + 1)
+            .Select(p => new
+            {
+                p.Ad, p.Durum, p.Baslangic, p.Bitis,
+                Birim = p.Birim != null ? p.Birim.Ad : null,
+                p.OlusturmaTarihi,
+            })
+            .ToListAsync(iptal);
+
+        ListeCikti.SiniriDenetle(satirlar.Count, "proje");
+
+        return ExcelTablosu.Uret(
+            "Projeler",
+            ["Ad", "Durum", "Başlangıç", "Bitiş", "Birim", "Oluşturma"],
+            satirlar.Select(p => new string?[]
+            {
+                p.Ad, p.Durum.ToString(),
+                p.Baslangic?.ToString("dd.MM.yyyy"),
+                p.Bitis?.ToString("dd.MM.yyyy"),
+                p.Birim,
+                p.OlusturmaTarihi.ToString("dd.MM.yyyy"),
+            }),
+            "projeler");
+    }
 }

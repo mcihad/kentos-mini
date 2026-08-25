@@ -31,6 +31,9 @@ namespace KentOS.Mini.Web.Services.V2;
 public interface IGorevServisi
 {
     Task<SayfaliSonuc<GorevOzetDto>> ListeAsync(GorevSuzgecDto suzgec, CancellationToken iptal = default);
+
+    /// <summary>Listenin Excel çıktısı — ekrandaki süzgeçlerle.</summary>
+    Task<DisaAktarmaDosyasi> ExcelAsync(GorevSuzgecDto suzgec, CancellationToken iptal = default);
     Task<GorevDetayDto> GetirAsync(long id, CancellationToken iptal = default);
     Task<GorevDetayDto> OlusturAsync(GorevKayitDto istek, CancellationToken iptal = default);
 
@@ -99,8 +102,19 @@ public class GorevServisi(
 
     // ── liste ──────────────────────────────────────────────────────────
 
-    public async Task<SayfaliSonuc<GorevOzetDto>> ListeAsync(
-        GorevSuzgecDto suzgec, CancellationToken iptal = default)
+    /// <summary>
+    /// GÖRÜNÜRLÜK KAPISI + SÜZGEÇLER — liste ve çıktı AYNI yerden okur.
+    /// </summary>
+    /// <remarks>
+    /// Çıktı ucu eklenirken bu blok kopyalanabilirdi; kopyalansaydı bir
+    /// süzgeç eklendiğinde biri unutulur ve <b>Excel ekrandakinden farklı bir
+    /// küme</b> döndürürdü — kullanıcının fark etmesi neredeyse imkânsız,
+    /// çünkü iki listeyi yan yana koymadan anlaşılmıyor. Aynı gerekçe
+    /// istatistik merkezinde de yazılı: listede göremediğin kaydı sayan ya da
+    /// dışa aktaran bir uç, kapıyı deliyor.
+    /// </remarks>
+    private async Task<IQueryable<WorkTask>> SorguKurAsync(
+        GorevSuzgecDto suzgec, CancellationToken iptal)
     {
         var kapsam = await _etkinBirim.KapsamAsync(suzgec.AltBirimlerDahil, iptal);
 
@@ -162,6 +176,14 @@ public class GorevServisi(
                 EF.Functions.ILike(g.TakipNo, $"%{ara}%") ||
                 (g.Adres != null && EF.Functions.ILike(g.Adres, $"%{ara}%")));
         }
+
+        return sorgu;
+    }
+
+    public async Task<SayfaliSonuc<GorevOzetDto>> ListeAsync(
+        GorevSuzgecDto suzgec, CancellationToken iptal = default)
+    {
+        var sorgu = await SorguKurAsync(suzgec, iptal);
 
         var toplam = await sorgu.LongCountAsync(iptal);
 
@@ -1317,4 +1339,61 @@ public class GorevServisi(
         GorevAtamaRolu.Izleyici => "İzleyici",
         _ => rol.ToString(),
     };
+
+
+    /// <summary>
+    /// LİSTE ÇIKTISI — ekrandaki süzgeçlerle, sayfalamasız.
+    /// </summary>
+    /// <remarks>
+    /// <para>
+    /// Sorgu <c>SorguKurAsync</c>'dan geliyor, yani görünürlük kapısı ve süzgeçler
+    /// listeyle birebir aynı. Sayfalama YOK: dışa aktarmanın amacı tam
+    /// listeyi tek dosyada vermek.
+    /// </para>
+    /// <para>
+    /// <b>Üst sınır aşılırsa SESSİZCE KIRPILMAZ, hata döner.</b> Kırpmak
+    /// "her şeyi indirdim" sanan bir kullanıcı bırakırdı; süzgeç eklemesini
+    /// istemek dürüst olan. Sınır bellek için de gerekli — çıktı satırların
+    /// tamamını belleğe alıyor.
+    /// </para>
+    /// </remarks>
+    public async Task<DisaAktarmaDosyasi> ExcelAsync(
+        GorevSuzgecDto suzgec, CancellationToken iptal = default)
+    {
+        var sorgu = await SorguKurAsync(suzgec, iptal);
+
+        var satirlar = await sorgu
+            .OrderByDescending(g => g.OlusturmaTarihi)
+            .Take(ListeCikti.UstSinir + 1)
+            .Select(g => new
+            {
+                g.TakipNo, g.Baslik, g.Durum, g.Oncelik, g.Kaynak,
+                Tip = g.GorevTipi != null ? g.GorevTipi.Ad : null,
+                Birim = g.Birim != null ? g.Birim.Ad : null,
+                g.ProjeId, g.Adres, g.SlaBitis, g.OlusturmaTarihi,
+            })
+            .ToListAsync(iptal);
+
+        ListeCikti.SiniriDenetle(satirlar.Count, "görev");
+
+        // Proje adları AYRI okunuyor: `WorkTask` üzerinde gezinme özelliği
+        // yok, alt sorgu ile çekmek satır başına bir okuma demekti.
+        var projeAdlari = await _context.Projeler.AsNoTracking()
+            .Select(x => new { x.Id, x.Ad })
+            .ToDictionaryAsync(x => x.Id, x => x.Ad, iptal);
+
+        return ExcelTablosu.Uret(
+            "Görevler",
+            ["Takip No", "Başlık", "Durum", "Öncelik", "Kaynak", "Tip", "Birim", "Proje", "Adres", "Süre hedefi", "Oluşturma"],
+            satirlar.Select(g => new string?[]
+            {
+                g.TakipNo, g.Baslik, g.Durum.ToString(), g.Oncelik.ToString(), g.Kaynak.ToString(),
+                g.Tip, g.Birim,
+                g.ProjeId is { } pid ? projeAdlari.GetValueOrDefault(pid) : null,
+                g.Adres,
+                g.SlaBitis?.ToString("dd.MM.yyyy HH:mm"),
+                g.OlusturmaTarihi.ToString("dd.MM.yyyy HH:mm"),
+            }),
+            "gorevler");
+    }
 }

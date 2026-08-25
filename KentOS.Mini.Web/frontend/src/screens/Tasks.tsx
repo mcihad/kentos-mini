@@ -28,6 +28,8 @@ import { shortDate } from '../data/format';
 import { useTasks, useUsableTaskTypes, useTaskQuickActions } from '../data/tasks';
 import { TASK_PRIORITY_LABELS, TASK_STATUS_LABELS, type TaskSummary } from '../data/types';
 import { UnitScopePicker } from '../components/UnitScopePicker';
+import { ExportButtons } from '../components/ExportButtons';
+import { download } from '../data/download';
 import { SlaBadge, StageProgress } from './task/TaskBits';
 
 type Kapsam = 'kendi' | 'alt';
@@ -89,9 +91,14 @@ export default function Tasks() {
 
   const tipler = useUsableTaskTypes();
 
-  const { data, isLoading, isError, error, isPlaceholderData, refetch, isFetching } = useTasks({
-    sayfa,
-    boyut,
+  /*
+    SÜZGEÇ TEK NESNEDE — liste ve ÇIKTI aynı yerden okur.
+
+    Excel'e ayrı bir süzgeç kurulsaydı, bir alan eklendiğinde biri unutulur
+    ve dosya ekrandakinden farklı bir küme döndürürdü. Sunucu tarafında da
+    aynı kural yazılı (`GorevServisi.SorguKurAsync`).
+  */
+  const suzgec = {
     ara: arama,
     altBirimlerDahil: kapsam === 'alt',
     durumlar: durum === null ? undefined : [durum],
@@ -101,7 +108,10 @@ export default function Tasks() {
     yalnizKok: true,
     sirala,
     azalan,
-  });
+  };
+
+  const { data, isLoading, isError, error, isPlaceholderData, refetch, isFetching } =
+    useTasks({ sayfa, boyut, ...suzgec });
 
   const satirlar = data?.veriler ?? [];
 
@@ -251,10 +261,24 @@ export default function Tasks() {
           placeholder={masaustu ? 'Başlık, takip numarası veya adres ara' : 'Ara'}
           aria-label="Görevlerde ara"
           ikon={<Search size={15} />}
-          className="min-w-0 flex-1 md:max-w-[320px]"
+          className="min-w-[180px] flex-1 md:max-w-[320px]"
         />
 
-        <div className="hidden min-w-0 flex-wrap items-center gap-2 md:ml-auto md:flex md:flex-nowrap">
+        {/*
+          DENETİM GRUBU SIĞMAYINCA SARILIR ve arama kutusunun ALT SINIRI var.
+
+          `md:flex-nowrap` tek satırı zorluyordu ve arama kutusu `flex-1`
+          olduğu için bütün taşmayı o emiyordu: ölçüldü, 1280px'te arama
+          **52px**'e iniyor ve içine tek harf sığmıyordu — çıktı düğmesi
+          eklenmeden ÖNCE de böyleydi (düğme gizlenip ölçüldü: yine 52px).
+          Kapasiteyi aşan bir satırı tek satırda tutmak, en çok kullanılan
+          denetimi kullanılamaz kılmak demek.
+        */}
+        <div className="hidden min-w-0 flex-wrap items-center justify-end gap-2 md:ml-auto md:flex">
+          {hasPermission(PERMISSION.gorevCiktiAl) && (
+            <ExportButtons excel={() => download('/gorev/excel', suzgec)} />
+          )}
+
           <UnitScopePicker />
 
           {tipler.liste.length > 0 && (

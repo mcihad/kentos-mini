@@ -5,6 +5,8 @@ import {
 } from 'lucide-react';
 import { useEffect, useMemo, useState } from 'react';
 import { Switch } from '../components/Switch';
+import { ExportButtons } from '../components/ExportButtons';
+import { download } from '../data/download';
 import { FieldWrapper, SearchInput, Textarea, Input, Secim } from '../components/Field';
 import { EmptyState } from '../components/EmptyState';
 import { FormModal } from '../components/FormModal';
@@ -203,6 +205,13 @@ export default function Protocol() {
           ikon={<Search size={15} />}
           className="md:max-w-[320px] md:flex-1"
         />
+
+        {hasPermission(PERMISSION.protokolCiktiAl) && (
+          <ExportButtons
+            className="hidden md:inline-flex"
+            excel={() => download('/protokol/excel', { ara: arama, kategoriId, pasifDahil })}
+          />
+        )}
 
         {/*
           MOBİLDE ÜSTTE YALNIZCA ARAMA.
