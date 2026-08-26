@@ -1,3 +1,5 @@
+import { readFileSync } from 'node:fs';
+import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
 import {
   SLOT_HEIGHT, overlapping, minuteOffset, minutesToPixels, snapToSlot,
@@ -28,6 +30,10 @@ function etkinlik(bas: string, bit: string | null, ek: Partial<CalendarEvent> = 
 }
 
 const GUN = new Date(2026, 7, 12);
+
+/** Sürükleme/boyutlandırma kuralları KAYNAK TARANARAK kilitleniyor. */
+const izgaraKaynagi = readFileSync(
+  join(__dirname, '..', 'src', 'calendar', 'TimeGrid.tsx'), 'utf8');
 
 describe('ızgara ölçeği', () => {
   it('30 dakika bir dilim yüksekliğine denk gelir', () => {
@@ -182,5 +188,66 @@ describe('tekrar kapsamı sözleşmesi', () => {
     expect(RECURRENCE_SCOPE.yalnizca).toBe(0);
     expect(RECURRENCE_SCOPE.bundanSonrakiler).toBe(1);
     expect(RECURRENCE_SCOPE.tumu).toBe(2);
+  });
+});
+
+/**
+ * TAKVİM IZGARASI — sürükleme ve boyutlandırma sözleşmesi.
+ *
+ * <p>
+ * Buradaki kuralların üçü de <b>sessizce</b> bozulabiliyor: ekran açılır,
+ * bloklar çizilir, yalnızca jest bozuk hisseder. Davranışı jsdom'da sınamak
+ * gerçek işaretçi olayları ve düzen ölçümü gerektirdiği için kural
+ * <b>izgaraKaynagi taranarak</b> kilitleniyor — depodaki diğer izgaraKaynagi tarayan
+ * testlerle aynı gerekçe.
+ * </p>
+ */
+describe('takvim zaman ızgarası', () => {
+  /**
+   * Tek `PointerSensor` fare ile parmağa aynı kısıtı uyguluyordu
+   * (`distance: 4`). Parmakta dokunuş sırasında birkaç piksel kayma olağan;
+   * etkinliği AÇMAK isteyen kullanıcı farkında olmadan sürükleme başlatıyor,
+   * dokunuş yutuluyor ve blok bir dilim kayıyordu.
+   */
+  it('fare ve parmak AYRI sensör kullanır', () => {
+    // KULLANIM aranıyor, metin değil: bu dosyanın yorumları eski sensörün
+    // neden bırakıldığını anlatıyor ve düz bir metin taraması kendi
+    // açıklamasına takılırdı. (Aynı yanlış pozitifi `tokens.test.ts` de
+    // üretmişti — o bekçi yorum satırlarını da tarıyor.)
+    const kullanilan = [...izgaraKaynagi.matchAll(/useSensor\(\s*(\w+)/g)].map((m) => m[1]);
+
+    expect(kullanilan).toContain('MouseSensor');
+    expect(kullanilan).toContain('TouchSensor');
+    expect(kullanilan).not.toContain('PointerSensor');
+  });
+
+  it('parmakta ölçüt SÜRE, farede MESAFE', () => {
+    expect(izgaraKaynagi).toMatch(/MouseSensor,\s*\{\s*activationConstraint:\s*\{\s*distance:/);
+    expect(izgaraKaynagi).toMatch(/TouchSensor,\s*\{\s*activationConstraint:\s*\{\s*delay:/);
+  });
+
+  /**
+   * Tutamak geometrisi CANLI önizleme yüksekliğine bağlıyken, blok
+   * boyutlandırma sırasında eşiği geçince tutamak yeniden konumlanıyordu.
+   * Ölçüldü: 56×12px / soldan 68px → 122×8px / soldan 2px, tam kullanıcı
+   * onu tutarken.
+   */
+  it('tutamak geometrisi KAYDEDİLMİŞ yüksekliğe bakar', () => {
+    expect(izgaraKaynagi).toContain('tutamakKisa');
+    expect(izgaraKaynagi).toMatch(/const tutamakKisa = yukseklikPx </);
+    // İçerik düzeni ise canlı yüksekliğe bakmalı: blok uzarken etiket
+    // iki satıra geçsin.
+    expect(izgaraKaynagi).toMatch(/const icerikKisa = yuk </);
+  });
+
+  /**
+   * Tutamak bir dönem kısa blokta sağ alt köşeye çekiliyordu ve 124px'lik
+   * bloğun içinde soldan 68px içeride, hiçbir kenara yaslanmayan bir çubuk
+   * olarak görünüyordu.
+   */
+  it('tutamak her durumda TAM GENİŞLİK', () => {
+    expect(izgaraKaynagi).not.toMatch(/right-0 h-\[12px\] w-14/);
+    // Konumlandırma sınıfı tutamağın ortak kısmında olmalı.
+    expect(izgaraKaynagi).toMatch(/'inset-x-0',/);
   });
 });

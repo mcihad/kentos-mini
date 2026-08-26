@@ -1,5 +1,5 @@
 import {
-  DndContext, PointerSensor, pointerWithin, useDndMonitor, useDraggable, useDroppable,
+  DndContext, MouseSensor, TouchSensor, pointerWithin, useDndMonitor, useDraggable, useDroppable,
   useSensor, useSensors,
   type DragEndEvent,
 } from '@dnd-kit/core';
@@ -66,8 +66,26 @@ export function TimeGrid({
   const tumGunler = useMemo(() => etkinlikler.filter((e) => e.tumGun), [etkinlikler]);
   const kaydirmaRef = useRef<HTMLDivElement>(null);
 
-  // 4px'lik eşik: kısa dokunuş hâlâ "tıklama" sayılsın, detay açılabilsin.
-  const sensorler = useSensors(useSensor(PointerSensor, { activationConstraint: { distance: 4 } }));
+  /*
+    FARE VE PARMAK AYRI SENSÖRLER — tek `PointerSensor` ikisine birden
+    yetmiyor.
+
+    Önceden tek bir `PointerSensor` vardı ve kısıtı `distance: 4`. Fare için
+    doğru: 4px'lik kayma "sürüklemek istedim" demek. **Parmak için yanlış:**
+    dokunurken parmak neredeyse her zaman birkaç piksel kayıyor, yani
+    etkinliği AÇMAK için dokunan kullanıcı farkında olmadan sürükleme
+    başlatıyordu — dokunuş yutuluyor, blok bir dilim kayıyordu.
+
+    Parmakta ölçüt mesafe değil SÜRE: 200ms basılı tutmak "taşımak
+    istiyorum" demek, kısa dokunuş ise tıklama olarak geçiyor. Yerli takvim
+    uygulamalarının (iOS/Android) grameri de bu. `tolerance: 8` bekleme
+    sırasındaki doğal titremeye izin veriyor; daha dar bir tolerans, elini
+    sabit tutamayan kullanıcıda sürüklemeyi hiç başlatmıyordu.
+  */
+  const sensorler = useSensors(
+    useSensor(MouseSensor, { activationConstraint: { distance: 4 } }),
+    useSensor(TouchSensor, { activationConstraint: { delay: 200, tolerance: 8 } }),
+  );
 
   /**
    * Açılışta çalışma saatlerine kaydır.
@@ -474,7 +492,21 @@ function EtkinlikBlogu({
 
   // Renk kaynağı: önce etkinlik DURUMU, yoksa tip. Eski arayüzle aynı kural.
   const renkler = eventColors(etkinlik.durumRenk, etkinlik.tipRenk);
-  const kisa = yuk < SLOT_HEIGHT * 1.5;
+
+  /*
+    İKİ AYRI "KISA" ÖLÇÜSÜ — biri içerik, biri TUTAMAK.
+
+    `icerikKisa` canlı yüksekliğe bakar: blok uzarken saat ve başlık tek
+    satırdan iki satıra geçsin, önizleme gerçeği göstersin.
+
+    `tutamakKisa` ise KAYDEDİLMİŞ yüksekliğe bakar ve sürükleme boyunca
+    DEĞİŞMEZ. Canlı yüksekliğe bağlıyken tutamak, kullanıcı onu çekerken
+    biçim değiştiriyordu: 28px'lik blok bir dilim uzayıp eşiği geçince
+    tutamak yeniden konumlanıyor ve parmağın/imlecin altından kayıyordu —
+    "tutmuyor" hissinin kaynağı buydu.
+  */
+  const icerikKisa = yuk < SLOT_HEIGHT * 1.5;
+  const tutamakKisa = yukseklikPx < SLOT_HEIGHT * 1.5;
 
   return (
     <div
@@ -518,7 +550,7 @@ function EtkinlikBlogu({
         //  • sürüklenirken: kalın hâle + güçlü gölge, blok "havalanıyor"
         'outline outline-2 outline-offset-[-2px] outline-transparent',
         'hover:shadow-2 hover:outline-brand-line',
-        'active:scale-[0.98]',
+        !boyut && 'active:scale-[0.98]',
         isDragging && 'z-30 scale-[1.02] shadow-3 outline-brand opacity-95',
         // Boyutlandırma sırasında blok da öne çıkar — ama ÖLÇEKLENMEZ:
         // kenar hizası tam da kullanıcının baktığı şey, `scale` onu kaydırır.
@@ -527,7 +559,7 @@ function EtkinlikBlogu({
       {...attributes}
     >
       {/* Üst kenar tutamacı */}
-      <BoyutTutamaci etkinlik={etkinlik} gunIndeksi={gunIndeksi} kenar="ust" kisa={kisa} />
+      <BoyutTutamaci etkinlik={etkinlik} gunIndeksi={gunIndeksi} kenar="ust" kisa={tutamakKisa} />
 
       {/*
         Yarım saatlik blok 28px: saat ve başlık ALT ALTA sığmıyor, başlık
@@ -538,10 +570,10 @@ function EtkinlikBlogu({
         onClick={() => onAc(etkinlik)}
         className={cn(
           'block h-full w-full cursor-grab text-left active:cursor-grabbing',
-          kisa ? 'px-1.5 py-[3px]' : 'px-1.5 py-1',
+          icerikKisa ? 'px-1.5 py-[3px]' : 'px-1.5 py-1',
         )}
       >
-        {kisa ? (
+        {icerikKisa ? (
           <span className="flex items-center gap-1 overflow-hidden text-2xs leading-[1.2]">
             <span className="shrink-0 font-display text-2xs font-semibold tabular-nums text-text-2">
               {saat(bas)}
@@ -562,7 +594,7 @@ function EtkinlikBlogu({
         )}
       </button>
 
-      <BoyutTutamaci etkinlik={etkinlik} gunIndeksi={gunIndeksi} kenar="alt" kisa={kisa} />
+      <BoyutTutamaci etkinlik={etkinlik} gunIndeksi={gunIndeksi} kenar="alt" kisa={tutamakKisa} />
     </div>
   );
 }
@@ -570,22 +602,28 @@ function EtkinlikBlogu({
 /**
  * Kenar tutamacı.
  *
- * <h4>Kısa blokta tutamak KÖŞEYE çekilir</h4>
+ * <h4>Tutamak HER ZAMAN TAM GENİŞLİK</h4>
  * <p>
- * Dokunmatikte tutamaklar 14px'ti; 30 dakikalık blok da 28px. İki tutamak
- * bloğun <b>tamamını</b> kaplıyor ve taşımaya tek piksel kalmıyordu — kısa
- * etkinlikler telefonda yalnızca boyutlandırılabiliyor, taşınamıyordu.
+ * Bir dönem tek dilimlik blokta alt tutamak <b>sağ alt köşede 56px'lik bir
+ * kutuya</b> çekiliyordu; gerekçesi dokunmatikte taşımaya yer bırakmaktı.
+ * Bedeli görünürdü: 124px'lik bloğun içinde soldan 68px içeride duran,
+ * hiçbir kenara yaslanmayan bir çubuk — kullanıcının tarifiyle
+ * "boyutlandırıcı sağda gözüküyor, bozuk gözüküyor". Üstelik kural işaretçi
+ * türünden bağımsız uygulanıyordu, yani <b>masaüstünde de</b> öyle
+ * çiziliyordu; oysa aynı dosyanın yorumu masaüstünde tam genişlik olduğunu
+ * söylüyordu.
  * </p>
  * <p>
- * Kısa blokta (tek dilim) dokunmatik davranış şu: <b>üst tutamak yok</b> —
- * başlangıcı değiştirmek istiyorsan bloğu taşırsın, aynı kapıya çıkar. Alt
- * tutamak ise tam genişlik yerine <b>sağ alt köşede</b> 56px'lik bir tutamağa
- * iner. Böylece bloğun geri kalanı baştan sona taşıma alanı olarak kalıyor ve
- * uzatma da elden gitmiyor.
+ * Artık tutamak her durumda bloğun tam genişliğinde ve kenarına yaslı.
+ * Dokunmatikte taşımaya yer, <b>üst tutamağı gizleyerek</b> açılıyor:
+ * başlangıcı değiştirmek istiyorsan bloğu taşırsın, aynı kapıya çıkar.
+ * Böylece 28px'lik blokta üstteki 14px taşıma, alttaki 14px uzatma oluyor —
+ * ikisi de bloğun tam genişliği boyunca.
  * </p>
  * <p>
- * Masaüstünde ikisi de tam genişlik ve 8px: fare hassas, üstelik tutamaklar
- * yalnızca imleç blokta beliriyor.
+ * Masaüstünde tek dilimlik blokta <b>iki tutamak da durur</b> ama 6px'e
+ * iner: fare hassas ve ortada kalan 16px taşımaya yetiyor. Kısa bloğun
+ * başlangıcını fareyle de ayarlayabilmek, taşımaya zorlanmaktan iyi.
  * </p>
  */
 function BoyutTutamaci({
@@ -623,21 +661,22 @@ function BoyutTutamaci({
         // beliriyor — "buradan uzatabilirsin" demenin en kısa yolu.
         'absolute z-20 grid place-items-center cursor-ns-resize',
         kenar === 'ust' ? 'top-0' : 'bottom-0',
+        // Tutamak HER ZAMAN kenara yaslı ve tam genişlikte.
+        'inset-x-0',
         kisa
-          ? // TEK DİLİMLİK BLOK (28px): üst tutamak YOK, alt tutamak SAĞ KÖŞEDE.
+          ? // TEK DİLİMLİK BLOK (28px) — yer kavgası burada.
             //
-            // İki tam genişlik tutamak 28px'lik bloğun tamamını yiyordu —
-            // mobilde 14+14, masaüstünde 8+8 üstelik ortada kalan 12px de
-            // avlanabilir bir hedef değil. Kısa etkinlik boyutlandırılabiliyor
-            // ama TAŞINAMIYORDU. Kural işaretçi türünden bağımsız: fareyle de
-            // 12px'lik bir şeridi tutturmak zordu.
+            // Dokunmatikte üst tutamak KALKAR: iki 14px'lik tutamak bloğun
+            // tamamını yiyor ve taşımaya tek piksel kalmıyordu. Üstteki 14px
+            // taşımaya, alttaki 14px uzatmaya ayrılıyor.
             //
-            // Başlangıcı değiştirmek için bloğu taşımak yeterli; sonu uzatmak
-            // ise köşedeki tutamakla. Geri kalan yüzeyin tamamı taşıma alanı.
+            // Masaüstünde ikisi de durur ama 6px'e iner; ortada kalan 16px
+            // fareyle taşımaya yetiyor ve kısa bloğun başlangıcı da
+            // ayarlanabilir kalıyor.
             kenar === 'ust'
-            ? 'hidden'
-            : 'right-0 h-[12px] w-14'
-          : 'inset-x-0 h-[8px] pointer-coarse:h-[14px]',
+            ? 'h-[6px] pointer-coarse:hidden'
+            : 'h-[6px] pointer-coarse:h-[14px]'
+          : 'h-[8px] pointer-coarse:h-[14px]',
       )}
     >
       <span

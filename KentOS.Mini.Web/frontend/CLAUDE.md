@@ -2239,3 +2239,65 @@ liste ekranlarında `main input[type="search"]`.
 
 > Kural: çapa seçerken "bu metin 390px'te de görünüyor mu?" diye sor. Bir
 > tur adımının yeşil geçmesi, ekranın doğrulandığı anlamına gelmiyor.
+
+## TAKVİM: BOYUTLANDIRMA VE TAŞIMA
+
+Gün ve hafta görünümünde üç ayrı kusur vardı; üçü de jesti bozuyordu ama
+hiçbiri hata üretmiyordu.
+
+### 1. Tutamak SAĞ KÖŞEDE duruyordu
+
+Tek dilimlik (30 dakikalık, 28px) blokta alt tutamak `right-0 h-[12px] w-14`
+ile sağ alt köşeye çekiliyordu. Gerekçesi dokunmatikte taşımaya yer
+bırakmaktı ama kural **işaretçi türünden bağımsız** uygulanıyordu:
+
+```
+ÖNCE (masaüstü, 124px blok)   alt tutamak 56×12px · soldan 68px içeride
+                              üst tutamak YOK (0×0)
+SONRA                         iki tutamak da 122×6px · soldan 2px
+```
+
+Kullanıcının tarifi: *"boyutlandırıcı sağda gözüküyor, bozuk gözüküyor."*
+Hiçbir kenara yaslanmayan bir çubuk, tutamak gibi değil hata gibi okunuyor.
+
+Dokunmatikte yer, **üst tutamağı gizleyerek** açılıyor: 28px'lik blokta
+üstteki 14px taşıma, alttaki 14px uzatma — ikisi de tam genişlik. Masaüstünde
+iki tutamak da durur ama 6px'e iner; ortadaki 16px fareyle taşımaya yetiyor
+ve kısa bloğun başlangıcı da ayarlanabilir kalıyor.
+
+### 2. Tutamak SÜRÜKLENİRKEN ZIPLIYORDU
+
+Tutamak geometrisi `kisa` değişkenine bağlıydı ve `kisa` **canlı önizleme
+yüksekliğinden** hesaplanıyordu. Blok uzayıp 42px eşiğini geçtiği anda tutamak
+yeniden konumlanıyordu — tam kullanıcı onu tutarken.
+
+```
+ÖNCE  başlangıç   56×12px · soldan 68px
+      +30px      122×8px  · soldan 2px   ← 66px yatay ZIPLAMA
+SONRA başlangıç  122×6px  · soldan 2px
+      +30px      122×6px  · soldan 2px   ← sabit
+```
+
+Artık iki ayrı ölçü var: `icerikKisa` canlı yüksekliğe bakar (etiket tek
+satırdan iki satıra geçsin), `tutamakKisa` ise **kaydedilmiş** yüksekliğe ve
+sürükleme boyunca değişmez. Basış ölçeği (`active:scale`) de boyutlandırma
+sırasında kapatıldı: kenar hizası tam da kullanıcının baktığı şey.
+
+### 3. Tek sensör fare ile parmağa AYNI kısıtı uyguluyordu
+
+`PointerSensor` + `distance: 4`. Fare için doğru; **parmak için yanlış**:
+dokunurken parmak neredeyse her zaman birkaç piksel kayıyor, yani etkinliği
+AÇMAK isteyen kullanıcı farkında olmadan sürükleme başlatıyor, dokunuş
+yutuluyor ve blok bir dilim kayıyordu.
+
+`MouseSensor` (mesafe 4px) ve `TouchSensor` (**süre 200ms**, tolerans 8px)
+ayrıldı. Parmakta ölçüt mesafe değil süre: basılı tutmak "taşımak istiyorum"
+demek, kısa dokunuş tıklama olarak geçiyor — yerli takvim uygulamalarının
+grameri de bu.
+
+> **Bekçi `test/calendar.test.ts`.** Üç kural da sessizce bozulabiliyor
+> (ekran açılır, bloklar çizilir, yalnızca jest bozuk hisseder), bu yüzden
+> kaynak taranıyor. Sensör testi **kullanımı** arıyor, metni değil: dosyanın
+> yorumları eski sensörü anlatıyor ve düz bir metin taraması kendi
+> açıklamasına takılıyordu (aynı yanlış pozitifi `tokens.test.ts` de
+> üretmişti). **Üçünün de ateş ettiği ölçüldü.**
