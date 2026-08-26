@@ -47,6 +47,7 @@ export function OverlayShell({
   ikon,
   genislik = 'orta',
   masaustuYerlesim = 'orta',
+  disaTiklaKapatir = false,
   basligaEk,
   children,
 }: {
@@ -69,6 +70,24 @@ export function OverlayShell({
    * </p>
    */
   masaustuYerlesim?: 'orta' | 'yan';
+  /**
+   * Perdeye tıklamak katmanı KAPATSIN mı?
+   *
+   * <p>
+   * <b>Varsayılan `false` ve bu bilinçli.</b> Katmanların çoğu FORM ve yarısı
+   * doldurulmuş bir formu yanlış bir tıkla kaybetmek, diyalogla çalışmanın en
+   * sinir bozucu tarafı. Kapının açık olduğu yerler, kaybedilecek bir girdisi
+   * OLMAYAN panellerdir: tema tasarımcısı değişikliği anında uyguluyor,
+   * yardım paneli yalnızca okunuyor. Oralarda perdeye tıklamak "kapat"
+   * demenin en doğal yolu ve kapalı olması kullanıcıyı düğme aramaya
+   * zorluyordu.
+   * </p>
+   * <p>
+   * Mobil dalı etkilemez: orada kapatma zaten parmakla aşağı kaydırarak
+   * yapılıyor (bkz. <i>MOBİLDE HER TABAKA PARMAKLA KAPANIR</i>).
+   * </p>
+   */
+  disaTiklaKapatir?: boolean;
   /**
    * Başlık şeridine, kapat düğmesinin SOLUNA giren ek eylem (ör. tema
    * panelindeki "varsayılana sıfırla").
@@ -215,8 +234,8 @@ export function OverlayShell({
       <Dialog.Portal>
         <Dialog.Overlay className="anim-perde fixed inset-0 z-50 bg-perde backdrop-blur-[3px]" />
         <Dialog.Content
-          onPointerDownOutside={(e) => e.preventDefault()}
-          onInteractOutside={(e) => e.preventDefault()}
+          onPointerDownOutside={(e) => { if (!disaTiklaKapatir) e.preventDefault(); }}
+          onInteractOutside={(e) => { if (!disaTiklaKapatir) e.preventDefault(); }}
           aria-describedby={undefined}
           className={cn(
             'katman fixed z-50 flex flex-col bg-surface shadow-3',

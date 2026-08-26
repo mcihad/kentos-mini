@@ -44,6 +44,10 @@ export function HelpPanel({
       baslik={baslik}
       aciklama={ozet}
       masaustuYerlesim="yan"
+      // Yardım paneli yalnızca OKUNUYOR — kaybedilecek girdi yok. Kullanıcı
+      // okuduğu ekrana dönmek için perdeye tıklıyor; kapının kapalı olması
+      // onu kapatma düğmesi aramaya zorluyordu.
+      disaTiklaKapatir
       ikon={<BookOpen size={17} />}
     >
       <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain p-4 md:p-5">

@@ -1,6 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { join } from 'node:path';
 import { describe, expect, it } from 'vitest';
+import { PRESETS } from '../src/theme/presets';
 
 /**
  * TOKEN BÜTÜNLÜĞÜ.
@@ -116,5 +117,55 @@ describe('token bütünlüğü', () => {
     const gece = /:root\[data-tema='koyu'\]\s*\{([\s\S]*?)\n\}/.exec(tokenlar);
     expect(gece, 'gece bloğu bulunamadı').not.toBeNull();
     expect(gece![1]).toMatch(/--perde\s*:/);
+  });
+});
+
+/**
+ * HAZIR TEMALAR SİSTEMİN KENDİ MERDİVENİNDE KALIR.
+ *
+ * <p>
+ * Yarıçap merdiveni `--r`den TÜRETİLİYOR (`--r-sm: r × 0.667`,
+ * `--r-lg: r × 1.333`). Taban keyfi bir sayı olduğunda merdiven kesirli
+ * çıkıyor ve yarım piksellik köşe düşük yoğunluklu ekranda bulanık
+ * çiziliyor. Ölçüldü: rafine turundan önce Bordo ve Petrol'de 6 basamağın
+ * 4'ü, Antrasit'te 3'ü kesirliydi.
+ * </p>
+ * <p>
+ * Bu bir <b>görsel</b> kusur ve testler yeşil kalırken sessizce yaşıyor —
+ * kimse yarım pikseli sayı olarak görmüyor, yalnızca "biraz bulanık"
+ * hissediyor. Bu yüzden sayıyla kilitleniyor.
+ * </p>
+ */
+describe('hazır tema knobları', () => {
+  const presetler = Object.entries(PRESETS);
+
+  it('yarıçap tabanı TAM PİKSEL merdiven üretir', () => {
+    const kesirli = presetler.filter(([, p]) => {
+      const merdiven = [p.r * 0.5, p.r * 0.667, p.r, p.r * 1.333, p.r * 1.667, p.r * 2];
+      return merdiven.some((m) => Math.abs(m - Math.round(m)) > 0.02);
+    });
+
+    expect(kesirli.map(([ad]) => ad)).toEqual([]);
+  });
+
+  // Şartname §4: "boşluk 4'ün katıdır". `sp: 4.5` her adımı kesirli yapıyordu.
+  it('boşluk birimi TAM SAYI', () => {
+    const kesirli = presetler.filter(([, p]) => !Number.isInteger(p.sp));
+    expect(kesirli.map(([ad]) => ad)).toEqual([]);
+  });
+
+  /*
+    v3'te yazı tabanı ölçülerek 14 → 15 taşındı ("fontlar minnacık"), ama
+    o gün yalnızca kurumsal çift güncellenmişti: kurumsaldan Zümrüt'e geçmek
+    yazıyı bir kademe KÜÇÜLTÜYORDU.
+  */
+  it('yazı tabanı v3 tabanının altına inmez', () => {
+    const kucuk = presetler.filter(([, p]) => p.fs < 15);
+    expect(kucuk.map(([ad]) => ad)).toEqual([]);
+  });
+
+  it('geçiş süresi 40ms ızgarasında', () => {
+    const disarida = presetler.filter(([, p]) => p.dur % 40 !== 0);
+    expect(disarida.map(([ad]) => ad)).toEqual([]);
   });
 });

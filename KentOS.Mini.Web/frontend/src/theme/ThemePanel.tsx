@@ -57,6 +57,10 @@ export function ThemePanel({ acik, kapat }: { acik: boolean; kapat: () => void }
         </IconButton>
       }
       masaustuYerlesim="yan"
+      // Panelin kaybedecek bir girdisi YOK: her knob anında uygulanıyor ve
+      // "varsayılana sıfırla" başlıkta duruyor. Perdeye tıklayınca kapanması,
+      // kullanıcıyı kapatma düğmesi aramaya zorlamamanın en kısa yolu.
+      disaTiklaKapatir
     >
 
           <div className="min-h-0 flex-1 space-y-5 overflow-y-auto p-4">

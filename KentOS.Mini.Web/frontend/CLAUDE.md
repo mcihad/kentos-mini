@@ -2301,3 +2301,63 @@ grameri de bu.
 > yorumları eski sensörü anlatıyor ve düz bir metin taraması kendi
 > açıklamasına takılıyordu (aynı yanlış pozitifi `tokens.test.ts` de
 > üretmişti). **Üçünün de ateş ettiği ölçüldü.**
+
+## PERDEYE TIKLAMAK: FORMDA KAPATMAZ, PANELDE KAPATIR
+
+`OverlayShell` dış tıklamayı **bütün** katmanlarda engelliyordu
+(`onInteractOutside → preventDefault`). Gerekçe formlar için doğru ve yerinde
+duruyor: yarısı doldurulmuş bir formu yanlış bir tıkla kaybetmek, diyalogla
+çalışmanın en sinir bozucu tarafı.
+
+Ama kural **kaybedilecek girdisi olmayan** panellere de uygulanıyordu. Tema
+tasarımcısı her knob'u anında uyguluyor, yardım paneli yalnızca okunuyor;
+ikisinde de perdeye tıklamak "kapat" demenin en doğal yolu ve kapalı olması
+kullanıcıyı kapatma düğmesi aramaya zorluyordu.
+
+`disaTiklaKapatir` prop'u eklendi — **varsayılan `false`**, yani mevcut
+davranış korunuyor ve kapı yalnızca açıkça açıldığı yerde açılıyor.
+
+> Ölçüldü: tema paneli açık → perdeye tıkla → **kapandı**; yardım paneli →
+> **kapandı**; yeni etkinlik formu → **açık kaldı**.
+
+> Mobil dalı etkilenmiyor: orada kapatma zaten parmakla aşağı kaydırarak
+> yapılıyor.
+
+## HAZIR TEMALAR SİSTEMİN KENDİ MERDİVENİNDE
+
+v3 geçişi knob'ları mobil şartnameye çekmişti ama o gün **yalnızca kurumsal
+çifte** uygulanmıştı; kalan beş preset eski değerlerinde kaldı ve üç ayrı
+yerden sistemin dışına düşüyordu.
+
+**1. Yarım piksel köşeler.** Yarıçap merdiveni `--r`den TÜRETİLİYOR
+(`--r-sm: r × 0.667`, `--r-lg: r × 1.333`). Keyfi bir taban kesirli merdiven
+üretiyor ve yarım piksellik köşe düşük yoğunluklu ekranda bulanık çiziliyor.
+
+```
+ÖNCE   bordo   r 5  →  2.50 3.33 5.00 6.67 8.34 10.00   (6 basamağın 4'ü kesirli)
+       petrol  r 17 →  8.50 11.34 17.00 22.66 28.34 34.00      (4 kesirli)
+       zumrut  r 15 →  7.50 10.01 15.00 20.00 25.00 30.00      (1 kesirli)
+SONRA  hepsi        →  0 kesirli   (tabanlar 6 / 12 / 18)
+```
+
+**2. "Boşluk 4'ün katıdır"** (şartname §4) — Zümrüt ve Petrol `sp: 4.5`
+kullanıyordu, yani her boşluk adımı kesirli: 4.5/9/13.5/18/22.5. İkisi de 4.
+
+**3. Yazı tabanı 14'te kalmıştı.** 14 → 15 taşıması ölçülerek yapılmıştı
+("fontlar minnacık") ama Zümrüt, Bordo ve Antrasit 14'te bırakılmış:
+**kurumsal temadan birine geçmek yazıyı bir kademe küçültüyordu.** Üçü de 15;
+Yüksek Kontrast 16 — erişilebilirlik temasının yazısı varsayılandan küçük
+olamaz.
+
+**4. Geçiş süreleri 40'ın katı**: 120/160/200/240/280. Süre presetin
+karakterinin parçası — Yüksek Kontrast en kısa (hareket dikkat dağıtmasın),
+Petrol en uzun.
+
+> **Presetin İŞİ değişmedi:** Bordo hâlâ en sert köşeli ve en kalın
+> kenarlıklı, Zümrüt/Petrol hâlâ en yumuşak, Yüksek Kontrast hâlâ gölgesiz.
+> Değişen, bunu sistemin dışına çıkmadan yapmaları.
+
+> Bekçi `tokens.test.ts` → *hazır tema knobları* (4 test). Bu **görsel** bir
+> kusur ve testler yeşilken sessizce yaşıyor — kimse yarım pikseli sayı
+> olarak görmüyor, yalnızca "biraz bulanık" hissediyor. **Dördünün de ateş
+> ettiği ölçüldü.**
