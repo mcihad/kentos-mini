@@ -4,7 +4,7 @@ Belediye başkanlık makamı için ajanda / talep / iş takip sistemi. **İki y�
 canlıda**, binlerce kayıt ve aktif bir Flutter mobil uygulaması var. Buradaki
 her değişiklik üretimdeki bir sistemi etkiler.
 
-> **Ürün adı `KentOS.Kalem`, depo adı `kentos-mini`.** Ad alanları ve derleme
+> **Ürün adı `KentOS.Kalem`, depo adı `kentos-kalem`.** Ad alanları ve derleme
 > adları `KentOS.Kalem.*` önekini taşır. Uygulama açık kaynak olacak ve başka
 > belediyelere verilecek; bu yüzden **kaynak ağacında hiçbir kurumun adı
 > geçmez** — ne sınıf adında, ne varsayılanda, ne bir metinde. Yorum satırında
@@ -15,9 +15,11 @@ her değişiklik üretimdeki bir sistemi etkiler.
 
 > **Ürün adı `KentOS.Mini` → `KentOS.Kalem` olarak değiştirildi.** 493 dosya,
 > 6621 satır: ad alanları, derleme adları, proje dizinleri, çözüm dosyası,
-> npm paket adı. **Depo adı `kentos-mini` OLDUĞU GİBİ KALDI** — GitHub
-> deposunu yeniden adlandırmak dışarıya dönük bir karar ve mevcut klonları,
-> CI yapılandırmalarını ve yer imlerini etkiliyor.
+> npm paket adı. **Depo da ayrıca `kentos-mini` → `kentos-kalem` oldu**
+> (GitHub + yerel dizin + git remote). GitHub eski addan yeni ada kalıcı
+> yönlendirme kuruyor, yani eski adresle yapılan `clone`/`fetch`/`push`
+> çalışmaya devam ediyor — ama var olan klonlarda `git remote set-url`
+> yapılması gerekiyor.
 >
 > **Kritik doğrulama — hayalet migration.** `AppDbContextModelSnapshot.cs`
 > entity tiplerini **dize olarak** taşıyor (220 yerde
