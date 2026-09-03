@@ -6,7 +6,7 @@ sırasında otomatik çalışır** — ayrı bir `npm run build` adımı gerekme
 ## Kısaca
 
 ```bash
-dotnet publish KentOS.Mini.Web/KentOS.Mini.Web.csproj \
+dotnet publish KentOS.Kalem.Web/KentOS.Kalem.Web.csproj \
   -c Release -o C:\yayin\workcollab
 ```
 

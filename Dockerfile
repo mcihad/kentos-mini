@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  KentOS.Mini — kapsayıcı imajı
+#  KentOS.Kalem — kapsayıcı imajı
 #
 #  Üç aşama:
 #    1. onyuz   — Node ile SPA derlemesi (Vite)
@@ -15,14 +15,14 @@
 
 # ── 1. Ön yüz ──────────────────────────────────────────────────────────────
 FROM node:22-slim AS onyuz
-WORKDIR /kaynak/KentOS.Mini.Web/frontend
+WORKDIR /kaynak/KentOS.Kalem.Web/frontend
 
 # Önce yalnızca bağımlılık bildirimi: kaynak değişince bu katman korunur.
-COPY KentOS.Mini.Web/frontend/package.json KentOS.Mini.Web/frontend/package-lock.json ./
+COPY KentOS.Kalem.Web/frontend/package.json KentOS.Kalem.Web/frontend/package-lock.json ./
 RUN npm ci
 
-COPY KentOS.Mini.Web/frontend/ ./
-# Vite çıktısı `../wwwroot` — yani /kaynak/KentOS.Mini.Web/wwwroot.
+COPY KentOS.Kalem.Web/frontend/ ./
+# Vite çıktısı `../wwwroot` — yani /kaynak/KentOS.Kalem.Web/wwwroot.
 # `emptyOutDir` kapalı olduğu için var olan dosyaları silmez.
 RUN npm run build
 
@@ -33,24 +33,24 @@ WORKDIR /kaynak
 
 # Önce proje dosyaları: NuGet geri yüklemesi kaynak değişikliğinden bağımsız
 # olarak önbellekte kalsın.
-COPY KentOS.Mini.sln ./
-COPY KentOS.Mini.Application/KentOS.Mini.Application.csproj KentOS.Mini.Application/
-COPY KentOS.Mini.Web/KentOS.Mini.Web.csproj                 KentOS.Mini.Web/
-COPY KentOS.Mini.Tests/KentOS.Mini.Tests.csproj             KentOS.Mini.Tests/
-RUN dotnet restore KentOS.Mini.Web/KentOS.Mini.Web.csproj
+COPY KentOS.Kalem.sln ./
+COPY KentOS.Kalem.Application/KentOS.Kalem.Application.csproj KentOS.Kalem.Application/
+COPY KentOS.Kalem.Web/KentOS.Kalem.Web.csproj                 KentOS.Kalem.Web/
+COPY KentOS.Kalem.Tests/KentOS.Kalem.Tests.csproj             KentOS.Kalem.Tests/
+RUN dotnet restore KentOS.Kalem.Web/KentOS.Kalem.Web.csproj
 
-COPY KentOS.Mini.Application/ KentOS.Mini.Application/
-COPY KentOS.Mini.Web/         KentOS.Mini.Web/
+COPY KentOS.Kalem.Application/ KentOS.Kalem.Application/
+COPY KentOS.Kalem.Web/         KentOS.Kalem.Web/
 
 # Derlenmiş SPA'yı kaynak ağacının `wwwroot`una bindir. Depoda izlenen
 # varlıklar (amblem, PWA ikonları) yerinde kalır; üzerine `index.html` ve
 # `uygulama/` paketleri gelir.
-COPY --from=onyuz /kaynak/KentOS.Mini.Web/wwwroot/ KentOS.Mini.Web/wwwroot/
+COPY --from=onyuz /kaynak/KentOS.Kalem.Web/wwwroot/ KentOS.Kalem.Web/wwwroot/
 
 # SkipFrontend: ön yüz zaten derlendi. Bu bayrak olmadan MSBuild hedefi
 # imajda olmayan `npm`i arar ve derleme anlaşılır bir hata bile vermeden
 # durur.
-RUN dotnet publish KentOS.Mini.Web/KentOS.Mini.Web.csproj \
+RUN dotnet publish KentOS.Kalem.Web/KentOS.Kalem.Web.csproj \
       -c Release -o /yayin \
       -p:SkipFrontend=true \
       --no-restore
@@ -105,4 +105,4 @@ USER uygulama
 HEALTHCHECK --interval=30s --timeout=5s --start-period=40s --retries=3 \
   CMD curl -fsS http://127.0.0.1:8080/api/v2/institution || exit 1
 
-ENTRYPOINT ["dotnet", "KentOS.Mini.Web.dll"]
+ENTRYPOINT ["dotnet", "KentOS.Kalem.Web.dll"]

@@ -1,6 +1,6 @@
 # Kurulum Rehberi
 
-**KentOS.Mini** — belediye başkanlık makamı için ajanda, talep ve iş takip
+**KentOS.Kalem** — belediye başkanlık makamı için ajanda, talep ve iş takip
 sistemi. Bu rehber sıfırdan bir kuruluma başlayan sistem yöneticisi ve
 geliştirici için yazıldı.
 
@@ -190,7 +190,7 @@ atlayın — uygulama bildirimsiz çalışır.
 ## 6. Çalıştırma
 
 ```bash
-dotnet run --project KentOS.Mini.Web
+dotnet run --project KentOS.Kalem.Web
 ```
 
 Ön yüz derlemesi `dotnet build/run/publish` ile otomatik tetiklenir.
@@ -199,7 +199,7 @@ Atlamak için `-p:SkipFrontend=true`.
 Yayın için:
 
 ```bash
-dotnet publish KentOS.Mini.Web -c Release -o /yayin/klasoru
+dotnet publish KentOS.Kalem.Web -c Release -o /yayin/klasoru
 ```
 
 `.env` dosyasını yayın klasörüne kopyalayın (ya da ayarları ortam değişkeni
@@ -227,7 +227,7 @@ Uygulamaya `admin` ile girin → **Sistem → Kurum Bilgileri** (`/kurum`).
 Kaydettiğiniz an giriş ekranı, menü, sekme başlığı, PWA manifesti ve
 PDF/Excel çıktıları o değerleri kullanır.
 
-**Görselleri** sunucuda `KentOS.Mini.Web/wwwroot/` altına koyun ve yolunu
+**Görselleri** sunucuda `KentOS.Kalem.Web/wwwroot/` altına koyun ve yolunu
 alana yazın (örn. `/amblem.png`). Ekrandaki küçük önizleme boş kalıyorsa yol
 yanlıştır. Gereken dosyalar:
 
@@ -265,7 +265,7 @@ birim ağacı yanlışsa kullanıcı kendi işini göremez.
 ```bash
 dotnet build                       # ön yüzü de derler
 dotnet test                        # sunucu testleri
-cd KentOS.Mini.Web/frontend
+cd KentOS.Kalem.Web/frontend
 npx tsc --noEmit && npm test && npm run build
 node test/gorsel/tur.mjs           # sunucu ayakta olmalı
 ```

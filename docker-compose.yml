@@ -1,5 +1,5 @@
 # ═══════════════════════════════════════════════════════════════════════════
-#  KentOS.Mini — yerel kapsayıcı koşumu
+#  KentOS.Kalem — yerel kapsayıcı koşumu
 #
 #  Bu dosya YEREL DENEME içindir. Dokploy'da uygulamayı doğrudan
 #  `Dockerfile` ile dağıtmak daha uygun: veritabanını Dokploy'un kendi

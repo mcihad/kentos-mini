@@ -369,11 +369,11 @@ FodyWeavers.xsd
 # her derlemede birkaç MB şişiyor ve hiçbiri okunabilir bir değişiklik
 # değil. `index.html` ile `firebase-messaging-sw.js` de üretilmiş çıktı
 # (kaynakları `frontend/index.html` ve `frontend/public/`).
-KentOS.Mini.Web/wwwroot/yeni/
-KentOS.Mini.Web/wwwroot/uygulama/
-KentOS.Mini.Web/wwwroot/index.html
-KentOS.Mini.Web/wwwroot/firebase-messaging-sw.js
-KentOS.Mini.Web/frontend/node_modules/
+KentOS.Kalem.Web/wwwroot/yeni/
+KentOS.Kalem.Web/wwwroot/uygulama/
+KentOS.Kalem.Web/wwwroot/index.html
+KentOS.Kalem.Web/wwwroot/firebase-messaging-sw.js
+KentOS.Kalem.Web/frontend/node_modules/
 
 # --- KULLANICI DOSYALARI — depoya ASLA girmez ---
 # Etkinlik fotoğrafları, talep ekleri, özgeçmişler ve kullanıcıdan
@@ -382,12 +382,12 @@ KentOS.Mini.Web/frontend/node_modules/
 # silmek ayrı bir iş; en baştan dışarıda kalmalı.
 #
 # Klasörü uygulama açılışta kendisi oluşturuyor (`Program.cs`).
-KentOS.Mini.Web/wwwroot/uploads/
-KentOS.Mini.Web/wwwroot/temp/
-KentOS.Mini.Web/dosyalar/
+KentOS.Kalem.Web/wwwroot/uploads/
+KentOS.Kalem.Web/wwwroot/temp/
+KentOS.Kalem.Web/dosyalar/
 
 # TypeScript artımlı derleme damgası — her derlemede değişir.
-KentOS.Mini.Web/frontend/*.tsbuildinfo
+KentOS.Kalem.Web/frontend/*.tsbuildinfo
 
 # ── Kuruma özel yapılandırma ────────────────────────────────────────────
 # `.env` KURUMA ÖZELDİR ve sırlar içerir (veritabanı parolası, JWT imza

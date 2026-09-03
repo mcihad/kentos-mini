@@ -1,9 +1,9 @@
-# KentOS.Mini
+# KentOS.Kalem
 
 Belediye **başkanlık makamı** için ajanda, talep ve iş takip sistemi.
 
 Makamın günü üç şeyin etrafında dönüyor: kimin ne zaman geleceği (ajanda),
-vatandaşın ne istediği (talepler) ve bunların hangi birime düştüğü. KentOS.Mini
+vatandaşın ne istediği (talepler) ve bunların hangi birime düştüğü. KentOS.Kalem
 bu üçünü tek yerde tutar; üzerine halk günü, protokol/davet, özgeçmiş havuzu ve
 kurum içi dosya gönderimi modülleri gelir.
 
@@ -38,7 +38,7 @@ süzülür. Ayrıntı: [`OZELLIK-AGACI.md`](OZELLIK-AGACI.md).
 
 ```bash
 cp .env.example .env      # doldurun: veritabanı, JWT anahtarı, adres
-dotnet run --project KentOS.Mini.Web
+dotnet run --project KentOS.Kalem.Web
 ```
 
 Ön yüz derlemesi `dotnet build/run/publish` ile otomatik tetiklenir.
@@ -78,14 +78,14 @@ bilgilerini gir**. Yeniden derleme yok, kaynak değişikliği yok.
 dotnet build                              # ön yüzü de derler
 dotnet test                               # sunucu testleri
 
-cd KentOS.Mini.Web/frontend
+cd KentOS.Kalem.Web/frontend
 npm run dev                               # Vite; /api → :5097 proxy
 npx tsc --noEmit && npm test && npm run build
 node test/gorsel/tur.mjs                  # gerçek Chrome ile görsel tur
 ```
 
 Mimari kararlar, değişmez kurallar ve tuzaklar [`CLAUDE.md`](CLAUDE.md) ile
-[`KentOS.Mini.Web/frontend/CLAUDE.md`](KentOS.Mini.Web/frontend/CLAUDE.md)
+[`KentOS.Kalem.Web/frontend/CLAUDE.md`](KentOS.Kalem.Web/frontend/CLAUDE.md)
 içinde. İkisi de **bağlayıcıdır**; kod yazmadan önce okunur.
 
 ### Dil sözleşmesi

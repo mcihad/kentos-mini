@@ -253,7 +253,7 @@ var, JWT anahtar gücü açılışta zorlanıyor, Swagger üretimde kapalı.
 | Sayfalama tek zarfta (`SayfaliSonuc<T>`) | 🟡 | Yeni uçlarda zorunlu; bazı eski uçlarda yok — dokunulursa eklenir |
 | Kod dili İngilizce | 🟡 | **Ön yüz TAMAM** (dizin, dosya, tanımlayıcı). Sunucu **toplu çevrilmeyecek**: yeni kod İngilizce, eski kod dokundukça. Sözleşme sabitlendi (40 `[Table]` · 451 `[Column]` · 1190 `[JsonPropertyName]`) — dokundukça çevirmek güvenli |
 | Kuruma özel bilgi koddan çıktı | ✅ | Sırlar/altyapı `.env`'de (`Bolum__Alt` biçimi, `DotNetEnv`), kurum kimliği veritabanında ve `/kurum` ekranından düzenlenir. Bekçi: `YapilandirmaTests` — ayar varsayılanlarında kurum bilgisi olmadığını ve `.env.example`'ın eksiksizliğini denetler |
-| Ürün adı ve ad alanı | ✅ | `KentOS.Mini.*`; kaynak ağacında kurum adı geçmiyor. Depo `kentos-mini`; Flutter uygulaması ayrı depoda ve dahil değil |
+| Ürün adı ve ad alanı | ✅ | `KentOS.Kalem.*`; kaynak ağacında kurum adı geçmiyor. Depo `kentos-mini`; Flutter uygulaması ayrı depoda ve dahil değil |
 | Dosya depolama sağlayıcısı | ✅ | `STORAGE__PROVIDER=Local\|S3`. Nesne adı veritabanındaki yolun aynısı, geçişte kayıt değişmiyor; S3 kipinde eski `/uploads/...` adresleri köprü ara katmanıyla ayakta (v1 mobil sözleşmesi). Bekçi: `DepolamaTests` |
 | E2E test paketi | 🟡 | Görsel tur (154 ekran) + yetki matrisi (7 rol) var; işlem uçtan uca akışları eklenecek |
 | Çevrimdışı yazma (kuyruk) | ⬜ | Şu an yalnızca okuma kabuğu çevrimdışı |

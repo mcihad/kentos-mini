@@ -1,4 +1,4 @@
-# KentOS.Mini — Tasarım Sistemi Şartnamesi
+# KentOS.Kalem — Tasarım Sistemi Şartnamesi
 
 **Sürüm 3.0 — mobil tasarım dili.** Bu belge bağlayıcıdır: renk, ölçü,
 yarıçap, gölge, tipografi ve bileşen anatomisi buradan gelir. Buradaki

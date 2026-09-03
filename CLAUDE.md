@@ -1,11 +1,11 @@
-# KentOS.Mini — Sunucu (.NET 10)
+# KentOS.Kalem — Sunucu (.NET 10)
 
 Belediye başkanlık makamı için ajanda / talep / iş takip sistemi. **İki yıldır
 canlıda**, binlerce kayıt ve aktif bir Flutter mobil uygulaması var. Buradaki
 her değişiklik üretimdeki bir sistemi etkiler.
 
-> **Ürün adı `KentOS.Mini`, depo adı `kentos-mini`.** Ad alanları ve derleme
-> adları `KentOS.Mini.*` önekini taşır. Uygulama açık kaynak olacak ve başka
+> **Ürün adı `KentOS.Kalem`, depo adı `kentos-mini`.** Ad alanları ve derleme
+> adları `KentOS.Kalem.*` önekini taşır. Uygulama açık kaynak olacak ve başka
 > belediyelere verilecek; bu yüzden **kaynak ağacında hiçbir kurumun adı
 > geçmez** — ne sınıf adında, ne varsayılanda, ne bir metinde. Yorum satırında
 > geçebilir. Kural ve bekçisi: *KURUM BİLGİSİ KODA YAZILMAZ*.
@@ -13,18 +13,37 @@ her değişiklik üretimdeki bir sistemi etkiler.
 > Flutter mobil uygulaması **ayrı bir depodur** (`workcollab/`) ve bu depoya
 > dahil değildir.
 
+> **Ürün adı `KentOS.Mini` → `KentOS.Kalem` olarak değiştirildi.** 493 dosya,
+> 6621 satır: ad alanları, derleme adları, proje dizinleri, çözüm dosyası,
+> npm paket adı. **Depo adı `kentos-mini` OLDUĞU GİBİ KALDI** — GitHub
+> deposunu yeniden adlandırmak dışarıya dönük bir karar ve mevcut klonları,
+> CI yapılandırmalarını ve yer imlerini etkiliyor.
+>
+> **Kritik doğrulama — hayalet migration.** `AppDbContextModelSnapshot.cs`
+> entity tiplerini **dize olarak** taşıyor (220 yerde
+> `"KentOS.Mini.Application.Models.X"`). Ad alanı değişip anlık görüntü
+> geride kalsaydı bir sonraki `migrations add` **var olan tabloları düşürüp
+> yeniden yaratmayı** önerirdi. Bu yüzden yeniden adlandırma anlık görüntüye
+> ve migration dosyalarına da uygulandı, sonra ölçüldü: `migrations add`
+> **0 işlemli boş bir migration** üretti, yani model veritabanı açısından
+> hiç değişmedi. Deneme migration'ı geri alındı.
+>
+> Uygulanmış geçmiş etkilenmiyor: `__EFMigrationsHistory` yalnızca
+> `migration_id` tutuyor (`20260825142810_HassasMesajIcerigi` gibi), ad alanı
+> saklamıyor — ölçüldü, tabloda `KentOS` geçen 0 satır var.
+
 ## Çözüm yerleşimi
 
 | Proje | Ne barındırır |
 |---|---|
-| `KentOS.Mini.Web` | MVC View'ları, `Controllers/Api/*` (mobil API), `Controllers/V2/*` (yeni API), `AppDbContext`, Migrations, **servis implementasyonları**, 2 `BackgroundService` |
-| `KentOS.Mini.Application` | Entity'ler (`Models/`), DTO'lar (`Dto/`), enum'lar, **servis arayüzleri**, RRULE motoru. **NuGet bağımlılığı yok, proje referansı yok** — bu kasıtlı, böyle kalsın. |
-| `KentOS.Mini.Tests` | xUnit |
+| `KentOS.Kalem.Web` | MVC View'ları, `Controllers/Api/*` (mobil API), `Controllers/V2/*` (yeni API), `AppDbContext`, Migrations, **servis implementasyonları**, 2 `BackgroundService` |
+| `KentOS.Kalem.Application` | Entity'ler (`Models/`), DTO'lar (`Dto/`), enum'lar, **servis arayüzleri**, RRULE motoru. **NuGet bağımlılığı yok, proje referansı yok** — bu kasıtlı, böyle kalsın. |
+| `KentOS.Kalem.Tests` | xUnit |
 
 Ayrı Domain/Infrastructure projesi yok; iki katmanlı bölünme bilinçli.
 
 SPA'nın kendi kılavuzu ayrı ve **bağlayıcı**:
-`KentOS.Mini.Web/frontend/CLAUDE.md`.
+`KentOS.Kalem.Web/frontend/CLAUDE.md`.
 
 ## HER İYİLEŞTİRMEDEN SONRA DÖKÜMAN GÜNCELLENİR
 
@@ -632,7 +651,7 @@ docker exec postgis_db psql -U postgres -c "CREATE DATABASE workcollab_test OWNE
 `Database:AutoMigrate` (varsayılan `true`) → uygulama açılışta bekleyen migration'ları uygular; 3/6/9/12 sn ile 5 deneme, sonra **fail-fast**. Ayrıntı: `OTOMATIK-MIGRATION.md`.
 
 ```bash
-dotnet ef migrations add AdiBuraya -p KentOS.Mini.Web -s KentOS.Mini.Web
+dotnet ef migrations add AdiBuraya -p KentOS.Kalem.Web -s KentOS.Kalem.Web
 ```
 
 > `.config/dotnet-tools.json` `dotnet-ef` **9.0.0**'a sabitli ama EF paketleri 10.0.0 — sürüm uyuşmazlığı var, araç güncellenmesi gerekebilir.
@@ -1278,7 +1297,7 @@ klasörlere yazmayı dener, başaramazsa günlüğe yazar ama başlar.
 
 ## Yeni web uygulaması
 
-`KentOS.Mini.Web/frontend/` (Vite + React) → doğrudan **`wwwroot/`**
+`KentOS.Kalem.Web/frontend/` (Vite + React) → doğrudan **`wwwroot/`**
 altına derlenir ve **kökten** (`/`) yayınlanır. Eski MVC arayüzü **aynen**
 çalışmaya devam eder; onun rotaları (`/Randevu`, `/Ajanda`, `/Modules`…)
 dokunulmadan geçer.
@@ -1297,7 +1316,7 @@ dokunulmadan geçer.
   bırakır. Kapsamın kökte olması ayrıca kurulabilirliğin şartı — `start_url`i
   karşılayamayan worker'la tarayıcı uygulamayı kurulabilir saymıyor.
 
-Ayrıntı ve bütün arayüz kuralları: `KentOS.Mini.Web/frontend/CLAUDE.md`.
+Ayrıntı ve bütün arayüz kuralları: `KentOS.Kalem.Web/frontend/CLAUDE.md`.
 
 ## DİNAMİK FORM VE ANKET
 

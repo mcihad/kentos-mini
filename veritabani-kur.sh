@@ -54,4 +54,4 @@ done
 
 echo
 echo "Hazır. Şema ve tohum verisi için:"
-echo "  cd KentOS.Mini.Web && ASPNETCORE_ENVIRONMENT=Development dotnet run"
+echo "  cd KentOS.Kalem.Web && ASPNETCORE_ENVIRONMENT=Development dotnet run"

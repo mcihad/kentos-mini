@@ -13,8 +13,8 @@
 # ── Kullanıcı dosyaları ──
 # Gerçek özgeçmişler, etkinlik fotoğrafları, gönderilen belgeler.
 # Çalışma anında birimden (volume) gelir.
-KentOS.Mini.Web/wwwroot/uploads/
-KentOS.Mini.Web/dosyalar/
+KentOS.Kalem.Web/wwwroot/uploads/
+KentOS.Kalem.Web/dosyalar/
 
 # ── Derleme çıktıları ve bağımlılıklar ──
 # İmaj bunları kendisi üretiyor; kopyalamak hem yavaş hem de yerel makinenin
@@ -22,10 +22,10 @@ KentOS.Mini.Web/dosyalar/
 **/bin/
 **/obj/
 **/node_modules/
-KentOS.Mini.Web/wwwroot/uygulama/
-KentOS.Mini.Web/wwwroot/yeni/
-KentOS.Mini.Web/wwwroot/index.html
-KentOS.Mini.Web/wwwroot/firebase-messaging-sw.js
+KentOS.Kalem.Web/wwwroot/uygulama/
+KentOS.Kalem.Web/wwwroot/yeni/
+KentOS.Kalem.Web/wwwroot/index.html
+KentOS.Kalem.Web/wwwroot/firebase-messaging-sw.js
 **/*.tsbuildinfo
 
 # ── Depo ve araç dosyaları ──

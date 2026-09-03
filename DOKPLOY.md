@@ -1,6 +1,6 @@
 # Dokploy ile yayına alma
 
-KentOS.Mini bir Dockerfile taşıyor; Dokploy'da **Application → Docker** tipiyle
+KentOS.Kalem bir Dockerfile taşıyor; Dokploy'da **Application → Docker** tipiyle
 doğrudan dağıtılır. Ayrı bir derleme hattı gerekmiyor: imaj ön yüzü de
 kendisi derliyor.
 

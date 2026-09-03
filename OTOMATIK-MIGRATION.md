@@ -32,7 +32,7 @@ Kapatıldığında log: `"Database:AutoMigrate = false — migration atlandı."`
 Migration'ları elle uygulamak isterseniz:
 
 ```bash
-dotnet ef database update --project KentOS.Mini.Web
+dotnet ef database update --project KentOS.Kalem.Web
 ```
 
 ## Bu sürümde migration gerekiyor mu?
@@ -41,7 +41,7 @@ dotnet ef database update --project KentOS.Mini.Web
 Doğrulandı:
 
 ```
-$ dotnet ef migrations has-pending-model-changes --project KentOS.Mini.Web
+$ dotnet ef migrations has-pending-model-changes --project KentOS.Kalem.Web
 No changes have been made to the model since the last migration.
 ```
 
